@@ -1,0 +1,128 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+            <title>JMessage Phonegap Sample App</title>
+        <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'">
+        <link href="css/jquery.mobile-1.1.1.css" rel="stylesheet" type="text/css"/>
+            <script type="text/javascript" src="js/jquery.js"></script>
+            <script type="text/javascript" src="js/jquery.mobile-1.1.1.js"></script>
+            <script type="text/javascript" src="cordova.js"></script>
+<script type="text/javascript" charset="utf-8">
+
+			 
+			 function onclickConversationRow(targetId)
+			 {
+// 			 	alert(targetId);
+				sessionStorage.setItem("jmessage_conversation_username", targetId);
+				window.location.href="conversation.html";
+
+			 }
+			 
+			var rowcounter = 0;
+
+			var tbl;
+			function insert(dict){
+			
+			    var ss = JSON.stringify(dict);
+ 				console.log("insert" + ss);
+				var nickname=  dict.nickname;
+ 				var targetId= dict.targetId;
+ 				var  lastMessage =  dict.lastMessage;
+ 				
+ 		   	 	tbl=document.getElementById('dynamic_conversation_list');
+ 				var row = tbl.insertRow();
+		 		row.id=rowcounter;
+	     	 	cell = row.insertCell();
+			 	cell.align = 'center';
+				rowcounter++;
+				var htmlText =  "<div id="+targetId+" onclick=\"onclickConversationRow('"+targetId+"')\"> <label>targetId:" + targetId + "<br>lastMessage:" + lastMessage + "<br></label> </div>"; 
+				console.log("@"+htmlText);
+				
+				cell.innerHTML=htmlText;
+			 }   
+			 
+			 function sendMessage(){
+			    var username = $("#username").attr("value");
+            	var messageContent = $("#messageContent").attr("value");
+            	
+            	
+				 window.plugins.jmessagePlugin.sendSingleTextMessage(username,messageContent ,function(response){
+
+                                        var ss = JSON.stringify(response);
+                                        console.log("send message sucess" + ss);
+											alert("send message ok");
+// 											insert();
+                                        } ,function(response){
+                                                       
+                                        console.log("send message fail" + response);
+											alert("send message fail" + response);
+                                        });	
+			 }  
+			
+			 function updateConversationList(){
+			    console.log("updateConversationList");
+			    console.log(window.plugins.jmessagePlugin);
+			    console.log("----");
+				 window.plugins.jmessagePlugin.getSingleConversationList(function(response){
+                                        var ss = JSON.stringify(response);
+                                        console.log("getAllSingleConversation ok" + ss);
+ 											
+ 											for(var o in response){
+ 												insert(response[o]);
+ 											}
+                                        } ,function(response){          
+											alert("getAllSingleConversation failed");
+                                       		console.log("getAllSingleConversation fail" + response);
+                                        });	
+			 } 
+			 
+			 function onLoad(){
+			    console.log("onLoad");
+			 	updateConversationList();
+			 }
+			    
+ 
+ 
+      function JMessageLogout(){
+     	  console.log("JMessageLogout");
+     	  window.plugins.jmessagePlugin.logout(function(response){},function(response){});
+		  window.location.href="index.html";
+		  console.log("JMessageLogout");
+
+     }
+     
+     function addConversation(){
+     		  
+     }
+    
+</script>
+</head>
+    <body onload="onLoad()"> 
+     <div data-role="header">
+     	<h1>会话列表</h1>
+	 </div>
+     <div data-role="footer">
+     <div data-role="navbar">
+       <ul>
+         <li><a href="conversation-list.html " class="ui-btn-active">会话列表</a></li>
+         <li><a href="push.html " >推送设置</a></li>
+         <li><a href="my-info.html " >我的</a></li>
+       </ul>
+     </div>
+    </div>
+    
+    <div data-role="content">
+    		<div>
+                <input type="button" onclick="addConversation()" value="发起会话" />
+			</div>
+			<form>
+				<div>
+                    	<table border="0" id="dynamic_conversation_list">
+						</table>
+				</div>
+			</form>
+	</div>
+ 
+</body>
+</html>
