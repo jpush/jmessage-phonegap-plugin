@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        id="cordova-plugin-jmessage"
+        version="1.0.0">
+
+    <name>JMessage Plugin</name>
+    <description>集成极光IM和推送功能</description>
+    <author>HXHG</author>
+    <keywords>JMessage, JPush</keywords>
+    <license>Apache 2.0 License</license>
+
+    <preference name="API_KEY" />
+
+    <engines>
+        <engine name="cordova" version=">=3.0"/>
+<!--        文档说明 cordova 版本-->
+    </engines>
+    
+    <js-module src="www/JMessagePlugin.js" name="JMessagePlugin">
+            <clobbers target="JMessagePlugin"/>
+    </js-module>
+
+<!--    <js-module src="www/JPushPlugin.js" name="JPushPlugin">-->
+<!--        <clobbers target="JPushPlugin"/>-->
+<!--    </js-module>-->
+
+    <platform name="ios">
+            <config-file target="config.xml" parent="/*">
+                <feature name="JMessagePlugin">
+                    <param name="ios-package" value="JMessagePlugin"/>
+                </feature>
+            </config-file>
+            <hook type="after_plugin_install" src="script/ios-install.js" />
+            <hook type="before_plugin_uninstall" src="script/ios-uninstall.js" />
+            <header-file src="src/ios/Plugins/JMessagePlugin.h"/>
+            <source-file src="src/ios/Plugins/JMessagePlugin.m"/>
+            <header-file src="src/ios/Plugins/JMessageHelper.h"/>
+            <source-file src="src/ios/Plugins/JMessageHelper.m"/>
+            <framework src="src/ios/lib/JMessage.framework" custom="true" />
+            <framework src="CFNetwork.framework" weak="true" />
+            <framework src="CoreFoundation.framework" weak="true" />
+            <framework src="CoreTelephony.framework" weak="true" />
+            <framework src="SystemConfiguration.framework" weak="true" />
+            <framework src="CoreGraphics.framework" weak="true" />
+            <framework src="Foundation.framework" weak="true" />
+            <framework src="UIKit.framework" weak="true" />
+            <framework src="Security.framework" weak="true" />
+            <framework src="libz.tbd" weak="true" />
+            <framework src="libsqlite3.0.tbd" weak="true" />
+<!--            文档中说明xcode 版本-->
+        </platform>
+    
+    <platform name="android">
+        
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="JMessagePlugin">
+                <param name="android-package" value="cn.jmessage.phonegap.JMessagePlugin"/>
+            </feature>
+        </config-file>
+        
+        <config-file target="AndroidManifest.xml" parent="/manifest">
+            <!-- Required  一些系统要求的权限，如访问网络等-->
+            <uses-permission android:name="$PACKAGE_NAME.permission.JPUSH_MESSAGE"/>
+            <uses-permission android:name="android.permission.RECEIVE_USER_PRESENT"/>
+            <uses-permission android:name="android.permission.INTERNET"/>
+            <uses-permission android:name="android.permission.WAKE_LOCK"/>
+            <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+            <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+            <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+            <uses-permission android:name="android.permission.VIBRATE"/>
+            <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"/>
+            <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+            <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+            <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
+            <permission
+            android:name="$PACKAGE_NAME.permission.JPUSH_MESSAGE"
+            android:protectionLevel="signature"/>
+            
+            
+            <!-- JMessage Demo required for record audio-->
+            <uses-permission android:name="android.permission.RECORD_AUDIO" />
+            <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
+
+        </config-file>
+        
+        
+        
+        
+        <config-file target="AndroidManifest.xml" parent="/manifest/application">
+            
+            <!-- Required Push SDK核心功能-->
+            <service
+                android:name="cn.jpush.android.service.PushService"
+                android:enabled="true"
+                android:exported="false"
+                android:process=":remote">
+                <intent-filter>
+                    <action android:name="cn.jpush.android.intent.REGISTER" />
+                    <action android:name="cn.jpush.android.intent.REPORT" />
+                    <action android:name="cn.jpush.android.intent.PushService" />
+                    <action android:name="cn.jpush.android.intent.PUSH_TIME" />
+                </intent-filter>
+            </service>
+            
+            <!-- Required Push SDK核心功能-->
+            <receiver
+                android:name="cn.jpush.android.service.PushReceiver"
+                android:enabled="true"
+                android:exported="false">
+                <intent-filter android:priority="1000">
+                    <action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED_PROXY" />  <!--Required  显示通知栏 -->
+                    <category android:name="$PACKAGE_NAME" />
+                </intent-filter>
+                <intent-filter>
+                    <action android:name="android.intent.action.USER_PRESENT" />
+                    <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+                </intent-filter>
+                <!-- Optional -->
+                <intent-filter>
+                    <action android:name="android.intent.action.PACKAGE_ADDED" />
+                    <action android:name="android.intent.action.PACKAGE_REMOVED" />
+                    
+                    <data android:scheme="package" />
+                </intent-filter>
+            </receiver>
+            
+            <!-- Required Push SDK核心功能 -->
+            <activity
+                android:name="cn.jpush.android.ui.PushActivity"
+                android:configChanges="orientation|keyboardHidden"
+                android:theme="@android:style/Theme.NoTitleBar"
+                android:exported="false">
+                <intent-filter>
+                    <action android:name="cn.jpush.android.ui.PushActivity" />
+                    
+                    <category android:name="android.intent.category.DEFAULT" />
+                    <category android:name="$PACKAGE_NAME" />
+                </intent-filter>
+            </activity>
+            <!-- Required Push SDK核心功能 -->
+            <service
+            android:name="cn.jpush.android.service.DownloadService"
+            android:enabled="true"
+            android:exported="false" />
+            <!-- Required Push SDK核心功能 -->
+            <receiver android:name="cn.jpush.android.service.AlarmReceiver" android:exported="false"/>
+            
+            <!-- IM Required IM SDK核心功能-->
+            <receiver
+                android:name="cn.jpush.im.android.helpers.IMReceiver"
+                android:enabled="true"
+                android:exported="false">
+                <intent-filter android:priority="1000">
+                    <action android:name="cn.jpush.im.android.action.IM_RESPONSE" />
+                    <action android:name="cn.jpush.im.android.action.NOTIFICATION_CLICK_PROXY" />
+                    
+                    <category android:name="$PACKAGE_NAME" />
+                </intent-filter>
+            </receiver>
+
+            <!-- option 可选项。用于同一设备中不同应用的JPush服务相互拉起的功能。 -->
+            <!-- 若不启用该功能可删除该组件，将不拉起其他应用也不能被其他应用拉起 -->
+            <service
+                android:name="cn.jpush.android.service.DaemonService"
+                android:enabled="true"
+                android:exported="true">
+                <intent-filter>
+                    <action android:name="cn.jpush.android.intent.DaemonService" />
+                    <category android:name="$PACKAGE_NAME" />
+                </intent-filter>
+                
+            </service>
+            <meta-data android:name="JPUSH_APPKEY" android:value="$API_KEY"/>
+            <meta-data android:name="JPUSH_CHANNEL" android:value="developer-default"/>
+        </config-file>
+
+        <source-file src="src/android/jmessage-android-1.1.5.jar" target-dir="libs"/>
+        <source-file src="src/android/armeabi/libjpush205.so" target-dir="libs/armeabi"/>
+        <source-file src="src/android/armeabi-v7a/libjpush205.so" target-dir="libs/armeabi-v7a"/>
+        <source-file src="src/android/arm64-v8a/libjpush205.so" target-dir="libs/arm64-v8a"/>
+        <source-file src="src/android/x86_64/libjpush205.so" target-dir="libs/x86_64"/>
+        <source-file src="src/android/x86/libjpush205.so" target-dir="libs/x86"/>
+        <source-file src="src/android/mips64/libjpush205.so" target-dir="libs/mips64"/>
+        <source-file src="src/android/mips/libjpush205.so" target-dir="libs/mips"/>
+
+
+        <!--<source-file src="src/android/JPushPlugin.java" target-dir="src/cn/jpush/phonegap"/>-->
+<!--        <source-file src="src/android/MyReceiver.java" target-dir="src/cn/jmessage/phonegap"/>-->
+        <source-file src="src/android/JMessagePlugin.java" target-dir="src/cn/jmessage/phonegap"/>
+
+<!--        <source-file src="src/android/test_notification_layout.xml" target-dir="res/layout"/>-->
+<!--        <source-file src="src/android/jpush_notification_icon.png" target-dir="res/drawable"/>-->
+
+        
+    </platform>
+
+
+</plugin>

@@ -1,0 +1,176 @@
+
+<!DOCTYPE html>
+<html>
+    
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+            <title>JMessage Phonegap Sample App</title>
+        <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'">
+        <link href="css/jquery.mobile-1.1.1.css" rel="stylesheet" type="text/css"/>
+            <script type="text/javascript" src="js/jquery.js"></script>
+            <script type="text/javascript" src="js/jquery.mobile-1.1.1.js"></script>
+            <script type="text/javascript" src="cordova.js"></script>
+            <script type="text/javascript"> 
+            var onDeviceReady   = function(){
+                console.log("JPushPlugin:Device ready!");
+                 window.plugins.jmessagePlugin.onDeviceReady();  
+            }
+							
+            function register(){
+            	var username = $("#registerName").attr("value");
+            	var password = $("#registerPassword").attr("value");
+                $("#messageResult").html("click register");
+
+                window.plugins.jmessagePlugin.register(username,password ,function(response){
+
+                                                       var ss = JSON.stringify(response);
+                                                       console.log("register callback sucess" + ss);
+                                                        $("#messageResult").html(ss);
+
+                                                       } ,function(response){
+                                                       var ss = JSON.stringify(response);
+                                                       console.log("register callback fail" + response);
+                                                        $("#messageResult").html(ss);
+                                                       
+                                                       });
+            }
+            
+            function login(){
+                console.log("click login");
+            	var username = $("#username").attr("value");
+            	var password = $("#userPassword").attr("value");
+            	
+
+				
+				if(window.plugins.jmessagePlugin.username === username)
+				{
+               		 console.log("your had login");
+                    $("#messageResult").html("此账号已登录");
+					return;
+				}
+				
+                window.plugins.jmessagePlugin.login(username,password ,function(response){
+                                        var ss = JSON.stringify(response);
+                                        console.log("login callback sucess" + ss);
+											window.plugins.jmessagePlugin.username = username;
+                                           // $("#messageResult").html("登录成功");
+											alert("登录成功");
+											gotoConversation();
+
+                                         } ,function(response){
+                                                       
+                                        console.log("login callback fail" + response);
+                                           // $("#messageResult").html("登录失败");
+											alert("登录失败");
+                                         });
+            }
+
+			function gotoConversation(){
+				if(window.plugins.jmessagePlugin.username.length > 0){
+					window.location.href="conversation-list.html";
+				}
+				else{
+					alert("请先登录");
+				}
+			}
+			
+			function checkIsLogin()
+			{
+                console.log("checkIsLogin...");
+				//TODO: 增加一个 isLogin 函数
+                window.plugins.jmessagePlugin.getUserInfo(function(response){	
+                     var responseString = JSON.stringify(response);
+                    console.log("user is login" + responseString);
+                	
+					window.plugins.jmessagePlugin.username = response.username;
+					window.plugins.jmessagePlugin.nickname = response.nickname;
+					window.plugins.jmessagePlugin.gender = response.gender;
+					window.plugins.jmessagePlugin.avatatUrl = response.avatar;
+				 	gotoConversation();
+                },function(response){
+                     console.log("user is not login");
+					window.plugins.jmessagePlugin.username = "";
+					window.plugins.jmessagePlugin.nickname = "";
+					window.plugins.jmessagePlugin.gender = 0;
+					window.plugins.jmessagePlugin.avatatUrl = "";                
+				});
+			}
+			
+			 function onLoad(){
+				document.addEventListener("deviceready", onDeviceReady, false); 
+				$("#username").val("aa1234");
+				$("#userPassword").val("aa1234");
+                
+                checkIsLogin();
+			 }		
+			
+            //jpush.receiveMessage
+        </script>
+    </head>
+    <body onload="onLoad()"> 
+
+        <div data-role="page" id="page">
+             <div data-role="header">
+     	         <h1>注册/登录</h1>
+	    	 </div>
+            <div data-role="content">
+				<form>
+					<div>
+<!--                      <label id="messageResult" ></label> -->
+ 						<div data-role="fieldcontain">	
+						   <center> 
+						   		<label><br>注册 </label>
+						   	</center>                    
+                           <center>
+                            <table>
+                                <tr>
+                                    <td>
+                                        <input type="text"   id="registerName">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input type="text"   id="registerPassword">
+                                    </td>
+                                </tr>
+                            </table>
+                            </center>
+<!-- 
+                            <button onclick="register()">注册</button>
+ -->                            <input type="button" onclick="register()" value="注册" />
+
+                        </div>
+						
+<!-- 			login			 -->
+						<div data-role="fieldcontain">	
+						    <center>
+						    	<label><br><br>登录 </label>
+                           		 <table>
+                                	<tr>
+                                    <td>
+                                        <input type="text"   id="username">
+                                    </td>
+                               		 </tr>
+                                	<tr>
+                                    <td>
+                                        <input type="text"   id="userPassword">
+                                    </td>
+                                	</tr>
+                            	</table>
+						    </center>                   											                            
+
+<!-- 
+                            <button onclick="login()">登录</button>
+ -->
+							 <input type="button" onclick="checkIsLogin()" value="登录" />
+                        </div>
+						
+					</div>
+				</form>
+			</div>
+		</div>
+    </body>
+
+</html>
+
+
