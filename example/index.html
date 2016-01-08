@@ -1,176 +1,405 @@
-
 <!DOCTYPE html>
 <html>
-    
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-            <title>JMessage Phonegap Sample App</title>
-        <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'">
-        <link href="css/jquery.mobile-1.1.1.css" rel="stylesheet" type="text/css"/>
-            <script type="text/javascript" src="js/jquery.js"></script>
-            <script type="text/javascript" src="js/jquery.mobile-1.1.1.js"></script>
-            <script type="text/javascript" src="cordova.js"></script>
-            <script type="text/javascript"> 
-            var onDeviceReady   = function(){
-                console.log("JPushPlugin:Device ready!");
-                 window.plugins.jmessagePlugin.onDeviceReady();  
+<head>
+    <title>jQM Complex Demo</title>
+    <meta http-equiv='Content-Type' content='text/html; charset=utf-8'/>
+    <meta name="viewport"
+          content="width=device-width; initial-scale=1.0; maximum-scale=1.0; minimum-scale=1.0; user-scalable=no; target-densityDpi=device-dpi"/>
+
+    <link rel="stylesheet" href="css/themes/default/jquery.mobile-1.3.2.min.css">
+    <link rel="stylesheet" href="_assets/css/jqm-demos.css">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,700">
+    <script src="js/jquery.js"></script>
+    <script src="_assets/js/index.js"></script>
+    <script src="js/jquery.mobile-1.3.2.min.js"></script>
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript">
+
+        var usernameForConversation = "";//TODO: FIX ME
+
+        var onDeviceReady = function () {
+            console.log("JPushPlugin:Device ready!");
+            window.plugins.jmessagePlugin.onDeviceReady();
+            //checkIsLogin();
+            initJpush();
+        };
+
+        function initJpush() {
+
+        }
+
+        function onLoad() {
+            console.log("onLoad");
+            document.addEventListener("deviceready", onDeviceReady, false);
+        }
+
+        function onclickConversationRow(username) {
+            console.log("onclickConversationRow: username: " + username);
+            usernameForConversation = username;
+            $.mobile.navigate("#conversationPage", {transition: "slide"});
+        }
+
+        function insertCoversation(dict) {
+
+            var ss = JSON.stringify(dict);
+            console.log("insert" + ss);
+            var nickname = dict.nickname;
+            var username = dict.username;
+            var lastMessage = dict.lastMessage;
+
+            // <li><a onclick="onclickConversationRow('aa234')">jjj</a></li>
+
+            var insertString = "<li><a onclick=\"onclickConversationRow('" + username + "')\">" + username + ":" + lastMessage + '</a></li>';
+            console.log(insertString);
+            $('#conversationList').append(insertString).listview('refresh');
+        }
+        function naviBack() {
+            console.log("naviBack");
+            // history.back();
+            $.mobile.navigate("#conversationListPage", {transition: "pop"});
+        }
+
+        function gotoConversation() {
+
+            console.log("gotoConversation");
+            $.mobile.navigate("#conversationListPage", {transition: "slide"});
+        }
+
+        function checkIsLogin() {
+            console.log("checkIsLogin...");
+            //TODO: 增加一个 isLogin 函数
+            window.plugins.jmessagePlugin.getUserInfo(function (response) {
+                var responseString = JSON.stringify(response);
+                console.log("user is login" + responseString);
+
+                window.plugins.jmessagePlugin.username = response.username;
+                window.plugins.jmessagePlugin.nickname = response.nickname;
+                window.plugins.jmessagePlugin.gender = response.gender;
+                window.plugins.jmessagePlugin.avatatUrl = response.avatar;
+                gotoConversation();
+            }, function (response) {
+                console.log("user is not login");
+                window.plugins.jmessagePlugin.username = "";
+                window.plugins.jmessagePlugin.nickname = "";
+                window.plugins.jmessagePlugin.gender = 0;
+                window.plugins.jmessagePlugin.avatatUrl = "";
+            });
+        }
+
+        $(document).on("pageshow", "#loginPage", function () {
+            console.log("loginPage show");
+
+            $("#loginUername").val("aa1234");
+            $("#loginPassword").val("aa1234");
+        });
+
+        function insertMessage(dict) {
+
+            var ss = JSON.stringify(dict);
+            console.log("insert" + ss);
+
+
+            var contentType = dict.contentType;
+            if (contentType == "JMSGContentTypeText") {
+                var lastMessage = dict.contentText;
             }
-							
-            function register(){
-            	var username = $("#registerName").attr("value");
-            	var password = $("#registerPassword").attr("value");
-                $("#messageResult").html("click register");
+            var insertString = "<li><a>" + lastMessage + '</a></li>';
+            console.log(insertString);
+            $('#messageList').append(insertString).listview('refresh');
+        }
+        function getMessageHistory(username) {
+            $('#messageList').empty().listview('refresh');
+            console.log("getMessageHistory lastest 50 message with username:" + username);
+            //读取的是从0开始的50条聊天记录，可按实现需求传不同的值
+            window.plugins.jmessagePlugin.getSingleHistoryMessage(username, 0, 50, function (response) {
 
-                window.plugins.jmessagePlugin.register(username,password ,function(response){
+                var ss = JSON.stringify(response);
+                console.log("getMessageHistory ok: " + ss);
 
-                                                       var ss = JSON.stringify(response);
-                                                       console.log("register callback sucess" + ss);
-                                                        $("#messageResult").html(ss);
+                for (var o in response) {
+                    insertMessage(response[o]);
+                }
+            }, function (response) {
+                alert("getMessageHistory failed");
+                console.log("getMessageHistory fail" + response);
+            });
 
-                                                       } ,function(response){
-                                                       var ss = JSON.stringify(response);
-                                                       console.log("register callback fail" + response);
-                                                        $("#messageResult").html(ss);
-                                                       
-                                                       });
+        }
+
+        $(document).on("pageshow", "#conversationPage", function () {
+
+            console.log("conversationPage show   " + usernameForConversation);
+
+            getMessageHistory(usernameForConversation);
+        });
+
+
+        function updateConversationList() {
+            $('#conversationLis').empty().listview('refresh');
+
+            console.log("updateConversationList");
+            console.log("----");
+            window.plugins.jmessagePlugin.getSingleConversationList(function (response) {
+                var ss = JSON.stringify(response);
+                console.log("getAllSingleConversation ok" + ss);
+
+                for (var o in response) {
+                    insertCoversation(response[o]);
+                }
+            }, function (response) {
+                alert("getAllSingleConversation failed");
+                console.log("getAllSingleConversation fail" + response);
+            });
+        }
+
+
+        // 	当会话列表页初显示时
+        $(document).on("pageshow", "#conversationListPage", function () {
+            console.log("conversationListPage show username:" + usernameForConversation);
+            updateConversationList();
+
+        });
+
+        $(document).on("pageshow", "#myInfoPage", function () {
+
+            var genderStr = "unknow";
+            var gender = window.plugins.jmessagePlugin.gender;
+            if (gender == 1) {
+                genderStr = "male";
             }
-            
-            function login(){
-                console.log("click login");
-            	var username = $("#username").attr("value");
-            	var password = $("#userPassword").attr("value");
-            	
-
-				
-				if(window.plugins.jmessagePlugin.username === username)
-				{
-               		 console.log("your had login");
-                    $("#messageResult").html("此账号已登录");
-					return;
-				}
-				
-                window.plugins.jmessagePlugin.login(username,password ,function(response){
-                                        var ss = JSON.stringify(response);
-                                        console.log("login callback sucess" + ss);
-											window.plugins.jmessagePlugin.username = username;
-                                           // $("#messageResult").html("登录成功");
-											alert("登录成功");
-											gotoConversation();
-
-                                         } ,function(response){
-                                                       
-                                        console.log("login callback fail" + response);
-                                           // $("#messageResult").html("登录失败");
-											alert("登录失败");
-                                         });
+            else if (gender == 2) {
+                genderStr = "female";
             }
 
-			function gotoConversation(){
-				if(window.plugins.jmessagePlugin.username.length > 0){
-					window.location.href="conversation-list.html";
-				}
-				else{
-					alert("请先登录");
-				}
-			}
-			
-			function checkIsLogin()
-			{
-                console.log("checkIsLogin...");
-				//TODO: 增加一个 isLogin 函数
-                window.plugins.jmessagePlugin.getUserInfo(function(response){	
-                     var responseString = JSON.stringify(response);
-                    console.log("user is login" + responseString);
-                	
-					window.plugins.jmessagePlugin.username = response.username;
-					window.plugins.jmessagePlugin.nickname = response.nickname;
-					window.plugins.jmessagePlugin.gender = response.gender;
-					window.plugins.jmessagePlugin.avatatUrl = response.avatar;
-				 	gotoConversation();
-                },function(response){
-                     console.log("user is not login");
-					window.plugins.jmessagePlugin.username = "";
-					window.plugins.jmessagePlugin.nickname = "";
-					window.plugins.jmessagePlugin.gender = 0;
-					window.plugins.jmessagePlugin.avatatUrl = "";                
-				});
-			}
-			
-			 function onLoad(){
-				document.addEventListener("deviceready", onDeviceReady, false); 
-				$("#username").val("aa1234");
-				$("#userPassword").val("aa1234");
-                
-                checkIsLogin();
-			 }		
-			
-            //jpush.receiveMessage
-        </script>
-    </head>
-    <body onload="onLoad()"> 
+            console.log("myInfoPage show" + window.plugins.jmessagePlugin.username);
+            $("#myinfoUsername").text("username:" + window.plugins.jmessagePlugin.username);
+            $("#myinfoNickname").text("nickname:" + window.plugins.jmessagePlugin.nickname);
+            $("#myinfoGender").text("gender:" + genderStr);
 
-        <div data-role="page" id="page">
-             <div data-role="header">
-     	         <h1>注册/登录</h1>
-	    	 </div>
-            <div data-role="content">
-				<form>
-					<div>
-<!--                      <label id="messageResult" ></label> -->
- 						<div data-role="fieldcontain">	
-						   <center> 
-						   		<label><br>注册 </label>
-						   	</center>                    
-                           <center>
-                            <table>
-                                <tr>
-                                    <td>
-                                        <input type="text"   id="registerName">
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <input type="text"   id="registerPassword">
-                                    </td>
-                                </tr>
-                            </table>
-                            </center>
-<!-- 
-                            <button onclick="register()">注册</button>
- -->                            <input type="button" onclick="register()" value="注册" />
+        });
 
-                        </div>
-						
-<!-- 			login			 -->
-						<div data-role="fieldcontain">	
-						    <center>
-						    	<label><br><br>登录 </label>
-                           		 <table>
-                                	<tr>
-                                    <td>
-                                        <input type="text"   id="username">
-                                    </td>
-                               		 </tr>
-                                	<tr>
-                                    <td>
-                                        <input type="text"   id="userPassword">
-                                    </td>
-                                	</tr>
-                            	</table>
-						    </center>                   											                            
 
-<!-- 
-                            <button onclick="login()">登录</button>
- -->
-							 <input type="button" onclick="checkIsLogin()" value="登录" />
-                        </div>
-						
-					</div>
-				</form>
-			</div>
-		</div>
-    </body>
+        function login() {
+            console.log("click login");
+            var username = $("#loginUername").val();
+            var password = $("#loginPassword").val();
 
-</html>
+            console.log(username + " " + password);
 
+            if (window.plugins.jmessagePlugin.username === username) {
+                console.log("your had login");
+                return;
+            }
+
+            window.plugins.jmessagePlugin.login(username, password, function (response) {
+                var ss = JSON.stringify(response);
+                console.log("login callback sucess" + ss);
+                window.plugins.jmessagePlugin.username = username;
+                alert("登录成功");
+                gotoConversation();
+
+            }, function (response) {
+                var ss = JSON.stringify(response);
+                console.log("login callback fail" + ss);
+                alert("登录失败");
+            });
+        }
+
+        function register() {
+            console.log("register");
+            $.mobile.navigate("#conversationListPage", {transition: "slide"});
+        }
+
+        function logout() {
+            console.log("logout");
+            $.mobile.navigate("#loginPage", {transition: "pop"});
+        }
+
+        function sendMessage() {
+            var messageContentString = $("#messageContent").val();
+
+            window.plugins.jmessagePlugin.sendSingleTextMessage(usernameForConversation, messageContentString, function (response) {
+                var ss = JSON.stringify(response);
+                console.log("send message sucess" + ss);
+                alert("send message ok");
+            }, function (response) {
+
+                console.log("send message fail" + response);
+                alert("send message fail" + response);
+            });
+
+        }
+
+
+    </script>
+</head>
+
+<body onload="onLoad()">
+
+<div data-role="page" id="loginPage">
+    <div data-role="header">
+        <h1>登陆</h1>
+    </div>
+    <div>
+        <div data-role="content">
+            <h3>username:</h3>
+            <input type="text" placeholder="username" id="loginUername">
+
+            <h3>password:</h3>
+            <input type="text" placeholder="password" id="loginPassword">
+
+            <input type="button" onclick="login()" value="登录"/>
+            <input type="button" onclick="register()" value="注册"/>
+        </div>
+
+    </div>
+</div>
+
+<!--                  -->
+<div data-role="page" id="conversationListPage">
+    <div data-role="header">
+        <h1>会话列表</h1>
+
+        <div data-role="navbar">
+            <ul>
+                <li><a href="#conversationListPage" class="ui-btn-active ui-state-persist">会话列表</a></li>
+                <li><a href="#pushPage">推送设置</a></li>
+                <li><a href="#myInfoPage">我的</a></li>
+            </ul>
+        </div>
+    </div>
+    <!--会话列表 -->
+    <div>
+        <div data-role="content">
+            <ul data-role="listview" id="conversationList">
+                <!--
+                                         <li><a onclick="onclickConversationRow('aa234')">jjj</a></li>
+                 -->
+            </ul>
+        </div>
+    </div>
+    <!--会话列表 end -->
+</div>
+
+
+<!--         会话 -->
+<div data-role="page" id="conversationPage">
+    <div data-role="header">
+        <h1>会话</h1>
+    </div>
+    <div>
+        <div data-role="content">
+            <!--<h3>username:</h3>-->
+            <div>
+                <input type="button" onclick="naviBack()" value="返回"/>
+                <input type="text" id="messageContent">
+                <input type="button" onclick="sendMessage()" value="发送"/>
+            </div>
+            <div>
+                <ul data-role="listview" id="messageList">
+                </ul>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<!--  		 -->
+<div data-role="page" id="pushPage">
+    <div data-role="header">
+        <h1>推送设置</h1>
+
+        <div data-role="navbar">
+            <ul>
+                <li><a href="#conversationListPage">会话列表</a></li>
+                <li><a href="#pushPage" class="ui-btn-active ui-state-persist">推送设置</a></li>
+                <li><a href="#myInfoPage">我的</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div data-role="content">
+        <div data-role="fieldcontain">
+            <span name="alias" id="alias"></span>
+            <hr/>
+            <label>RegistrationID: </label>
+            <label id="registrationid">null</label>
+        </div>
+        <div data-role="fieldcontain">
+            <label>Tags: </label>
+            <table>
+                <tr>
+                    <td>
+                        <input type="text" id="tagText1"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="text" id="tagText2"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="text" id="tagText3">
+                    </td>
+                </tr>
+            </table>
+            <label>Alias: </label>
+            <table>
+                <tr>
+                    <td>
+                        <input type="text" id="aliasText">
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div data-role="fieldcontain">
+            <input type="button" id="setTagWithAliasButton" value="Add tag and alias"/>
+        </div>
+        <div data-role="fieldcontain">
+            <label id="tagAliasPrompt">设置tag/alias结果： </label>
+            <label id="tagAliasResult">null</label>
+        </div>
+        <div data-role="fieldcontain">
+            <label id="notificationPrompt">接受的通知内容:</label>
+            <label id="notificationResult">null</label>
+        </div>
+        <div data-role="fieldcontain">
+            <label id="messagePrompt">接受的自定义消息:</label>
+            <label id="messageResult">null</label>
+        </div>
+    </div>
+
+</div>
+<!--  		 -->
+<div data-role="page" id="myInfoPage">
+    <div data-role="header">
+        <h1>我的</h1>
+
+        <div data-role="navbar">
+            <ul>
+                <li><a href="#conversationListPage">会话列表</a></li>
+                <li><a href="#pushPage">推送设置</a></li>
+                <li><a href="#myInfoPage" class="ui-btn-active ui-state-persist">我的</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div>
+        <div data-role="content">
+            <div data-role="fieldcontain">
+                <h4 id="myinfoUsername"> username:</h4>
+                <h4 id="myinfoNickname"> nickname:</h4>
+                <h4 id="myinfoGender"> gender:</h4>
+                <input type="button" onclick="logout()" value="logout"/>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>  
 
