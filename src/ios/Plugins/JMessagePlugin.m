@@ -20,13 +20,12 @@ static NSString *const KEY_CONTENTTEXT = @"contentText";
 static NSString *const KEY_LASTMESSAGE = @"lastMessage";
 static NSString *const KEY_UNREADCOUNT = @"unreadCount";
 
-
+//code style
 
 @implementation JMessagePlugin
 
 
-+(NSMutableDictionary*)getDictionaryWithError:(NSInteger)error description:(NSString*)descriptionString
-{
++(NSMutableDictionary *)getDictionaryWithError:(NSInteger)error description:(NSString*)descriptionString {
     NSMutableDictionary * dict = [NSMutableDictionary new];
     [dict setValue:[NSNumber numberWithLong:error] forKey:KEY_ERRORCODE];
     [dict setValue:descriptionString forKey:KEY_ERRORDESCRIP];
@@ -102,12 +101,12 @@ static NSString *const KEY_UNREADCOUNT = @"unreadCount";
     if (info && info.username.length > 0) {//以此判断是否有用户信息
         NSMutableDictionary * dict = [NSMutableDictionary new];
         
-        int gender = 0;
+        int gender = 0;//性别未定义
         if (info.gender == kJMSGUserGenderMale) {
-            gender = 1;
+            gender = 1;//男
         }
         else if(gender == kJMSGUserGenderFemale){
-            gender = 2;
+            gender = 2;//女
         }
         
         [dict setValue:info.username forKey:KEY_USERNAME];
@@ -320,7 +319,7 @@ static NSString *const KEY_UNREADCOUNT = @"unreadCount";
     });
 }
 
-
+//didReceiveJMessageMessage change name
 - (void)didReceiveJMessageMessage:(NSNotification *)notification {
     
     NSString *jsonString = [self getStringFromNotification:notification];

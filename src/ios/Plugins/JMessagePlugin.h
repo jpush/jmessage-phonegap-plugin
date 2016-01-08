@@ -7,7 +7,7 @@
 #import <JMessage/JMessage.h>
 @interface JMessagePlugin : CDVPlugin<JMessageDelegate>
 
-
+//方法名改小写开头  去掉前缀？
 -(void)JMessageRegister:(CDVInvokedUrlCommand*)command;
 -(void)JMessageLogin:(CDVInvokedUrlCommand*)command;
 -(void)JMessageLogout:(CDVInvokedUrlCommand*)command;

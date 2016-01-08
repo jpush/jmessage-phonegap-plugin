@@ -115,10 +115,14 @@
     [dict setValue:message.msgId forKey:@"msgId"];
     [dict setValue:[NSNumber numberWithInt:message.contentType] forKey:@"contentType"];
     
+    //TODO: message to json string
     
     if (message.contentType == kJMSGContentTypeText && [message.content isKindOfClass:[JMSGTextContent class]]) {
         JMSGTextContent *textContent =  message.content;
         [dict setValue:textContent.text forKey:@"text"];
+    }
+    else {
+        NSLog(@"TODO:...");
     }
     
     [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageReceiveMessage
@@ -144,6 +148,7 @@
     [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageSendSingleMessageRespone
                                                         object:dict];
 }
+
 
 - (void)onReceiveMessageDownloadFailed:(JMSGMessage *)message
 {
