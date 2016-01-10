@@ -1,3 +1,5 @@
+
+               
 var JMessagePlugin = function(){
                                                                                                                    
     console.log("--- JMessagePlugin init");
@@ -14,37 +16,37 @@ JMessagePlugin.prototype.singleReceiveMessage={}
                
 JMessagePlugin.prototype.register = function(username,password,success, fail){
 
-	 cordova.exec(success, fail, "JMessagePlugin", "JMessageRegister", [username,password]);
+	 cordova.exec(success, fail, "JMessagePlugin", "userRegister", [username,password]);
 }
                
                
 JMessagePlugin.prototype.login = function(username,password,success, fail){
 
-	 cordova.exec(success, fail, "JMessagePlugin", "JMessageLogin", [username,password]);
+	 cordova.exec(success, fail, "JMessagePlugin", "userLogin", [username,password]);
 }
 
                
 JMessagePlugin.prototype.logout = function(success, fail){
 
-	cordova.exec(success, fail, "JMessagePlugin", "JMessageLogout",[]);
+	cordova.exec(success, fail, "JMessagePlugin", "userLogout",[]);
 }
                
 JMessagePlugin.prototype.getUserInfo = function(success, fail){
 
-	cordova.exec(success, fail, "JMessagePlugin", "JMessageGetUserInfo",[]);
+	cordova.exec(success, fail, "JMessagePlugin", "getUserInfo",[]);
 }
 
 
 //message
 JMessagePlugin.prototype.sendSingleTextMessage = function(username, text, success, fail){
 
-	cordova.exec(success, fail, "JMessagePlugin", "JMessageSendSingleTextMessage",[username,text]);
+	cordova.exec(success, fail, "JMessagePlugin", "sendSingleTextMessage",[username,text]);
 }
 
                
 JMessagePlugin.prototype.getSingleHistoryMessage = function(username, from, limit, success, fail){
 
-	cordova.exec(success, fail, "JMessagePlugin", "JMessageGetSingleHistoryMessage",[username,from,limit]);
+	cordova.exec(success, fail, "JMessagePlugin", "getSingleConversationHistoryMessage",[username,from,limit]);
 }
 
 //  conversation
@@ -52,13 +54,14 @@ JMessagePlugin.prototype.getSingleConversationList = function(success, fail){
 
 	console.log("---- getSingleConversationList");
 
-	cordova.exec(success, fail, "JMessagePlugin", "JMessageGetAllSingleConversation",[]);
+	cordova.exec(success, fail, "JMessagePlugin", "getAllSingleConversation",[]);
 }
 
 JMessagePlugin.prototype.deleteSingleConversation = function(username, success, fail){
 
-	cordova.exec(success, fail, "JMessagePlugin", "JMessageDeleteSingleConversation",[username]);
+	cordova.exec(success, fail, "JMessagePlugin", "deleteSingleConversation",[username]);
 }
+
 function commonMessageReceive(response){
 		     console.log("### rev");
              var ss = JSON.stringify(response);
@@ -66,15 +69,15 @@ function commonMessageReceive(response){
 			 this.singleReceiveMessage=response;
 			 cordova.fireDocumentEvent('jmessage.singleReceiveMessage',null);
 }
+
 //receive message callback
 JMessagePlugin.prototype.onSingleConversationMessageReceived = function(data){
                try{               
                     var bToObj  = JSON.parse(data);
                     console.log("### rev");
                     console.log(bToObj);
-                    this.singleReceiveMessage=bToObj
-                    cordova.fireDocumentEvent('jmessage.singleReceiveMessage',null);
-
+                    //this.singleReceiveMessage=bToObj
+                    cordova.fireDocumentEvent('jmessage.singleReceiveMessage',bToObj);
                }
                catch(exception){
                     console.log("onSingleConversationMessageReceived "+exception);
@@ -86,8 +89,8 @@ JMessagePlugin.prototype.onSingleConversationChanged = function(data){
                     var bToObj  = JSON.parse(data);
                     console.log("### change");
                     console.log(bToObj);
-                    this.singleReceiveMessage=bToObj
-//                     cordova.fireDocumentEvent('jmessage.singleReceiveMessage',null);
+                   // this.singleReceiveMessage=bToObj
+                   cordova.fireDocumentEvent('jmessage.conversationChange',bToObj);
                }
                catch(exception){
                     console.log("onSingleConversationChanged "+exception);
@@ -108,12 +111,9 @@ JMessagePlugin.prototype.onSendSingleTextMessage = function(data){
 JMessagePlugin.prototype.onDeviceReady = function(){
     console.log("--- onDeviceReady");
 	//if(device.platform == "Android"){
-		
-		
 		function AndroidReceiveMessageCallback(message){
 			console.log("--- AndroidReceiveMessageCallback");
 			commonMessageReceive(message);
-			
 		}
 		function fail(){
 		}
@@ -149,4 +149,5 @@ if(!window.plugins.jmessagePlugin){
     window.plugins.jmessagePlugin = new JMessagePlugin();//JMessagePlugin是一个函数
 }  
 module.exports = new JMessagePlugin();
+
 

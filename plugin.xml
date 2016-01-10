@@ -18,12 +18,12 @@
     </engines>
     
     <js-module src="www/JMessagePlugin.js" name="JMessagePlugin">
-            <clobbers target="JMessagePlugin"/>
+        <clobbers target="JMessagePlugin"/>
     </js-module>
 
-<!--    <js-module src="www/JPushPlugin.js" name="JPushPlugin">-->
-<!--        <clobbers target="JPushPlugin"/>-->
-<!--    </js-module>-->
+    <js-module src="www/JPushPlugin.js" name="JPushPlugin">
+        <clobbers target="JPushPlugin"/>
+    </js-module>
 
     <platform name="ios">
             <config-file target="config.xml" parent="/*">

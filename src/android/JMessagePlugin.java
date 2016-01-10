@@ -44,14 +44,14 @@ import android.util.Log;
 public class JMessagePlugin extends CordovaPlugin {
 	private final static List<String> methodList = 
 			Arrays.asList(
-					"JMessageLogin",
-					"JMessageRegister",
-					"JMessageLogout",
-					"JMessageGetUserInfo",
-					"JMessageSendSingleTextMessage",
-					"JMessageGetSingleHistoryMessage",
-					"JMessageGetAllSingleConversation",
-					"JMessageDeleteSingleConversation",
+					"userRegister",
+					"userLogin",
+					"userLogout",
+					"getUserInfo",
+					"sendSingleTextMessage",
+					"getSingleConversationHistoryMessage",
+					"getAllSingleConversation",
+					"deleteSingleConversation",
 					"JMessageAndroidCallbackInit"
 					);
 	
@@ -200,7 +200,7 @@ public class JMessagePlugin extends CordovaPlugin {
 
 	//jmessage method
 
-	public  void JMessageRegister(JSONArray data, CallbackContext callbackContext){
+	public  void userRegister(JSONArray data, CallbackContext callbackContext){
 		Log.i(TAG, " JMessageRegister \n" + data);
 
 		final  CallbackContext cb = callbackContext;
@@ -208,12 +208,12 @@ public class JMessagePlugin extends CordovaPlugin {
 			String username = data.getString(0);
 			String password = data.getString(1);
 
-			JMessageClient.register(username,password,new BasicCallback() {
+			JMessageClient.register(username, password, new BasicCallback() {
 
 				@Override
 				public void gotResult(final int status, final String desc) {
 
-					handelResult("注册成功",status,desc,cb);
+					handelResult("注册成功", status, desc, cb);
 				}
 			});
 
@@ -224,8 +224,8 @@ public class JMessagePlugin extends CordovaPlugin {
 
 	}
 
-	public  void JMessageLogin(JSONArray data, CallbackContext callbackContext) {
-		Log.i(TAG, "  JMessageLogin \n" + data);
+	public  void userLogin(JSONArray data, CallbackContext callbackContext) {
+		Log.i(TAG, "  userLogin \n" + data);
 
 		final  CallbackContext cb = callbackContext;
 		try {
@@ -249,22 +249,44 @@ public class JMessagePlugin extends CordovaPlugin {
 
 	}
 
-	public  void JMessageLogout(JSONArray data, CallbackContext callbackContext) {
+	public  void userLogout(JSONArray data, CallbackContext callbackContext) {
 		Log.i(TAG, "JMessageLogout \n" + data);
 
  		JMessageClient.logout();
 		callbackContext.success("退出成功");
 	}
 
-	public  void JMessageGetUserInfo(JSONArray data, CallbackContext callbackContext) {
-		Log.i(TAG, " JMessageGetUserInfo \n" + data);
+	public  void getUserInfo(JSONArray data, CallbackContext callbackContext) {
+		Log.i(TAG, " getUserInfo \n" + data);
 
 		UserInfo info = JMessageClient.getMyInfo();
-//		callbackContext.success("退出成功");
+
+		try{
+
+
+			if(info != null && info.getUserName() != null){
+				JSONObject jsonItem = new JSONObject();
+
+				jsonItem.put("username",info.getUserName());
+				jsonItem.put("nickname",info.getNickname());
+				jsonItem.put("gender","unknow");
+
+				callbackContext.success(jsonItem);
+			}
+			else{
+				JSONObject jsonItem = new JSONObject();
+				jsonItem.put("errorCode",863004);
+				jsonItem.put("errorDscription","not found");
+				callbackContext.error(jsonItem);
+			}
+		}
+		catch (JSONException e){
+			e.printStackTrace();
+		}
 	}
 
-	public  void JMessageSendSingleTextMessage(JSONArray data, CallbackContext callbackContext) {
-		Log.i(TAG, " JMessageSendSingleTextMessage \n" + data);
+	public  void sendSingleTextMessage(JSONArray data, CallbackContext callbackContext) {
+		Log.i(TAG, " sendSingleTextMessage \n" + data);
 
 		final  CallbackContext cb = callbackContext;
 		try {
@@ -292,8 +314,50 @@ public class JMessagePlugin extends CordovaPlugin {
 
 	}
 
-	public  void JMessageGetSingleHistoryMessage(JSONArray data, CallbackContext callbackContext) {
-		Log.i(TAG, " JMessageGetSingleHistoryMessage \n" + data);
+	private  JSONObject getJSonFormMessage(Message msg){
+		String contentText = "";
+		String msgType = "";//上传给js 层的类型，请和ios 保持一致
+
+		switch (msg.getContentType()) {
+			case text:
+				contentText = ((TextContent) msg.getContent()).getText();
+				msgType="text";
+				break;
+			default:
+				break;
+		}
+		Log.i(TAG, "msg " + contentText );
+
+
+		JSONObject jsonItem = new JSONObject();
+		try {
+			MessageContent content = msg.getContent();
+			UserInfo targetUser = (UserInfo) msg.getTargetInfo();
+			UserInfo fromUser = (UserInfo) msg.getFromUser();
+
+
+			jsonItem.put("target_type", "single");
+			jsonItem.put("target_id", targetUser.getUserID());
+			jsonItem.put("target_name", targetUser.getUserName());
+			jsonItem.put("from_id", fromUser.getUserID());
+			jsonItem.put("from_name", fromUser.getUserName());
+			jsonItem.put("create_time", msg.getCreateTime());
+			jsonItem.put("msg_type", msgType);
+			//jsonItem.put("text", contentText);
+
+			JSONObject contentBody = new JSONObject();
+			contentBody.put("text",contentText);
+			jsonItem.put("msg_body",contentBody);
+
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return  jsonItem;
+
+	}
+
+	public  void getSingleConversationHistoryMessage(JSONArray data, CallbackContext callbackContext) {
+		Log.i(TAG, " getSingleConversationHistoryMessage \n" + data);
 
 		try {
 			String username = data.getString(0);
@@ -320,35 +384,8 @@ public class JMessagePlugin extends CordovaPlugin {
 
 			for(int i = 0; i < list.size(); ++i){
 				Message msg = list.get(i);
-				String contentText = "";
-				//MSGContentTypeUnknown",@"JMSGContentTypeText",@"JMSGContentTypeImage",@"JMSGContentTypeVoice",@"JMSGContentTypeCustom",@"JMSGContentTypeEventNotification"
-				String pluginContentType = "MSGContentTypeUnknown";//上传给js 层的类型，请和ios 保持一致
-
-				switch (msg.getContentType()) {
-					case text:
-						contentText = ((TextContent) msg.getContent()).getText();
-						pluginContentType="JMSGContentTypeText";
- 						break;
-
-					default:
-						break;
- 				}
-				Log.i(TAG, "msg " + contentText );
-
-
-				JSONObject jsonItem = new JSONObject();
-				try {
-					MessageContent content = msg.getContent();
-
-					jsonItem.put("msgId", msg.getId());
-					jsonItem.put("contentType", pluginContentType);
-					jsonItem.put("text", contentText);
-
-					jsonRusult.put(jsonItem);
-
-				} catch (JSONException e) {
-					e.printStackTrace();
-				}
+				JSONObject obj=  this.getJSonFormMessage(msg);
+				jsonRusult.put(obj);
 			}
 
 			callbackContext.success(jsonRusult);
@@ -360,8 +397,8 @@ public class JMessagePlugin extends CordovaPlugin {
 	}
 
 
-	public  void JMessageGetAllSingleConversation(JSONArray data, CallbackContext callbackContext) {
-		Log.i(TAG, "  JMessageGetAllSingleConversation \n" + data);
+	public  void getAllSingleConversation(JSONArray data, CallbackContext callbackContext) {
+		Log.i(TAG, "  getAllSingleConversation \n" + data);
 
 
 
@@ -377,12 +414,28 @@ public class JMessagePlugin extends CordovaPlugin {
 				if(conv.getType() == ConversationType.single){
 
 					UserInfo info = (UserInfo) conv.getTargetInfo();
+					Message msg =  conv.getLatestMessage();
+					String 	contentText = "";
+					if(msg != null){
+						switch (msg.getContentType()) {
+							case  text:
+							{
+								contentText = ((TextContent) msg.getContent()).getText();
+
+							}break;
+							default:
+								break;
+						}
+					}
+
 
 					JSONObject jsonItem = new JSONObject();
 					try {
-						jsonItem.put("targetId", info.getUserName());
+						jsonItem.put("username", info.getUserName());
 						jsonItem.put("nickname", info.getNickname());
-						jsonItem.put("avatar", info.getAvatar());
+						//jsonItem.put("avatar", info.getAvatar());
+						jsonItem.put("lastMessage",contentText );
+						jsonItem.put("unreadCount", conv.getUnReadMsgCnt());
 
 						jsonRusult.put(jsonItem);
 

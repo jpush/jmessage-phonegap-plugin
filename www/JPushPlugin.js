@@ -20,7 +20,8 @@ JPushPlugin.prototype.error_callback = function(msg){
 
 JPushPlugin.prototype.call_native = function(name, args, callback){ 
 
-	ret = cordova.exec(callback,this.error_callback,'JPushPlugin',name,args);
+	console.log("### " + name)
+	ret = cordova.exec(callback,this.error_callback,'JMessagePlugin',name,args);
 	return ret;
 }
 //public plugin function
@@ -49,6 +50,7 @@ JPushPlugin.prototype.setApplicationIconBadgeNumber = function(badge){
 }
 
 JPushPlugin.prototype.setTagsWithAlias = function(tags,alias){
+	console.log("setTagsWithAlias alias:" + alias  +"  tags:"+ tags);
 	try{
     	if(tags==null){
     		this.setAlias(alias);
@@ -65,8 +67,8 @@ JPushPlugin.prototype.setTagsWithAlias = function(tags,alias){
 	catch(exception){
     	console.log(exception);
 	}
-
 }
+
 JPushPlugin.prototype.setTags = function(tags){
         
 	try{
@@ -133,17 +135,49 @@ JPushPlugin.prototype.setLogOFF = function(){
             this.call_native("setLogOFF",[data],null);
 	}
 }
-JPushPlugin.prototype.receiveMessageIniOSCallback = function(data){
+
+JPushPlugin.prototype.onReceiveMessageIniOS = function(data){
 	try{
-		console.log("JPushPlugin:receiveMessageIniOSCallback--data:"+data);
+		console.log("JPushPlugin:onReceiveMessageIniOS--data:"+data);
 		var bToObj = JSON.parse(data);
 		var content = bToObj.content;
         console.log(content);
+		cordova.fireDocumentEvent('jpush.receiveMessage',bToObj);
+
 	}
 	catch(exception){               
-		console.log("JPushPlugin:receiveMessageIniOSCallback"+exception);
+		console.log("JPushPlugin:onReceiveMessageIniOS"+exception);
 	}
 }
+
+	JPushPlugin.prototype.onOpenNofiticationIniOS = function(data) {
+		try{
+			console.log("JPushPlugin:onOpenNofiticationIniOS--data:"+data);
+			var bToObj = JSON.parse(data);
+			var content = bToObj.content;
+			console.log(content);
+			cordova.fireDocumentEvent('jpush.openNotification',bToObj);
+		}
+		catch(exception){
+			console.log("JPushPlugin:onOpenNofiticationIniOS"+exception);
+		}
+	}
+
+	JPushPlugin.prototype.onReceiveNofiticationIniOS = function(data) {
+		try{
+			console.log("JPushPlugin:onReceiveNofiticationIniOS--data:"+data);
+			var bToObj = JSON.parse(data);
+			var content = bToObj.content;
+			console.log(content);
+			cordova.fireDocumentEvent('jpush.receiveNotification',bToObj);
+
+		}
+		catch(exception){
+			console.log("JPushPlugin:onReceiveNofiticationIniOS"+exception);
+		}
+	}
+
+
 JPushPlugin.prototype.receiveMessageInAndroidCallback = function(data){
 	try{
 		console.log("JPushPlugin:receiveMessageInAndroidCallback");
@@ -164,7 +198,6 @@ JPushPlugin.prototype.receiveMessageInAndroidCallback = function(data){
 	}
 }
 
-//
 JPushPlugin.prototype.openNotificationInAndroidCallback = function(data){
 	try{
 		console.log("JPushPlugin:openNotificationInAndroidCallback");
