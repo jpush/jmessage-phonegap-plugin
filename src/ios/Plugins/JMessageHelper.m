@@ -38,6 +38,8 @@
 - (void)registerJPushStatusNotification {
     NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
   
+  [JPUSHService setDebugMode];
+  
     [defaultCenter addObserver:self
                       selector:@selector(receivePushMessage:)
                           name:kJPFNetworkDidReceiveMessageNotification

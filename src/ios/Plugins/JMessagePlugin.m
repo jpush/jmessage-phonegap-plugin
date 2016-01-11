@@ -10,6 +10,9 @@
 
 static NSString * errorNoFoundString =  @"not found";
 static NSInteger  errorNoFound =  kJMSGErrorSDKUserNotLogin;
+static NSString * errorParamString =  @"error param";
+
+
 
 
 static NSString *const KEY_ERRORCODE = @"errorCode";
@@ -84,17 +87,17 @@ static NSString *const KEY_UNREADCOUNT = @"unreadCount";
     WEAK_SELF(weak_self);
     if (info && info.username.length > 0) {//以此判断是否有用户信息
         NSMutableDictionary * dict = [NSMutableDictionary new];
-        int gender = 0;//性别未定义
+        NSString * gender = @"unknow";//性别未定义
         if (info.gender == kJMSGUserGenderMale) {
-            gender = 1;//男
+            gender = @"male";//男
         }
-        else if(gender == kJMSGUserGenderFemale){
-            gender = 2;//女
+        else if(info.gender == kJMSGUserGenderFemale){
+            gender = @"female";//女
         }
         [dict setValue:info.username forKey:KEY_USERNAME];
         [dict setValue:info.nickname forKey:KEY_NICKNAME];
         [dict setValue:info.avatar forKey:KEY_AVATAR];//TODO: 这个头像的图片，还不知如何处理
-        [dict setValue:[NSNumber numberWithInt:gender] forKey:KEY_GENDER];
+        [dict setValue:gender forKey:KEY_GENDER];
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:dict];
         [weak_self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }
@@ -103,6 +106,71 @@ static NSString *const KEY_UNREADCOUNT = @"unreadCount";
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:dict];
     }
 }
+
+- (void)setUserInfoWithFielType:(JMSGUserField)userFieldType val:(id)val sucessRespone:(NSString*)responeString {
+  
+     [JMSGUser updateMyInfoWithParameter:val userFieldType:userFieldType completionHandler:^(id resultObject, NSError *error) {
+      
+      CDVPluginResult* pluginResult = nil;
+      if (error == nil) {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:responeString];
+      } else {
+        NSMutableDictionary * dict  = [JMessagePlugin getDictionaryFromError:error];
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:dict];
+      }
+      
+    }];
+
+}
+- (void)reponeParamError {
+      CDVPluginResult* pluginResult = nil;
+      NSMutableDictionary * dict  = [JMessagePlugin getDictionaryWithError:kJMSGErrorHttpPrameterInvalid description:errorParamString ];
+      pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:dict];
+  
+}
+
+- (void)setUserNickname:(CDVInvokedUrlCommand *)command {
+  
+  NSString * nickname = [command argumentAtIndex:0];
+  if (nickname.length > 0) {
+    [self setUserInfoWithFielType:kJMSGUserFieldsNickname val:nickname sucessRespone:@"set nickname ok"];
+  }
+  else{
+    [self reponeParamError];
+  }
+}
+
+- (void)setUserGender:(CDVInvokedUrlCommand *)command {
+  
+  NSString * gender = [command argumentAtIndex:0];
+  if (gender.length > 0) {
+    
+    NSNumber *genderNumber = [NSNumber numberWithInt:kJMSGUserGenderUnknown];
+    if ([gender isEqualToString:@"male"]) {
+      genderNumber = [NSNumber numberWithInt:kJMSGUserGenderMale];
+    }
+    else if([gender isEqualToString:@"female"]){
+      genderNumber = [NSNumber numberWithInt:kJMSGUserGenderFemale];
+    }
+    
+    [self setUserInfoWithFielType:kJMSGUserFieldsGender val:genderNumber sucessRespone:@"set gender ok"];
+  }
+  else{
+    [self reponeParamError];
+  }
+}
+
+- (void)setUserAvatar:(CDVInvokedUrlCommand *)command {
+  
+  NSString * avatar = [command argumentAtIndex:0];
+  if (avatar.length > 0) {
+    [self setUserInfoWithFielType:kJMSGUserFieldsAvatar val:avatar sucessRespone:@"set avatar ok"];
+  }
+  else{
+    [self reponeParamError];
+  }
+}
+
 
 - (void)sendSingleTextMessage:(CDVInvokedUrlCommand *)command {
     NSString * username = [command argumentAtIndex:0];

@@ -7,11 +7,8 @@
           content="width=device-width; initial-scale=1.0; maximum-scale=1.0; minimum-scale=1.0; user-scalable=no; target-densityDpi=device-dpi"/>
 
     <link rel="stylesheet" href="css/themes/default/jquery.mobile-1.3.2.min.css">
-    <link rel="stylesheet" href="_assets/css/jqm-demos.css">
-    <link rel="shortcut icon" href="favicon.ico">
     <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,700">
     <script src="js/jquery.js"></script>
-    <script src="_assets/js/index.js"></script>
     <script src="js/jquery.mobile-1.3.2.min.js"></script>
     <script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript">
@@ -20,13 +17,14 @@
 
         function onDeviceReady() {
             console.log("JPushPlugin:Device ready!");
+            window.plugins.jPushPlugin.onDeviceReady();
             window.plugins.jmessagePlugin.onDeviceReady();
+
             checkIsLogin();
             initJpush();
         }
 
-//        login page
-
+        /////   Login Page ////////////
 
         $(document).on("pageshow", "#loginPage", function () {
             console.log("loginPage show");
@@ -36,12 +34,25 @@
 
         function register() {
             console.log("register");
-            console.log(window.plugins);
+
+            var username = $("#registerUername").val();
+            var password = $("#registerPassword").val();
+
+            window.plugins.jmessagePlugin.register(username, password, function (response) {
+                var ss = JSON.stringify(response);
+                console.log("login callback sucess" + ss);
+                 alert("register ok");
+
+            }, function (response) {
+                var ss = JSON.stringify(response);
+                console.log("login callback fail" + ss);
+                alert(response.errorDscription);
+            });
+
         }
 
         function checkIsLogin() {
             console.log("checkIsLogin...");
-            //TODO: 增加一个 isLogin 函数
             window.plugins.jmessagePlugin.getUserInfo(function (response) {
                 var responseString = JSON.stringify(response);
                 console.log("user is login" + responseString);
@@ -67,7 +78,6 @@
 
             console.log(username + " " + password);
 
-
             window.plugins.jmessagePlugin.login(username, password, function (response) {
                 var ss = JSON.stringify(response);
                 console.log("login callback sucess" + ss);
@@ -82,6 +92,9 @@
             });
         }
 
+        function  gotoRegister(){
+            $.mobile.navigate("#registerPage", {transition: "slide"});
+        }
 
         /////   Conversation List ////////////
 
@@ -94,11 +107,11 @@
 
         });
 
-        function  onConversatinoChange(data){
+        function onConversatinoChange(data) {
             updateConversationList();
         }
 
-        function  gotoAddConversation(){
+        function gotoAddConversation() {
             $.mobile.navigate("#addConversationPage", {transition: "slide"});
         }
 
@@ -155,7 +168,6 @@
         }
 
 
-
         /////   conversation  ////////////
 
 
@@ -169,7 +181,7 @@
             getMessageHistory(usernameForConversation);
         });
 
-        function  onReceiveSingleReceiveMessage(data){
+        function onReceiveSingleReceiveMessage(data) {
             var ss = JSON.stringify(data);
             console.log("####" + ss);
             insertMessage(data);
@@ -200,7 +212,7 @@
             if (dict.msg_type == "text") {
                 var lastMessage = dict.msg_body.text;
             }
-            var fromName= dict.from_name;
+            var fromName = dict.from_name;
 
             var insertString = "<li>" + fromName + ": " + lastMessage + '</li>';
             console.log(insertString);
@@ -227,8 +239,8 @@
 
         /////////// addConversationPage //////////////
 
-        function  addConversation(){
-            var username =  $("#addConversationText").val();
+        function addConversation() {
+            var username = $("#addConversationText").val();
             usernameForConversation = username;
             $.mobile.navigate("#conversationPage", {transition: "slide"});
         }
@@ -240,104 +252,105 @@
         $(document).on("pageshow", "#pushPage", function () {
             console.log("pushPage show username:" + usernameForConversation);
 
-            try{
+            try {
                 window.plugins.jPushPlugin.getRegistrationID(onGetRegistradionID);
             }
-            catch(exception){
+            catch (exception) {
                 console.log(exception);
             }
         });
 
-        function  onGetRegistradionID(respone){
-            console.log("registrationID is "+respone);
-            var  jpushRegistradionID = respone;
-            $("#notificationResult").html(jpushRegistradionID);
+        function onGetRegistradionID(respone) {
+            console.log("registrationID is " + respone);
+            $("#registrationid").html(respone);
         }
 
         function initJpush() {
 
-            try{
+            try {
                 window.plugins.jPushPlugin.init();
                 window.plugins.jPushPlugin.getRegistrationID(onGetRegistradionID);
 
-                if(device.platform != "Android"){
+                if (device.platform != "Android") {
                     window.plugins.jPushPlugin.setDebugModeFromIos();
                     window.plugins.jPushPlugin.setApplicationIconBadgeNumber(0);
-                }else{
+                } else {
                     window.plugins.jPushPlugin.setDebugMode(true);
                 }
             }
-            catch(exception) {
+            catch (exception) {
                 console.log(exception);
             }
         }
 
 
-        function onOpenNotification(event){
-            try{
+        function onOpenNotification(event) {
+            console.log(" index onOpenNotification");
+
+            try {
                 var alertContent;
-                if(device.platform == "Android"){
-                    alertContent=window.plugins.jPushPlugin.openNotification.alert;
-                }else{
-                    alertContent   = event.aps.alert;
+                if (device.platform == "Android") {
+                    alertContent = event.alert;
+                } else {
+                    alertContent = event.aps.alert;
                 }
-                alert("open Notificaiton:"+alertContent);
+                alert("open Notificaiton:" + alertContent);
 
             }
-            catch(exception){
-                console.log("JPushPlugin:onOpenNotification"+exception);
+            catch (exception) {
+                console.log("JPushPlugin:onOpenNotification" + exception);
             }
         }
 
-        function onReceiveNotification(event){
-            try{
+        function onReceiveNotification(event) {
+            console.log(" index onReceiveNotification");
+            try {
                 var alertContent;
-                if(device.platform == "Android"){
-                    alertContent = window.plugins.jPushPlugin.receiveNotification.alert;
-                }else{
-                    alertContent   = event.aps.alert;
+                if (device.platform == "Android") {
+                    //alertContent = window.plugins.jPushPlugin.receiveNotification.alert;
+                    alertContent = event.alert;
+                } else {
+                    alertContent = event.aps.alert;
                 }
                 $("#notificationResult").html(alertContent);
 
             }
-            catch(exeption){
+            catch (exeption) {
                 console.log(exception)
             }
         }
 
-        function onReceivePushMessage(event){
-            try{
-
+        function onReceivePushMessage(event) {
+            try {
                 var message;
-                if(device.platform == "Android"){
-                    message = window.plugins.jPushPlugin.receiveMessage.message;
-                }else{
-                    message   = event.content;
+                if (device.platform == "Android") {
+                    message = event.message;
+                } else {
+                    message = event.content;
                 }
-                //var extras = window.plugins.jPushPlugin.extras
-
+                console.log(message);
                 $("#messageResult").html(message);
 
             }
-            catch(exception){
-                console.log("JPushPlugin:onReceivePushMessage-->"+exception);
+            catch (exception) {
+                console.log("JPushPlugin:onReceivePushMessage-->" + exception);
             }
         }
 
-        function onSetTagsWithAlias(event){
-            try{
+        function onSetTagsWithAlias(event) {
+            try {
                 console.log("onSetTagsWithAlias");
-                var result="result code:"+event.resultCode+" ";
-                result+="tags:"+event.tags+" ";
-                result+="alias:"+event.alias+" ";
+                var result = "result code:" + event.resultCode + " ";
+                result += "tags:" + event.tags + " ";
+                result += "alias:" + event.alias + " ";
                 $("#tagAliasResult").html(result);
             }
-            catch(exception){
+            catch (exception) {
                 console.log(exception)
             }
         }
-        function  setTagWithAlias(){
-            try{
+        function setTagWithAlias() {
+            try {
 
                 var username = $("#loginUername").val();
 
@@ -347,24 +360,24 @@
                 var alias = $("#aliasText").val();
 
                 var dd = [];
-                if(tag1==""&&tag2==""&&tag3==""){
+                if (tag1 == "" && tag2 == "" && tag3 == "") {
                 }
-                else{
-                    if(tag1 != ""){
+                else {
+                    if (tag1 != "") {
                         dd.push(tag1);
                     }
-                    if(tag2 != ""){
+                    if (tag2 != "") {
                         dd.push(tag2);
                     }
-                    if(tag3 != ""){
+                    if (tag3 != "") {
                         dd.push(tag3);
                     }
                 }
 
-                window.plugins.jPushPlugin.setTagsWithAlias(dd,alias);
+                window.plugins.jPushPlugin.setTagsWithAlias(dd, alias);
 
             }
-            catch(exception){
+            catch (exception) {
                 console.log(exception);
             }
         }
@@ -385,12 +398,11 @@
             }
 
             console.log("myInfoPage show" + window.plugins.jmessagePlugin.username);
-            $("#myinfoUsername").val( window.plugins.jmessagePlugin.username);
-            $("#myinfoNickname").val( window.plugins.jmessagePlugin.nickname);
+            $("#myinfoUsername").text(window.plugins.jmessagePlugin.username);
+            $("#myinfoNickname").val(window.plugins.jmessagePlugin.nickname);
             $("#myinfoGender").val(genderStr);
 
         });
-
 
 
         function logout() {
@@ -401,6 +413,33 @@
             }, function (response) {
 
                 alert("logout fail");
+            });
+        }
+
+        function  setUserInfo(){
+            var nickname = $("#myinfoNickname").val();
+            var gender = $("#myinfoGender").val();
+
+//            var genderArray = new Array('male','female');
+//
+//            if([gender].indexOf(genderArray) == -1){
+//                alert("gender val: male, female");
+//                return;
+//            }
+            console.log(nickname + gender);
+
+            window.plugins.jmessagePlugin.setUserNickname(nickname,function (response) {
+                console.log(response);
+            }, function (response) {
+                console.log("updata fail:" + response.errorDscription);
+            });
+
+
+
+            window.plugins.jmessagePlugin.setUserGender(gender,function (response) {
+                console.log(response);
+            }, function (response) {
+                console.log("updata fail:" + response.errorDscription);
             });
         }
 
@@ -420,26 +459,51 @@
 
 <body onload="onLoad()">
 
+<!--登录页-->
 <div data-role="page" id="loginPage">
     <div data-role="header">
         <h1>Login</h1>
     </div>
-    <div>
         <div data-role="content">
             <h3>username:</h3>
             <input type="text" placeholder="username" id="loginUername">
 
             <h3>password:</h3>
             <input type="text" placeholder="password" id="loginPassword">
-
-            <input type="button" onclick="login()" value="登录"/>
-            <input type="button" onclick="register()" value="注册"/>
+            <div><h2></h2></div>
+            <input type="button" onclick="login()" value="login"/>
+            <div><h2></h2></div>
+            <div class="ui-grid-b">
+                <div class="ui-block-a">
+                    <div><h2></h2></div>
+                </div>
+                <div class="ui-block-b">
+                </div>
+                <div class="ui-block-c">
+                    <input type="button" onclick="gotoRegister()" value="register"/>
+                </div>
+            </div>
         </div>
 
+</div>
+
+<!--注册页-->
+<div data-role="page" id="registerPage">
+    <div data-role="header">
+        <a href="#loginPage" data-icon="arrow-l">Back</a>
+        <h1>Register</h1>
+    </div>
+    <div data-role="content">
+        <h3>username:</h3>
+        <input type="text" placeholder="username" id="registerUername">
+        <h3>password:</h3>
+        <input type="text" placeholder="password" id="registerPassword">
+        <div><h2></h2></div>
+        <input type="button" onclick="register()" value="register"/>
     </div>
 </div>
 
-<!--                  -->
+<!--会话列表 -->
 <div data-role="page" id="conversationListPage">
     <div data-role="header">
         <h1>ConversationList</h1>
@@ -453,13 +517,13 @@
         </div>
     </div>
 
-    <!--会话列表 -->
     <div>
         <div data-role="content">
             <div class="ui-grid-b">
                 <div class="ui-block-c">
                     <div data-role="controlgroup" data-type="horizontal" data-mini="true">
-                        <a href="#" data-role="button" data-iconpos="notext" data-icon="plus" data-theme="b" onclick="gotoAddConversation()">Add</a>
+                        <a href="#" data-role="button" data-iconpos="notext" data-icon="plus" data-theme="b"
+                           onclick="gotoAddConversation()">Add</a>
                     </div>
                 </div>
             </div>
@@ -479,7 +543,7 @@
 
 <!--         会话 -->
 <div data-role="page" id="conversationPage">
-    <div data-role="header" >
+    <div data-role="header">
         <a href="#conversationListPage" data-icon="arrow-l">Back</a>
         <h1>Conversation</h1>
     </div>
@@ -515,8 +579,8 @@
                 <!--<input type="button" onclick="naviBack()" value="返回"/>-->
             </div>
         </div>
-        <input type="text" id="addConversationText"/>
-        <input type="button" onclick="addConversation()" value="确定" />
+        <label for="addConversationText">username</label><input type="text" id="addConversationText"/>
+        <input type="button" onclick="addConversation()" value="确定"/>
     </div>
 </div>
 
@@ -588,7 +652,7 @@
 
 </div>
 
-<!--  		 -->
+<!--  	my info	 -->
 <div data-role="page" id="myInfoPage">
     <div data-role="header">
         <h1>MyInfo</h1>
@@ -607,27 +671,27 @@
             <form>
                 <div data-role="fieldcontain">
 
-                <label >username:</label> <label id="myinfoUsername">null:</label>
+                    <label>username:</label> <label id="myinfoUsername">null:</label>
                 </div>
 
-                    <!--<input type="text" name="text-1" id="myinfoUsername" value="">-->
+                <!--<input type="text" name="text-1" id="myinfoUsername" value="">-->
 
                 <label for="myinfoNickname">nickname:</label>
                 <input type="text" data-clear-btn="true" name="text-2" id="myinfoNickname" value="">
 
                 <label for="myinfoGender">gender: </label>
-                <input type="text"  name="text-3" id="myinfoGender" value="">
+                <input type="text" name="text-3" id="myinfoGender" value="">
             </form>
 
             <div data-role="fieldcontain">
-                <input type="button" onclick="logout()" value="set my info"/>
+                <input type="button" onclick="setUserInfo()" value="set my info"/>
 
             </div>
 
 
             <div data-role="fieldcontain">
-            <br>
-            <input type="button" onclick="logout()" value="logout" data-theme="e"/>
+                <br>
+                <input type="button" onclick="logout()" value="logout" data-theme="e"/>
             </div>
         </div>
     </div>
