@@ -3,6 +3,7 @@
 <head>
     <title>jQM Complex Demo</title>
     <meta http-equiv='Content-Type' content='text/html; charset=utf-8'/>
+
     <meta name="viewport"
           content="width=device-width; initial-scale=1.0; maximum-scale=1.0; minimum-scale=1.0; user-scalable=no; target-densityDpi=device-dpi"/>
 
@@ -41,7 +42,7 @@
             window.plugins.jmessagePlugin.register(username, password, function (response) {
                 var ss = JSON.stringify(response);
                 console.log("login callback sucess" + ss);
-                 alert("register ok");
+                alert("register ok");
 
             }, function (response) {
                 var ss = JSON.stringify(response);
@@ -60,15 +61,37 @@
                 window.plugins.jmessagePlugin.username = response.username;
                 window.plugins.jmessagePlugin.nickname = response.nickname;
                 window.plugins.jmessagePlugin.gender = response.gender;
-                window.plugins.jmessagePlugin.avatatUrl = response.avatar;
+               // window.plugins.jmessagePlugin.avatatUrl = response.avatar;
                 gotoConversation();
             }, function (response) {
                 console.log("user is not login");
                 window.plugins.jmessagePlugin.username = "";
                 window.plugins.jmessagePlugin.nickname = "";
                 window.plugins.jmessagePlugin.gender = 0;
-                window.plugins.jmessagePlugin.avatatUrl = "";
+               // window.plugins.jmessagePlugin.avatatUrl = "";
             });
+        }
+
+        function updataUserInfo() {
+             window.plugins.jmessagePlugin.getUserInfo(function (response) {
+                var responseString = JSON.stringify(response);
+                console.log("user is login" + responseString);
+
+                window.plugins.jmessagePlugin.username = response.username;
+                window.plugins.jmessagePlugin.nickname = response.nickname;
+                window.plugins.jmessagePlugin.gender = response.gender;
+            }, function (response) {
+
+            });
+        }
+
+        function getUserDisplayName() {
+            if (window.plugins.jmessagePlugin.nickname.length == 0) {
+                return window.plugins.jmessagePlugin.username;
+            }
+            else {
+                return window.plugins.jmessagePlugin.nickname;
+            }
         }
 
         function login() {
@@ -92,7 +115,7 @@
             });
         }
 
-        function  gotoRegister(){
+        function gotoRegister() {
             $.mobile.navigate("#registerPage", {transition: "slide"});
         }
 
@@ -104,6 +127,7 @@
             updateConversationList();
 
             document.addEventListener("jmessage.conversationChange", onConversatinoChange, false);
+            document.addEventListener("jmessage.singleReceiveMessage", updateConversationList, false);
 
         });
 
@@ -117,10 +141,9 @@
 
         //更新会话列表
         function updateConversationList() {
-            $('#conversationLis').remove();
+            $('#conversationList').empty().listview('refresh');
 
             console.log("updateConversationList");
-            console.log("----");
             window.plugins.jmessagePlugin.getSingleConversationList(function (response) {
                 var ss = JSON.stringify(response);
                 console.log("getAllSingleConversation ok" + ss);
@@ -181,10 +204,12 @@
             getMessageHistory(usernameForConversation);
         });
 
-        function onReceiveSingleReceiveMessage(data) {
-            var ss = JSON.stringify(data);
-            console.log("####" + ss);
-            insertMessage(data);
+        function onReceiveSingleReceiveMessage(message) {
+
+            console.log("onReceiveSingleReceiveMessage ####");
+            var ss = JSON.stringify(message);
+            console.log(ss);
+            insertMessage(message);
         }
 
 
@@ -194,7 +219,18 @@
             window.plugins.jmessagePlugin.sendSingleTextMessage(usernameForConversation, messageContentString, function (response) {
                 var ss = JSON.stringify(response);
                 console.log("send message sucess" + ss);
-                alert("send message ok");
+                alert("send message had send");
+
+                var msg_body = new Object;
+                msg_body.text = messageContentString;
+
+                var dict = new Object;
+                dict.msg_type = "text";
+                dict.from_name = getUserDisplayName();
+                dict.msg_body = msg_body;
+
+                insertMessage(dict);
+
             }, function (response) {
 
                 console.log("send message fail" + response);
@@ -416,28 +452,24 @@
             });
         }
 
-        function  setUserInfo(){
+        function setUserNickname() {
             var nickname = $("#myinfoNickname").val();
-            var gender = $("#myinfoGender").val();
-
-//            var genderArray = new Array('male','female');
-//
-//            if([gender].indexOf(genderArray) == -1){
-//                alert("gender val: male, female");
-//                return;
-//            }
-            console.log(nickname + gender);
-
-            window.plugins.jmessagePlugin.setUserNickname(nickname,function (response) {
+            window.plugins.jmessagePlugin.setUserNickname(nickname, function (response) {
                 console.log(response);
+                updataUserInfo();
+
             }, function (response) {
-                console.log("updata fail:" + response.errorDscription);
+                console.log("updata nickname fail:" + response.errorDscription);
             });
+        }
 
-
-
-            window.plugins.jmessagePlugin.setUserGender(gender,function (response) {
+        function setUserGender() {
+            var gender = $("#myinfoGender").val();
+            window.plugins.jmessagePlugin.setUserGender(gender, function (response) {
                 console.log(response);
+                updataUserInfo();
+
+
             }, function (response) {
                 console.log("updata fail:" + response.errorDscription);
             });
@@ -464,26 +496,26 @@
     <div data-role="header">
         <h1>Login</h1>
     </div>
-        <div data-role="content">
-            <h3>username:</h3>
-            <input type="text" placeholder="username" id="loginUername">
+    <div data-role="content">
+        <h3>username:</h3>
+        <input type="text" placeholder="username" id="loginUername">
 
-            <h3>password:</h3>
-            <input type="text" placeholder="password" id="loginPassword">
-            <div><h2></h2></div>
-            <input type="button" onclick="login()" value="login"/>
-            <div><h2></h2></div>
-            <div class="ui-grid-b">
-                <div class="ui-block-a">
-                    <div><h2></h2></div>
-                </div>
-                <div class="ui-block-b">
-                </div>
-                <div class="ui-block-c">
-                    <input type="button" onclick="gotoRegister()" value="register"/>
-                </div>
+        <h3>password:</h3>
+        <input type="text" placeholder="password" id="loginPassword">
+        <div><h2></h2></div>
+        <input type="button" onclick="login()" value="login"/>
+        <div><h2></h2></div>
+        <div class="ui-grid-b">
+            <div class="ui-block-a">
+                <div><h2></h2></div>
+            </div>
+            <div class="ui-block-b">
+            </div>
+            <div class="ui-block-c">
+                <input type="button" onclick="gotoRegister()" value="register"/>
             </div>
         </div>
+    </div>
 
 </div>
 
@@ -668,25 +700,22 @@
 
     <div>
         <div data-role="content">
-            <form>
-                <div data-role="fieldcontain">
+                 <div data-role="fieldcontain">
 
                     <label>username:</label> <label id="myinfoUsername">null:</label>
                 </div>
 
                 <!--<input type="text" name="text-1" id="myinfoUsername" value="">-->
 
-                <label for="myinfoNickname">nickname:</label>
-                <input type="text" data-clear-btn="true" name="text-2" id="myinfoNickname" value="">
+                    <label for="myinfoNickname">nickname:</label>
+                    <input type="text"  name="text-2" id="myinfoNickname" value="">
+                    <input type="button" onclick="setUserNickname()" value="set nickname"/>
 
-                <label for="myinfoGender">gender: </label>
-                <input type="text" name="text-3" id="myinfoGender" value="">
-            </form>
 
-            <div data-role="fieldcontain">
-                <input type="button" onclick="setUserInfo()" value="set my info"/>
+                    <label for="myinfoGender">gender:(male , female , unknow) </label>
+                    <input type="text" name="text-3" id="myinfoGender" value="">
+                    <input type="button" onclick="setUserGender()" value="set gender"/>
 
-            </div>
 
 
             <div data-role="fieldcontain">

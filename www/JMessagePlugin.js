@@ -10,7 +10,7 @@
 
     };
 
-    JMessagePlugin.prototype.singleReceiveMessage = {};
+//    JMessagePlugin.prototype.singleReceiveMessage = {};
 
 
     JMessagePlugin.prototype.register = function (username, password, success, fail) {
@@ -36,16 +36,13 @@
     };
 
     JMessagePlugin.prototype.setUserNickname = function (nickname,success, fail) {
-
-        cordova.exec(success, fail, "JMessagePlugin", "setUserNickname", nickname);
+        console.log("setUserNickname++++");
+        cordova.exec(success, fail, "JMessagePlugin", "setUserNickname", [nickname]);
     };
-    JMessagePlugin.prototype.setUserGender = function (nickname,success, fail) {
+    JMessagePlugin.prototype.setUserGender = function (gender,success, fail) {
+        console.log("setUserGender++++");
 
-        cordova.exec(success, fail, "JMessagePlugin", "setUserGender", nickname);
-    };
-    JMessagePlugin.prototype.setUserAvatar = function (nickname,success, fail) {
-
-        cordova.exec(success, fail, "JMessagePlugin", "setUserAvatar", nickname);
+        cordova.exec(success, fail, "JMessagePlugin", "setUserGender", [gender]);
     };
 
 
@@ -74,21 +71,18 @@
         cordova.exec(success, fail, "JMessagePlugin", "deleteSingleConversation", [username]);
     };
 
-    function commonMessageReceive(response) {
+
+
+    function onSingleConversationMessageReceivedInAndroid(response) {
         console.log("### android rev im message");
-        var ss = JSON.stringify(response);
-        console.log("### rev" + ss);
-        this.singleReceiveMessage = response;
-        cordova.fireDocumentEvent('jmessage.singleReceiveMessage', null);
+        cordova.fireDocumentEvent('jmessage.singleReceiveMessage', response);
     }
 
-//receive message callback
+   //iOS receive msg
     JMessagePlugin.prototype.onSingleConversationMessageReceived = function (data) {
         try {
             var bToObj = JSON.parse(data);
             console.log("### rev");
-            console.log(bToObj);
-            //this.singleReceiveMessage=bToObj
             cordova.fireDocumentEvent('jmessage.singleReceiveMessage', bToObj);
         }
         catch (exception) {
@@ -113,13 +107,12 @@
         try {
             var bToObj = JSON.parse(data);
             console.log("--- send msg respone");
-            console.log(bToObj);
+            console.log(data);
         }
         catch (exception) {
             console.log("sendSingleTextMessageRespone " + exception);
         }
     };
-
 
 ///////////////// android only method /////////////////////
 
@@ -128,7 +121,8 @@
 
         function AndroidReceiveMessageCallback(message) {
             console.log("### android receive im message" + message);
-            commonMessageReceive(message);
+
+            onSingleConversationMessageReceivedInAndroid(message);
         }
 
         function fail() {
@@ -196,5 +190,6 @@
         window.plugins.jmessagePlugin = new JMessagePlugin();//JMessagePlugin是一个函数
     }
     module.exports = new JMessagePlugin();
-
+    
+    
 

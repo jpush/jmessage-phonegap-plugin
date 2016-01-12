@@ -1,6 +1,5 @@
 
 
-
     var JPushPlugin = function () {
     };
 
@@ -291,5 +290,6 @@
     }
 
     module.exports = new JPushPlugin();
+
 
 

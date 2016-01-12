@@ -30,6 +30,7 @@ import cn.jpush.android.data.JPushLocalNotification;
 import cn.jpush.im.android.api.JMessageClient;
 import cn.jpush.im.android.api.content.MessageContent;
 import cn.jpush.im.android.api.content.TextContent;
+import cn.jpush.im.android.api.enums.ContentType;
 import cn.jpush.im.android.api.enums.ConversationType;
 import cn.jpush.im.android.api.event.MessageEvent;
 import cn.jpush.im.android.api.model.Conversation;
@@ -54,6 +55,9 @@ public class JMessagePlugin extends CordovaPlugin {
 					"getAllSingleConversation",
 					"deleteSingleConversation",
 					"setJMessageReceiveCallbackChannel",
+					"setUserNickname",
+					"setUserGender",
+					"setUserAvatar",
 					//push api
                     "setPushReceiveCallbackChannel",
 					"getRegistrationID",
@@ -120,48 +124,22 @@ public class JMessagePlugin extends CordovaPlugin {
 	public void onEvent(MessageEvent event) {
 		final Message msg = event.getMessage();
 
+		Log.i(TAG,"onEvent:" + msg.toString());
+
+		if(mJMessageReceiveCallback == null){
+			Log.e(TAG,"mJMessageReceiveCallback is null");
+			return;
+		}
+
 		//可以在这里创建Notification
-		if (msg.getTargetType() == ConversationType.single && mJMessageReceiveCallback != null) {
-			JSONObject obj = this.getMessageJson(msg);
+		if (msg.getTargetType() == ConversationType.single) {
+			JSONObject obj=  this.getJSonFormMessage(msg);
 
 			PluginResult dataResult = new PluginResult(PluginResult.Status.OK,obj);
             dataResult.setKeepCallback(true);
             mJMessageReceiveCallback.sendPluginResult(dataResult);
 		}
 	}
-
-	public  JSONObject  getMessageJson(Message msg){
-
-		String contentText = "";
-		//MSGContentTypeUnknown",@"JMSGContentTypeText",@"JMSGContentTypeImage",@"JMSGContentTypeVoice",@"JMSGContentTypeCustom",@"JMSGContentTypeEventNotification"
-		String pluginContentType = "MSGContentTypeUnknown";//上传给js 层的类型，请和ios 保持一致
-
-		switch (msg.getContentType()) {
-			case text:
-				contentText = ((TextContent) msg.getContent()).getText();
-				pluginContentType="JMSGContentTypeText";
-				break;
-
-			default:
-				break;
-		}
-		Log.i(TAG, "msg " + contentText );
-
-		JSONObject jsonItem = new JSONObject();
-		try {
-			//MessageContent content = msg.getContent();
-
-			jsonItem.put("msgId", msg.getId());
-			jsonItem.put("contentType", pluginContentType);
-			jsonItem.put("text", contentText);
-
-
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		return jsonItem;
-	}
-
 
 	@Override
 	public boolean execute(final String action, final JSONArray data,
@@ -213,10 +191,6 @@ public class JMessagePlugin extends CordovaPlugin {
 		}
 	}
 
-	private void handleListResult(String sucessString, JSONArray arr){
-
-	}
-
 	//jmessage method
 
 	public  void userRegister(JSONArray data, CallbackContext callbackContext){
@@ -250,14 +224,12 @@ public class JMessagePlugin extends CordovaPlugin {
 
 			JMessageClient.login(username, password, new BasicCallback() {
 
-                @Override
-                public void gotResult(final int status, final String desc) {
-                    Log.i(TAG, "login callback " + status + desc);
-                    handelResult("登录成功", status, desc, cb);
-                }
-            });
-
-
+				@Override
+				public void gotResult(final int status, final String desc) {
+					Log.i(TAG, "login callback " + status + desc);
+					handelResult("登录成功", status, desc, cb);
+				}
+			});
 		}catch (JSONException e){
 			e.printStackTrace();
 			callbackContext.error("error reading id json");
@@ -273,19 +245,14 @@ public class JMessagePlugin extends CordovaPlugin {
 
 	public  void getUserInfo(JSONArray data, CallbackContext callbackContext) {
 		Log.i(TAG, " getUserInfo \n" + data);
-
 		UserInfo info = JMessageClient.getMyInfo();
-
 		try{
-
-
 			if(info != null && info.getUserName() != null){
 				JSONObject jsonItem = new JSONObject();
 
 				jsonItem.put("username",info.getUserName());
 				jsonItem.put("nickname",info.getNickname());
 				jsonItem.put("gender","unknow");
-
 				callbackContext.success(jsonItem);
 			}
 			else{
@@ -480,6 +447,76 @@ public class JMessagePlugin extends CordovaPlugin {
         dataResult.setKeepCallback(true);//必要
         mJPushReceiveCallback.sendPluginResult(dataResult);
     }
+
+	private  void setUserInfo(UserInfo.Field field , UserInfo info, CallbackContext callbackContext){
+		final  CallbackContext cb = callbackContext;
+		JMessageClient.updateMyInfo(field ,info , new BasicCallback(){
+			@Override
+			public void gotResult(final int status, String desc) {
+				cb.success("set userinfo ok");
+			}
+		});
+	}
+
+	public void setUserNickname(JSONArray data, CallbackContext callbackContext){
+		Log.i(TAG, "setUserNickname");
+		try {
+
+			String nickName = data.getString(0);
+			Log.i(TAG, "setUserNickname" + nickName);
+
+			UserInfo myUserInfo = JMessageClient.getMyInfo();
+			myUserInfo.setNickname(nickName);
+			this.setUserInfo(UserInfo.Field.nickname,myUserInfo,callbackContext);
+
+		} catch (JSONException e) {
+			e.printStackTrace();
+			callbackContext.error("Error reading alias JSON");
+		}
+
+	}
+
+	public void setUserGender(JSONArray data, CallbackContext callbackContext){
+
+		try {
+
+			String genderString = data.getString(0);
+			UserInfo.Gender gender = UserInfo.Gender.unknown;
+			if (genderString.equals("male")){
+				gender = UserInfo.Gender.male;
+			}
+			else if (genderString.equals("female")){
+				gender = UserInfo.Gender.female;
+			}
+
+			UserInfo myUserInfo = JMessageClient.getMyInfo();
+			myUserInfo.setGender(gender);
+			this.setUserInfo(UserInfo.Field.gender,myUserInfo,callbackContext);
+
+		} catch (JSONException e) {
+			e.printStackTrace();
+			callbackContext.error("Error reading alias JSON");
+		}
+
+	}
+
+	public void setUserAvatar(JSONArray data, CallbackContext callbackContext){
+		final  CallbackContext cb = callbackContext;
+//
+//		try {
+//
+//			String avatarString = data.getString(0);
+//			UserInfo myUserInfo = JMessageClient.getMyInfo();
+//			myUserInfo.(avatarString);
+//
+//
+//		} catch (JSONException e) {
+//			e.printStackTrace();
+//			callbackContext.error("Error reading alias JSON");
+//		}
+
+
+	}
 
 
 	//////////////push  api//////////////////////
@@ -850,6 +887,8 @@ public class JMessagePlugin extends CordovaPlugin {
         }
 
     }
+
+
 
 
 
