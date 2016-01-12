@@ -18,12 +18,12 @@
     </engines>
     
     <js-module src="www/JMessagePlugin.js" name="JMessagePlugin">
-            <clobbers target="JMessagePlugin"/>
+        <clobbers target="JMessagePlugin"/>
     </js-module>
 
-<!--    <js-module src="www/JPushPlugin.js" name="JPushPlugin">-->
-<!--        <clobbers target="JPushPlugin"/>-->
-<!--    </js-module>-->
+    <js-module src="www/JPushPlugin.js" name="JPushPlugin">
+        <clobbers target="JPushPlugin"/>
+    </js-module>
 
     <platform name="ios">
             <config-file target="config.xml" parent="/*">
@@ -125,6 +125,31 @@
                 </intent-filter>
             </receiver>
             
+            <!-- User defined.  For test only  用户自定义的广播接收器 -->
+            <receiver
+              android:name="cn.jmessage.phonegap.MyReceiver"
+              android:enabled="true">
+              <intent-filter android:priority="1000">
+                <action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED_PROXY"/>
+                <!-- Required  显示通知栏 -->
+                <category android:name="$PACKAGE_NAME"/>
+              </intent-filter>
+              <intent-filter>
+                <action android:name="cn.jpush.android.intent.REGISTRATION"/>
+                <!-- Required  用户注册SDK的intent -->
+                <action android:name="cn.jpush.android.intent.UNREGISTRATION"/>
+                <action android:name="cn.jpush.android.intent.MESSAGE_RECEIVED"/>
+                <!-- Required  用户接收SDK消息的intent -->
+                <action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED"/>
+                <!-- Required  用户接收SDK通知栏信息的intent -->
+                <action android:name="cn.jpush.android.intent.NOTIFICATION_OPENED"/>
+                <!-- Required  用户打开自定义通知栏的intent -->
+                <action android:name="cn.jpush.android.intent.ACTION_RICHPUSH_CALLBACK"/>
+                <!-- Optional 用户接受Rich Push Javascript 回调函数的intent -->
+                <category android:name="$PACKAGE_NAME"/>
+              </intent-filter>
+            </receiver>
+            
             <!-- Required Push SDK核心功能 -->
             <activity
                 android:name="cn.jpush.android.ui.PushActivity"
@@ -185,8 +210,7 @@
         <source-file src="src/android/mips/libjpush205.so" target-dir="libs/mips"/>
 
 
-        <!--<source-file src="src/android/JPushPlugin.java" target-dir="src/cn/jpush/phonegap"/>-->
-<!--        <source-file src="src/android/MyReceiver.java" target-dir="src/cn/jmessage/phonegap"/>-->
+        <source-file src="src/android/MyReceiver.java" target-dir="src/cn/jmessage/phonegap"/>
         <source-file src="src/android/JMessagePlugin.java" target-dir="src/cn/jmessage/phonegap"/>
 
 <!--        <source-file src="src/android/test_notification_layout.xml" target-dir="res/layout"/>-->

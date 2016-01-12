@@ -19,9 +19,14 @@
 #define kJJMessageConversationChange @"kJJMessageConversationChange"
 #define kJJMessageSendSingleMessageRespone @"kJJMessageSendSingleMessageRespone"
 
+#define kJJPushReceiveNotification @"kJJPushReceiveNotification"
+#define kJJPushReceiveMessage @"kJJPushReceiveMessage"
+
 
 @interface JMessageHelper : NSObject<JMessageDelegate>
 
--(void)initJMessage:(NSDictionary*)launchOptions;
+- (void)initJMessage:(NSDictionary*)launchOptions;
+- (void)didReceiveRemoteNotification:(NSDictionary *)userInfo;
+
 
 @end
