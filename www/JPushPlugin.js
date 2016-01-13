@@ -1,5 +1,4 @@
 
-
     var JPushPlugin = function () {
     };
 

@@ -126,18 +126,18 @@ public class JMessagePlugin extends CordovaPlugin {
 
 		Log.i(TAG,"onEvent:" + msg.toString());
 
-		if(mJMessageReceiveCallback == null){
-			Log.e(TAG,"mJMessageReceiveCallback is null");
-			return;
-		}
 
 		//可以在这里创建Notification
 		if (msg.getTargetType() == ConversationType.single) {
 			JSONObject obj=  this.getJSonFormMessage(msg);
 
+
 			PluginResult dataResult = new PluginResult(PluginResult.Status.OK,obj);
             dataResult.setKeepCallback(true);
-            mJMessageReceiveCallback.sendPluginResult(dataResult);
+			if(mJMessageReceiveCallback != null){
+				mJMessageReceiveCallback.sendPluginResult(dataResult);
+
+			}
 		}
 	}
 
