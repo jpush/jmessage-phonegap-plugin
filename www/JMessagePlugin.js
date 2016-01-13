@@ -1,4 +1,5 @@
 
+
     var JMessagePlugin = function () {
 
         console.log("--- JMessagePlugin init");
@@ -183,5 +184,6 @@
     module.exports = new JMessagePlugin();
     
     
+
 
 

@@ -31,9 +31,8 @@
         /////   Login Page ////////////
         $(document).on("pageshow", "#loginPage", function () {
             console.log("loginPage show");
-            $("#loginUername").val("aa12345");
-            $("#loginPassword").val("aa12345");
-        });
+            
+        	});
 
         function register() {
             console.log("register");
@@ -202,9 +201,13 @@
             getMessageHistory(usernameForConversation);
         });
 
-        function onReceiveSingleMessage() {
+
+        function onReceiveSingleMessage(message) {
             console.log("onReceiveSingleMessage ####");
-            var message = window.plugins.jmessagePlugin.ReceiveMessageObj;
+
+            if (device.platform == "Android") {
+               message = window.plugins.jmessagePlugin.ReceiveMessageObj;
+            }
             var ss = JSON.stringify(message);
             console.log("++++" + ss);
 
@@ -231,7 +234,6 @@
                 console.log("send message fail" + response);
                 alert("send message fail" + response);
             });
-
         }
 
         function insertMessage(dict) {

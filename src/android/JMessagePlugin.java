@@ -131,7 +131,6 @@ public class JMessagePlugin extends CordovaPlugin {
 		if (msg.getTargetType() == ConversationType.single) {
 			JSONObject obj=  this.getJSonFormMessage(msg);
 
-
 			PluginResult dataResult = new PluginResult(PluginResult.Status.OK,obj);
             dataResult.setKeepCallback(true);
 			if(mJMessageReceiveCallback != null){
@@ -318,9 +317,9 @@ public class JMessagePlugin extends CordovaPlugin {
 
 			jsonItem.put("target_type", "single");
 			jsonItem.put("target_id", targetUser.getUserID());
-			jsonItem.put("target_name", targetUser.getUserName());
+			jsonItem.put("target_name", targetUser.getNickname());
 			jsonItem.put("from_id", fromUser.getUserID());
-			jsonItem.put("from_name", fromUser.getUserName());
+			jsonItem.put("from_name", fromUser.getNickname());
 			jsonItem.put("create_time", msg.getCreateTime());
 			jsonItem.put("msg_type", msgType);
 			//jsonItem.put("text", contentText);
