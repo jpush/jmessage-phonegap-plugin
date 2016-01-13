@@ -7,20 +7,14 @@
         this.nickname = "";
         this.gender = 0;
         this.avatarUrl = "";
-
+        this.ReceiveMessageObj = "";
     };
 
-//    JMessagePlugin.prototype.singleReceiveMessage = {};
-
-
     JMessagePlugin.prototype.register = function (username, password, success, fail) {
-
         cordova.exec(success, fail, "JMessagePlugin", "userRegister", [username, password]);
     };
 
-
     JMessagePlugin.prototype.login = function (username, password, success, fail) {
-
         cordova.exec(success, fail, "JMessagePlugin", "userLogin", [username, password]);
     };
 
@@ -120,9 +114,8 @@
     JMessagePlugin.prototype.setReceiveMessageCallbackChannel = function () {
 
         function AndroidReceiveMessageCallback(message) {
-            console.log("### android receive im message" + message);
-
-            onSingleConversationMessageReceivedInAndroid(message);
+            window.plugins.jmessagePlugin.ReceiveMessageObj = message;
+            cordova.fireDocumentEvent('jmessage.singleReceiveMessage', null);
         }
 
         function fail() {
@@ -142,7 +135,6 @@
             console.log("### android receive push message");
 
             var ss = JSON.stringify(bToObj);
-            console.log(ss);
 
             var messageWrapTyle = bToObj.messageWrapTyle;
             var realData;
@@ -187,9 +179,11 @@
     }
 
     if (!window.plugins.jmessagePlugin) {
-        window.plugins.jmessagePlugin = new JMessagePlugin();//JMessagePlugin是一个函数
+        window.plugins.jmessagePlugin = new JMessagePlugin();
     }
     module.exports = new JMessagePlugin();
     
     
+
+
 

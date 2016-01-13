@@ -126,10 +126,6 @@ public class JMessagePlugin extends CordovaPlugin {
 
 		Log.i(TAG,"onEvent:" + msg.toString());
 
-		if(mJMessageReceiveCallback == null){
-			Log.e(TAG,"mJMessageReceiveCallback is null");
-			return;
-		}
 
 		//可以在这里创建Notification
 		if (msg.getTargetType() == ConversationType.single) {
@@ -137,7 +133,10 @@ public class JMessagePlugin extends CordovaPlugin {
 
 			PluginResult dataResult = new PluginResult(PluginResult.Status.OK,obj);
             dataResult.setKeepCallback(true);
-            mJMessageReceiveCallback.sendPluginResult(dataResult);
+			if(mJMessageReceiveCallback != null){
+				mJMessageReceiveCallback.sendPluginResult(dataResult);
+
+			}
 		}
 	}
 
@@ -318,9 +317,9 @@ public class JMessagePlugin extends CordovaPlugin {
 
 			jsonItem.put("target_type", "single");
 			jsonItem.put("target_id", targetUser.getUserID());
-			jsonItem.put("target_name", targetUser.getUserName());
+			jsonItem.put("target_name", targetUser.getNickname());
 			jsonItem.put("from_id", fromUser.getUserID());
-			jsonItem.put("from_name", fromUser.getUserName());
+			jsonItem.put("from_name", fromUser.getNickname());
 			jsonItem.put("create_time", msg.getCreateTime());
 			jsonItem.put("msg_type", msgType);
 			//jsonItem.put("text", contentText);

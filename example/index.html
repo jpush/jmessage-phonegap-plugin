@@ -3,9 +3,12 @@
 <head>
     <title>jQM Complex Demo</title>
     <meta http-equiv='Content-Type' content='text/html; charset=utf-8'/>
+    <meta name="msapplication-tap-highlight" content="no"/>
 
+    <!--<meta name="viewport"-->
+    <!--content="width=device-width; initial-scale=1.0; maximum-scale=1.0; minimum-scale=1.0; user-scalable=no; target-densityDpi=device-dpi"/>-->
     <meta name="viewport"
-          content="width=device-width; initial-scale=1.0; maximum-scale=1.0; minimum-scale=1.0; user-scalable=no; target-densityDpi=device-dpi"/>
+          content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi"/>
 
     <link rel="stylesheet" href="css/themes/default/jquery.mobile-1.3.2.min.css">
     <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,700">
@@ -26,12 +29,10 @@
         }
 
         /////   Login Page ////////////
-
         $(document).on("pageshow", "#loginPage", function () {
             console.log("loginPage show");
-            $("#loginUername").val("aa1234");
-            $("#loginPassword").val("aa1234");
-        });
+            
+        	});
 
         function register() {
             console.log("register");
@@ -49,7 +50,6 @@
                 console.log("login callback fail" + ss);
                 alert(response.errorDscription);
             });
-
         }
 
         function checkIsLogin() {
@@ -61,19 +61,19 @@
                 window.plugins.jmessagePlugin.username = response.username;
                 window.plugins.jmessagePlugin.nickname = response.nickname;
                 window.plugins.jmessagePlugin.gender = response.gender;
-               // window.plugins.jmessagePlugin.avatatUrl = response.avatar;
+                // window.plugins.jmessagePlugin.avatatUrl = response.avatar;
                 gotoConversation();
             }, function (response) {
                 console.log("user is not login");
                 window.plugins.jmessagePlugin.username = "";
                 window.plugins.jmessagePlugin.nickname = "";
                 window.plugins.jmessagePlugin.gender = 0;
-               // window.plugins.jmessagePlugin.avatatUrl = "";
+                // window.plugins.jmessagePlugin.avatatUrl = "";
             });
         }
 
         function updataUserInfo() {
-             window.plugins.jmessagePlugin.getUserInfo(function (response) {
+            window.plugins.jmessagePlugin.getUserInfo(function (response) {
                 var responseString = JSON.stringify(response);
                 console.log("user is login" + responseString);
 
@@ -194,37 +194,35 @@
         /////   conversation  ////////////
 
 
-        // 	当会话列表页初显示时
 
         $(document).on("pageshow", "#conversationPage", function () {
-
             console.log("conversationPage show   " + usernameForConversation);
-            document.addEventListener("jmessage.singleReceiveMessage", onReceiveSingleReceiveMessage, false);
-
+            document.addEventListener("jmessage.singleReceiveMessage", onReceiveSingleMessage, false);
             getMessageHistory(usernameForConversation);
         });
 
-        function onReceiveSingleReceiveMessage(message) {
 
-            console.log("onReceiveSingleReceiveMessage ####");
+        function onReceiveSingleMessage(message) {
+            console.log("onReceiveSingleMessage ####");
+
+            if (device.platform == "Android") {
+               message = window.plugins.jmessagePlugin.ReceiveMessageObj;
+            }
             var ss = JSON.stringify(message);
-            console.log(ss);
+            console.log("++++" + ss);
+
             insertMessage(message);
         }
 
-
         function sendMessage() {
             var messageContentString = $("#messageContent").val();
-
             window.plugins.jmessagePlugin.sendSingleTextMessage(usernameForConversation, messageContentString, function (response) {
                 var ss = JSON.stringify(response);
                 console.log("send message sucess" + ss);
                 alert("send message had send");
-
-                var msg_body = new Object;
+                var msg_body = new Object();
                 msg_body.text = messageContentString;
-
-                var dict = new Object;
+                var dict = new Object();
                 dict.msg_type = "text";
                 dict.from_name = getUserDisplayName();
                 dict.msg_body = msg_body;
@@ -236,24 +234,21 @@
                 console.log("send message fail" + response);
                 alert("send message fail" + response);
             });
-
         }
 
         function insertMessage(dict) {
 
-            var ss = JSON.stringify(dict);
-            console.log("insert" + ss);
-
-
+            //var ss = JSON.stringify(dict);
+            //console.log("insert" + ss);
             if (dict.msg_type == "text") {
                 var lastMessage = dict.msg_body.text;
             }
             var fromName = dict.from_name;
-
             var insertString = "<li>" + fromName + ": " + lastMessage + '</li>';
             console.log(insertString);
             $('#messageList').append(insertString).listview('refresh');
         }
+
         function getMessageHistory(username) {
             $('#messageList').empty().listview('refresh');
             console.log("getMessageHistory lastest 50 message with username:" + username);
@@ -270,7 +265,6 @@
                 alert("getMessageHistory failed");
                 console.log("getMessageHistory fail" + response);
             });
-
         }
 
         /////////// addConversationPage //////////////
@@ -700,22 +694,21 @@
 
     <div>
         <div data-role="content">
-                 <div data-role="fieldcontain">
+            <div data-role="fieldcontain">
 
-                    <label>username:</label> <label id="myinfoUsername">null:</label>
-                </div>
+                <label>username:</label> <label id="myinfoUsername">null:</label>
+            </div>
 
-                <!--<input type="text" name="text-1" id="myinfoUsername" value="">-->
+            <!--<input type="text" name="text-1" id="myinfoUsername" value="">-->
 
-                    <label for="myinfoNickname">nickname:</label>
-                    <input type="text"  name="text-2" id="myinfoNickname" value="">
-                    <input type="button" onclick="setUserNickname()" value="set nickname"/>
+            <label for="myinfoNickname">nickname:</label>
+            <input type="text" name="text-2" id="myinfoNickname" value="">
+            <input type="button" onclick="setUserNickname()" value="set nickname"/>
 
 
-                    <label for="myinfoGender">gender:(male , female , unknow) </label>
-                    <input type="text" name="text-3" id="myinfoGender" value="">
-                    <input type="button" onclick="setUserGender()" value="set gender"/>
-
+            <label for="myinfoGender">gender:(male , female , unknow) </label>
+            <input type="text" name="text-3" id="myinfoGender" value="">
+            <input type="button" onclick="setUserGender()" value="set gender"/>
 
 
             <div data-role="fieldcontain">
