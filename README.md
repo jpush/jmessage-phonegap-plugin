@@ -10,13 +10,17 @@
 
 功能和特性：
 
+**IM**
 + 用户注册/登录
-+ 单聊
-+ 获取本地聊天记录
-+ 设置用户昵称，性别
-+ 发送通知
-+ 发送自定义消息
++ 会话
++ 会话列表
++ 获取本地会话记录
++ 设置用户基本信息昵称，性别等
 
+**Push**
++ 发送推送通知
++ 发送推送自定义消息
++ 设置推送标签和别名
 
 开发环境建议：
 
@@ -36,24 +40,24 @@ Android 平台：Android Studio 1.5
 在线安装
 
 ```sh
-cordova plugin add  https://github.com/jpush/jmessage-phonegap-plugin.git --variable JPUSH_APP_KEY="<your app key>"
+cordova plugin add  https://github.com/jpush/jmessage-phonegap-plugin.git --variable APP_KEY="<your app key>"
 ```
 
 或 下载代码后，在本地安装
 
 ```sh
-cordova plugin add  <jmessage-phonegap-plugin路径>   --variable JPUSH_APP_KEY="<your app key>"
+cordova plugin add  <jmessage-phonegap-plugin路径>   --variable APP_KEY="<your app key>"
 ```
 
 
 
-如何获得[JPUSH_APP_KEY](http://docs.jpush.io/guideline/statistical_report/)
+如何获得[APP_KEY](http://docs.jpush.io/guideline/statistical_report/)
 
 
 
 
 
-#### 依赖的其他 plugin
+#### 安装依赖的其他 plugin
 
 + org.apache.cordova.device
 
@@ -77,11 +81,11 @@ cordova plugin add org.apache.cordova.device
 
 API 分为IM（聊天）API 和  Push(消息推送)两部分
 
-[JMessage API](doc/JMessage_API.md)
++ [JMessage API](doc/JMessage_API.md)
 
-[Push API](doc/JPush_API.md)
++ [Push API](doc/JPush_API.md)
 
-[API 返回错误码定义](http://docs.jpush.io/client/im_errorcode/)
++ [API 返回错误码定义](http://docs.jpush.io/client/im_errorcode/)
 
 
 

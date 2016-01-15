@@ -10,7 +10,7 @@
     <keywords>JMessage, JPush</keywords>
     <license>Apache 2.0 License</license>
 
-    <preference name="JPUSH_APP_KEY" />
+    <preference name="APP_KEY" />
 
     <engines>
         <engine name="cordova" version=">=3.0"/>
@@ -50,7 +50,7 @@
             <framework src="libsqlite3.0.tbd" weak="true" />
             
             <config-file target="*JMessageConfig.plist" parent="APP_KEY">
-              <string>$JPUSH_APP_KEY</string>
+              <string>$APP_KEY</string>
             </config-file>
 
         </platform>
@@ -200,7 +200,7 @@
                 </intent-filter>
                 
             </service>
-            <meta-data android:name="JPUSH_APPKEY" android:value="$JPUSH_APP_KEY"/>
+            <meta-data android:name="JPUSH_APPKEY" android:value="$APP_KEY"/>
             <meta-data android:name="JPUSH_CHANNEL" android:value="developer-default"/>
         </config-file>
 
