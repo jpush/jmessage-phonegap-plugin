@@ -8,6 +8,14 @@
 **jmessage-phonegap-plugin**  除了支持IM 功能外，还集成了原 [**jpush-phonegap-plugin**](https://github.com/jpush/jpush-phonegap-plugin) 插件,  支持消息推送功能。
 
 
+功能和特性：
+
++ 用户注册/登录
++ 单聊
++ 获取本地聊天记录
++ 设置用户昵称，性别
++ 发送通知
++ 发送自定义消息
 
 
 开发环境建议：
@@ -28,7 +36,7 @@ Android 平台：Android Studio 1.5
 在线安装
 
 ```sh
-cordova plugin add  xxx.git --variable JPUSH_APP_KEY="<your app key>"
+cordova plugin add  https://github.com/jpush/jmessage-phonegap-plugin.git --variable JPUSH_APP_KEY="<your app key>"
 ```
 
 或 下载代码后，在本地安装
@@ -60,6 +68,7 @@ cordova plugin add org.apache.cordova.device
 示例目录
 
 `jmessage-phonegap-plugin/example/`
+
 
 
 
