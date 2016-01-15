@@ -91,18 +91,6 @@ API 分为IM（聊天）API 和  Push(消息推送)两部分
 
 
 
-## 常见问题
-
-+ 安装插件后，如何设置推送channel 和  修改appkey ？
-
-    iOS
-    `在iOS 工程的 JMessageConfig.plist 中设置和修改`
-    
-    Android 
-    安装插件后在工程文件 AndroidManifest.xml 中修改 JPUSH_APPKEY 和 JPUSH_CHANNEL
-
-
-
 
 
 
