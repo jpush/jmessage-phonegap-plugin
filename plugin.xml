@@ -37,6 +37,7 @@
             <source-file src="src/ios/Plugins/JMessagePlugin.m"/>
             <header-file src="src/ios/Plugins/JMessageHelper.h"/>
             <source-file src="src/ios/Plugins/JMessageHelper.m"/>
+            <resource-file src="src/ios/JMessageConfig.plist" />
             <framework src="src/ios/lib/JMessage.framework" custom="true" />
             <framework src="CFNetwork.framework" weak="true" />
             <framework src="CoreFoundation.framework" weak="true" />
@@ -48,6 +49,11 @@
             <framework src="Security.framework" weak="true" />
             <framework src="libz.tbd" weak="true" />
             <framework src="libsqlite3.0.tbd" weak="true" />
+            
+            <config-file target="*JMessageConfig.plist" parent="APP_KEY">
+              <string>$API_KEY</string>
+            </config-file>
+
 <!--            文档中说明xcode 版本-->
         </platform>
     
@@ -58,7 +64,7 @@
                 <param name="android-package" value="cn.jmessage.phonegap.JMessagePlugin"/>
             </feature>
         </config-file>
-        
+        <hook type="after_plugin_install" src="script/android-install.js" />
         <config-file target="AndroidManifest.xml" parent="/manifest">
             <!-- Required  一些系统要求的权限，如访问网络等-->
             <uses-permission android:name="$PACKAGE_NAME.permission.JPUSH_MESSAGE"/>

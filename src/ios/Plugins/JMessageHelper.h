@@ -11,7 +11,7 @@
 
 
 // 需要填写为您自己的 JPush Appkey
-#define JMSSAGE_APPKEY @"18e186ca16883add07b6d37a"
+#define JMSSAGE_APPKEY @"2972770d9e0d5bf547d8a66a"
 #define CHANNEL @""
 
 

@@ -14,11 +14,11 @@ cordova 版本 3.0 以上
 
 在线安装
 
-cordova plugin add  xxx.git --variable API_KEY=`<your app key>`
+`cordova plugin add  xxx.git --variable API_KEY= <your app key>`
 
 或
 
-cordova plugin add  `<jmessage-phonegap-plugin路径>`   --variable API_KEY=`<your app key>`
+`cordova plugin add  <jmessage-phonegap-plugin路径>   --variable API_KEY=<your app key>`
 
 
 
@@ -31,29 +31,13 @@ cordova plugin add  `<jmessage-phonegap-plugin路径>`   --variable API_KEY=`<yo
 
 API 分为IM（聊天）API 和  Push(消息推送)两部分
 
-
-### iOS API
-
-#### iOS IM API
-
-
-#### iOS IM API
-
-#### iOS push API
-
-
-### Android API
-
-
-#### Android IM API
-
-#### Android push API
+api 连接
 
 
 
 
 ## 其他
 
-
+http://docs.jpush.io/client/im_errorcode/
 
 

@@ -55,6 +55,21 @@ static NSString *const KEY_UNREADCOUNT = @"unreadCount";
     [weak_self.commandDelegate sendPluginResult:pluginResult callbackId:callbackId];
 }
 
+- (void)reponeParamErrorWithCallbackId:(NSString*)callbackId {
+  CDVPluginResult* pluginResult = nil;
+  NSMutableDictionary * dict  = [JMessagePlugin getDictionaryWithError:kJMSGErrorHttpPrameterInvalid description:errorParamString ];
+  pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:dict];
+  [self.commandDelegate sendPluginResult:pluginResult callbackId:callbackId];
+  
+}
+
+
+//因为cordova 有lazy 特性，所以在不使用其他函数的情况下。这个函数作用在于激活插件
+- (void)initPush:(CDVInvokedUrlCommand *)command {
+  
+}
+
+
 - (void)userRegister:(CDVInvokedUrlCommand *)command {
     NSString * username = [command argumentAtIndex:0];
     NSString * password = [command argumentAtIndex:1];
@@ -107,41 +122,40 @@ static NSString *const KEY_UNREADCOUNT = @"unreadCount";
     }
 }
 
-- (void)setUserInfoWithFielType:(JMSGUserField)userFieldType val:(id)val sucessRespone:(NSString*)responeString {
+- (void)setUserInfoWithFielType:(JMSGUserField)userFieldType val:(id)val sucessRespone:(NSString*)responeString callbackId:(NSString*)callbackId{
+  WEAK_SELF(weak_self);
   
-     [JMSGUser updateMyInfoWithParameter:val userFieldType:userFieldType completionHandler:^(id resultObject, NSError *error) {
-      
-      CDVPluginResult* pluginResult = nil;
-      if (error == nil) {
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:responeString];
-      } else {
-        NSMutableDictionary * dict  = [JMessagePlugin getDictionaryFromError:error];
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:dict];
-      }
-      
-    }];
-
-}
-- (void)reponeParamError {
-      CDVPluginResult* pluginResult = nil;
-      NSMutableDictionary * dict  = [JMessagePlugin getDictionaryWithError:kJMSGErrorHttpPrameterInvalid description:errorParamString ];
+  [JMSGUser updateMyInfoWithParameter:val userFieldType:userFieldType completionHandler:^(id resultObject, NSError *error) {
+    
+    CDVPluginResult* pluginResult = nil;
+    if (error == nil) {
+      pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:responeString];
+    } else {
+      NSMutableDictionary * dict  = [JMessagePlugin getDictionaryFromError:error];
       pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:dict];
+    }
+    [weak_self.commandDelegate sendPluginResult:pluginResult callbackId:callbackId];
+    
+  }];
   
 }
+
 
 - (void)setUserNickname:(CDVInvokedUrlCommand *)command {
   
   NSString * nickname = [command argumentAtIndex:0];
+  
+
   if (nickname.length > 0) {
-    [self setUserInfoWithFielType:kJMSGUserFieldsNickname val:nickname sucessRespone:@"set nickname ok"];
+    [self setUserInfoWithFielType:kJMSGUserFieldsNickname val:nickname sucessRespone:@"set nickname ok" callbackId:command.callbackId];
   }
   else{
-    [self reponeParamError];
+    [self reponeParamErrorWithCallbackId:command.callbackId];
   }
+ 
 }
 
 - (void)setUserGender:(CDVInvokedUrlCommand *)command {
-  
   NSString * gender = [command argumentAtIndex:0];
   if (gender.length > 0) {
     
@@ -153,21 +167,21 @@ static NSString *const KEY_UNREADCOUNT = @"unreadCount";
       genderNumber = [NSNumber numberWithInt:kJMSGUserGenderFemale];
     }
     
-    [self setUserInfoWithFielType:kJMSGUserFieldsGender val:genderNumber sucessRespone:@"set gender ok"];
+    [self setUserInfoWithFielType:kJMSGUserFieldsGender val:genderNumber sucessRespone:@"set gender ok" callbackId:command.callbackId];
+
   }
   else{
-    [self reponeParamError];
+    [self reponeParamErrorWithCallbackId:command.callbackId];
   }
 }
 
 - (void)setUserAvatar:(CDVInvokedUrlCommand *)command {
-  
   NSString * avatar = [command argumentAtIndex:0];
   if (avatar.length > 0) {
-    [self setUserInfoWithFielType:kJMSGUserFieldsAvatar val:avatar sucessRespone:@"set avatar ok"];
+    [self setUserInfoWithFielType:kJMSGUserFieldsAvatar val:avatar sucessRespone:@"set avatar ok" callbackId:command.callbackId];
   }
   else{
-    [self reponeParamError];
+    [self reponeParamErrorWithCallbackId:command.callbackId];
   }
 }
 

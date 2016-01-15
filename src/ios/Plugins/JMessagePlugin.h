@@ -21,6 +21,7 @@
 - (void)deleteSingleConversation:(CDVInvokedUrlCommand *)command;
 
 
+- (void)initPush:(CDVInvokedUrlCommand *)command;
 
 - (void)setTagsWithAlias:(CDVInvokedUrlCommand *)command;
 - (void)setTags:(CDVInvokedUrlCommand *)command;
