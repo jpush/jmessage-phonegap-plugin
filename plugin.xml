@@ -10,11 +10,10 @@
     <keywords>JMessage, JPush</keywords>
     <license>Apache 2.0 License</license>
 
-    <preference name="API_KEY" />
+    <preference name="JPUSH_APP_KEY" />
 
     <engines>
         <engine name="cordova" version=">=3.0"/>
-<!--        文档说明 cordova 版本-->
     </engines>
     
     <js-module src="www/JMessagePlugin.js" name="JMessagePlugin">
@@ -51,10 +50,9 @@
             <framework src="libsqlite3.0.tbd" weak="true" />
             
             <config-file target="*JMessageConfig.plist" parent="APP_KEY">
-              <string>$API_KEY</string>
+              <string>$JPUSH_APP_KEY</string>
             </config-file>
 
-<!--            文档中说明xcode 版本-->
         </platform>
     
     <platform name="android">
@@ -202,7 +200,7 @@
                 </intent-filter>
                 
             </service>
-            <meta-data android:name="JPUSH_APPKEY" android:value="$API_KEY"/>
+            <meta-data android:name="JPUSH_APPKEY" android:value="$JPUSH_APP_KEY"/>
             <meta-data android:name="JPUSH_CHANNEL" android:value="developer-default"/>
         </config-file>
 

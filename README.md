@@ -39,7 +39,7 @@ cordova plugin add  <jmessage-phonegap-plugin路径>   --variable JPUSH_APP_KEY=
 
 
 
-如何获得[极光APP_KEY](http://docs.jpush.io/guideline/statistical_report/)
+如何获得[JPUSH_APP_KEY](http://docs.jpush.io/guideline/statistical_report/)
 
 
 
