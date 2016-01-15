@@ -45,7 +45,7 @@ cordova plugin add  <jmessage-phonegap-plugin路径>   --variable JPUSH_APP_KEY=
 
 
 
-## 依赖的其他 plugin
+#### 依赖的其他 plugin
 
 + org.apache.cordova.device
 
@@ -68,9 +68,9 @@ cordova plugin add org.apache.cordova.device
 
 API 分为IM（聊天）API 和  Push(消息推送)两部分
 
-[JMessage Api](http://docs.jpush.io/client/im_errorcode1/)
+[JMessage API](doc/JMessage_API.md)
 
-[Push API](https://github.com/jpush/jpush-phonegap-plugin)
+[Push API](doc/JPush_API.md)
 
 [API 返回错误码定义](http://docs.jpush.io/client/im_errorcode/)
 
@@ -87,5 +87,9 @@ API 分为IM（聊天）API 和  Push(消息推送)两部分
     
     Android 
     安装插件后在工程文件 AndroidManifest.xml 中修改 JPUSH_APPKEY 和 JPUSH_CHANNEL
+
+
+
+
 
 
