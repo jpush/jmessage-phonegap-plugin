@@ -74,7 +74,7 @@
         NSLog(@"Unexpected - no user info in jpush mesasge");
     }
   [[NSNotificationCenter defaultCenter] postNotificationName:kJJPushReceiveMessage
-                                                      object:notification];
+                                                      object:info];
   
 }
 

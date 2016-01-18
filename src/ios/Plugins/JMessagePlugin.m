@@ -561,7 +561,7 @@ static NSString *const KEY_UNREADCOUNT = @"unreadCount";
 
 - (void)networkDidReceiveMessage:(NSNotification *)notification {
   
-  NSDictionary *userInfo = [notification userInfo];
+  NSDictionary *userInfo = [notification object];
   NSLog(@"networkDidReceiveMessage %@",userInfo);
   
   NSError  *error;

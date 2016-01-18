@@ -203,7 +203,7 @@ JMSG_ASSUME_NONNULL_BEGIN
 /*!
  * @abstract 异步获取所有消息记录
  *
- * @param handler 结果回调。正常返回时 resultObject 类型为 NSArray，数据成员类型为 JMSGConversation 。
+ * @param handler 结果回调。正常返回时 resultObject 类型为 NSArray，数据成员类型为 JMSGMessage。
  *
  * @discussion 排序规则：最新
  */

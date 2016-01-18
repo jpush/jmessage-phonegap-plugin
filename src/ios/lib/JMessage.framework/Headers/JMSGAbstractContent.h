@@ -30,7 +30,7 @@
  *    }
  *    ```
  */
-@interface JMSGAbstractContent : NSObject <NSCopying, NSCoding> {}
+@interface JMSGAbstractContent : NSObject <NSCopying> {}
 
 JMSG_ASSUME_NONNULL_BEGIN
 

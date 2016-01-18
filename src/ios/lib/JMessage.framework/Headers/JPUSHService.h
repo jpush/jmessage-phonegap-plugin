@@ -9,6 +9,8 @@
  * Copyright (c) 2011 ~ 2015 Shenzhen HXHG. All rights reserved.
  */
 
+#define JPUSH_VERSION_NUMBER 2.1.0
+
 #import <Foundation/Foundation.h>
 
 @class CLRegion;
@@ -40,7 +42,7 @@ extern NSString *const kJPFServiceErrorNotification;  // 错误提示
  *
  * @discussion 这是旧版本的启动方法, 依赖于 PushConfig.plist 文件. 建议不要使用, 已经过期.
  */
-+ (void)setupWithOption:(NSDictionary *)launchingOption __attribute__((deprecated("JPush 1.8.3 版本已过期")));
++ (void)setupWithOption:(NSDictionary *)launchingOption __attribute__((deprecated("JPush 2.1.0 版本已过期")));
 
 /*!
  * @abstract 启动SDK
@@ -88,7 +90,7 @@ extern NSString *const kJPFServiceErrorNotification;  // 错误提示
 
 /*!
  * 下面的接口是可选的
- * 设置标签和(或)别名（若参数为nil，则忽略；若是空对象，则清空；详情请参考文档：http://docs.jpush.cn/pages/viewpage.action?pageId=3309913）
+ * 设置标签和(或)别名（若参数为nil，则忽略；若是空对象，则清空；详情请参考文档：http://docs.jpush.io/client/ios_api/#api-ios）
  * setTags:alias:fetchCompletionHandle:是新的设置标签别名的方法，不再需要显示声明回调函数，只需要在block里面处理设置结果即可.
  * WARN: 使用block时需要注意循环引用问题
  */
