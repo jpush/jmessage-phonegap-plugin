@@ -237,9 +237,7 @@ function insertCodeForAppdelegateM(inputFile, outputFile, fs) {
 function findIosProjectName(fs, path){
 
     var files = fs.readdirSync(path);	
-    
-    console.log(files);
-    
+        
 	var regRexIsInsert = /[\S]*.xcodeproj/;	
 	
 	for(var i in files){
@@ -248,7 +246,6 @@ function findIosProjectName(fs, path){
 		if(matchItem !== null){
 			var projectName = matchItem[0];
 			projectName = projectName.substring(0,projectName.length - 10);
- 			console.log(projectName);
 			return projectName;
 		}
 	}
