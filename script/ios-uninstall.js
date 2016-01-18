@@ -17,6 +17,29 @@ function consoleLogWarning(string) {
 }
 
 
+function findIosProjectName(fs, path){
+
+    var files = fs.readdirSync(path);	
+    
+    console.log(files);
+    
+	var regRexIsInsert = /[\S]*.xcodeproj/;	
+	
+	for(var i in files){
+		var item = files[i];
+		var matchItem = item.match(regRexIsInsert);
+		if(matchItem !== null){
+			var projectName = matchItem[0];
+			projectName = projectName.substring(0,projectName.length - 10);
+ 			console.log(projectName);
+			return projectName;
+		}
+	}
+
+	
+	return null;	
+ }
+ 
 module.exports = function (context) {
 
     var path = context.requireCordovaModule('path'),
@@ -36,14 +59,27 @@ module.exports = function (context) {
         }
     } else {
 
-
         consoleLogInfo("ios running uninstall script ...");
 
-        var appdelegateFileH = projectRoot + "/platforms/ios/jmessage/Classes/AppDelegate.h";
-        var appdelegateFileM = projectRoot + "/platforms/ios/jmessage/Classes/AppDelegate.m";
+		var iosProjectName = findIosProjectName(fs,projectRoot + "/platforms/ios/");
+		
+		consoleLogInfo("ios project name is" + iosProjectName);
+		
+		if(iosProjectName == null){
+			consoleLogError("can not find ios project");
+			return;
+		}		
+		var iosProjectPath = projectRoot + "/platforms/ios/" + iosProjectName;
 
-        var appdelegateFileH_backup = projectRoot + "/platforms/ios/jmessage/Classes/AppDelegate_JM_backup_H";
-        var appdelegateFileM_backup = projectRoot + "/platforms/ios/jmessage/Classes/AppDelegate_JM_backup_M";
+        var appdelegateFileH = iosProjectPath + "/Classes/AppDelegate.h";
+        var appdelegateFileM =  iosProjectPath + "/Classes/AppDelegate.m";
+        
+
+        var appdelegateFileH_backup = iosProjectPath + "/Classes/AppDelegate_JM_backup_H";
+        var appdelegateFileM_backup = iosProjectPath + "/Classes/AppDelegate_JM_backup_M";
+
+        console.log(appdelegateFileM_backup);
+
 
         fs.readFile(appdelegateFileH_backup, {encoding: 'utf-8', flag: 'r'}, function (err, data) {
             if (err) {
@@ -63,8 +99,6 @@ module.exports = function (context) {
             consoleLogInfo("restore 'Appdelegate.m' from backup file:" + appdelegateFileM_backup);
         });
 
-        //removeCode(appdelegateFileH,appdelegateFileH,fs,AppDelegateHeaderRegExp);
-        //removeCode(appdelegateFileM,appdelegateFileM,fs,AppDelegateSourceRegExp);
     }
 };
 
@@ -72,7 +106,6 @@ function test() {
     var fs = require('fs');
     var appdelegateFileH = "./AppDelegate.h";
     var appdelegateFileM = "./AppDelegate.m";
-
 
     var appdelegateFileH_backup = "./AppDelegate_JM_backup_H";
     var appdelegateFileM_backup = "./AppDelegate_JM_backup_M";

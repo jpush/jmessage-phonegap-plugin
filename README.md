@@ -34,21 +34,20 @@ iOS平台：xcode 版本 7.2
 Android 平台：Android Studio 1.5
 
 
-
-
 ## 安装
 
-在线安装
+下载代码后，在本地安装（推荐）
 
 ```sh
-cordova plugin add  https://github.com/jpush/jmessage-phonegap-plugin.git --variable APP_KEY="<your app key>"
+cordova plugin add  <jmessage-phonegap-plugin路径>   --variable APP_KEY=<your app key>
 ```
 
-或 下载代码后，在本地安装
+或 在线安装（文件比较大，网速慢的情况下慎用这种方式）
 
 ```sh
-cordova plugin add  <jmessage-phonegap-plugin路径>   --variable APP_KEY="<your app key>"
+cordova plugin add  https://github.com/jpush/jmessage-phonegap-plugin.git --variable APP_KEY=<your app key>
 ```
+
 
 
 
