@@ -8,9 +8,7 @@
 **jmessage-phonegap-plugin**  除了支持IM 功能外，还集成了原 [**jpush-phonegap-plugin**](https://github.com/jpush/jpush-phonegap-plugin) 插件,  支持消息推送功能。
 
 
-
-
-***功能和特性：***
+**功能和特性：**
 
 IM
 + 用户注册/登录
@@ -34,7 +32,6 @@ cordova 版本 5.4.0
 iOS平台：xcode 版本 7.2
 
 Android 平台：Android Studio 1.5
-
 
 
 
