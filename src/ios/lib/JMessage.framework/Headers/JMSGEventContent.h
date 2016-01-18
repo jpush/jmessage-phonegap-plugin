@@ -12,21 +12,6 @@
 #import <Foundation/Foundation.h>
 #import <JMessage/JMSGAbstractContent.h>
 
-/*!
- * 事件类型
- */
-typedef NS_ENUM(NSInteger, JMSGEventNotificationType) {
-  /// 事件类型: 登录被踢
-  kJMSGEventNotificationLoginKicked = 1,
-  /// 事件类型: 群组被创建
-  kJMSGEventNotificationCreateGroup = 8,
-  /// 事件类型: 退出群组
-  kJMSGEventNotificationExitGroup = 9,
-  /// 事件类型: 添加新成员
-  kJMSGEventNotificationAddGroupMembers = 10,
-  /// 事件类型: 成员被踢出
-  kJMSGEventNotificationRemoveGroupMembers = 11,
-};
 
 
 /*!

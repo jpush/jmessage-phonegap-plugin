@@ -234,12 +234,33 @@ function insertCodeForAppdelegateM(inputFile, outputFile, fs) {
     })
 }
 
+function findIosProjectName(fs, path){
+
+    var files = fs.readdirSync(path);	
+        
+	var regRexIsInsert = /[\S]*.xcodeproj/;	
+	
+	for(var i in files){
+		var item = files[i];
+		var matchItem = item.match(regRexIsInsert);
+		if(matchItem !== null){
+			var projectName = matchItem[0];
+			projectName = projectName.substring(0,projectName.length - 10);
+			return projectName;
+		}
+	}
+
+	
+	return null;	
+ }
+
+
 module.exports = function (context) {
 
     var path = context.requireCordovaModule('path'),
         fs = context.requireCordovaModule('fs'),
         shell = context.requireCordovaModule('shelljs'),
-        projectRoot = context.opts.projectRoot;
+        projectRoot = context.opts.projectRoot;                 
 
     // android platform available?
     if (context.opts.cordova.platforms.indexOf("ios") === -1) {
@@ -255,21 +276,33 @@ module.exports = function (context) {
     } else {
         consoleLogInfo("ios running install script...");
 
-        var appdelegateFileH = projectRoot + "/platforms/ios/jmessage/Classes/AppDelegate.h";
-        var appdelegateFileM = projectRoot + "/platforms/ios/jmessage/Classes/AppDelegate.m";
+		var iosProjectName = findIosProjectName(fs,projectRoot + "/platforms/ios/");
+		
+		consoleLogInfo("ios project name is" + iosProjectName);
+		
+		if(iosProjectName == null){
+			consoleLogError("can not find ios project, please setup AppDelegate.h AppDelegate.m by handle");
+			return;
+		}		
+		
+		var iosProjectPath = projectRoot + "/platforms/ios/" + iosProjectName;
+
+        var appdelegateFileH = iosProjectPath + "/Classes/AppDelegate.h";
+        var appdelegateFileM =  iosProjectPath + "/Classes/AppDelegate.m";
+        
+        console.log(appdelegateFileM);
 
         fs.readFile(appdelegateFileH, {encoding: 'utf-8', flag: 'r'}, function (err, data) {
-            fs.writeFileSync(projectRoot + "/platforms/ios/jmessage/Classes/AppDelegate_JM_backup_H", data);
+            fs.writeFileSync(iosProjectPath + "/Classes/AppDelegate_JM_backup_H", data);
         });
         fs.readFile(appdelegateFileM, {encoding: 'utf-8', flag: 'r'}, function (err, data) {
-            fs.writeFileSync(projectRoot + "/platforms/ios/jmessage/Classes/AppDelegate_JM_backup_M", data);
+            fs.writeFileSync(iosProjectPath + "/Classes/AppDelegate_JM_backup_M", data);
         });
 
         insertCodeForAppdelegateH(appdelegateFileH, appdelegateFileH, fs);
         insertCodeForAppdelegateM(appdelegateFileM, appdelegateFileM, fs);
 
         consoleLogInfo("ios running install script done");
-
     }
 };
 

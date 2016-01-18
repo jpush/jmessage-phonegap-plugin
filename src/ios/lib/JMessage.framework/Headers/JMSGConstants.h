@@ -107,14 +107,6 @@ typedef NS_ENUM(NSInteger, JMSGConversationType) {
   kJMSGConversationTypeGroup = 2,
 };
 
-//NSString *JMSGConversationTypeStr(JMSGConversationType type) {
-//  if (type == kJMSGConversationTypeSingle) {
-//    return @"conversationSingle";
-//  } else {
-//    return @"conversationGroup";
-//  }
-//}
-
 /*!
  * 消息内容类型 - 文本、语音、图片等
  */
@@ -133,24 +125,6 @@ typedef NS_ENUM(NSInteger, JMSGContentType) {
   kJMSGContentTypeEventNotification = 5,
 };
 
-//NSString *JMSGContentTypeStr(JMSGContentType type) {
-//  switch (type) {
-//    case kJMSGContentTypeUnknown:
-//      return @"未知类型";
-//    case kJMSGContentTypeText:
-//      return @"文本消息";
-//    case kJMSGContentTypeImage:
-//      return @"图片消息";
-//    case kJMSGContentTypeVoice:
-//      return @"语音消息";
-//    case kJMSGContentTypeCustom:
-//      return @"自定义消息";
-//    case kJMSGContentTypeEventNotification:
-//      return @"事件通知消息";
-//    default:
-//      break;
-//  }
-//}
 
 
 /*!
@@ -190,15 +164,21 @@ typedef NS_ENUM(NSInteger, JMSGFileType) {
   kJMSGFileTypeVoice,
 };
 
-//NSString *JMSGFileTypeStr(JMSGFileType type) {
-//  if (type == kJMSGFileTypeUnknown) {
-//    return @"未知文件类型";
-//  } else if (type == kJMSGFileTypeImage){
-//    return @"图片";
-//  } else {
-//    return @"语音";
-//  }
-//}
+/*!
+ * 通知事件类型
+ */
+typedef NS_ENUM(NSInteger, JMSGEventNotificationType) {
+  /// 事件类型: 登录被踢
+  kJMSGEventNotificationLoginKicked = 1,
+  /// 事件类型: 群组被创建
+  kJMSGEventNotificationCreateGroup = 8,
+  /// 事件类型: 退出群组
+  kJMSGEventNotificationExitGroup = 9,
+  /// 事件类型: 添加新成员
+  kJMSGEventNotificationAddGroupMembers = 10,
+  /// 事件类型: 成员被踢出
+  kJMSGEventNotificationRemoveGroupMembers = 11,
+};
 
 ///----------------------------------------------------
 /// @name errors

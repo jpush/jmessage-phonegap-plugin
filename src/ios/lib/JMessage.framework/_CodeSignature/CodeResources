@@ -6,15 +6,15 @@
 	<dict>
 		<key>Headers/JMSGAbstractContent.h</key>
 		<data>
-		l+WJyEDDYoTfxj/75yFAkHsDMKE=
+		sWnb8XrpWeNz1xrAQ6lK50IKXf0=
 		</data>
 		<key>Headers/JMSGConstants.h</key>
 		<data>
-		DGs7Ou40XGgIN166cAmm8vccyeY=
+		oX95rwtXbZ3/GiznMlpQ249hH/g=
 		</data>
 		<key>Headers/JMSGConversation.h</key>
 		<data>
-		rPTg+ibwgb8En8nv3BGcHBGUFwc=
+		LdRyTgGP+tS+bi4SnzUtALGc5ZU=
 		</data>
 		<key>Headers/JMSGConversationDelegate.h</key>
 		<data>
@@ -30,7 +30,7 @@
 		</data>
 		<key>Headers/JMSGEventContent.h</key>
 		<data>
-		nr7tJ2zzDlX7TFlh2nkx69CWki0=
+		oZ/6x9wyAwhrPuo/ROgokr6i3Vs=
 		</data>
 		<key>Headers/JMSGGroup.h</key>
 		<data>
@@ -74,7 +74,7 @@
 		</data>
 		<key>Headers/JMessage.h</key>
 		<data>
-		+HqPpAmnvnUL5HYmIfI1GCxpzr8=
+		IB1EypTgvUcPOu7b4rDFTsOeEU0=
 		</data>
 		<key>Headers/JMessageDelegate.h</key>
 		<data>
@@ -82,11 +82,11 @@
 		</data>
 		<key>Headers/JPUSHService.h</key>
 		<data>
-		E1oQ01nZCabUtN5hY7PgBCcA9IA=
+		wxbkaiauMXlcRiumKzMCCVNpSOc=
 		</data>
 		<key>Info.plist</key>
 		<data>
-		FeShLChsONd5wHmxNE6Il6NcrqI=
+		JcH2ULHGHT3YmzEScjHgacYpypw=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -97,15 +97,15 @@
 	<dict>
 		<key>Headers/JMSGAbstractContent.h</key>
 		<data>
-		l+WJyEDDYoTfxj/75yFAkHsDMKE=
+		sWnb8XrpWeNz1xrAQ6lK50IKXf0=
 		</data>
 		<key>Headers/JMSGConstants.h</key>
 		<data>
-		DGs7Ou40XGgIN166cAmm8vccyeY=
+		oX95rwtXbZ3/GiznMlpQ249hH/g=
 		</data>
 		<key>Headers/JMSGConversation.h</key>
 		<data>
-		rPTg+ibwgb8En8nv3BGcHBGUFwc=
+		LdRyTgGP+tS+bi4SnzUtALGc5ZU=
 		</data>
 		<key>Headers/JMSGConversationDelegate.h</key>
 		<data>
@@ -121,7 +121,7 @@
 		</data>
 		<key>Headers/JMSGEventContent.h</key>
 		<data>
-		nr7tJ2zzDlX7TFlh2nkx69CWki0=
+		oZ/6x9wyAwhrPuo/ROgokr6i3Vs=
 		</data>
 		<key>Headers/JMSGGroup.h</key>
 		<data>
@@ -165,7 +165,7 @@
 		</data>
 		<key>Headers/JMessage.h</key>
 		<data>
-		+HqPpAmnvnUL5HYmIfI1GCxpzr8=
+		IB1EypTgvUcPOu7b4rDFTsOeEU0=
 		</data>
 		<key>Headers/JMessageDelegate.h</key>
 		<data>
@@ -173,7 +173,7 @@
 		</data>
 		<key>Headers/JPUSHService.h</key>
 		<data>
-		E1oQ01nZCabUtN5hY7PgBCcA9IA=
+		wxbkaiauMXlcRiumKzMCCVNpSOc=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
