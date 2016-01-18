@@ -11,30 +11,27 @@
 //  Created by liangjianguo
 //
 
+
+
+
+
 #import "JMessageHelper.h"
-
-
-
 
 
 @implementation JMessageHelper
 
 -(void)initJMessage:(NSDictionary*)launchOptions
 {
-  //read appkey and channel
+  //read appkey and channel from JMessageConfig.plist
   
   NSString *plistPath = [[NSBundle mainBundle] pathForResource:@"JMessageConfig" ofType:@"plist"];
   NSMutableDictionary *plistData = [[NSMutableDictionary alloc] initWithContentsOfFile:plistPath];
-  
   NSString * appkey = [plistData valueForKey:@"APP_KEY"];
   NSString * channel = [plistData valueForKey:@"CHANNEL"];
-  
   if (!appkey || appkey.length == 0) {
     NSLog(@"error: have to set appkey in JMessageConfig.plist ");
     assert(0);
   }
-
-  
   // init third-party SDK
   [JMessage addDelegate:self withConversation:nil];
   [JMessage setupJMessage:launchOptions
@@ -46,33 +43,34 @@
                                                     UIUserNotificationTypeAlert)
                                         categories:nil];
   
+  [JMessage setDebugMode];
   [self registerJPushStatusNotification];
 }
 
 
 
 - (void)registerJPushStatusNotification {
-    NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
+  NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
   
   
-    [defaultCenter addObserver:self
-                      selector:@selector(receivePushMessage:)
-                          name:kJPFNetworkDidReceiveMessageNotification
-                        object:nil];
-    
+  [defaultCenter addObserver:self
+                    selector:@selector(receivePushMessage:)
+                        name:kJPFNetworkDidReceiveMessageNotification
+                      object:nil];
+  
 }
 
 
 // notification from JPush
 - (void)receivePushMessage:(NSNotification *)notification {
-    NSLog(@"Event - receivePushMessage");
-    
-    NSDictionary *info = notification.userInfo;
-    if (info) {
-        NSLog(@"The message - %@", info);
-    } else {
-        NSLog(@"Unexpected - no user info in jpush mesasge");
-    }
+  NSLog(@"Event - receivePushMessage");
+  
+  NSDictionary *info = notification.userInfo;
+  if (info) {
+    NSLog(@"The message - %@", info);
+  } else {
+    NSLog(@"Unexpected - no user info in jpush mesasge");
+  }
   [[NSNotificationCenter defaultCenter] postNotificationName:kJJPushReceiveMessage
                                                       object:info];
   
@@ -89,9 +87,7 @@
   
   NSLog(@"onReceiveMessage");
   NSMutableDictionary * dict = [NSMutableDictionary new];
-  
-  [dict setValue:jsonString forKey:@"content"];
-  
+  [dict setValue:jsonString forKey:KEY_CONTENT];
   [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageReceiveMessage
                                                       object:dict];
 }
@@ -100,55 +96,54 @@
 - (void)onSendMessageResponse:(JMSGMessage *)message
                         error:(NSError *)error
 {
-    NSLog(@"onSendMessageResponse");
-    
-    NSMutableDictionary * dict = [NSMutableDictionary new];
-    [dict setValue:message.msgId forKey:@"msgId"];
-    
-    if (error == nil) {
-        [dict setValue:@"send message sucess" forKey:@"respone"];
-    }else{
-        [dict setValue:@"send message fail" forKey:@"respone"];
-        [dict setValue:[NSNumber numberWithLong:error.code] forKey:@"error"];
-        [dict setValue:error.description forKey:@"error"];
-    }
-    
-    [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageSendSingleMessageRespone
-                                                        object:dict];
+  NSLog(@"onSendMessageResponse");
+  
+  NSMutableDictionary * dict = [NSMutableDictionary new];
+  [dict setValue:message.msgId forKey:KEY_MSGID];
+  
+  if (error == nil) {
+    [dict setValue:@"send message sucess" forKey:KEY_RESPONE];
+  }else{
+    [dict setValue:@"send message fail" forKey:KEY_RESPONE];
+    [dict setValue:[NSNumber numberWithLong:error.code] forKey:KEY_ERRORCODE];
+    [dict setValue:error.description forKey:KEY_ERRORDESCRIP];
+  }
+  [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageSendSingleMessageRespone
+                                                      object:dict];
 }
 
 
 - (void)onReceiveMessageDownloadFailed:(JMSGMessage *)message
 {
-    NSLog(@"onReceiveMessageDownloadFailed");
+  NSLog(@"onReceiveMessageDownloadFailed");
 }
 
 
 - (void)onConversationChanged:(JMSGConversation *)conversation
 {
-    NSLog(@"onConversationChanged");
-    
-    NSMutableDictionary * dict = [NSMutableDictionary new];
-    
-    JMSGUser *user = conversation.target;
-    int nGender = (int) user.gender;
-    
-    [dict setValue:user.username forKey:@"targetId"];
-    [dict setValue:user.nickname  forKey:@"nickname"];
-    [dict setValue:user.avatar forKey:@"avatar"];
-    [dict setValue:[NSNumber numberWithInt:nGender] forKey:@"gender"];
-    
-    [dict setValue:conversation.latestMessageContentText forKey:@"lastMessage"];
-    [dict setValue:conversation.unreadCount forKey:@"unreadCount"];
-    
-    [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageConversationChange
-                                                        object:dict];
+  NSLog(@"onConversationChanged");
+  
+  NSMutableDictionary * dict = [NSMutableDictionary new];
+  
+  JMSGUser *user = conversation.target;
+  int nGender = (int) user.gender;
+  
+  [dict setValue:user.username forKey:KEY_TARGETID];
+  [dict setValue:user.nickname  forKey:KEY_NICKNAME];
+  [dict setValue:user.avatar forKey:KEY_AVATAR];
+  [dict setValue:[NSNumber numberWithInt:nGender] forKey:KEY_GENDER];
+  
+  [dict setValue:conversation.latestMessageContentText forKey:KEY_LASTMESSAGE];
+  [dict setValue:conversation.unreadCount forKey:KEY_UNREADCOUNT];
+  
+  [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageConversationChange
+                                                      object:dict];
   
 }
 
 - (void)onUnreadChanged:(NSUInteger)newCount
 {
-    NSLog(@"onUnreadChanged");
+  NSLog(@"onUnreadChanged");
 }
 
 
@@ -183,6 +178,5 @@
   return str;
 }
 
-//------------------------------JMessage end-----------------------------------
 
 @end

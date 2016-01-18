@@ -18,7 +18,7 @@
 
 
 
-@interface JMessagePlugin : CDVPlugin<JMessageDelegate>
+@interface JMessagePlugin : CDVPlugin
 
 //JMessage Interface
 
@@ -33,7 +33,6 @@
 
 
 - (void)initPush:(CDVInvokedUrlCommand *)command;
-
 - (void)setTagsWithAlias:(CDVInvokedUrlCommand *)command;
 - (void)setTags:(CDVInvokedUrlCommand *)command;
 - (void)setAlias:(CDVInvokedUrlCommand *)command;
