@@ -1,3 +1,17 @@
+//	            __    __                ________
+//	| |    | |  \ \  / /  | |    | |   / _______|
+//	| |____| |   \ \/ /   | |____| |  / /
+//	| |____| |    \  /    | |____| |  | |   _____
+//	| |    | |    /  \    | |    | |  | |  |____ |
+//  | |    | |   / /\ \   | |    | |  \ \______| |
+//  | |    | |  /_/  \_\  | |    | |   \_________|
+//
+//	Copyright (c) 2012年 HXHG. All rights reserved.
+//	http://www.jpush.cn
+//  Created by liangjianguo
+//
+
+
 package cn.jmessage.phonegap;
 
 import java.lang.reflect.Method;
@@ -46,6 +60,7 @@ import android.util.Log;
 public class JMessagePlugin extends CordovaPlugin {
 	private final static List<String> methodList = 
 			Arrays.asList(
+          "initPush",
 					"userRegister",
 					"userLogin",
 					"userLogout",
@@ -87,7 +102,7 @@ public class JMessagePlugin extends CordovaPlugin {
 	
 	private ExecutorService threadPool = Executors.newFixedThreadPool(1);
 	private static JMessagePlugin instance;
-    private static String TAG = "--- JMessagePlugin";
+    private static String TAG = "JMessagePlugin";
 
 	private  static  boolean shouldCacheMsg = false;
 
@@ -130,6 +145,7 @@ public class JMessagePlugin extends CordovaPlugin {
 		//可以在这里创建Notification
 		if (msg.getTargetType() == ConversationType.single) {
 			JSONObject obj=  this.getJSonFormMessage(msg);
+			Log.i(TAG,"@@@"+obj.toString());
 
 			PluginResult dataResult = new PluginResult(PluginResult.Status.OK,obj);
             dataResult.setKeepCallback(true);
@@ -189,6 +205,11 @@ public class JMessagePlugin extends CordovaPlugin {
 			}
 		}
 	}
+  
+  void initPush(JSONArray data,CallbackContext callbackContext){
+    JPushInterface.init(this.cordova.getActivity().getApplicationContext());
+    //callbackContext.success();
+  }
 
 	//jmessage method
 
@@ -319,7 +340,8 @@ public class JMessagePlugin extends CordovaPlugin {
 			jsonItem.put("target_id", targetUser.getUserID());
 			jsonItem.put("target_name", targetUser.getNickname());
 			jsonItem.put("from_id", fromUser.getUserID());
-			jsonItem.put("from_name", fromUser.getNickname());
+			//jsonItem.put("from_name", fromUser.getNickname());
+			jsonItem.put("from_name", msg.getFromName());
 			jsonItem.put("create_time", msg.getCreateTime());
 			jsonItem.put("msg_type", msgType);
 			//jsonItem.put("text", contentText);
@@ -332,7 +354,6 @@ public class JMessagePlugin extends CordovaPlugin {
 			e.printStackTrace();
 		}
 		return  jsonItem;
-
 	}
 
 	public  void getSingleConversationHistoryMessage(JSONArray data, CallbackContext callbackContext) {
@@ -364,6 +385,8 @@ public class JMessagePlugin extends CordovaPlugin {
 			for(int i = 0; i < list.size(); ++i){
 				Message msg = list.get(i);
 				JSONObject obj=  this.getJSonFormMessage(msg);
+
+
 				jsonRusult.put(obj);
 			}
 
@@ -460,13 +483,13 @@ public class JMessagePlugin extends CordovaPlugin {
 	public void setUserNickname(JSONArray data, CallbackContext callbackContext){
 		Log.i(TAG, "setUserNickname");
 		try {
-
 			String nickName = data.getString(0);
 			Log.i(TAG, "setUserNickname" + nickName);
 
 			UserInfo myUserInfo = JMessageClient.getMyInfo();
 			myUserInfo.setNickname(nickName);
-			this.setUserInfo(UserInfo.Field.nickname,myUserInfo,callbackContext);
+			this.setUserInfo(UserInfo.Field.nickname, myUserInfo, callbackContext);
+			callbackContext.success("update userinfo ok");
 
 		} catch (JSONException e) {
 			e.printStackTrace();

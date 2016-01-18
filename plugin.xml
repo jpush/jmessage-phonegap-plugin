@@ -10,11 +10,10 @@
     <keywords>JMessage, JPush</keywords>
     <license>Apache 2.0 License</license>
 
-    <preference name="API_KEY" />
+    <preference name="APP_KEY" />
 
     <engines>
         <engine name="cordova" version=">=3.0"/>
-<!--        文档说明 cordova 版本-->
     </engines>
     
     <js-module src="www/JMessagePlugin.js" name="JMessagePlugin">
@@ -37,6 +36,7 @@
             <source-file src="src/ios/Plugins/JMessagePlugin.m"/>
             <header-file src="src/ios/Plugins/JMessageHelper.h"/>
             <source-file src="src/ios/Plugins/JMessageHelper.m"/>
+            <resource-file src="src/ios/JMessageConfig.plist" />
             <framework src="src/ios/lib/JMessage.framework" custom="true" />
             <framework src="CFNetwork.framework" weak="true" />
             <framework src="CoreFoundation.framework" weak="true" />
@@ -48,7 +48,11 @@
             <framework src="Security.framework" weak="true" />
             <framework src="libz.tbd" weak="true" />
             <framework src="libsqlite3.0.tbd" weak="true" />
-<!--            文档中说明xcode 版本-->
+            
+            <config-file target="*JMessageConfig.plist" parent="APP_KEY">
+              <string>$APP_KEY</string>
+            </config-file>
+
         </platform>
     
     <platform name="android">
@@ -58,7 +62,7 @@
                 <param name="android-package" value="cn.jmessage.phonegap.JMessagePlugin"/>
             </feature>
         </config-file>
-        
+        <hook type="after_plugin_install" src="script/android-install.js" />
         <config-file target="AndroidManifest.xml" parent="/manifest">
             <!-- Required  一些系统要求的权限，如访问网络等-->
             <uses-permission android:name="$PACKAGE_NAME.permission.JPUSH_MESSAGE"/>
@@ -196,7 +200,7 @@
                 </intent-filter>
                 
             </service>
-            <meta-data android:name="JPUSH_APPKEY" android:value="$API_KEY"/>
+            <meta-data android:name="JPUSH_APPKEY" android:value="$APP_KEY"/>
             <meta-data android:name="JPUSH_CHANNEL" android:value="developer-default"/>
         </config-file>
 

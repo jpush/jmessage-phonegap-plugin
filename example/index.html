@@ -111,7 +111,17 @@
             }, function (response) {
                 var ss = JSON.stringify(response);
                 console.log("login callback fail" + ss);
-                alert("login fail");
+
+                alert("login fail. errcode:"+ response.errorCode + "  error discription:" +  response.errorDscription);
+
+                //error code 请参考 http://docs.jpush.io/client/im_errorcode/
+                console.log(device.platform);
+                console.log(response.errorCode);
+
+                 if(response.errorCode == "801003"){
+                    alert("用户未注册");
+                }
+
             });
         }
 
@@ -451,9 +461,12 @@
             window.plugins.jmessagePlugin.setUserNickname(nickname, function (response) {
                 console.log(response);
                 updataUserInfo();
+                alert("updata ok");
 
             }, function (response) {
                 console.log("updata nickname fail:" + response.errorDscription);
+                alert("updata fail");
+
             });
         }
 
@@ -462,10 +475,13 @@
             window.plugins.jmessagePlugin.setUserGender(gender, function (response) {
                 console.log(response);
                 updataUserInfo();
+                alert("updata ok");
 
 
             }, function (response) {
                 console.log("updata fail:" + response.errorDscription);
+                alert("updata fail");
+
             });
         }
 
@@ -499,13 +515,10 @@
         <div><h2></h2></div>
         <input type="button" onclick="login()" value="login"/>
         <div><h2></h2></div>
-        <div class="ui-grid-b">
+        <div class="ui-grid-a">
             <div class="ui-block-a">
-                <div><h2></h2></div>
             </div>
             <div class="ui-block-b">
-            </div>
-            <div class="ui-block-c">
                 <input type="button" onclick="gotoRegister()" value="register"/>
             </div>
         </div>
@@ -547,10 +560,12 @@
         <div data-role="content">
             <div class="ui-grid-b">
                 <div class="ui-block-c">
-                    <div data-role="controlgroup" data-type="horizontal" data-mini="true">
-                        <a href="#" data-role="button" data-iconpos="notext" data-icon="plus" data-theme="b"
-                           onclick="gotoAddConversation()">Add</a>
-                    </div>
+                    <!--<div data-role="controlgroup" data-type="horizontal" data-mini="true">-->
+                        <!--<a href="#" data-role="button" data-iconpos="notext" data-icon="plus" data-theme="b"-->
+                           <!--onclick="gotoAddConversation()">Add</a>-->
+                    <!--</div>-->
+                    <input type="button" onclick="gotoAddConversation()" value="add"/>
+
                 </div>
             </div>
             <div>

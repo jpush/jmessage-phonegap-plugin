@@ -1,9 +1,14 @@
+//	            __    __                ________
+//	| |    | |  \ \  / /  | |    | |   / _______|
+//	| |____| |   \ \/ /   | |____| |  / /
+//	| |____| |    \  /    | |____| |  | |   _____
+//	| |    | |    /  \    | |    | |  | |  |____ |
+//  | |    | |   / /\ \   | |    | |  \ \______| |
+//  | |    | |  /_/  \_\  | |    | |   \_________|
 //
-//  AppJMessage.m
-//  jmessage
-//
-//  Created by ljg on 15/12/28.
-//
+//	Copyright (c) 2012年 HXHG. All rights reserved.
+//	http://www.jpush.cn
+//  Created by liangjianguo
 //
 
 #import "JMessageHelper.h"
@@ -14,25 +19,36 @@
 
 @implementation JMessageHelper
 
-
-
 -(void)initJMessage:(NSDictionary*)launchOptions
 {
-    // init third-party SDK
-    [JMessage addDelegate:self withConversation:nil];
-    
-    [JMessage setupJMessage:launchOptions
-                     appKey:JMSSAGE_APPKEY
-                    channel:CHANNEL apsForProduction:NO
-                   category:nil];
-    
-    [JPUSHService registerForRemoteNotificationTypes:(UIUserNotificationTypeBadge |
-                                                      UIUserNotificationTypeSound |
-                                                      UIUserNotificationTypeAlert)
-                                          categories:nil];
+  //read appkey and channel
   
-    [self registerJPushStatusNotification];
+  NSString *plistPath = [[NSBundle mainBundle] pathForResource:@"JMessageConfig" ofType:@"plist"];
+  NSMutableDictionary *plistData = [[NSMutableDictionary alloc] initWithContentsOfFile:plistPath];
+  
+  NSString * appkey = [plistData valueForKey:@"APP_KEY"];
+  NSString * channel = [plistData valueForKey:@"CHANNEL"];
+  
+  if (!appkey || appkey.length == 0) {
+    NSLog(@"error: have to set appkey in JMessageConfig.plist ");
+    assert(0);
+  }
+
+  
+  // init third-party SDK
+  [JMessage addDelegate:self withConversation:nil];
+  [JMessage setupJMessage:launchOptions
+                   appKey:appkey
+                  channel:channel apsForProduction:NO
+                 category:nil];
+  [JPUSHService registerForRemoteNotificationTypes:(UIUserNotificationTypeBadge |
+                                                    UIUserNotificationTypeSound |
+                                                    UIUserNotificationTypeAlert)
+                                        categories:nil];
+  
+  [self registerJPushStatusNotification];
 }
+
 
 
 - (void)registerJPushStatusNotification {
