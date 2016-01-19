@@ -203,7 +203,7 @@
 
         /////   conversation  ////////////
 
-
+        var tempMessageDataSource = new Array();
 
         $(document).on("pageshow", "#conversationPage", function () {
             console.log("conversationPage show   " + usernameForConversation);
@@ -216,7 +216,7 @@
             console.log("onReceiveSingleMessage ####");
 
             if (device.platform == "Android") {
-               message = window.plugins.jmessagePlugin.ReceiveMessageObj;
+                message = window.plugins.jmessagePlugin.ReceiveMessageObj;
             }
             var ss = JSON.stringify(message);
             console.log("++++" + ss);
@@ -229,18 +229,18 @@
             window.plugins.jmessagePlugin.sendSingleTextMessage(usernameForConversation, messageContentString, function (response) {
                 var ss = JSON.stringify(response);
                 console.log("send message sucess" + ss);
-                alert("send message had send");
                 var msg_body = new Object();
                 msg_body.text = messageContentString;
                 var dict = new Object();
                 dict.msg_type = "text";
                 dict.from_name = getUserDisplayName();
                 dict.msg_body = msg_body;
+                dict.create_time = new Date().getTime();
 
-                insertMessage(dict);
-
+                tempMessageDataSource.unshift(dict);
+                refreshConversation();
+                <!--insertMessage(dict);-->
             }, function (response) {
-
                 console.log("send message fail" + response);
                 alert("send message fail" + response);
             });
@@ -254,9 +254,20 @@
                 var lastMessage = dict.msg_body.text;
             }
             var fromName = dict.from_name;
-            var insertString = "<li>" + fromName + ": " + lastMessage + '</li>';
-            console.log(insertString);
+
+            var create_time = dict.create_time;
+            var create_time_sring = new Date(create_time).toLocaleString();
+
+            var insertString = "<li>" + create_time_sring + "<br>" + fromName + ":" + lastMessage + '</li>';
+            // console.log(insertString);
             $('#messageList').append(insertString).listview('refresh');
+        }
+
+        function  refreshConversation() {
+            $('#messageList').empty().listview('refresh');
+            for (var o in tempMessageDataSource) {
+                insertMessage(tempMessageDataSource[o]);
+            }
         }
 
         function getMessageHistory(username) {
@@ -267,10 +278,11 @@
 
                 var ss = JSON.stringify(response);
                 console.log("getMessageHistory ok: " + ss);
-
-                for (var o in response) {
-                    insertMessage(response[o]);
-                }
+                <!--for (var o in response) {-->
+                <!--insertMessage(response[o]);-->
+                <!--}-->
+                tempMessageDataSource = response;
+                refreshConversation();
             }, function (response) {
                 alert("getMessageHistory failed");
                 console.log("getMessageHistory fail" + response);

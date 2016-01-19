@@ -11,6 +11,7 @@ JMessagePlugin.init()
 ```
 
 + 注册
+
 ```sh
   JMessagePlugin.register(username, password, success, fail)
 ```

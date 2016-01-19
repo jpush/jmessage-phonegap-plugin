@@ -8,6 +8,16 @@ var JMessagePlugin = function () {
     this.ReceiveMessageObj = "";
 };
 
+
+JMessagePlugin.prototype.init = function () {
+    console.log("JMessagePlugin onDeviceReady");
+
+    if (device.platform == "Android") {
+        this.setReceiveMessageCallbackChannel();
+        this.setReceivePushCallbackChannel();
+    }
+};
+
 JMessagePlugin.prototype.register = function (username, password, success, fail) {
     cordova.exec(success, fail, "JMessagePlugin", "userRegister", [username, password]);
 };
@@ -146,15 +156,6 @@ JMessagePlugin.prototype.setReceivePushCallbackChannel = function () {
     cordova.exec(AndroidReceivePushCallback, fail, "JMessagePlugin", "setPushReceiveCallbackChannel", []);
 };
 
-
-JMessagePlugin.prototype.onDeviceReady = function () {
-    console.log("JMessagePlugin onDeviceReady");
-
-    if (device.platform == "Android") {
-        this.setReceiveMessageCallbackChannel();
-        this.setReceivePushCallbackChannel();
-    }
-};
 
 
 if (!window.plugins) {
