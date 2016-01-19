@@ -169,10 +169,6 @@ JPushPlugin.prototype.onReceiveNofiticationInAndroid = function (data) {
     cordova.fireDocumentEvent('jpush.receiveNotification', data);
 };
 
-JPushPlugin.prototype.onDeviceReady = function () {
-    console.log("--- JPushPlugin onDeviceReady");
-};
-
 
 //android single
 
