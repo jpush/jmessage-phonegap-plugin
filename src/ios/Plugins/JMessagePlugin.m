@@ -24,7 +24,8 @@
 @implementation JMessagePlugin
 
 
-+(NSMutableDictionary *)getDictionaryWithError:(NSInteger)error description:(NSString*)descriptionString {
++(NSMutableDictionary *)getDictionaryWithError:(NSInteger)error
+                                   description:(NSString*)descriptionString {
   NSMutableDictionary * dict = [NSMutableDictionary new];
   [dict setValue:[NSNumber numberWithLong:error] forKey:KEY_ERRORCODE];
   [dict setValue:descriptionString forKey:KEY_ERRORDESCRIP];
@@ -37,7 +38,9 @@
 }
 
 
--(void)commonResponeWithSucess:(NSString*)sucessString error:(NSError*)error callbackId:(NSString*)callbackId {
+-(void)commonResponeWithSucess:(NSString*)sucessString
+                         error:(NSError*)error
+                    callbackId:(NSString*)callbackId {
   WEAK_SELF(weak_self);
   CDVPluginResult* pluginResult = nil;
   if (error == nil) {
@@ -116,7 +119,10 @@
   }
 }
 
-- (void)setUserInfoWithFielType:(JMSGUserField)userFieldType val:(id)val sucessRespone:(NSString*)responeString callbackId:(NSString*)callbackId{
+- (void)setUserInfoWithFielType:(JMSGUserField)userFieldType
+                            val:(id)val
+                  sucessRespone:(NSString*)responeString
+                     callbackId:(NSString*)callbackId{
   WEAK_SELF(weak_self);
   [JMSGUser updateMyInfoWithParameter:val userFieldType:userFieldType completionHandler:^(id resultObject, NSError *error) {
     CDVPluginResult* pluginResult = nil;
@@ -349,7 +355,9 @@
 
 ///////////////////JPush////////////////////////
 
--(void)tagsWithAliasCallback:(int)resultCode tags:(NSSet *)tags alias:(NSString *)alias{
+-(void)tagsWithAliasCallback:(int)resultCode
+                        tags:(NSSet *)tags
+                       alias:(NSString *)alias{
   
   NSDictionary *dict=[NSDictionary dictionaryWithObjectsAndKeys:
                       [NSNumber numberWithInt:resultCode],@"resultCode",
@@ -515,7 +523,8 @@
 }
 
 
--(void)commonPushRespone:(NSString*)functionName jsonParm:(NSString*)jsonString{
+-(void)commonPushRespone:(NSString*)functionName
+                jsonParm:(NSString*)jsonString{
   [self.commandDelegate evalJs:[NSString stringWithFormat:@"%@.%@('%@')",Plugin_Push_Name,functionName,jsonString]];
 }
 

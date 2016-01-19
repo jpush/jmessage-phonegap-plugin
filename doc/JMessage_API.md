@@ -4,6 +4,12 @@
 JMessage API 在文件 JMessagePlugin.js 中定义
 
 
+
++ 初始化
+```sh
+JMessagePlugin.init()
+```
+
 + 注册
 ```sh
   JMessagePlugin.register(username, password, success, fail)
@@ -29,14 +35,13 @@ JMessagePlugin.setUserGender(gender,success, fail)
 JMessagePlugin.setUserNickname(nickname,success, fail)
 ```
 
-+ 消息
 
-发消息
++ 发消息
 ```sh
 JMessagePlugin.setUserGender(username, text,success, fail)
 ```
 
-收消息
++收消息
 **iOS**
 ```sh
 event  jmessage.singleReceiveMessage
@@ -45,6 +50,7 @@ JMessagePlugin.onSingleConversationMessageReceived(data){
 }
 ```
 **Android**
+
 ```sh
 通过 event jmessage.singleReceiveMessage 通知
 消息存在 window.plugins.jmessagePlugin.ReceiveMessageObj 中
@@ -69,11 +75,7 @@ JMessagePlugin.getSingleHistoryMessage(username, from, limit, success, fail)
 ```
 
 
-+ 初始化时设置回调
 
-```sh
-JMessagePlugin.onDeviceReady()
-```
 
 
 
