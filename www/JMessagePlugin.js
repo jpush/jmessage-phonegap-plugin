@@ -13,8 +13,8 @@ JMessagePlugin.prototype.init = function () {
     console.log("JMessagePlugin onDeviceReady");
 
     if (device.platform == "Android") {
-        this.setReceiveMessageCallbackChannel();
-        this.setReceivePushCallbackChannel();
+        this.setAndroidReceiveMessageCallbackChannel();
+        this.setAndroidReceivePushCallbackChannel();
     }
 };
 
@@ -66,19 +66,19 @@ JMessagePlugin.prototype.deleteSingleConversation = function (username, success,
 };
 
 
-function onSingleConversationMessageReceivedInAndroid(response) {
-    cordova.fireDocumentEvent('jmessage.singleReceiveMessage', response);
-}
+JMessagePlugin.prototype.onReceivedSingleConversationMessage = function (data) {
+    if (device.platform == "Android") {
+        var bToObj = window.plugins.jmessagePlugin.ReceiveMessageObj;
+    } else {
 
-//iOS receive msg
-JMessagePlugin.prototype.onSingleConversationMessageReceived = function (data) {
-    try {
-        var bToObj = JSON.parse(data);
-        cordova.fireDocumentEvent('jmessage.singleReceiveMessage', bToObj);
+        try {
+             bToObj = JSON.parse(data);
+        }
+        catch (exception) {
+            console.log("onSingleConversationMessageReceived " + exception);
+        }
     }
-    catch (exception) {
-        console.log("onSingleConversationMessageReceived " + exception);
-    }
+    cordova.fireDocumentEvent('jmessage.singleReceiveMessage', bToObj);
 };
 
 JMessagePlugin.prototype.onSingleConversationChanged = function (data) {
@@ -102,14 +102,16 @@ JMessagePlugin.prototype.onSendSingleTextMessage = function (data) {
     }
 };
 
-///////////////// android only method /////////////////////
+//private function
 
+////////////////// handle android IM  callback ///////////////////
 
-JMessagePlugin.prototype.setReceiveMessageCallbackChannel = function () {
+JMessagePlugin.prototype.setAndroidReceiveMessageCallbackChannel = function () {
 
     function AndroidReceiveMessageCallback(message) {
         window.plugins.jmessagePlugin.ReceiveMessageObj = message;
-        cordova.fireDocumentEvent('jmessage.singleReceiveMessage', null);
+        window.plugins.jmessagePlugin.onReceivedSingleConversationMessage(null);
+        //cordova.fireDocumentEvent('jmessage.singleReceiveMessage', null);
     }
 
     function fail() {
@@ -122,8 +124,9 @@ JMessagePlugin.prototype.setReceiveMessageCallbackChannel = function () {
 
 
 ////////////////// handle android receive push ///////////////////
-
-JMessagePlugin.prototype.setReceivePushCallbackChannel = function () {
+//TODO:fix this
+// 这个本应放到JPushPlugin.js 中的实现,但放到 JPushPlugin.js 无法触发,所以放到这里
+JMessagePlugin.prototype.setAndroidReceivePushCallbackChannel = function () {
 
     function AndroidReceivePushCallback(bToObj) {
         console.log("### android receive push message");
@@ -145,12 +148,12 @@ JMessagePlugin.prototype.setReceivePushCallbackChannel = function () {
             window.plugins.jPushPlugin.onReceiveNofiticationInAndroid(realData);
         }
         else {
-
+            console.log("unknow push type");
         }
     }
 
     function fail() {
-        console.log("--- setPushReceiveCallbackChannel  faild");
+        console.log("setPushReceiveCallbackChannel  faild");
     }
 
     cordova.exec(AndroidReceivePushCallback, fail, "JMessagePlugin", "setPushReceiveCallbackChannel", []);

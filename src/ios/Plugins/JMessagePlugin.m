@@ -373,7 +373,7 @@
   NSString *jsonString = [userInfo valueForKey:KEY_CONTENT];
   NSLog(@"JMessage didReceiveJMessageMessage  %@",jsonString);
   dispatch_async(dispatch_get_main_queue(), ^{
-    [self commonSendMessage:@"onSingleConversationMessageReceived" jsonParm:jsonString];
+    [self commonSendMessage:@"onReceivedSingleConversationMessage" jsonParm:jsonString];
   });
 }
 

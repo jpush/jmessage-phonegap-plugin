@@ -9,6 +9,12 @@ JPushPlugin.prototype.openNotification = {};
 JPushPlugin.prototype.receiveNotification = {};
 
 
+JPushPlugin.prototype.init = function () {
+    var data = [];
+    this.call_native("initPush",data,null);
+};
+
+
 JPushPlugin.prototype.isPlatformIOS = function () {
     return device.platform == "iPhone" || device.platform == "iPad" || device.platform == "iPod touch" || device.platform == "iOS"
 };
@@ -105,9 +111,9 @@ JPushPlugin.prototype.setBadge = function (value) {
         catch (exception) {
             console.log(exception);
         }
-
     }
 };
+
 JPushPlugin.prototype.resetBadge = function () {
 
     if (this.isPlatformIOS()) {
@@ -126,14 +132,15 @@ JPushPlugin.prototype.setDebugModeFromIos = function () {
         var data = [];
         this.call_native("setDebugModeFromIos", [data], null);
     }
-
 };
+
 JPushPlugin.prototype.setLogOFF = function () {
     if (this.isPlatformIOS()) {
         var data = [];
         this.call_native("setLogOFF", [data], null);
     }
 };
+
 //////////////iOS push callback////////////////////
 
 JPushPlugin.prototype.onReceiveMessageIniOS = function (data) {
@@ -228,11 +235,6 @@ JPushPlugin.prototype.isPushStopped = function (callback) {
     this.call_native("isPushStopped", data, callback)
 };
 
-JPushPlugin.prototype.init = function () {
-    var data = [];
-    this.call_native("initPush",data,null);
-};
-
 JPushPlugin.prototype.setDebugMode = function (mode) {
     if (device.platform == "Android") {
         this.call_native("setDebugMode", [mode], null);
@@ -250,6 +252,7 @@ JPushPlugin.prototype.removeLocalNotification = function (notificationID) {
         this.call_native("removeLocalNotification", [notificationID], null);
     }
 };
+
 JPushPlugin.prototype.clearLocalNotifications = function () {
     if (device.platform == "Android") {
         data = [];
