@@ -1,4 +1,7 @@
-var JMessagePlugin = function () {
+
+
+
+ var JMessagePlugin = function () {
 
     console.log("JMessagePlugin init");
     this.username = "";
@@ -6,6 +9,16 @@ var JMessagePlugin = function () {
     this.gender = 0;
     this.avatarUrl = "";
     this.ReceiveMessageObj = "";
+};
+
+
+JMessagePlugin.prototype.init = function () {
+    console.log("JMessagePlugin init");
+
+    if (device.platform == "Android") {
+        this.setReceiveMessageCallbackChannel();
+        this.setReceivePushCallbackChannel();
+    }
 };
 
 JMessagePlugin.prototype.register = function (username, password, success, fail) {
@@ -56,19 +69,19 @@ JMessagePlugin.prototype.deleteSingleConversation = function (username, success,
 };
 
 
-function onSingleConversationMessageReceivedInAndroid(response) {
-    cordova.fireDocumentEvent('jmessage.singleReceiveMessage', response);
-}
+JMessagePlugin.prototype.onReceivedSingleConversationMessage = function (data) {
+    if (device.platform == "Android") {
+        var bToObj = window.plugins.jmessagePlugin.ReceiveMessageObj;
+    } else {
 
-//iOS receive msg
-JMessagePlugin.prototype.onSingleConversationMessageReceived = function (data) {
-    try {
-        var bToObj = JSON.parse(data);
-        cordova.fireDocumentEvent('jmessage.singleReceiveMessage', bToObj);
+        try {
+             bToObj = JSON.parse(data);
+        }
+        catch (exception) {
+            console.log("onSingleConversationMessageReceived " + exception);
+        }
     }
-    catch (exception) {
-        console.log("onSingleConversationMessageReceived " + exception);
-    }
+    cordova.fireDocumentEvent('jmessage.singleReceiveMessage', bToObj);
 };
 
 JMessagePlugin.prototype.onSingleConversationChanged = function (data) {
@@ -99,7 +112,8 @@ JMessagePlugin.prototype.setReceiveMessageCallbackChannel = function () {
 
     function AndroidReceiveMessageCallback(message) {
         window.plugins.jmessagePlugin.ReceiveMessageObj = message;
-        cordova.fireDocumentEvent('jmessage.singleReceiveMessage', null);
+        window.plugins.jmessagePlugin.onReceivedSingleConversationMessage(null);
+        //cordova.fireDocumentEvent('jmessage.singleReceiveMessage', null);
     }
 
     function fail() {
@@ -146,15 +160,6 @@ JMessagePlugin.prototype.setReceivePushCallbackChannel = function () {
     cordova.exec(AndroidReceivePushCallback, fail, "JMessagePlugin", "setPushReceiveCallbackChannel", []);
 };
 
-
-JMessagePlugin.prototype.onDeviceReady = function () {
-    console.log("JMessagePlugin onDeviceReady");
-
-    if (device.platform == "Android") {
-        this.setReceiveMessageCallbackChannel();
-        this.setReceivePushCallbackChannel();
-    }
-};
 
 
 if (!window.plugins) {

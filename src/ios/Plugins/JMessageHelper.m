@@ -12,10 +12,8 @@
 //
 
 
-
-
-
 #import "JMessageHelper.h"
+#import "ConstantDef.h"
 
 
 @implementation JMessageHelper
@@ -23,13 +21,17 @@
 -(void)initJMessage:(NSDictionary*)launchOptions
 {
   //read appkey and channel from JMessageConfig.plist
+  NSString *plistPath = [[NSBundle mainBundle] pathForResource:JMessageConfigFileName ofType:@"plist"];
+  if (plistPath == nil) {
+    NSLog(@"error: JMessageConfig.plist ");
+    assert(0);
+  }
   
-  NSString *plistPath = [[NSBundle mainBundle] pathForResource:@"JMessageConfig" ofType:@"plist"];
   NSMutableDictionary *plistData = [[NSMutableDictionary alloc] initWithContentsOfFile:plistPath];
-  NSString * appkey = [plistData valueForKey:@"APP_KEY"];
-  NSString * channel = [plistData valueForKey:@"CHANNEL"];
+  NSString * appkey = [plistData valueForKey:JM_APP_KEY];
+  NSString * channel = [plistData valueForKey:JM_APP_CHANNEL];
   if (!appkey || appkey.length == 0) {
-    NSLog(@"error: have to set appkey in JMessageConfig.plist ");
+    NSLog(@"error: app key not found in JMessageConfig.plist ");
     assert(0);
   }
   // init third-party SDK
@@ -43,7 +45,6 @@
                                                     UIUserNotificationTypeAlert)
                                         categories:nil];
   
-  [JMessage setDebugMode];
   [self registerJPushStatusNotification];
 }
 
@@ -51,7 +52,6 @@
 
 - (void)registerJPushStatusNotification {
   NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
-  
   
   [defaultCenter addObserver:self
                     selector:@selector(receivePushMessage:)
@@ -82,9 +82,7 @@
 - (void)onReceiveMessage:(JMSGMessage *)message
                    error:(NSError *)error;
 {
-  
   NSString * jsonString =  [message toJsonString];
-  
   NSLog(@"onReceiveMessage");
   NSMutableDictionary * dict = [NSMutableDictionary new];
   [dict setValue:jsonString forKey:KEY_CONTENT];
@@ -97,7 +95,6 @@
                         error:(NSError *)error
 {
   NSLog(@"onSendMessageResponse");
-  
   NSMutableDictionary * dict = [NSMutableDictionary new];
   [dict setValue:message.msgId forKey:KEY_MSGID];
   
@@ -140,6 +137,7 @@
                                                       object:dict];
   
 }
+
 
 - (void)onUnreadChanged:(NSUInteger)newCount
 {

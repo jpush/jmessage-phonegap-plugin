@@ -78,10 +78,9 @@ functionRegexp[2] = /fetchCompletionHandler[\s]*:[\s]*\([\s]*void[\s]*\([\s]*\^[
 functionCode[2] = "\n- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler { \n\
     [_jmessage didReceiveRemoteNotification:userInfo]; \n\
 }";
-
-insertCodeRegrexList[2] = /[[\s]*JPUSHService[\s]*handleRemoteNotification[\s]*:[\s]*userInfo[\s]*]/;
-insertCodeList[2] = "didReceiveRemoteNotification:(NSDictionary *)userInfo { \n\
-    [_jmessage didReceiveRemoteNotification:userInfo]; \n";
+insertCodeRegrexList[2] = /[[\s]*_jmessage[\s]*didReceiveRemoteNotification[\s]*:[\s]*userInfo[\s]*]/;
+insertCodeList[2] = "fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler { \n\
+    [_jmessage didReceiveRemoteNotification:userInfo];";
 
 //------------------
 
@@ -315,5 +314,5 @@ function test() {
     insertCodeForAppdelegateM(appdelegateFileM, './hello.m', fs);
 
 }
-// test();
+//  test();
 

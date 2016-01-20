@@ -21,11 +21,11 @@
 
         function onDeviceReady() {
             console.log("JPushPlugin:Device ready!");
-            window.plugins.jPushPlugin.onDeviceReady();
-            window.plugins.jmessagePlugin.onDeviceReady();
+            window.plugins.jPushPlugin.init();
+            window.plugins.jmessagePlugin.init();
 
             checkIsLogin();
-            initJpush();
+            getPushRegistrationID();
         }
 
         /////   Login Page ////////////
@@ -203,7 +203,7 @@
 
         /////   conversation  ////////////
 
-
+        var tempMessageDataSource = new Array();
 
         $(document).on("pageshow", "#conversationPage", function () {
             console.log("conversationPage show   " + usernameForConversation);
@@ -216,12 +216,16 @@
             console.log("onReceiveSingleMessage ####");
 
             if (device.platform == "Android") {
-               message = window.plugins.jmessagePlugin.ReceiveMessageObj;
+                message = window.plugins.jmessagePlugin.ReceiveMessageObj;
             }
-            var ss = JSON.stringify(message);
-            console.log("++++" + ss);
 
-            insertMessage(message);
+            <!--var ss = JSON.stringify(message);-->
+            <!--console.log("++++" + ss);-->
+
+            <!--insertMessage(message);-->
+
+            tempMessageDataSource.unshift(message);
+            refreshConversation();
         }
 
         function sendMessage() {
@@ -229,18 +233,19 @@
             window.plugins.jmessagePlugin.sendSingleTextMessage(usernameForConversation, messageContentString, function (response) {
                 var ss = JSON.stringify(response);
                 console.log("send message sucess" + ss);
-                alert("send message had send");
                 var msg_body = new Object();
                 msg_body.text = messageContentString;
                 var dict = new Object();
                 dict.msg_type = "text";
                 dict.from_name = getUserDisplayName();
+                dict.from_id=window.plugins.jmessagePlugin.username;
                 dict.msg_body = msg_body;
+                dict.create_time = new Date().getTime();
 
-                insertMessage(dict);
-
+                tempMessageDataSource.unshift(dict);
+                refreshConversation();
+                <!--insertMessage(dict);-->
             }, function (response) {
-
                 console.log("send message fail" + response);
                 alert("send message fail" + response);
             });
@@ -254,9 +259,30 @@
                 var lastMessage = dict.msg_body.text;
             }
             var fromName = dict.from_name;
-            var insertString = "<li>" + fromName + ": " + lastMessage + '</li>';
-            console.log(insertString);
+
+            var create_time = dict.create_time;
+            var create_time_sring = new Date(create_time).toLocaleString();
+            console.log(window.plugins.jmessagePlugin.username);
+            console.log(window.plugins.jmessagePlugin.nickname);
+
+            if(dict.from_id == window.plugins.jmessagePlugin.username){
+                var insertString = '<li style="text-align:right"><span style="font-size:12px">' + create_time_sring + "</span><br>" + fromName + ":" + lastMessage + '</li>';
+
+            }
+            else {
+                 insertString = '<li style="text-align:left"><span style="font-size:12px">' + create_time_sring + "</span><br>" + fromName + ":" + lastMessage + '</li>';
+
+            }
+
+            // console.log(insertString);
             $('#messageList').append(insertString).listview('refresh');
+        }
+
+        function  refreshConversation() {
+            $('#messageList').empty().listview('refresh');
+            for (var o in tempMessageDataSource) {
+                insertMessage(tempMessageDataSource[o]);
+            }
         }
 
         function getMessageHistory(username) {
@@ -267,10 +293,11 @@
 
                 var ss = JSON.stringify(response);
                 console.log("getMessageHistory ok: " + ss);
-
-                for (var o in response) {
-                    insertMessage(response[o]);
-                }
+                <!--for (var o in response) {-->
+                <!--insertMessage(response[o]);-->
+                <!--}-->
+                tempMessageDataSource = response;
+                refreshConversation();
             }, function (response) {
                 alert("getMessageHistory failed");
                 console.log("getMessageHistory fail" + response);
@@ -305,10 +332,9 @@
             $("#registrationid").html(respone);
         }
 
-        function initJpush() {
+        function getPushRegistrationID() {
 
             try {
-                window.plugins.jPushPlugin.init();
                 window.plugins.jPushPlugin.getRegistrationID(onGetRegistradionID);
 
                 if (device.platform != "Android") {

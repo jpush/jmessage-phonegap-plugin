@@ -16,8 +16,6 @@
 #import <Cordova/CDV.h>
 #import <JMessage/JMessage.h>
 
-
-
 @interface JMessagePlugin : CDVPlugin
 
 //JMessage Interface
@@ -31,7 +29,7 @@
 - (void)getAllSingleConversation:(CDVInvokedUrlCommand *)command;
 - (void)deleteSingleConversation:(CDVInvokedUrlCommand *)command;
 
-
+//JPush Interface
 - (void)initPush:(CDVInvokedUrlCommand *)command;
 - (void)setTagsWithAlias:(CDVInvokedUrlCommand *)command;
 - (void)setTags:(CDVInvokedUrlCommand *)command;

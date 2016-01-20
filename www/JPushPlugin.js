@@ -1,4 +1,6 @@
-var JPushPlugin = function () {
+
+
+ var JPushPlugin = function () {
 };
 
 //private plugin function
@@ -169,10 +171,6 @@ JPushPlugin.prototype.onReceiveNofiticationInAndroid = function (data) {
     cordova.fireDocumentEvent('jpush.receiveNotification', data);
 };
 
-JPushPlugin.prototype.onDeviceReady = function () {
-    console.log("--- JPushPlugin onDeviceReady");
-};
-
 
 //android single
 
@@ -242,6 +240,7 @@ JPushPlugin.prototype.setDebugMode = function (mode) {
         this.call_native("setDebugMode", [mode], null);
     }
 };
+
 JPushPlugin.prototype.addLocalNotification = function (builderId, content, title, notificaitonID, broadcastTime, extras) {
     if (device.platform == "Android") {
         data = [builderId, content, title, notificaitonID, broadcastTime, extras];
@@ -279,6 +278,7 @@ if (!window.plugins.jPushPlugin) {
 }
 
 module.exports = new JPushPlugin();
+
 
 
 

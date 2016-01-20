@@ -17,6 +17,39 @@ function consoleLogWarning(string) {
 }
 
 
+var AppDelegateSourceRegExp = new Array();
+ 
+AppDelegateSourceRegExp[0]=/[[\s]*JPUSHService[\s]*registerDeviceToken[\s]*:[\s]*deviceToken[\s]*]/;
+AppDelegateSourceRegExp[1]=/[[\s]*JPUSHService[\s]*handleRemoteNotification[\s]*:[\s]*userInfo[\s]*]/;
+AppDelegateSourceRegExp[2]=/[[\s]*_jmessage[\s]*didReceiveRemoteNotification[\s]*:[\s]*userInfo[\s]*]/;
+AppDelegateSourceRegExp[3]=/[[\s]*JPUSHService[\s]*showLocalNotificationAtFront[\s]*:[\s]*notification[\s]*identifierKey[\s]*:[\s]*nil[\s]*]/;
+AppDelegateSourceRegExp[4]=/_jmessage[\s]*=[\s]*[[\s]*JMessageHelper[\s]*new[\s]*]/;
+AppDelegateSourceRegExp[5]= /\[[\s]*_jmessage[\s]*initJMessage[\s]*:[\s]*launchOptions[\s]*\]/;
+
+var AppDelegateHeaderRegExp = new Array();
+AppDelegateHeaderRegExp[0] =   /#import[\s]*"JMessageHelper.h"/;
+AppDelegateHeaderRegExp[1]=/@property[\s]*\([\s]*nonatomic,[\s]*strong[\s]*\)[\s]*JMessageHelper[\s]*\*[\s]*jmessage/;
+ 
+
+
+function removeCode(inputFile,outputFile,fs,regExpList){
+
+	console.info("remove " + inputFile + "...");
+
+   fs.readFile(inputFile, {encoding: 'utf-8',flag:'r+'}, function (err, data) {    
+ 
+  	if(err){
+ 	 	console.info("#ios open file err:"+ err);
+ 	}
+
+    for(var k = 0; k < regExpList.length; ++k){
+    	var regexp = regExpList[k];
+    	data = data.replace(regexp,'\n//JMessage remove code mark');
+     }
+    fs.writeFileSync(outputFile, data);        
+ })
+}
+
 function findIosProjectName(fs, path){
 
     var files = fs.readdirSync(path);	
@@ -71,30 +104,34 @@ module.exports = function (context) {
         var appdelegateFileH = iosProjectPath + "/Classes/AppDelegate.h";
         var appdelegateFileM =  iosProjectPath + "/Classes/AppDelegate.m";
         
-
-        var appdelegateFileH_backup = iosProjectPath + "/Classes/AppDelegate_JM_backup_H";
-        var appdelegateFileM_backup = iosProjectPath + "/Classes/AppDelegate_JM_backup_M";
-
-        console.log(appdelegateFileM_backup);
-
-
-        fs.readFile(appdelegateFileH_backup, {encoding: 'utf-8', flag: 'r'}, function (err, data) {
-            if (err) {
-                consoleLogError("ios: can not open backup file:" + appdelegateFileH_backup);
-                return;
-            }
-
-            fs.writeFileSync(appdelegateFileH, data);
-            consoleLogInfo("restore  ' Appdelegate.h' from backup file:" + appdelegateFileH_backup);
-        });
-        fs.readFile(appdelegateFileM_backup, {encoding: 'utf-8', flag: 'r'}, function (err, data) {
-            if (err) {
-                consoleLogError("ios: can not open backup file:" + appdelegateFileM_backup);
-                return;
-            }
-            fs.writeFileSync(appdelegateFileM, data);
-            consoleLogInfo("restore 'Appdelegate.m' from backup file:" + appdelegateFileM_backup);
-        });
+        
+		removeCode(appdelegateFileH,appdelegateFileH,fs,AppDelegateHeaderRegExp);
+		removeCode(appdelegateFileM,appdelegateFileM,fs,AppDelegateSourceRegExp);
+        
+// 
+//         var appdelegateFileH_backup = iosProjectPath + "/Classes/AppDelegate_JM_backup_H";
+//         var appdelegateFileM_backup = iosProjectPath + "/Classes/AppDelegate_JM_backup_M";
+// 
+//         console.log(appdelegateFileM_backup);
+// 
+// 
+//         fs.readFile(appdelegateFileH_backup, {encoding: 'utf-8', flag: 'r'}, function (err, data) {
+//             if (err) {
+//                 consoleLogError("ios: can not open backup file:" + appdelegateFileH_backup);
+//                 return;
+//             }
+// 
+//             fs.writeFileSync(appdelegateFileH, data);
+//             consoleLogInfo("restore  ' Appdelegate.h' from backup file:" + appdelegateFileH_backup);
+//         });
+//         fs.readFile(appdelegateFileM_backup, {encoding: 'utf-8', flag: 'r'}, function (err, data) {
+//             if (err) {
+//                 consoleLogError("ios: can not open backup file:" + appdelegateFileM_backup);
+//                 return;
+//             }
+//             fs.writeFileSync(appdelegateFileM, data);
+//             consoleLogInfo("restore 'Appdelegate.m' from backup file:" + appdelegateFileM_backup);
+//         });
 
     }
 };
@@ -104,22 +141,10 @@ function test() {
     var appdelegateFileH = "./AppDelegate.h";
     var appdelegateFileM = "./AppDelegate.m";
 
-    var appdelegateFileH_backup = "./AppDelegate_JM_backup_H";
-    var appdelegateFileM_backup = "./AppDelegate_JM_backup_M";
+	console.log("dddd");
 
-    console.log("recover appdelegate from backup");
-
-    fs.readFile(appdelegateFileH_backup, {encoding: 'utf-8', flag: 'r'}, function (err, data) {
-        fs.writeFileSync(appdelegateFileH, data);
-
-
-    });
-    fs.readFile(appdelegateFileM, {encoding: 'utf-8', flag: 'r'}, function (err, data) {
-        fs.writeFileSync(appdelegateFileM, data);
-    });
-
-    //removeCode(appdelegateFileH,'./hello.h',fs,AppDelegateHeaderRegExp);
-    //removeCode(appdelegateFileM,'./hello.m',fs,AppDelegateSourceRegExp);
+    removeCode(appdelegateFileH,'./hello.h',fs,AppDelegateHeaderRegExp);
+    removeCode(appdelegateFileM,'./hello.m',fs,AppDelegateSourceRegExp);
 }
-// test();
+//  test();
 

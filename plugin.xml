@@ -35,6 +35,7 @@
             <header-file src="src/ios/Plugins/JMessagePlugin.h"/>
             <source-file src="src/ios/Plugins/JMessagePlugin.m"/>
             <header-file src="src/ios/Plugins/JMessageHelper.h"/>
+            <header-file src="src/ios/Plugins/ConstantDef.h"/>
             <source-file src="src/ios/Plugins/JMessageHelper.m"/>
             <resource-file src="src/ios/JMessageConfig.plist" />
             <framework src="src/ios/lib/JMessage.framework" custom="true" />
