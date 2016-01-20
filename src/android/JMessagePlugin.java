@@ -435,6 +435,18 @@ public class JMessagePlugin extends CordovaPlugin {
         callbackContext.success(jsonRusult);
     }
 
+    public void deleteSingleConversation(JSONArray data, CallbackContext callbackContext) {
+        try {
+            String username = data.getString(0);
+            JMessageClient.deleteSingleConversation(username);
+            callbackContext.success("deleteSingleConversation ok");
+
+        } catch (JSONException e) {
+            callbackContext.error("deleteSingleConversation failed");
+            e.printStackTrace();
+        }
+    }
+
     public void setJMessageReceiveCallbackChannel(JSONArray data, CallbackContext callbackContext) {
         Log.i(TAG, "setJMessageReceiveCallbackChannel:" + callbackContext.getCallbackId());
 

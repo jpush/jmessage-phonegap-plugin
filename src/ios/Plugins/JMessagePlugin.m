@@ -131,7 +131,7 @@
   NSString * password = [command argumentAtIndex:1];
   NSLog(@"JMessageRegister");
   [JMSGUser registerWithUsername:username password:password completionHandler:^(id resultObject, NSError *error) {
-    [self commonResponeWithSucess:@"注册成功" error:error callbackId:command.callbackId];
+    [self commonResponeWithSucess:@"regeister ok" error:error callbackId:command.callbackId];
   }];
 }
 
@@ -140,14 +140,14 @@
   NSString * username = [command argumentAtIndex:0];
   NSString * password = [command argumentAtIndex:1];
   [JMSGUser loginWithUsername:username password:password completionHandler:^(id resultObject, NSError *error) {
-    [self commonResponeWithSucess:@"登陆成功" error:error callbackId:command.callbackId];
+    [self commonResponeWithSucess:@"login ok" error:error callbackId:command.callbackId];
   }];
 }
 
 - (void)userLogout:(CDVInvokedUrlCommand *)command {
   NSLog(@"JMessageLogout");
   [JMSGUser logout:^(id resultObject, NSError *error) {
-    [self commonResponeWithSucess:@"退出登陆成功" error:nil callbackId:command.callbackId];
+    [self commonResponeWithSucess:@"login out ok" error:nil callbackId:command.callbackId];
   }];
 }
 
@@ -332,6 +332,13 @@
 
 
 - (void)deleteSingleConversation:(CDVInvokedUrlCommand *)command {
+  NSString * username = [command argumentAtIndex:0];
+  [JMSGConversation deleteSingleConversationWithUsername:username];
+  CDVPluginResult* pluginResult = nil;
+  pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"delete conversation ok"];
+
+  [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+
 }
 
 -(NSString*)getStringFromNotification:(NSNotification*)notification
