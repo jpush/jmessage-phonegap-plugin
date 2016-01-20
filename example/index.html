@@ -215,9 +215,9 @@
         function onReceiveSingleMessage(message) {
             console.log("onReceiveSingleMessage ####");
 
-            if (device.platform == "Android") {
-                message = window.plugins.jmessagePlugin.ReceiveMessageObj;
-            }
+            <!--if (device.platform == "Android") {-->
+                <!--message = window.plugins.jmessagePlugin.ReceiveMessageObj;-->
+            <!--}-->
             var ss = JSON.stringify(message);
             console.log("++++" + ss);
 
@@ -258,7 +258,15 @@
             var create_time = dict.create_time;
             var create_time_sring = new Date(create_time).toLocaleString();
 
-            var insertString = "<li>" + create_time_sring + "<br>" + fromName + ":" + lastMessage + '</li>';
+            if(fromName == window.plugins.jmessagePlugin.username){
+            var insertString = '<li style="text-align:right"><span style="font-size:12px">' + create_time_sring + "</span><br>" + fromName + ":" + lastMessage + '</li>';
+
+            }
+            else {
+             insertString = '<li style="text-align:left"><span style="font-size:12px">' + create_time_sring + "</span><br>" + fromName + ":" + lastMessage + '</li>';
+
+            }
+
             // console.log(insertString);
             $('#messageList').append(insertString).listview('refresh');
         }

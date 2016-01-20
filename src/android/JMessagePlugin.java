@@ -322,9 +322,9 @@ public class JMessagePlugin extends CordovaPlugin {
             UserInfo fromUser = (UserInfo) msg.getFromUser();
 
             jsonItem.put("target_type", "single");
-            jsonItem.put("target_id", targetUser.getUserID());
+            jsonItem.put("target_id", targetUser.getUserName());
             jsonItem.put("target_name", targetUser.getNickname());
-            jsonItem.put("from_id", fromUser.getUserID());
+            jsonItem.put("from_id", fromUser.getUserName());
             //jsonItem.put("from_name", fromUser.getNickname());
             jsonItem.put("from_name", msg.getFromName());
             jsonItem.put("create_time", msg.getCreateTime());

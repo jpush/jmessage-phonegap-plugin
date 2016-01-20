@@ -9,7 +9,7 @@ JMessagePlugin.init()
 ```
 
 ####注册
-```js
+```
 JMessagePlugin.register(username, password, success, fail)
 ```
 
@@ -43,7 +43,7 @@ JMessagePlugin.setUserGender(username, text, success, fail)
 
 	
 	JMessagePlugin.onReceivedSingleConversationMessage(data) {	
-		cordova.fireDocumentEvent('jmessage.singleReceiveMessage',	data)
+		cordova.fireDocumentEvent('jmessage.singleReceiveMessage', data)
 	}
 	
 

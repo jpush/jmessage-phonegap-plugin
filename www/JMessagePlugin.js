@@ -1,4 +1,7 @@
-var JMessagePlugin = function () {
+
+
+
+ var JMessagePlugin = function () {
 
     console.log("JMessagePlugin init");
     this.username = "";
@@ -10,11 +13,11 @@ var JMessagePlugin = function () {
 
 
 JMessagePlugin.prototype.init = function () {
-    console.log("JMessagePlugin onDeviceReady");
+    console.log("JMessagePlugin init");
 
     if (device.platform == "Android") {
-        this.setAndroidReceiveMessageCallbackChannel();
-        this.setAndroidReceivePushCallbackChannel();
+        this.setReceiveMessageCallbackChannel();
+        this.setReceivePushCallbackChannel();
     }
 };
 
@@ -102,11 +105,10 @@ JMessagePlugin.prototype.onSendSingleTextMessage = function (data) {
     }
 };
 
-//private function
+///////////////// android only method /////////////////////
 
-////////////////// handle android IM  callback ///////////////////
 
-JMessagePlugin.prototype.setAndroidReceiveMessageCallbackChannel = function () {
+JMessagePlugin.prototype.setReceiveMessageCallbackChannel = function () {
 
     function AndroidReceiveMessageCallback(message) {
         window.plugins.jmessagePlugin.ReceiveMessageObj = message;
@@ -124,9 +126,8 @@ JMessagePlugin.prototype.setAndroidReceiveMessageCallbackChannel = function () {
 
 
 ////////////////// handle android receive push ///////////////////
-//TODO:fix this
-// 这个本应放到JPushPlugin.js 中的实现,但放到 JPushPlugin.js 无法触发,所以放到这里
-JMessagePlugin.prototype.setAndroidReceivePushCallbackChannel = function () {
+
+JMessagePlugin.prototype.setReceivePushCallbackChannel = function () {
 
     function AndroidReceivePushCallback(bToObj) {
         console.log("### android receive push message");
@@ -148,12 +149,12 @@ JMessagePlugin.prototype.setAndroidReceivePushCallbackChannel = function () {
             window.plugins.jPushPlugin.onReceiveNofiticationInAndroid(realData);
         }
         else {
-            console.log("unknow push type");
+
         }
     }
 
     function fail() {
-        console.log("setPushReceiveCallbackChannel  faild");
+        console.log("--- setPushReceiveCallbackChannel  faild");
     }
 
     cordova.exec(AndroidReceivePushCallback, fail, "JMessagePlugin", "setPushReceiveCallbackChannel", []);
