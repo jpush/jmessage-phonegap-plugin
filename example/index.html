@@ -215,13 +215,17 @@
         function onReceiveSingleMessage(message) {
             console.log("onReceiveSingleMessage ####");
 
-            <!--if (device.platform == "Android") {-->
-                <!--message = window.plugins.jmessagePlugin.ReceiveMessageObj;-->
-            <!--}-->
-            var ss = JSON.stringify(message);
-            console.log("++++" + ss);
+            if (device.platform == "Android") {
+                message = window.plugins.jmessagePlugin.ReceiveMessageObj;
+            }
 
-            insertMessage(message);
+            <!--var ss = JSON.stringify(message);-->
+            <!--console.log("++++" + ss);-->
+
+            <!--insertMessage(message);-->
+
+            tempMessageDataSource.unshift(message);
+            refreshConversation();
         }
 
         function sendMessage() {
@@ -234,6 +238,7 @@
                 var dict = new Object();
                 dict.msg_type = "text";
                 dict.from_name = getUserDisplayName();
+                dict.from_id=window.plugins.jmessagePlugin.username;
                 dict.msg_body = msg_body;
                 dict.create_time = new Date().getTime();
 
@@ -257,13 +262,15 @@
 
             var create_time = dict.create_time;
             var create_time_sring = new Date(create_time).toLocaleString();
+            console.log(window.plugins.jmessagePlugin.username);
+            console.log(window.plugins.jmessagePlugin.nickname);
 
-            if(fromName == window.plugins.jmessagePlugin.username){
-            var insertString = '<li style="text-align:right"><span style="font-size:12px">' + create_time_sring + "</span><br>" + fromName + ":" + lastMessage + '</li>';
+            if(dict.from_id == window.plugins.jmessagePlugin.username){
+                var insertString = '<li style="text-align:right"><span style="font-size:12px">' + create_time_sring + "</span><br>" + fromName + ":" + lastMessage + '</li>';
 
             }
             else {
-             insertString = '<li style="text-align:left"><span style="font-size:12px">' + create_time_sring + "</span><br>" + fromName + ":" + lastMessage + '</li>';
+                 insertString = '<li style="text-align:left"><span style="font-size:12px">' + create_time_sring + "</span><br>" + fromName + ":" + lastMessage + '</li>';
 
             }
 
