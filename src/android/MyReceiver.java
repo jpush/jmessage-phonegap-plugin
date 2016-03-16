@@ -31,7 +31,6 @@ public class MyReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-
         if (JPushInterface.ACTION_REGISTRATION_ID.equals(intent.getAction())) {
 
         } else if (JPushInterface.ACTION_MESSAGE_RECEIVED.equals(intent.getAction())) {
@@ -44,7 +43,7 @@ public class MyReceiver extends BroadcastReceiver {
         } else if (JPushInterface.ACTION_RICHPUSH_CALLBACK.equals(intent.getAction())) {
 
         } else {
-            Log.d(TAG, "Unhandled intent - " + intent.getAction());
+            Log.d(TAG, "unhandled intent - " + intent.getAction());
         }
     }
 
@@ -72,12 +71,10 @@ public class MyReceiver extends BroadcastReceiver {
 
         JMessagePlugin.transmitPushMessage(JPushInterface.ACTION_NOTIFICATION_OPENED, alert, extras);
 
-
         context.startActivity(launch);
     }
 
     private void handlingNotificationReceive(Context context, Intent intent) {
-
         Log.i(TAG, "handlingNotificationReceive");
 
         String alert = intent.getStringExtra(JPushInterface.EXTRA_ALERT);
@@ -112,5 +109,10 @@ public class MyReceiver extends BroadcastReceiver {
     }
 
     private static final List<String> IGNORED_EXTRAS_KEYS =
-            Arrays.asList("cn.jpush.android.TITLE", "cn.jpush.android.MESSAGE", "cn.jpush.android.APPKEY", "cn.jpush.android.NOTIFICATION_CONTENT_TITLE");
+            Arrays.asList(
+                "cn.jpush.android.TITLE",
+                "cn.jpush.android.MESSAGE",
+                "cn.jpush.android.APPKEY",
+                "cn.jpush.android.NOTIFICATION_CONTENT_TITLE"
+            );
 }

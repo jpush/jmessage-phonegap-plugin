@@ -1,8 +1,7 @@
 
 
 
- var JMessagePlugin = function () {
-
+var JMessagePlugin = function () {
     console.log("JMessagePlugin init");
     this.username = "";
     this.nickname = "";
@@ -10,7 +9,6 @@
     this.avatarUrl = "";
     this.ReceiveMessageObj = "";
 };
-
 
 JMessagePlugin.prototype.init = function () {
     console.log("JMessagePlugin init");
@@ -30,36 +28,33 @@ JMessagePlugin.prototype.login = function (username, password, success, fail) {
 };
 
 JMessagePlugin.prototype.logout = function (success, fail) {
-
     cordova.exec(success, fail, "JMessagePlugin", "userLogout", []);
 };
 
 JMessagePlugin.prototype.getUserInfo = function (success, fail) {
-
     cordova.exec(success, fail, "JMessagePlugin", "getUserInfo", []);
 };
 
 JMessagePlugin.prototype.setUserNickname = function (nickname, success, fail) {
      cordova.exec(success, fail, "JMessagePlugin", "setUserNickname", [nickname]);
 };
+
 JMessagePlugin.prototype.setUserGender = function (gender, success, fail) {
     cordova.exec(success, fail, "JMessagePlugin", "setUserGender", [gender]);
 };
 
 
-//message
+//  Message
 JMessagePlugin.prototype.sendSingleTextMessage = function (username, text, success, fail) {
-
     cordova.exec(success, fail, "JMessagePlugin", "sendSingleTextMessage", [username, text]);
 };
 
-
 JMessagePlugin.prototype.getSingleHistoryMessage = function (username, from, limit, success, fail) {
-
     cordova.exec(success, fail, "JMessagePlugin", "getSingleConversationHistoryMessage", [username, from, limit]);
 };
 
-//  conversation
+
+//  Conversation
 JMessagePlugin.prototype.getSingleConversationList = function (success, fail) {
     cordova.exec(success, fail, "JMessagePlugin", "getAllSingleConversation", []);
 };
@@ -68,16 +63,13 @@ JMessagePlugin.prototype.deleteSingleConversation = function (username, success,
     cordova.exec(success, fail, "JMessagePlugin", "deleteSingleConversation", [username]);
 };
 
-
 JMessagePlugin.prototype.onReceivedSingleConversationMessage = function (data) {
     if (device.platform == "Android") {
         var bToObj = window.plugins.jmessagePlugin.ReceiveMessageObj;
     } else {
-
         try {
-             bToObj = JSON.parse(data);
-        }
-        catch (exception) {
+            bToObj = JSON.parse(data);
+        } catch (exception) {
             console.log("onSingleConversationMessageReceived " + exception);
         }
     }
@@ -87,10 +79,8 @@ JMessagePlugin.prototype.onReceivedSingleConversationMessage = function (data) {
 JMessagePlugin.prototype.onSingleConversationChanged = function (data) {
     try {
         var bToObj = JSON.parse(data);
-        //console.log(bToObj);
         cordova.fireDocumentEvent('jmessage.conversationChange', bToObj);
-    }
-    catch (exception) {
+    } catch (exception) {
         console.log("onSingleConversationChanged " + exception);
     }
 };
@@ -99,17 +89,15 @@ JMessagePlugin.prototype.onSendSingleTextMessage = function (data) {
     try {
         var bToObj = JSON.parse(data);
         console.log(data);
-    }
-    catch (exception) {
+    } catch (exception) {
         console.log("sendSingleTextMessageRespone " + exception);
     }
 };
 
-///////////////// android only method /////////////////////
 
+//  Android Method
 
 JMessagePlugin.prototype.setReceiveMessageCallbackChannel = function () {
-
     function AndroidReceiveMessageCallback(message) {
         window.plugins.jmessagePlugin.ReceiveMessageObj = message;
         window.plugins.jmessagePlugin.onReceivedSingleConversationMessage(null);
@@ -117,50 +105,40 @@ JMessagePlugin.prototype.setReceiveMessageCallbackChannel = function () {
     }
 
     function fail() {
-        console.log("setMessageCallbackChannel  faild");
+        console.log("setMessageCallbackChannel failed");
     }
 
-    cordova.exec(AndroidReceiveMessageCallback, fail, "JMessagePlugin", "setJMessageReceiveCallbackChannel", []);
-
+    cordova.exec(AndroidReceiveMessageCallback, fail, "JMessagePlugin",
+        "setJMessageReceiveCallbackChannel", []);
 };
 
 
-////////////////// handle android receive push ///////////////////
+//  handle android receive push
 
 JMessagePlugin.prototype.setReceivePushCallbackChannel = function () {
-
     function AndroidReceivePushCallback(bToObj) {
         console.log("### android receive push message");
 
         var ss = JSON.stringify(bToObj);
+        var messageWrapType = bToObj.messageWrapType;
+        var realData = bToObj.data;
 
-        var messageWrapTyle = bToObj.messageWrapTyle;
-        var realData;
-        if (messageWrapTyle === "ACTION_MESSAGE_RECEIVED") {
-            realData = bToObj.data;
+        if (messageWrapType === "ACTION_MESSAGE_RECEIVED") {
             window.plugins.jPushPlugin.onReceiveMessageInAndroid(realData);
-        }
-        else if (messageWrapTyle === "ACTION_NOTIFICATION_OPENED") {
-            realData = bToObj.data;
-            window.plugins.jPushPlugin.onOpenNofiticationInAndroid(realData);
-        }
-        else if (messageWrapTyle === "ACTION_NOTIFICATION_RECEIVED") {
-            realData = bToObj.data;
-            window.plugins.jPushPlugin.onReceiveNofiticationInAndroid(realData);
-        }
-        else {
-
+        } else if (messageWrapType === "ACTION_NOTIFICATION_OPENED") {
+            window.plugins.jPushPlugin.onOpenNotificationInAndroid(realData);
+        } else if (messageWrapType === "ACTION_NOTIFICATION_RECEIVED") {
+            window.plugins.jPushPlugin.onReceiveNotificationInAndroid(realData);
         }
     }
 
     function fail() {
-        console.log("--- setPushReceiveCallbackChannel  faild");
+        console.log("--- setPushReceiveCallbackChannel failed");
     }
 
-    cordova.exec(AndroidReceivePushCallback, fail, "JMessagePlugin", "setPushReceiveCallbackChannel", []);
+    cordova.exec(AndroidReceivePushCallback, fail, "JMessagePlugin",
+        "setPushReceiveCallbackChannel", []);
 };
-
-
 
 if (!window.plugins) {
     console.log('int window plugins');
@@ -170,9 +148,5 @@ if (!window.plugins) {
 if (!window.plugins.jmessagePlugin) {
     window.plugins.jmessagePlugin = new JMessagePlugin();
 }
+
 module.exports = new JMessagePlugin();
-    
-    
-
-
-

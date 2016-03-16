@@ -9,10 +9,12 @@
 //	Copyright (c) 2012年 HXHG. All rights reserved.
 //	http://www.jpush.cn
 //  Created by liangjianguo
-//
 
 
 package cn.jmessage.phonegap;
+
+import android.app.Activity;
+import android.util.Log;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -36,7 +38,7 @@ import org.json.JSONObject;
 
 import java.util.Map.Entry;
 
-import com.ljg.push.R;
+import __PACKAGE_NAME__.R;
 
 import cn.jpush.android.api.BasicPushNotificationBuilder;
 import cn.jpush.android.api.JPushInterface;
@@ -51,8 +53,6 @@ import cn.jpush.im.android.api.model.Conversation;
 import cn.jpush.im.android.api.model.Message;
 import cn.jpush.im.android.api.model.UserInfo;
 import cn.jpush.im.api.BasicCallback;
-
-import android.util.Log;
 
 
 public class JMessagePlugin extends CordovaPlugin {
@@ -100,6 +100,7 @@ public class JMessagePlugin extends CordovaPlugin {
 
     private ExecutorService threadPool = Executors.newFixedThreadPool(1);
     private static JMessagePlugin instance;
+    private static Activity cordovaActivity;
     private static String TAG = "JMessagePlugin";
 
     private static boolean shouldCacheMsg = false;
@@ -117,9 +118,11 @@ public class JMessagePlugin extends CordovaPlugin {
     protected void pluginInitialize() {
         Log.i(TAG, "pluginInitialize");
 
-        JMessageClient.init(cordova.getActivity().getApplicationContext());
+        cordovaActivity = this.cordova.getActivity();
+
+        JMessageClient.init(cordovaActivity.getApplicationContext());
         JMessageClient.registerEventReceiver(this);
-        JPushInterface.init(this.cordova.getActivity().getApplicationContext());
+        JPushInterface.init(cordovaActivity.getApplicationContext());
     }
 
     public void onPause(boolean multitasking) {
@@ -131,7 +134,6 @@ public class JMessagePlugin extends CordovaPlugin {
 
         Log.i(TAG, "onEvent:" + msg.toString());
 
-
         //可以在这里创建Notification
         if (msg.getTargetType() == ConversationType.single) {
             JSONObject obj = this.getJSonFormMessage(msg);
@@ -141,16 +143,15 @@ public class JMessagePlugin extends CordovaPlugin {
             dataResult.setKeepCallback(true);
             if (mJMessageReceiveCallback != null) {
                 mJMessageReceiveCallback.sendPluginResult(dataResult);
-
             }
         } else {
-            LOG.w(TAG, "message is not singleTyle");
+            LOG.w(TAG, "message is not singleType");
         }
     }
 
     @Override
     public boolean execute(final String action, final JSONArray data,
-                           final CallbackContext callbackContext) throws JSONException {
+            final CallbackContext callbackContext) throws JSONException {
         Log.i(TAG, action);
         if (!methodList.contains(action)) {
             return false;
@@ -175,28 +176,25 @@ public class JMessagePlugin extends CordovaPlugin {
         JMessageClient.unRegisterEventReceiver(this);
     }
 
-    private void handelResult(String sucessString, int status, String desc, CallbackContext cb) {
+    private void handleResult(String successString, int status, String desc,
+            CallbackContext cb) {
         if (status == 0) {
-            cb.success(sucessString);
+            cb.success(successString);
         } else {
-
             JSONObject data = new JSONObject();
             try {
                 data.put("errorCode", status);
-                data.put("errorDscription", desc);
-
+                data.put("errorDescription", desc);
                 cb.error(data);
-
             } catch (JSONException e) {
                 e.printStackTrace();
-                cb.error("error write  json");
+                cb.error("error write json");
             }
         }
     }
 
     void initPush(JSONArray data, CallbackContext callbackContext) {
-        JPushInterface.init(this.cordova.getActivity().getApplicationContext());
-
+        JPushInterface.init(cordovaActivity.getApplicationContext());
     }
 
     //jmessage method
@@ -210,15 +208,14 @@ public class JMessagePlugin extends CordovaPlugin {
             String password = data.getString(1);
 
             JMessageClient.register(username, password, new BasicCallback() {
-
                 @Override
                 public void gotResult(final int status, final String desc) {
-                    handelResult("注册成功", status, desc, cb);
+                    handleResult("注册成功", status, desc, cb);
                 }
             });
         } catch (JSONException e) {
             e.printStackTrace();
-            callbackContext.error("error reading id json");
+            callbackContext.error("error reading id json.");
         }
     }
 
@@ -231,11 +228,10 @@ public class JMessagePlugin extends CordovaPlugin {
             String password = data.getString(1);
 
             JMessageClient.login(username, password, new BasicCallback() {
-
                 @Override
                 public void gotResult(final int status, final String desc) {
                     Log.i(TAG, "login callback " + status + desc);
-                    handelResult("登录成功", status, desc, cb);
+                    handleResult("登录成功", status, desc, cb);
                 }
             });
         } catch (JSONException e) {
@@ -259,12 +255,12 @@ public class JMessagePlugin extends CordovaPlugin {
                 JSONObject jsonItem = new JSONObject();
                 jsonItem.put("username", info.getUserName());
                 jsonItem.put("nickname", info.getNickname());
-                jsonItem.put("gender", "unknow");
+                jsonItem.put("gender", "unknown");
                 callbackContext.success(jsonItem);
             } else {
                 JSONObject jsonItem = new JSONObject();
                 jsonItem.put("errorCode", 863004);
-                jsonItem.put("errorDscription", "not found");
+                jsonItem.put("errorDescription", "not found");
                 callbackContext.error(jsonItem);
             }
         } catch (JSONException e) {
@@ -293,16 +289,15 @@ public class JMessagePlugin extends CordovaPlugin {
 
             JMessageClient.sendMessage(msg);
             callbackContext.success("正在发送");
-
         } catch (JSONException e) {
             e.printStackTrace();
-            callbackContext.error("error reading id json");
+            callbackContext.error("error reading id json.");
         }
     }
 
     private JSONObject getJSonFormMessage(Message msg) {
         String contentText = "";
-        String msgType = "";//上传给js 层的类型，请和ios 保持一致
+        String msgType = "";    //上传给 js 层的类型，请和 iOS 保持一致
 
         switch (msg.getContentType()) {
             case text:
@@ -313,7 +308,6 @@ public class JMessagePlugin extends CordovaPlugin {
                 break;
         }
         Log.i(TAG, "msg " + contentText);
-
 
         JSONObject jsonItem = new JSONObject();
         try {
@@ -334,14 +328,14 @@ public class JMessagePlugin extends CordovaPlugin {
             JSONObject contentBody = new JSONObject();
             contentBody.put("text", contentText);
             jsonItem.put("msg_body", contentBody);
-
         } catch (JSONException e) {
             e.printStackTrace();
         }
         return jsonItem;
     }
 
-    public void getSingleConversationHistoryMessage(JSONArray data, CallbackContext callbackContext) {
+    public void getSingleConversationHistoryMessage(JSONArray data,
+            CallbackContext callbackContext) {
         Log.i(TAG, " getSingleConversationHistoryMessage \n" + data);
 
         try {
@@ -350,10 +344,9 @@ public class JMessagePlugin extends CordovaPlugin {
             int limit = data.getInt(2);
 
             if (limit <= 0 || from < 0) {
-                Log.w(TAG, "  JMessageGetSingleHistoryMessage from: " + from + "limit" + limit);
+                Log.w(TAG, " JMessageGetSingleHistoryMessage from: " + from + "limit" + limit);
                 return;
             }
-
             Conversation conversation = JMessageClient.getSingleConversation(username);
             if (conversation == null) {
                 conversation = Conversation.createSingleConversation(username);
@@ -365,56 +358,43 @@ public class JMessagePlugin extends CordovaPlugin {
             List<Message> list = conversation.getMessagesFromNewest(from, limit);
             Log.i(TAG, "JMessageGetSingleHistoryMessage list size is" + list.size());
 
-            JSONArray jsonRusult = new JSONArray();
-
+            JSONArray jsonResult = new JSONArray();
             for (int i = 0; i < list.size(); ++i) {
                 Message msg = list.get(i);
                 JSONObject obj = this.getJSonFormMessage(msg);
-
-
-                jsonRusult.put(obj);
+                jsonResult.put(obj);
             }
-
-            callbackContext.success(jsonRusult);
-
+            callbackContext.success(jsonResult);
         } catch (JSONException e) {
             e.printStackTrace();
-            callbackContext.error("error reading id json");
+            callbackContext.error("error reading id json.");
         }
     }
 
-
     public void getAllSingleConversation(JSONArray data, CallbackContext callbackContext) {
         Log.i(TAG, "  getAllSingleConversation \n" + data);
-
 
         List<Conversation> list = JMessageClient.getConversationList();
 
         Log.i(TAG, "JMessageGetAllSingleConversation" + list.size());
 
-        JSONArray jsonRusult = new JSONArray();
+        JSONArray jsonResult = new JSONArray();
 
         for (int i = 0; i < list.size(); ++i) {
             Conversation conv = list.get(i);
-
             if (conv.getType() == ConversationType.single) {
-
                 UserInfo info = (UserInfo) conv.getTargetInfo();
                 Message msg = conv.getLatestMessage();
                 String contentText = "";
                 if (msg != null) {
                     switch (msg.getContentType()) {
-                        case text: {
+                        case text:
                             contentText = ((TextContent) msg.getContent()).getText();
-
-                        }
-                        break;
+                            break;
                         default:
                             break;
                     }
                 }
-
-
                 JSONObject jsonItem = new JSONObject();
                 try {
                     jsonItem.put("username", info.getUserName());
@@ -422,32 +402,29 @@ public class JMessagePlugin extends CordovaPlugin {
                     //jsonItem.put("avatar", info.getAvatar());
                     jsonItem.put("lastMessage", contentText);
                     jsonItem.put("unreadCount", conv.getUnReadMsgCnt());
-
-                    jsonRusult.put(jsonItem);
-
+                    jsonResult.put(jsonItem);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
-
         }
-
-        callbackContext.success(jsonRusult);
+        callbackContext.success(jsonResult);
     }
 
-    public void deleteSingleConversation(JSONArray data, CallbackContext callbackContext) {
+    public void deleteSingleConversation(JSONArray data,
+            CallbackContext callbackContext) {
         try {
             String username = data.getString(0);
             JMessageClient.deleteSingleConversation(username);
             callbackContext.success("deleteSingleConversation ok");
-
         } catch (JSONException e) {
             callbackContext.error("deleteSingleConversation failed");
             e.printStackTrace();
         }
     }
 
-    public void setJMessageReceiveCallbackChannel(JSONArray data, CallbackContext callbackContext) {
+    public void setJMessageReceiveCallbackChannel(JSONArray data,
+            CallbackContext callbackContext) {
         Log.i(TAG, "setJMessageReceiveCallbackChannel:" + callbackContext.getCallbackId());
 
         mJMessageReceiveCallback = callbackContext;
@@ -456,8 +433,8 @@ public class JMessagePlugin extends CordovaPlugin {
         mJMessageReceiveCallback.sendPluginResult(dataResult);
     }
 
-
-    public void setPushReceiveCallbackChannel(JSONArray data, CallbackContext callbackContext) {
+    public void setPushReceiveCallbackChannel(JSONArray data,
+            CallbackContext callbackContext) {
         Log.i(TAG, "setPushReceiveCallbackChannel:" + callbackContext.getCallbackId());
 
         mJPushReceiveCallback = callbackContext;
@@ -466,7 +443,8 @@ public class JMessagePlugin extends CordovaPlugin {
         mJPushReceiveCallback.sendPluginResult(dataResult);
     }
 
-    private void setUserInfo(UserInfo.Field field, UserInfo info, CallbackContext callbackContext) {
+    private void setUserInfo(UserInfo.Field field, UserInfo info,
+            CallbackContext callbackContext) {
         final CallbackContext cb = callbackContext;
         JMessageClient.updateMyInfo(field, info, new BasicCallback() {
             @Override
@@ -486,18 +464,14 @@ public class JMessagePlugin extends CordovaPlugin {
             myUserInfo.setNickname(nickName);
             this.setUserInfo(UserInfo.Field.nickname, myUserInfo, callbackContext);
             callbackContext.success("update userinfo ok");
-
         } catch (JSONException e) {
             e.printStackTrace();
             callbackContext.error("Error reading alias JSON");
         }
-
     }
 
     public void setUserGender(JSONArray data, CallbackContext callbackContext) {
-
         try {
-
             String genderString = data.getString(0);
             UserInfo.Gender gender = UserInfo.Gender.unknown;
             if (genderString.equals("male")) {
@@ -505,16 +479,13 @@ public class JMessagePlugin extends CordovaPlugin {
             } else if (genderString.equals("female")) {
                 gender = UserInfo.Gender.female;
             }
-
             UserInfo myUserInfo = JMessageClient.getMyInfo();
             myUserInfo.setGender(gender);
             this.setUserInfo(UserInfo.Field.gender, myUserInfo, callbackContext);
-
         } catch (JSONException e) {
             e.printStackTrace();
             callbackContext.error("Error reading alias JSON");
         }
-
     }
 
     public void setUserAvatar(JSONArray data, CallbackContext callbackContext) {
@@ -531,30 +502,27 @@ public class JMessagePlugin extends CordovaPlugin {
 //			e.printStackTrace();
 //			callbackContext.error("Error reading alias JSON");
 //		}
-
-
     }
 
 
-    //////////////push  api//////////////////////
+    // ------------ JPush API -------------
 
     void getRegistrationID(JSONArray data, CallbackContext callbackContext) {
         Log.i(TAG, "getRegistrationID");
-        String regID = JPushInterface.getRegistrationID(this.cordova.getActivity().getApplicationContext());
+        String regID = JPushInterface.getRegistrationID(
+            cordovaActivity.getApplicationContext());
         callbackContext.success(regID);
     }
 
     void setTags(JSONArray data, CallbackContext callbackContext) {
-
         try {
             HashSet<String> tags = new HashSet<String>();
             for (int i = 0; i < data.length(); i++) {
                 tags.add(data.getString(i));
             }
-            JPushInterface.setTags(this.cordova.getActivity()
-                    .getApplicationContext(), tags, mTagWithAliasCallback);
+            JPushInterface.setTags(cordovaActivity.getApplicationContext(),
+                tags, mTagWithAliasCallback);
             callbackContext.success();
-
         } catch (JSONException e) {
             e.printStackTrace();
             callbackContext.error("Error reading tags JSON");
@@ -564,8 +532,8 @@ public class JMessagePlugin extends CordovaPlugin {
     void setAlias(JSONArray data, CallbackContext callbackContext) {
         try {
             String alias = data.getString(0);
-            JPushInterface.setAlias(this.cordova.getActivity()
-                    .getApplicationContext(), alias, mTagWithAliasCallback);
+            JPushInterface.setAlias(cordovaActivity.getApplicationContext(),
+                alias, mTagWithAliasCallback);
             callbackContext.success();
         } catch (JSONException e) {
             e.printStackTrace();
@@ -582,9 +550,8 @@ public class JMessagePlugin extends CordovaPlugin {
             for (int i = 0; i < tagsArray.length(); i++) {
                 tags.add(tagsArray.getString(i));
             }
-
-            JPushInterface.setAliasAndTags(this.cordova.getActivity()
-                    .getApplicationContext(), alias, tags, mTagWithAliasCallback);
+            JPushInterface.setAliasAndTags(cordovaActivity.getApplicationContext(),
+                alias, tags, mTagWithAliasCallback);
             callbackContext.success();
         } catch (JSONException e) {
             e.printStackTrace();
@@ -593,9 +560,9 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     void setBasicPushNotificationBuilder(JSONArray data,
-                                         CallbackContext callbackContext) {
+            CallbackContext callbackContext) {
         BasicPushNotificationBuilder builder = new BasicPushNotificationBuilder(
-                this.cordova.getActivity());
+                cordovaActivity);
         builder.developerArg0 = "Basic builder 1";
         JPushInterface.setPushNotificationBuilder(1, builder);
         JSONObject obj = new JSONObject();
@@ -607,33 +574,29 @@ public class JMessagePlugin extends CordovaPlugin {
         //callbackContext.success(obj);
     }
 
-
     void setCustomPushNotificationBuilder(JSONArray data,
-                                          CallbackContext callbackContext) {
-
-//		CustomPushNotificationBuilder builder = new CustomPushNotificationBuilder(
-//				this.cordova.getActivity(), R.layout.test_notification_layout,
-//				R.id.icon, R.id.title, R.id.text);
-//		builder.developerArg0 = "Custom Builder 1";
-//		builder.layoutIconDrawable = R.drawable.jpush_notification_icon;
-//		JPushInterface.setPushNotificationBuilder(2, builder);
-//		JSONObject obj = new JSONObject();
-//		try {
-//			obj.put("id", 2);
-//		} catch (JSONException e) {
-//			e.printStackTrace();
-//		}
+            CallbackContext callbackContext) {
+		// CustomPushNotificationBuilder builder = new CustomPushNotificationBuilder(
+		// 		this.cordova.getActivity(), R.layout.test_notification_layout,
+		// 		R.id.icon, R.id.title, R.id.text);
+		// builder.developerArg0 = "Custom Builder 1";
+		// builder.layoutIconDrawable = R.drawable.jpush_notification_icon;
+		// JPushInterface.setPushNotificationBuilder(2, builder);
+		// JSONObject obj = new JSONObject();
+		// try {
+		// 	obj.put("id", 2);
+		// } catch (JSONException e) {
+		// 	e.printStackTrace();
+		// }
         //callbackContext.success(obj);
     }
 
-    void clearAllNotification(JSONArray data,
-                              CallbackContext callbackContext) {
-        JPushInterface.clearAllNotifications(this.cordova.getActivity());
+    void clearAllNotification(JSONArray data, CallbackContext callbackContext) {
+        JPushInterface.clearAllNotifications(cordovaActivity);
         //callbackContext.success();
     }
 
-    void clearNotificationById(JSONArray data,
-                               CallbackContext callbackContext) {
+    void clearNotificationById(JSONArray data, CallbackContext callbackContext) {
         int notificationId = -1;
         try {
             notificationId = data.getInt(0);
@@ -642,16 +605,15 @@ public class JMessagePlugin extends CordovaPlugin {
             callbackContext.error("error reading id json");
         }
         if (notificationId != -1) {
-            JPushInterface.clearNotificationById(this.cordova.getActivity(), notificationId);
+            JPushInterface.clearNotificationById(cordovaActivity, notificationId);
         } else {
             callbackContext.error("error id");
         }
     }
 
-    void addLocalNotification(JSONArray data,
-                              CallbackContext callbackContext) throws JSONException {
+    void addLocalNotification(JSONArray data, CallbackContext callbackContext)
+            throws JSONException {
         //builderId,content,title,notificaitonID,broadcastTime,extras
-
         int builderId = data.getInt(0);
         String content = data.getString(1);
         String title = data.getString(2);
@@ -665,47 +627,42 @@ public class JMessagePlugin extends CordovaPlugin {
         ln.setTitle(title);
         ln.setNotificationId(notificationID);
         ln.setBroadcastTime(System.currentTimeMillis() + broadcastTime);
-
         ln.setExtras(extras.toString());
-        JPushInterface.addLocalNotification(this.cordova.getActivity(), ln);
+        JPushInterface.addLocalNotification(cordovaActivity, ln);
     }
 
-    void removeLocalNotification(JSONArray data,
-                                 CallbackContext callbackContext) throws JSONException {
-
+    void removeLocalNotification(JSONArray data, CallbackContext callbackContext)
+            throws JSONException {
         int notificationID = data.getInt(0);
-        JPushInterface.removeLocalNotification(this.cordova.getActivity(), notificationID);
-
+        JPushInterface.removeLocalNotification(cordovaActivity, notificationID);
     }
 
-    void clearLocalNotifications(JSONArray data,
-                                 CallbackContext callbackContext) {
-        JPushInterface.clearLocalNotifications(this.cordova.getActivity());
+    void clearLocalNotifications(JSONArray data, CallbackContext callbackContext) {
+        JPushInterface.clearLocalNotifications(cordovaActivity);
     }
-
 
     private final TagAliasCallback mTagWithAliasCallback = new TagAliasCallback() {
-
         @Override
         public void gotResult(int code, String alias, Set<String> tags) {
             if (instance == null) {
                 return;
             }
-
             JSONObject data = new JSONObject();
             try {
                 data.put("resultCode", code);
                 data.put("tags", tags);
                 data.put("alias", alias);
 
-                String jsEvent = String
-                        .format("cordova.fireDocumentEvent('jpush.setTagsWithAlias',%s)",
-                                data.toString());
-                instance.webView.sendJavascript(jsEvent);
-
-
+                String format = "cordova.fireDocumentEvent('jpush.setTagsWithAlias',%s)";
+                final String js = String.format(format, data.toString());
+                cordovaActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        webView.loadUrl("javascript:" + js);
+                    }
+                });
             } catch (JSONException e) {
-
+                e.printStackTrace();
             }
         }
     };
@@ -714,34 +671,26 @@ public class JMessagePlugin extends CordovaPlugin {
         boolean mode;
         try {
             mode = data.getBoolean(0);
-            // if (mode.equals("true")) {
-            // 	JPushInterface.setDebugMode(true);
-            // } else if (mode.equals("false")) {
-            // 	JPushInterface.setDebugMode(false);
-            // } else {
-            // 	callbackContext.error("error mode");
-            // }
             JPushInterface.setDebugMode(mode);
             callbackContext.success();
-        } catch (JSONException e) {
+        } catch(JSONException e) {
+            e.printStackTrace();
         }
     }
 
-    void stopPush(JSONArray data,
-                  CallbackContext callbackContext) {
-        JPushInterface.stopPush(this.cordova.getActivity().getApplicationContext());
+    void stopPush(JSONArray data, CallbackContext callbackContext) {
+        JPushInterface.stopPush(cordovaActivity.getApplicationContext());
         callbackContext.success();
     }
 
-    void resumePush(JSONArray data,
-                    CallbackContext callbackContext) {
-        JPushInterface.resumePush(this.cordova.getActivity().getApplicationContext());
+    void resumePush(JSONArray data, CallbackContext callbackContext) {
+        JPushInterface.resumePush(cordovaActivity.getApplicationContext());
         callbackContext.success();
     }
 
-    void isPushStopped(JSONArray data,
-                       CallbackContext callbackContext) {
-        boolean isStopped = JPushInterface.isPushStopped(this.cordova.getActivity().getApplicationContext());
+    void isPushStopped(JSONArray data, CallbackContext callbackContext) {
+        boolean isStopped = JPushInterface.isPushStopped(
+            cordovaActivity.getApplicationContext());
         if (isStopped) {
             callbackContext.success(1);
         } else {
@@ -749,8 +698,7 @@ public class JMessagePlugin extends CordovaPlugin {
         }
     }
 
-    void setLatestNotificationNum(JSONArray data,
-                                  CallbackContext callbackContext) {
+    void setLatestNotificationNum(JSONArray data, CallbackContext callbackContext) {
         int num = -1;
         try {
             num = data.getInt(0);
@@ -759,14 +707,14 @@ public class JMessagePlugin extends CordovaPlugin {
             callbackContext.error("error reading num json");
         }
         if (num != -1) {
-            JPushInterface.setLatestNotificationNumber(this.cordova.getActivity().getApplicationContext(), num);
+            JPushInterface.setLatestNotificationNumber(
+                cordovaActivity.getApplicationContext(), num);
         } else {
             callbackContext.error("error num");
         }
     }
 
-    void setPushTime(JSONArray data,
-                     CallbackContext callbackContext) {
+    void setPushTime(JSONArray data, CallbackContext callbackContext) {
         Set<Integer> days = new HashSet<Integer>();
         JSONArray dayArray;
         int startHour = -1;
@@ -786,25 +734,25 @@ public class JMessagePlugin extends CordovaPlugin {
         } catch (JSONException e) {
             callbackContext.error("error reading hour json");
         }
-        JPushInterface.setPushTime(this.cordova.getActivity().getApplicationContext(), days, startHour, endHour);
+        JPushInterface.setPushTime(cordovaActivity.getApplicationContext(),
+            days, startHour, endHour);
         callbackContext.success();
     }
 
     void onResume(JSONArray data, CallbackContext callbackContext) {
-        JPushInterface.onResume(this.cordova.getActivity());
+        JPushInterface.onResume(cordovaActivity);
     }
 
     void onPause(JSONArray data, CallbackContext callbackContext) {
-        JPushInterface.onPause(this.cordova.getActivity());
+        JPushInterface.onPause(cordovaActivity);
     }
 
     void reportNotificationOpened(JSONArray data, CallbackContext callbackContext) {
         try {
             String msgID;
             msgID = data.getString(0);
-            JPushInterface.reportNotificationOpened(this.cordova.getActivity(), msgID);
+            JPushInterface.reportNotificationOpened(cordovaActivity, msgID);
         } catch (JSONException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -815,17 +763,14 @@ public class JMessagePlugin extends CordovaPlugin {
             Log.i(TAG, "mJPushReceiveCallback is null");
             return;
         }
-
         PluginResult dataResult = new PluginResult(PluginResult.Status.OK, jsonData);
         dataResult.setKeepCallback(true);
         mJPushReceiveCallback.sendPluginResult(dataResult);
-
     }
 
-
-    //构造上传到Js 的 Push 数据
+    //构造上传到 js 的 Push 数据
     private static JSONObject basePushJsonObject(String message,
-                                                 Map<String, Object> extras) {
+            Map<String, Object> extras) {
         JSONObject data = new JSONObject();
         try {
             JSONObject jExtras = new JSONObject();
@@ -841,31 +786,27 @@ public class JMessagePlugin extends CordovaPlugin {
                 data.put("extras", jExtras);
             }
         } catch (JSONException e) {
-
+            e.printStackTrace();
         }
         return data;
     }
 
-
-    private static JSONObject getPushObject(String messageWrapTyle,
-                                            String messageKeyword,
-                                            String message,
-                                            Map<String, Object> extras) {
-
+    private static JSONObject getPushObject(String messageWrapType,
+            String messageKeyword, String message, Map<String, Object> extras) {
         JSONObject data = basePushJsonObject(message, extras);
         JSONObject data2 = new JSONObject();
         try {
             data.put(messageKeyword, message);
             data2.put("data", data);
-            data2.put("messageWrapTyle", messageWrapTyle);
-
+            data2.put("messageWrapType", messageWrapType);
         } catch (JSONException e) {
-
+            e.printStackTrace();
         }
         return data2;
     }
 
-    public static void transmitPushMessage(String action, String message, Map<String, Object> extras) {
+    public static void transmitPushMessage(String action, String message,
+            Map<String, Object> extras) {
         JSONObject data = null;
         if (action.equals(JPushInterface.ACTION_MESSAGE_RECEIVED)) {
             data = getPushObject("ACTION_MESSAGE_RECEIVED", "message", message, extras);
@@ -874,7 +815,7 @@ public class JMessagePlugin extends CordovaPlugin {
         } else if (action.equals(JPushInterface.ACTION_NOTIFICATION_OPENED)) {
             data = getPushObject("ACTION_NOTIFICATION_OPENED", "alert", message, extras);
         } else {
-            Log.w(TAG, "unkown push action ");
+            Log.w(TAG, "unknown push action.");
         }
 
         if (instance != null && data != null) {
@@ -883,7 +824,8 @@ public class JMessagePlugin extends CordovaPlugin {
             if (instance == null) {
                 Log.w(TAG, "instance is null");
             }
-            Log.w(TAG, " err when transmit Message to js ");
+            Log.w(TAG, " err when transmit Message to js.");
         }
     }
+
 }

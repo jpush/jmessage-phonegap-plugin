@@ -7,20 +7,23 @@
 
     <!--<meta name="viewport"-->
     <!--content="width=device-width; initial-scale=1.0; maximum-scale=1.0; minimum-scale=1.0; user-scalable=no; target-densityDpi=device-dpi"/>-->
-    <meta name="viewport"
-          content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi"/>
+    <meta name="viewport" content="user-scalable=no, initial-scale=1,
+        maximum-scale=1, minimum-scale=1, width=device-width,
+        height=device-height, target-densitydpi=device-dpi"/>
 
-    <link rel="stylesheet" href="css/themes/default/jquery.mobile-1.3.2.min.css">
-    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,700">
+    <link rel="stylesheet"
+        href="css/themes/default/jquery.mobile-1.3.2.min.css">
+    <link rel="stylesheet"
+        href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,700">
     <script src="js/jquery.js"></script>
     <script src="js/jquery.mobile-1.3.2.min.js"></script>
     <script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript">
-
         var usernameForConversation = "";//TODO: FIX ME
 
         function onDeviceReady() {
             console.log("JPushPlugin:Device ready!");
+
             window.plugins.jPushPlugin.init();
             window.plugins.jmessagePlugin.init();
 
@@ -28,28 +31,29 @@
             getPushRegistrationID();
         }
 
-        /////   Login Page ////////////
+        // Login Page
         $(document).on("pageshow", "#loginPage", function () {
             console.log("loginPage show");
-            
-        	});
+        });
 
         function register() {
             console.log("register");
 
-            var username = $("#registerUername").val();
+            var username = $("#registerUsername").val();
             var password = $("#registerPassword").val();
 
-            window.plugins.jmessagePlugin.register(username, password, function (response) {
-                var ss = JSON.stringify(response);
-                console.log("login callback sucess" + ss);
-                alert("register ok");
-
-            }, function (response) {
-                var ss = JSON.stringify(response);
-                console.log("login callback fail" + ss);
-                alert(response.errorDscription);
-            });
+            window.plugins.jmessagePlugin.register(username, password,
+                function (response) {
+                    var ss = JSON.stringify(response);
+                    console.log("login callback success" + ss);
+                    alert("register ok");
+                },
+                function (response) {
+                    var ss = JSON.stringify(response);
+                    console.log("login callback fail" + ss);
+                    alert(response.errorDescription);
+                }
+            );
         }
 
         function checkIsLogin() {
@@ -72,76 +76,75 @@
             });
         }
 
-        function updataUserInfo() {
-            window.plugins.jmessagePlugin.getUserInfo(function (response) {
-                var responseString = JSON.stringify(response);
-                console.log("user is login" + responseString);
+        function updateUserInfo() {
+            window.plugins.jmessagePlugin.getUserInfo(
+                function (response) {
+                    var responseString = JSON.stringify(response);
+                    console.log("user is login" + responseString);
 
-                window.plugins.jmessagePlugin.username = response.username;
-                window.plugins.jmessagePlugin.nickname = response.nickname;
-                window.plugins.jmessagePlugin.gender = response.gender;
-            }, function (response) {
+                    window.plugins.jmessagePlugin.username = response.username;
+                    window.plugins.jmessagePlugin.nickname = response.nickname;
+                    window.plugins.jmessagePlugin.gender = response.gender;
+                }, function (response) {
 
-            });
+                });
         }
 
         function getUserDisplayName() {
             if (window.plugins.jmessagePlugin.nickname.length == 0) {
                 return window.plugins.jmessagePlugin.username;
-            }
-            else {
+            } else {
                 return window.plugins.jmessagePlugin.nickname;
             }
         }
 
         function login() {
             console.log("click login");
-            var username = $("#loginUername").val();
-            var password = $("#loginPassword").val();
 
+            var username = $("#loginUsername").val();
+            var password = $("#loginPassword").val();
             console.log(username + " " + password);
 
-            window.plugins.jmessagePlugin.login(username, password, function (response) {
-                var ss = JSON.stringify(response);
-                console.log("login callback sucess" + ss);
-                window.plugins.jmessagePlugin.username = username;
-                alert("login ok");
-                gotoConversation();
+            window.plugins.jmessagePlugin.login(username, password,
+                function (response) {
+                    var ss = JSON.stringify(response);
+                    console.log("login callback success" + ss);
 
-            }, function (response) {
-                var ss = JSON.stringify(response);
-                console.log("login callback fail" + ss);
+                    window.plugins.jmessagePlugin.username = username;
+                    alert("login ok");
+                    gotoConversation();
+                }, function (response) {
+                    var ss = JSON.stringify(response);
+                    console.log("login callback fail" + ss);
 
-                alert("login fail. errcode:"+ response.errorCode + "  error discription:" +  response.errorDscription);
+                    alert("login fail. errorCode:"+ response.errorCode
+                        + "  error description:" +  response.errorDescription);
 
-                //error code 请参考 http://docs.jpush.io/client/im_errorcode/
-                console.log(device.platform);
-                console.log(response.errorCode);
+                    //error code 请参考 http://docs.jpush.io/client/im_errorcode/
+                    console.log(device.platform);
+                    console.log(response.errorCode);
 
-                 if(response.errorCode == "801003"){
-                    alert("用户未注册");
-                }
-
-            });
+                    if(response.errorCode == "801003") {
+                        alert("用户未注册");
+                    }
+                });
         }
 
         function gotoRegister() {
             $.mobile.navigate("#registerPage", {transition: "slide"});
         }
 
-        /////   Conversation List ////////////
 
+        /////   Conversation List ////////////
 
         $(document).on("pageshow", "#conversationListPage", function () {
             console.log("conversationListPage show username:" + usernameForConversation);
             updateConversationList();
-
-            document.addEventListener("jmessage.conversationChange", onConversatinoChange, false);
+            document.addEventListener("jmessage.conversationChange", onConversationChange, false);
             document.addEventListener("jmessage.singleReceiveMessage", updateConversationList, false);
-
         });
 
-        function onConversatinoChange(data) {
+        function onConversationChange(data) {
             updateConversationList();
         }
 
@@ -154,28 +157,29 @@
             $('#conversationList').empty().listview('refresh');
 
             console.log("updateConversationList");
-            window.plugins.jmessagePlugin.getSingleConversationList(function (response) {
-                var ss = JSON.stringify(response);
-                console.log("getAllSingleConversation ok" + ss);
 
-                for (var o in response) {
-                    insertCoversation(response[o]);
-                }
-            }, function (response) {
-                alert("getAllSingleConversation failed");
-                console.log("getAllSingleConversation fail" + response);
-            });
+            window.plugins.jmessagePlugin.getSingleConversationList(
+                function (response) {
+                    var ss = JSON.stringify(response);
+
+                    console.log("getAllSingleConversation ok" + ss);
+
+                    for (var o in response) {
+                        insertConversation(response[o]);
+                    }
+                }, function (response) {
+                    alert("getAllSingleConversation failed");
+                    console.log("getAllSingleConversation fail" + response);
+                });
         }
 
-
-        function onclickConversationRow(username) {
-            console.log("onclickConversationRow: username: " + username);
+        function onClickConversationRow(username) {
+            console.log("onClickConversationRow: username: " + username);
             usernameForConversation = username;
             $.mobile.navigate("#conversationPage", {transition: "slide"});
         }
 
-        function insertCoversation(dict) {
-
+        function insertConversation(dict) {
             var ss = JSON.stringify(dict);
             console.log("insert" + ss);
             var nickname = dict.nickname;
@@ -184,10 +188,12 @@
 
             // <li><a onclick="onclickConversationRow('aa234')">jjj</a></li>
 
-            var insertString = "<li><a onclick=\"onclickConversationRow('" + username + "')\">" + username + ":" + lastMessage + '</a></li>';
+            var insertString = "<li><a onclick=\"onClickConversationRow('"
+                + username + "')\">" + username + ":" + lastMessage + '</a></li>';
             console.log(insertString);
             $('#conversationList').append(insertString).listview('refresh');
         }
+
         function naviBack() {
             console.log("naviBack");
             // history.back();
@@ -195,7 +201,6 @@
         }
 
         function gotoConversation() {
-
             console.log("gotoConversation");
             $.mobile.navigate("#conversationListPage", {transition: "slide"});
         }
@@ -205,12 +210,12 @@
 
         var tempMessageDataSource = new Array();
 
-        $(document).on("pageshow", "#conversationPage", function () {
-            console.log("conversationPage show   " + usernameForConversation);
-            document.addEventListener("jmessage.singleReceiveMessage", onReceiveSingleMessage, false);
+        $(document).on("pageshow", "#conversationPage", function() {
+            console.log("conversationPage show " + usernameForConversation);
+            document.addEventListener("jmessage.singleReceiveMessage",
+                onReceiveSingleMessage, false);
             getMessageHistory(usernameForConversation);
         });
-
 
         function onReceiveSingleMessage(message) {
             console.log("onReceiveSingleMessage ####");
@@ -230,55 +235,59 @@
 
         function sendMessage() {
             var messageContentString = $("#messageContent").val();
-            window.plugins.jmessagePlugin.sendSingleTextMessage(usernameForConversation, messageContentString, function (response) {
-                var ss = JSON.stringify(response);
-                console.log("send message sucess" + ss);
-                var msg_body = new Object();
-                msg_body.text = messageContentString;
-                var dict = new Object();
-                dict.msg_type = "text";
-                dict.from_name = getUserDisplayName();
-                dict.from_id=window.plugins.jmessagePlugin.username;
-                dict.msg_body = msg_body;
-                dict.create_time = new Date().getTime();
+            window.plugins.jmessagePlugin.sendSingleTextMessage(
+                usernameForConversation, messageContentString,
+                function (response) {
+                    var ss = JSON.stringify(response);
 
-                tempMessageDataSource.unshift(dict);
-                refreshConversation();
-                <!--insertMessage(dict);-->
-            }, function (response) {
-                console.log("send message fail" + response);
-                alert("send message fail" + response);
-            });
+                    console.log("send message success" + ss);
+
+                    var msg_body = new Object();
+                    msg_body.text = messageContentString;
+
+                    var dict = new Object();
+                    dict.msg_type = "text";
+                    dict.from_name = getUserDisplayName();
+                    dict.from_id = window.plugins.jmessagePlugin.username;
+                    dict.msg_body = msg_body;
+                    dict.create_time = new Date().getTime();
+
+                    tempMessageDataSource.unshift(dict);
+                    refreshConversation();
+                    <!--insertMessage(dict);-->
+                }, function (response) {
+                    console.log("send message fail" + response);
+                    alert("send message fail" + response);
+                });
         }
 
         function insertMessage(dict) {
-
             //var ss = JSON.stringify(dict);
             //console.log("insert" + ss);
             if (dict.msg_type == "text") {
                 var lastMessage = dict.msg_body.text;
             }
             var fromName = dict.from_name;
-
             var create_time = dict.create_time;
-            var create_time_sring = new Date(create_time).toLocaleString();
+            var create_time_string = new Date(create_time).toLocaleString();
+
             console.log(window.plugins.jmessagePlugin.username);
             console.log(window.plugins.jmessagePlugin.nickname);
 
-            if(dict.from_id == window.plugins.jmessagePlugin.username){
-                var insertString = '<li style="text-align:right"><span style="font-size:12px">' + create_time_sring + "</span><br>" + fromName + ":" + lastMessage + '</li>';
-
+            if(dict.from_id == window.plugins.jmessagePlugin.username) {
+                var insertString = '<li style="text-align:right"><span style="font-size:12px">'
+                    + create_time_string + "</span><br>" + fromName + ":"
+                    + lastMessage + '</li>';
+            } else {
+                insertString = '<li style="text-align:left"><span style="font-size:12px">'
+                    + create_time_string + "</span><br>" + fromName + ":"
+                    + lastMessage + '</li>';
             }
-            else {
-                 insertString = '<li style="text-align:left"><span style="font-size:12px">' + create_time_sring + "</span><br>" + fromName + ":" + lastMessage + '</li>';
-
-            }
-
             // console.log(insertString);
             $('#messageList').append(insertString).listview('refresh');
         }
 
-        function  refreshConversation() {
+        function refreshConversation() {
             $('#messageList').empty().listview('refresh');
             for (var o in tempMessageDataSource) {
                 insertMessage(tempMessageDataSource[o]);
@@ -287,21 +296,22 @@
 
         function getMessageHistory(username) {
             $('#messageList').empty().listview('refresh');
-            console.log("getMessageHistory lastest 50 message with username:" + username);
+            console.log("getMessageHistory latest 50 message with username:" + username);
             //读取的是从0开始的50条聊天记录，可按实现需求传不同的值
-            window.plugins.jmessagePlugin.getSingleHistoryMessage(username, 0, 50, function (response) {
-
-                var ss = JSON.stringify(response);
-                console.log("getMessageHistory ok: " + ss);
-                <!--for (var o in response) {-->
-                <!--insertMessage(response[o]);-->
-                <!--}-->
-                tempMessageDataSource = response;
-                refreshConversation();
-            }, function (response) {
-                alert("getMessageHistory failed");
-                console.log("getMessageHistory fail" + response);
-            });
+            window.plugins.jmessagePlugin.getSingleHistoryMessage(username, 0, 50,
+                function (response) {
+                    var ss = JSON.stringify(response);
+                    console.log("getMessageHistory ok: " + ss);
+                    <!--for (var o in response) {-->
+                    <!--insertMessage(response[o]);-->
+                    <!--}-->
+                    tempMessageDataSource = response;
+                    refreshConversation();
+                }, function (response) {
+                    alert("getMessageHistory failed");
+                    console.log("getMessageHistory fail" + response);
+                }
+            );
         }
 
         /////////// addConversationPage //////////////
@@ -312,47 +322,40 @@
             $.mobile.navigate("#conversationPage", {transition: "slide"});
         }
 
-
         /////   JPush  ////////////
 
         // 	当推送页显示时
         $(document).on("pageshow", "#pushPage", function () {
             console.log("pushPage show username:" + usernameForConversation);
-
             try {
-                window.plugins.jPushPlugin.getRegistrationID(onGetRegistradionID);
+                window.plugins.jPushPlugin.getRegistrationID(onGetRegistrationID);
             }
             catch (exception) {
                 console.log(exception);
             }
         });
 
-        function onGetRegistradionID(respone) {
-            console.log("registrationID is " + respone);
-            $("#registrationid").html(respone);
+        function onGetRegistrationID(response) {
+            console.log("registrationID is " + response);
+            $("#registrationId").html(response);
         }
 
         function getPushRegistrationID() {
-
             try {
-                window.plugins.jPushPlugin.getRegistrationID(onGetRegistradionID);
-
+                window.plugins.jPushPlugin.getRegistrationID(onGetRegistrationID);
                 if (device.platform != "Android") {
                     window.plugins.jPushPlugin.setDebugModeFromIos();
                     window.plugins.jPushPlugin.setApplicationIconBadgeNumber(0);
                 } else {
                     window.plugins.jPushPlugin.setDebugMode(true);
                 }
-            }
-            catch (exception) {
+            } catch (exception) {
                 console.log(exception);
             }
         }
 
-
         function onOpenNotification(event) {
             console.log(" index onOpenNotification");
-
             try {
                 var alertContent;
                 if (device.platform == "Android") {
@@ -360,10 +363,8 @@
                 } else {
                     alertContent = event.aps.alert;
                 }
-                alert("open Notificaiton:" + alertContent);
-
-            }
-            catch (exception) {
+                alert("open Notification:" + alertContent);
+            } catch (exception) {
                 console.log("JPushPlugin:onOpenNotification" + exception);
             }
         }
@@ -373,15 +374,13 @@
             try {
                 var alertContent;
                 if (device.platform == "Android") {
-                    //alertContent = window.plugins.jPushPlugin.receiveNotification.alert;
                     alertContent = event.alert;
                 } else {
                     alertContent = event.aps.alert;
                 }
                 $("#notificationResult").html(alertContent);
-
             }
-            catch (exeption) {
+            catch (exception) {
                 console.log(exception)
             }
         }
@@ -397,8 +396,7 @@
                 console.log(message);
                 $("#messageResult").html(message);
 
-            }
-            catch (exception) {
+            } catch (exception) {
                 console.log("JPushPlugin:onReceivePushMessage-->" + exception);
             }
         }
@@ -410,131 +408,105 @@
                 result += "tags:" + event.tags + " ";
                 result += "alias:" + event.alias + " ";
                 $("#tagAliasResult").html(result);
-            }
-            catch (exception) {
+            } catch (exception) {
                 console.log(exception)
             }
         }
+
         function setTagWithAlias() {
             try {
-
-                var username = $("#loginUername").val();
-
+                var username = $("#loginUsername").val();
                 var tag1 = $("#tagText1").val();
                 var tag2 = $("#tagText2").val();
                 var tag3 = $("#tagText3").val();
                 var alias = $("#aliasText").val();
-
                 var dd = [];
-                if (tag1 == "" && tag2 == "" && tag3 == "") {
-                }
-                else {
-                    if (tag1 != "") {
-                        dd.push(tag1);
-                    }
-                    if (tag2 != "") {
-                        dd.push(tag2);
-                    }
-                    if (tag3 != "") {
-                        dd.push(tag3);
-                    }
-                }
 
+                if (tag1 != "") {
+                    dd.push(tag1);
+                }
+                if (tag2 != "") {
+                    dd.push(tag2);
+                }
+                if (tag3 != "") {
+                    dd.push(tag3);
+                }
                 window.plugins.jPushPlugin.setTagsWithAlias(dd, alias);
-
-            }
-            catch (exception) {
+            } catch (exception) {
                 console.log(exception);
             }
         }
 
-
-        /////   My Info Page  ////////////
-
-
+        <!-- My info page -->
         $(document).on("pageshow", "#myInfoPage", function () {
-
-            var genderStr = "unknow";
+            var genderStr = "unknown";
             var gender = window.plugins.jmessagePlugin.gender;
             if (gender == 1) {
                 genderStr = "male";
-            }
-            else if (gender == 2) {
+            } else if (gender == 2) {
                 genderStr = "female";
             }
-
             console.log("myInfoPage show" + window.plugins.jmessagePlugin.username);
-            $("#myinfoUsername").text(window.plugins.jmessagePlugin.username);
-            $("#myinfoNickname").val(window.plugins.jmessagePlugin.nickname);
-            $("#myinfoGender").val(genderStr);
-
+            $("#myInfoUsername").text(window.plugins.jmessagePlugin.username);
+            $("#myInfoNickname").val(window.plugins.jmessagePlugin.nickname);
+            $("#myInfoGender").val(genderStr);
         });
-
 
         function logout() {
             console.log("logout");
-
-            window.plugins.jmessagePlugin.logout(function (response) {
+            window.plugins.jmessagePlugin.logout(function(response) {
                 $.mobile.navigate("#loginPage", {transition: "pop"});
             }, function (response) {
-
                 alert("logout fail");
             });
         }
 
         function setUserNickname() {
-            var nickname = $("#myinfoNickname").val();
-            window.plugins.jmessagePlugin.setUserNickname(nickname, function (response) {
+            var nickname = $("#myInfoNickname").val();
+            window.plugins.jmessagePlugin.setUserNickname(nickname, function(response) {
                 console.log(response);
-                updataUserInfo();
-                alert("updata ok");
-
+                updateUserInfo();
+                alert("update ok");
             }, function (response) {
-                console.log("updata nickname fail:" + response.errorDscription);
-                alert("updata fail");
-
+                console.log("update nickname fail:" + response.errorDescription);
+                alert("update fail");
             });
         }
 
         function setUserGender() {
-            var gender = $("#myinfoGender").val();
-            window.plugins.jmessagePlugin.setUserGender(gender, function (response) {
-                console.log(response);
-                updataUserInfo();
-                alert("updata ok");
-
-
-            }, function (response) {
-                console.log("updata fail:" + response.errorDscription);
-                alert("updata fail");
-
-            });
+            var gender = $("#myInfoGender").val();
+            window.plugins.jmessagePlugin.setUserGender(gender,
+                function (response) {
+                    console.log(response);
+                    updateUserInfo();
+                    alert("update ok");
+                }, function (response) {
+                    console.log("update fail:" + response.errorDescription);
+                    alert("update fail");
+                });
         }
-
 
         function onLoad() {
             console.log("onLoad");
             document.addEventListener("deviceready", onDeviceReady, false);
-
             document.addEventListener("jpush.setTagsWithAlias", onSetTagsWithAlias, false);
             document.addEventListener("jpush.openNotification", onOpenNotification, false);
             document.addEventListener("jpush.receiveNotification", onReceiveNotification, false);
             document.addEventListener("jpush.receiveMessage", onReceivePushMessage, false);
         }
-
     </script>
 </head>
 
 <body onload="onLoad()">
 
-<!--登录页-->
+<!-- Login page -->
 <div data-role="page" id="loginPage">
     <div data-role="header">
         <h1>Login</h1>
     </div>
     <div data-role="content">
         <h3>username:</h3>
-        <input type="text" placeholder="username" id="loginUername">
+        <input type="text" placeholder="username" id="loginUsername">
 
         <h3>password:</h3>
         <input type="text" placeholder="password" id="loginPassword">
@@ -549,10 +521,9 @@
             </div>
         </div>
     </div>
-
 </div>
 
-<!--注册页-->
+<!-- Register page -->
 <div data-role="page" id="registerPage">
     <div data-role="header">
         <a href="#loginPage" data-icon="arrow-l">Back</a>
@@ -560,7 +531,7 @@
     </div>
     <div data-role="content">
         <h3>username:</h3>
-        <input type="text" placeholder="username" id="registerUername">
+        <input type="text" placeholder="username" id="registerUsername">
         <h3>password:</h3>
         <input type="text" placeholder="password" id="registerPassword">
         <div><h2></h2></div>
@@ -568,11 +539,10 @@
     </div>
 </div>
 
-<!--会话列表 -->
+<!-- Conversation list -->
 <div data-role="page" id="conversationListPage">
     <div data-role="header">
         <h1>ConversationList</h1>
-
         <div data-role="navbar">
             <ul>
                 <li><a href="#conversationListPage" class="ui-btn-active ui-state-persist">ConversationList</a></li>
@@ -586,29 +556,19 @@
         <div data-role="content">
             <div class="ui-grid-b">
                 <div class="ui-block-c">
-                    <!--<div data-role="controlgroup" data-type="horizontal" data-mini="true">-->
-                        <!--<a href="#" data-role="button" data-iconpos="notext" data-icon="plus" data-theme="b"-->
-                           <!--onclick="gotoAddConversation()">Add</a>-->
-                    <!--</div>-->
                     <input type="button" onclick="gotoAddConversation()" value="add"/>
-
                 </div>
             </div>
             <div>
                 <h4></h4>
             </div>
             <ul data-role="listview" id="conversationList">
-                <!--
-                                         <li><a onclick="onclickConversationRow('aa234')">jjj</a></li>
-                 -->
             </ul>
         </div>
     </div>
-    <!--会话列表 end -->
 </div>
 
-
-<!--         会话 -->
+<!-- Conversation page -->
 <div data-role="page" id="conversationPage">
     <div data-role="header">
         <a href="#conversationListPage" data-icon="arrow-l">Back</a>
@@ -619,7 +579,7 @@
             <!--<h3>username:</h3>-->
             <div>
                 <!--<input type="button" onclick="naviBack()" value="返回"/>-->
-                <input type="text" id="messageContent">
+                <input type="text" id="messageContent" />
                 <input type="button" onclick="sendMessage()" value="发送" data-inline="true"/>
             </div>
             <div>
@@ -633,7 +593,6 @@
     </div>
 </div>
 
-
 <div data-role="page" id="addConversationPage">
     <div data-role="header">
         <a href="#conversationListPage" data-icon="arrow-l">Back</a>
@@ -641,21 +600,20 @@
     </div>
     <div data-role="content">
         <div class="ui-grid-b">
-
             <div class="ui-block-c">
                 <!--<input type="button" onclick="naviBack()" value="返回"/>-->
             </div>
         </div>
-        <label for="addConversationText">username</label><input type="text" id="addConversationText"/>
+        <label for="addConversationText">username</label>
+        <input type="text" id="addConversationText"/>
         <input type="button" onclick="addConversation()" value="确定"/>
     </div>
 </div>
 
-<!--  	推送	 -->
+<!-- Push page -->
 <div data-role="page" id="pushPage">
     <div data-role="header">
-        <h1>Push Seting</h1>
-
+        <h1>Push Setting</h1>
         <div data-role="navbar">
             <ul>
                 <li><a href="#conversationListPage">ConversationList</a></li>
@@ -670,7 +628,7 @@
             <span name="alias" id="alias"></span>
             <hr/>
             <label>RegistrationID: </label>
-            <label id="registrationid">null</label>
+            <label id="registrationId">null</label>
         </div>
         <div data-role="fieldcontain">
             <label>Tags: </label>
@@ -704,7 +662,7 @@
             <input type="button" onclick="setTagWithAlias()" value="Add tag and alias"/>
         </div>
         <div data-role="fieldcontain">
-            <label id="tagAliasPrompt">设置tag/alias结果： </label>
+            <label id="tagAliasPrompt">设置tag/alias结果:</label>
             <label id="tagAliasResult">null</label>
         </div>
         <div data-role="fieldcontain">
@@ -716,14 +674,12 @@
             <label id="messageResult">null</label>
         </div>
     </div>
-
 </div>
 
-<!--  	my info	 -->
+<!--  my info  -->
 <div data-role="page" id="myInfoPage">
     <div data-role="header">
         <h1>MyInfo</h1>
-
         <div data-role="navbar">
             <ul>
                 <li><a href="#conversationListPage">ConversationList</a></li>
@@ -736,21 +692,16 @@
     <div>
         <div data-role="content">
             <div data-role="fieldcontain">
-
-                <label>username:</label> <label id="myinfoUsername">null:</label>
+                <label>username:</label> <label id="myInfoUsername">null:</label>
             </div>
 
-            <!--<input type="text" name="text-1" id="myinfoUsername" value="">-->
-
-            <label for="myinfoNickname">nickname:</label>
-            <input type="text" name="text-2" id="myinfoNickname" value="">
+            <label for="myInfoNickname">nickname:</label>
+            <input type="text" name="text-2" id="myInfoNickname" value="" />
             <input type="button" onclick="setUserNickname()" value="set nickname"/>
 
-
-            <label for="myinfoGender">gender:(male , female , unknow) </label>
-            <input type="text" name="text-3" id="myinfoGender" value="">
+            <label for="myInfoGender">gender:(male , female , unknown)</label>
+            <input type="text" name="text-3" id="myInfoGender" value="">
             <input type="button" onclick="setUserGender()" value="set gender"/>
-
 
             <div data-role="fieldcontain">
                 <br>
@@ -760,7 +711,5 @@
     </div>
 </div>
 
-
 </body>
-</html>  
-
+</html>
