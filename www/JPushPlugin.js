@@ -1,28 +1,28 @@
 
 
- var JPushPlugin = function () {
+var JPushPlugin = function () {
 };
 
 //private plugin function
 
 JPushPlugin.prototype.receiveMessage = {};
 JPushPlugin.prototype.openNotification = {};
-
 JPushPlugin.prototype.receiveNotification = {};
 
 
 JPushPlugin.prototype.isPlatformIOS = function () {
-    return device.platform == "iPhone" || device.platform == "iPad" || device.platform == "iPod touch" || device.platform == "iOS"
+    return device.platform == "iPhone" || device.platform == "iPad"
+        || device.platform == "iPod touch" || device.platform == "iOS";
 };
 
 JPushPlugin.prototype.error_callback = function (msg) {
-    console.log("Javascript Callback Error: " + msg)
+    console.log("Javascript Callback Error: " + msg);
 };
 
 JPushPlugin.prototype.call_native = function (name, args, callback) {
-    ret = cordova.exec(callback, this.error_callback, 'JMessagePlugin', name, args);
-    return ret;
+    return cordova.exec(callback, this.error_callback, 'JMessagePlugin', name, args);
 };
+
 //public plugin function
 
 JPushPlugin.prototype.startLogPageView = function (pageName) {
@@ -42,6 +42,7 @@ JPushPlugin.prototype.beginLogPageView = function (pageName, duration) {
         this.call_native("beginLogPageView", [pageName, duration], null);
     }
 };
+
 JPushPlugin.prototype.setApplicationIconBadgeNumber = function (badge) {
     if (this.isPlatformIOS()) {
         this.call_native("setApplicationIconBadgeNumber", [badge], null);
@@ -62,18 +63,15 @@ JPushPlugin.prototype.setTagsWithAlias = function (tags, alias) {
         var arrayTagWithAlias = [tags];
         arrayTagWithAlias.unshift(alias);
         this.call_native("setTagsWithAlias", arrayTagWithAlias, null);
-    }
-    catch (exception) {
+    } catch (exception) {
         console.log(exception);
     }
 };
 
 JPushPlugin.prototype.setTags = function (tags) {
-
     try {
         this.call_native("setTags", tags, null);
-    }
-    catch (exception) {
+    } catch (exception) {
         console.log(exception);
     }
 };
@@ -81,43 +79,36 @@ JPushPlugin.prototype.setTags = function (tags) {
 JPushPlugin.prototype.setAlias = function (alias) {
     try {
         this.call_native("setAlias", [alias], null);
-    }
-    catch (exception) {
+    } catch (exception) {
         console.log(exception);
     }
 };
 
 JPushPlugin.prototype.getRegistrationID = function (callback) {
-
     try {
         var data = [];
         this.call_native("getRegistrationID", [data], callback);
-    }
-    catch (exception) {
+    } catch (exception) {
         console.log(exception);
     }
 };
 
 JPushPlugin.prototype.setBadge = function (value) {
-
     if (this.isPlatformIOS()) {
         try {
             this.call_native("setBadge", [value], null);
-        }
-        catch (exception) {
+        } catch (exception) {
             console.log(exception);
         }
-
     }
 };
-JPushPlugin.prototype.resetBadge = function () {
 
+JPushPlugin.prototype.resetBadge = function () {
     if (this.isPlatformIOS()) {
         try {
             var data = [];
             this.call_native("resetBadge", [data], null);
-        }
-        catch (exception) {
+        } catch (exception) {
             console.log(exception);
         }
     }
@@ -128,14 +119,15 @@ JPushPlugin.prototype.setDebugModeFromIos = function () {
         var data = [];
         this.call_native("setDebugModeFromIos", [data], null);
     }
-
 };
+
 JPushPlugin.prototype.setLogOFF = function () {
     if (this.isPlatformIOS()) {
         var data = [];
         this.call_native("setLogOFF", [data], null);
     }
 };
+
 //////////////iOS push callback////////////////////
 
 JPushPlugin.prototype.onReceiveMessageIniOS = function (data) {
@@ -143,13 +135,12 @@ JPushPlugin.prototype.onReceiveMessageIniOS = function (data) {
     cordova.fireDocumentEvent('jpush.receiveMessage', bToObj);
 };
 
-JPushPlugin.prototype.onOpenNofiticationIniOS = function (data) {
+JPushPlugin.prototype.onOpenNotificationIniOS = function (data) {
     var bToObj = JSON.parse(data);
     cordova.fireDocumentEvent('jpush.openNotification', bToObj);
 };
 
-JPushPlugin.prototype.onReceiveNofiticationIniOS = function (data) {
-
+JPushPlugin.prototype.onReceiveNotificationIniOS = function (data) {
     var bToObj = JSON.parse(data);
     cordova.fireDocumentEvent('jpush.receiveNotification', bToObj);
 };
@@ -160,12 +151,11 @@ JPushPlugin.prototype.onReceiveMessageInAndroid = function (data) {
     cordova.fireDocumentEvent('jpush.receiveMessage', data);
 };
 
-JPushPlugin.prototype.onOpenNofiticationInAndroid = function (data) {
+JPushPlugin.prototype.onOpenNotificationInAndroid = function (data) {
     cordova.fireDocumentEvent('jpush.openNotification', data);
 };
 
-JPushPlugin.prototype.onReceiveNofiticationInAndroid = function (data) {
-
+JPushPlugin.prototype.onReceiveNotificationInAndroid = function (data) {
     var ss = JSON.stringify(data);
     console.log(ss);
     cordova.fireDocumentEvent('jpush.receiveNotification', data);
@@ -203,6 +193,7 @@ JPushPlugin.prototype.setDebugMode = function (mode) {
         this.call_native("setDebugMode", [mode], null);
     }
 };
+
 //setDebugMode
 JPushPlugin.prototype.clearAllNotification = function () {
     if (device.platform == "Android") {
@@ -225,7 +216,6 @@ JPushPlugin.prototype.setLatestNotificationNum = function (num) {
 };
 
 JPushPlugin.prototype.isPushStopped = function (callback) {
-
     data = [];
     this.call_native("isPushStopped", data, callback)
 };
@@ -241,17 +231,20 @@ JPushPlugin.prototype.setDebugMode = function (mode) {
     }
 };
 
-JPushPlugin.prototype.addLocalNotification = function (builderId, content, title, notificaitonID, broadcastTime, extras) {
+JPushPlugin.prototype.addLocalNotification = function (builderId, content,
+        title, notificationID, broadcastTime, extras) {
     if (device.platform == "Android") {
-        data = [builderId, content, title, notificaitonID, broadcastTime, extras];
+        data = [builderId, content, title, notificationID, broadcastTime, extras];
         this.call_native("addLocalNotification", data, null);
     }
 };
+
 JPushPlugin.prototype.removeLocalNotification = function (notificationID) {
     if (device.platform == "Android") {
         this.call_native("removeLocalNotification", [notificationID], null);
     }
 };
+
 JPushPlugin.prototype.clearLocalNotifications = function () {
     if (device.platform == "Android") {
         data = [];
@@ -261,13 +254,11 @@ JPushPlugin.prototype.clearLocalNotifications = function () {
 
 JPushPlugin.prototype.reportNotificationOpened = function (msgID) {
     if (device.platform == "Android") {
-
         this.call_native("reportNotificationOpened", [msgID], null);
     }
 };
 
 //iOS  single
-
 
 if (!window.plugins) {
     window.plugins = {};
@@ -278,7 +269,3 @@ if (!window.plugins.jPushPlugin) {
 }
 
 module.exports = new JPushPlugin();
-
-
-
-

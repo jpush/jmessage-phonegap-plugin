@@ -90,7 +90,7 @@ JMessagePlugin.prototype.onSendSingleTextMessage = function (data) {
         var bToObj = JSON.parse(data);
         console.log(data);
     } catch (exception) {
-        console.log("sendSingleTextMessageRespone " + exception);
+        console.log("sendSingleTextMessageResponse " + exception);
     }
 };
 

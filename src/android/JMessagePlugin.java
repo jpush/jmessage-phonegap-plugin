@@ -375,16 +375,15 @@ public class JMessagePlugin extends CordovaPlugin {
         Log.i(TAG, "  getAllSingleConversation \n" + data);
 
         List<Conversation> list = JMessageClient.getConversationList();
-
         Log.i(TAG, "JMessageGetAllSingleConversation" + list.size());
 
         JSONArray jsonResult = new JSONArray();
 
         for (int i = 0; i < list.size(); ++i) {
-            Conversation conv = list.get(i);
-            if (conv.getType() == ConversationType.single) {
-                UserInfo info = (UserInfo) conv.getTargetInfo();
-                Message msg = conv.getLatestMessage();
+            Conversation con = list.get(i);
+            if (con.getType() == ConversationType.single) {
+                UserInfo info = (UserInfo) con.getTargetInfo();
+                Message msg = con.getLatestMessage();
                 String contentText = "";
                 if (msg != null) {
                     switch (msg.getContentType()) {
@@ -401,7 +400,7 @@ public class JMessagePlugin extends CordovaPlugin {
                     jsonItem.put("nickname", info.getNickname());
                     //jsonItem.put("avatar", info.getAvatar());
                     jsonItem.put("lastMessage", contentText);
-                    jsonItem.put("unreadCount", conv.getUnReadMsgCnt());
+                    jsonItem.put("unreadCount", con.getUnReadMsgCnt());
                     jsonResult.put(jsonItem);
                 } catch (JSONException e) {
                     e.printStackTrace();
