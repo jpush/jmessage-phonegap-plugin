@@ -43,15 +43,56 @@ JMessagePlugin.prototype.setUserGender = function (gender, success, fail) {
     cordova.exec(success, fail, "JMessagePlugin", "setUserGender", [gender]);
 };
 
+JMessagePlugin.prototype.updateUserPassword = function(oldPwd, newPwd,
+        success, fail) {
+    cordova.exec(success, fail, "JMessagePlugin", "updateUserPassword",
+        [oldPwd, newPwd]);
+};
+
 
 //  Message
-JMessagePlugin.prototype.sendSingleTextMessage = function (username, text, success, fail) {
-    cordova.exec(success, fail, "JMessagePlugin", "sendSingleTextMessage", [username, text]);
+JMessagePlugin.prototype.sendSingleTextMessage = function (username, text,
+        success, fail) {
+    cordova.exec(success, fail, "JMessagePlugin", "sendSingleTextMessage",
+        [username, text]);
 };
 
-JMessagePlugin.prototype.getSingleHistoryMessage = function (username, from, limit, success, fail) {
-    cordova.exec(success, fail, "JMessagePlugin", "getSingleConversationHistoryMessage", [username, from, limit]);
+JMessagePlugin.prototype.sendSingleImageMessage = function (username, fileUrl,
+        success, fail) {
+    cordova.exec(success, fail, "JMessagePlugin",
+        "sendSingleImageMessage", [username, fileUrl]);
 };
+
+JMessagePlugin.prototype.sendSingleVoiceMessage = function (username, fileUrl,
+        success, fail) {
+    cordova.exec(success, fail, "JMessagePlugin",
+        "sendSingleVoiceMessage", [username, fileUrl]);
+};
+
+JMessagePlugin.prototype.sendGroupTextMessage = function (username, fileUrl,
+        success, fail) {
+    cordova.exec(success, fail, "JMessagePlugin",
+        "sendGroupTextMessage", [groupId, text]);
+};
+
+JMessagePlugin.prototype.sendGroupImageMessage = function (username, fileUrl,
+        success, fail) {
+    cordova.exec(success, fail, "JMessagePlugin",
+        "sendGroupImageMessage", [groupId, imgUrl]);
+};
+
+JMessagePlugin.prototype.sendGroupVoiceMessage = function (username, fileUrl,
+        success, fail) {
+    cordova.exec(success, fail, "JMessagePlugin",
+        "sendGroupVoiceMessage", [groupId, voiceFileUrl]);
+};
+
+JMessagePlugin.prototype.getSingleHistoryMessage = function (username, from,
+        limit, success, fail) {
+    cordova.exec(success, fail, "JMessagePlugin",
+        "getSingleConversationHistoryMessage", [username, from, limit]);
+};
+
 
 
 //  Conversation

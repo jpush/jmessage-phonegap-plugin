@@ -59,43 +59,49 @@ public class JMessagePlugin extends CordovaPlugin {
 
     private final static List<String> methodList = Arrays.asList(
             /*JMessage*/
+            "deleteSingleConversation",
+            "getAllSingleConversation",
+            "getSingleConversationHistoryMessage",
+            "getUserInfo",
             "initPush",
+            "sendSingleTextMessage",
+            "sendSingleImageMessage",
+            "sendSingleVoiceMessage",
+            "sendGroupTextMessage",
+            "sendGroupImageMessage",
+            "sendGroupVoiceMessage",
+            "setJMessageReceiveCallbackChannel",
+            "setUserAvatar",
+            "setUserGender",
+            "setUserNickname",
+            "setJMessageDebugMode",
+            "updateUserPassword",
             "userRegister",
             "userLogin",
             "userLogout",
-            "getUserInfo",
-            "sendSingleTextMessage",
-            "getSingleConversationHistoryMessage",
-            "getAllSingleConversation",
-            "deleteSingleConversation",
-            "setJMessageReceiveCallbackChannel",
-            "setUserNickname",
-            "setUserGender",
-            "setUserAvatar",
             /*push api*/
-            "setPushReceiveCallbackChannel",
+            "addLocalNotification",
+            "clearAllNotification",
+            "clearNotificationById",
+            "clearLocalNotifications",
             "getRegistrationID",
-            "setTags",
-            "setTagsWithAlias",
+            "init",
+            "isPushStopped",
+            "onResume",
+            "onPause",
+            "removeLocalNotification",
+            "reportNotificationOpened",
+            "resumePush",
             "setAlias",
             "setBasicPushNotificationBuilder",
             "setCustomPushNotificationBuilder",
-            "setPushTime",
-            "init",
-            "setDebugMode",
-            "stopPush",
-            "resumePush",
-            "isPushStopped",
+            "setJPushDebugMode",
             "setLatestNotificationNum",
             "setPushTime",
-            "clearAllNotification",
-            "clearNotificationById",
-            "addLocalNotification",
-            "removeLocalNotification",
-            "clearLocalNotifications",
-            "onResume",
-            "onPause",
-            "reportNotificationOpened"
+            "setPushReceiveCallbackChannel",
+            "setTags",
+            "setTagsWithAlias",
+            "stopPush"
     );
 
     private ExecutorService threadPool = Executors.newFixedThreadPool(1);
@@ -123,10 +129,6 @@ public class JMessagePlugin extends CordovaPlugin {
         JMessageClient.init(cordovaActivity.getApplicationContext());
         JMessageClient.registerEventReceiver(this);
         JPushInterface.init(cordovaActivity.getApplicationContext());
-    }
-
-    public void onPause(boolean multitasking) {
-        Log.i(TAG, "onPause");
     }
 
     public void onEvent(MessageEvent event) {
@@ -169,6 +171,10 @@ public class JMessagePlugin extends CordovaPlugin {
             }
         });
         return true;
+    }
+
+    public void onPause(boolean multitasking) {
+        Log.i(TAG, "onPause");
     }
 
     public void onDestroy() {
@@ -247,6 +253,28 @@ public class JMessagePlugin extends CordovaPlugin {
         callbackContext.success("退出成功");
     }
 
+    /**
+    * Update user password.
+    * @param data JSONArray; data.getString(0): old password, data.getString(1): new password.
+    * @param callbackContext result callback method.
+    */
+    public void updateUserPassword(JSONArray data, CallbackContext callbackContext) {
+        final CallbackContext cb = callbackContext;
+        try {
+            String oldPwd = data.getString(0);
+            String newPwd = data.getString(1);
+            JMessageClient.updateUserPassword(oldPwd, newPwd, new BasicCallback() {
+                @Override
+                public void gotResult(int status, String desc) {
+                    handleResult("密码修改成功", status, desc, cb);
+                }
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callbackContext.error("error reading password json.");
+        }
+    }
+
     public void getUserInfo(JSONArray data, CallbackContext callbackContext) {
         Log.i(TAG, " getUserInfo \n" + data);
         UserInfo info = JMessageClient.getMyInfo();
@@ -275,8 +303,8 @@ public class JMessagePlugin extends CordovaPlugin {
         try {
             String username = data.getString(0);
             String text = data.getString(1);
-
             Conversation conversation = JMessageClient.getSingleConversation(username);
+
             if (conversation == null) {
                 conversation = Conversation.createSingleConversation(username);
             }
@@ -286,7 +314,111 @@ public class JMessagePlugin extends CordovaPlugin {
             }
             TextContent content = new TextContent(text);
             final Message msg = conversation.createSendMessage(content);
+            JMessageClient.sendMessage(msg);
+            callbackContext.success("正在发送");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callbackContext.error("error reading id json.");
+        }
+    }
 
+    /**
+     * Send a image message to specified user.
+     * @param data JSONArray.
+     * @param callbackContext CallbackContext.
+     */
+    public void sendSingleImageMessage(JSONArray data, CallbackContext callbackContext) {
+        try {
+            String userName = data.getString(0);
+            String imgUrlStr = data.getString(1);
+
+            Conversation conversation = JMessageClient.getSingleConversation(userName);
+            if (conversation == null) {
+                conversation = Conversation.createSingleConversation(userName);
+            }
+            if (conversation == null) {
+                callbackContext.error("无法创建对话");
+                return;
+            }
+
+            URL imgUrl = new URL(imgUrlStr);
+            File imgFile = new File(imgUrl.getPath());
+            Message msg = conversation.createSendImageMessage(imgFile);
+            JMessageClient.sendMessage(msg);
+            callbackContext.success("正在发送");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callbackContext.error("json data error");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            callbackContext.error("文件不存在");
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Send a voice message to specified user.
+     * @param data JSONArray; data.getString(0):username, data.getString(1):voiceFileUrl.
+     * @param callbackContext CallbackContext.
+     */
+    public void sendSingleVoiceMessage(JSONArray data, CallbackContext callbackContext) {
+        try {
+            String userName = data.getString(0);
+            String voiceUrlStr = data.getString(1);
+
+            Conversation conversation = JMessageClient.getSingleConversation(userName);
+            if (conversation == null) {
+                conversation = Conversation.createSingleConversation(userName);
+            }
+            if (conversation == null) {
+                callbackContext.error("无法创建对话");
+                return;
+            }
+
+            URL url = new URL(voiceUrlStr);
+            String voicePath = url.getPath();
+            File file = new File(voicePath);
+            MediaPlayer mediaPlayer = MediaPlayer.create(cordovaActivity,
+                    Uri.parse(voicePath));
+            int duration = mediaPlayer.getDuration();
+
+            Message msg = JMessageClient.createSingleVoiceMessage(userName, file, duration);
+            JMessageClient.sendMessage(msg);
+            callbackContext.success("正在发送");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callbackContext.error("json data error");
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            callbackContext.error("file url error");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            callbackContext.error("文件不存在");
+        }
+    }
+
+    /**
+     * Send a text message to the entire group.
+     * @param data JSONArray;
+     *             data.getLong(0):groupId, data.getString(1):text.
+     * @param callbackContext CallbackContext.
+     */
+    public void sendGroupTextMessage(JSONArray data, CallbackContext callbackContext) {
+        try {
+            long groupId = data.getLong(0);
+            String text = data.getString(1);
+
+            Conversation conversation = JMessageClient.getGroupConversation(groupId);
+            if (conversation == null) {
+                conversation = Conversation.createGroupConversation(groupId);
+            }
+            if (conversation == null) {
+                callbackContext.error("无法创建对话");
+                return;
+            }
+
+            Message msg = JMessageClient.createGroupTextMessage(groupId, text);
             JMessageClient.sendMessage(msg);
             callbackContext.success("正在发送");
         } catch (JSONException e) {
@@ -487,20 +619,30 @@ public class JMessagePlugin extends CordovaPlugin {
         }
     }
 
+    /**
+     * set user's avatar.
+     * @param data data.getString(0): the URL of the users avatar file.
+     * @param callbackContext callback method.
+     */
     public void setUserAvatar(JSONArray data, CallbackContext callbackContext) {
         final CallbackContext cb = callbackContext;
-//
-//		try {
-//
-//			String avatarString = data.getString(0);
-//			UserInfo myUserInfo = JMessageClient.getMyInfo();
-//			myUserInfo.(avatarString);
-//
-//
-//		} catch (JSONException e) {
-//			e.printStackTrace();
-//			callbackContext.error("Error reading alias JSON");
-//		}
+        try {
+            String avatarPath = data.getString(0);
+            if (TextUtils.isEmpty(avatarPath)) {
+                callbackContext.error("Avatar path is empty!");
+                return;
+            }
+            File avatarFile = new File(avatarPath);
+            JMessageClient.updateUserAvatar(avatarFile, new BasicCallback() {
+                @Override
+                public void gotResult(int status, String errorDesc) {
+                    handleResult("修改头像成功", status, errorDesc, cb);
+                }
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callbackContext.error("Error reading alias JSON.");
+        }
     }
 
 
@@ -666,7 +808,7 @@ public class JMessagePlugin extends CordovaPlugin {
         }
     };
 
-    void setDebugMode(JSONArray data, CallbackContext callbackContext) {
+    void setJPushDebugMode(JSONArray data, CallbackContext callbackContext) {
         boolean mode;
         try {
             mode = data.getBoolean(0);
