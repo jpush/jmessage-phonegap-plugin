@@ -50,12 +50,12 @@ JMessagePlugin.setUserGender(username, text, success, fail)
 
 ####会话列表
 ```
-JMessagePlugin.deleteSingleConversation(username, success, fail)
+JMessagePlugin.getSingleConversationList(success, fail)   
 ```
 ####删除会话
-
-  	JMessagePlugin.getSingleConversationList(success, fail)   
-
+```
+JMessagePlugin.deleteSingleConversation(username, success, fail)
+```
 ####历史消息
 
 ```
