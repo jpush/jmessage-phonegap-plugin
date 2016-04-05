@@ -64,9 +64,11 @@ public class JMessagePlugin extends CordovaPlugin {
             "getSingleConversationHistoryMessage",
             "getUserInfo",
             "initPush",
+            "sendSingleCustomMessage"
             "sendSingleTextMessage",
             "sendSingleImageMessage",
             "sendSingleVoiceMessage",
+            "sendGroupCustomMessage",
             "sendGroupTextMessage",
             "sendGroupImageMessage",
             "sendGroupVoiceMessage",
@@ -296,6 +298,43 @@ public class JMessagePlugin extends CordovaPlugin {
         }
     }
 
+    /**
+     * @param data JSONArray.
+     *             data.getString(0):username, data.getJSONObject(1):custom key-values.
+     * @param callbackContext CallbackContext.
+     */
+    public void sendSingleCustomMessage(JSONArray data, CallbackContext callbackContext) {
+        try {
+            String userName = data.getString(0);
+
+            Conversation con = JMessageClient.getSingleConversation(userName);
+            if (con == null) {
+                con = Conversation.createSingleConversation(userName);
+            }
+            if (con == null) {
+                callbackContext.error("无法创建对话");
+                return;
+            }
+
+            JSONObject values = data.getJSONObject(1);
+            Iterator<? extends String> keys = values.keys();
+            Map<String, String> valuesMap = new HashMap<String, String>();
+
+            String key = null;
+            String value = null;
+            while(keys.hasNext()) {
+                key = keys.next();
+                value = values.getString(key);
+                valuesMap.put(key, value);
+            }
+            Message msg = con.createSendCustomMessage(valuesMap);
+            JMessageClient.sendMessage(msg);
+            callbackContext.success("正在发送");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void sendSingleTextMessage(JSONArray data, CallbackContext callbackContext) {
         Log.i(TAG, " sendSingleTextMessage \n" + data);
 
@@ -303,8 +342,8 @@ public class JMessagePlugin extends CordovaPlugin {
         try {
             String username = data.getString(0);
             String text = data.getString(1);
-            Conversation conversation = JMessageClient.getSingleConversation(username);
 
+            Conversation conversation = JMessageClient.getSingleConversation(username);
             if (conversation == null) {
                 conversation = Conversation.createSingleConversation(username);
             }
@@ -312,6 +351,7 @@ public class JMessagePlugin extends CordovaPlugin {
                 callbackContext.error("无法创建对话");
                 return;
             }
+
             TextContent content = new TextContent(text);
             final Message msg = conversation.createSendMessage(content);
             JMessageClient.sendMessage(msg);
@@ -323,8 +363,8 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     /**
-     * Send a image message to specified user.
      * @param data JSONArray.
+     *        data.getString(0):username, data.getString(1):text
      * @param callbackContext CallbackContext.
      */
     public void sendSingleImageMessage(JSONArray data, CallbackContext callbackContext) {
@@ -358,8 +398,8 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     /**
-     * Send a voice message to specified user.
-     * @param data JSONArray; data.getString(0):username, data.getString(1):voiceFileUrl.
+     * @param data JSONArray.
+     *        data.getString(0):username, data.getString(1):voiceFileUrl.
      * @param callbackContext CallbackContext.
      */
     public void sendSingleVoiceMessage(JSONArray data, CallbackContext callbackContext) {
@@ -379,6 +419,7 @@ public class JMessagePlugin extends CordovaPlugin {
             URL url = new URL(voiceUrlStr);
             String voicePath = url.getPath();
             File file = new File(voicePath);
+
             MediaPlayer mediaPlayer = MediaPlayer.create(cordovaActivity,
                     Uri.parse(voicePath));
             int duration = mediaPlayer.getDuration();
@@ -399,8 +440,44 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     /**
-     * Send a text message to the entire group.
-     * @param data JSONArray;
+     * @param data JSONArray.
+     *             data.getLong(0):groupID, data.getJSONObject(1):custom key-values.
+     * @param callbackContext CallbackContext.
+     */
+    public void sendGroupCustomMessage(JSONArray data, CallbackContext callbackContext) {
+        try {
+            long groupId = data.getLong(0);
+
+            Conversation con = JMessageClient.getGroupConversation(groupId);
+            if (con == null) {
+                con = Conversation.createGroupConversation(groupId);
+            }
+            if (con == null) {
+                callbackContext.error("无法建立对话");
+                return;
+            }
+
+            Map<String, String> valuesMap = new HashMap<String, String>();
+            JSONObject customeValues = data.getJSONObject(1);
+            Iterator<? extends String> keys = customeValues.keys();
+            String key = null;
+            String value = null;
+            while (keys.hasNext()) {
+                key = keys.next();
+                value = customeValues.getString(key);
+                valuesMap.put(key, value);
+            }
+            Message msg = con.createSendCustomMessage(valuesMap);
+            JMessageClient.sendMessage(msg);
+            callbackContext.success("正在发送");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callbackContext.error("error reading id json.");
+        }
+    }
+
+    /**
+     * @param data JSONArray.
      *             data.getLong(0):groupId, data.getString(1):text.
      * @param callbackContext CallbackContext.
      */
