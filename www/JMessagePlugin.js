@@ -1,6 +1,5 @@
 
 
-
 var JMessagePlugin = function () {
     console.log("JMessagePlugin init");
     this.username = "";
@@ -43,10 +42,8 @@ JMessagePlugin.prototype.setUserGender = function (gender, success, fail) {
     cordova.exec(success, fail, "JMessagePlugin", "setUserGender", [gender]);
 };
 
-JMessagePlugin.prototype.updateUserPassword = function(oldPwd, newPwd,
-        success, fail) {
-    cordova.exec(success, fail, "JMessagePlugin", "updateUserPassword",
-        [oldPwd, newPwd]);
+JMessagePlugin.prototype.updateUserPassword = function(oldPwd, newPwd, success, fail) {
+    cordova.exec(success, fail, "JMessagePlugin", "updateUserPassword", [oldPwd, newPwd]);
 };
 
 
@@ -146,7 +143,6 @@ JMessagePlugin.prototype.onSendSingleTextMessage = function (data) {
         console.log("sendSingleTextMessageResponse " + exception);
     }
 };
-
 
 //  Android Method
 

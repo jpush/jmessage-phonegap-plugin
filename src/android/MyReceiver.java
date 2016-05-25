@@ -50,8 +50,8 @@ public class MyReceiver extends BroadcastReceiver {
     private void handlingReceivedMessage(Intent intent) {
         String msg = intent.getStringExtra(JPushInterface.EXTRA_MESSAGE);
         Map<String, Object> extras = getNotificationExtras(intent);
-
-        JMessagePlugin.transmitPushMessage(JPushInterface.ACTION_MESSAGE_RECEIVED, msg, extras);
+        JMessagePlugin.transmitPushMessage(JPushInterface.ACTION_MESSAGE_RECEIVED,
+            msg, extras);
 
         //JMessagePlugin.transmitMessage(msg, extras);
     }
@@ -62,15 +62,15 @@ public class MyReceiver extends BroadcastReceiver {
         String alert = intent.getStringExtra(JPushInterface.EXTRA_ALERT);
         Map<String, Object> extras = getNotificationExtras(intent);
 
-        Intent launch = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
+        Intent launch = context.getPackageManager().getLaunchIntentForPackage(
+                context.getPackageName());
         launch.addCategory(Intent.CATEGORY_LAUNCHER);
         launch.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         JMessagePlugin.openNotificationAlert = alert;
         JMessagePlugin.openNotificationExtras = extras;
         // JMessagePlugin.transmitOpen(alert, extras);
-
-        JMessagePlugin.transmitPushMessage(JPushInterface.ACTION_NOTIFICATION_OPENED, alert, extras);
-
+        JMessagePlugin.transmitPushMessage(JPushInterface.ACTION_NOTIFICATION_OPENED,
+            alert, extras);
         context.startActivity(launch);
     }
 
@@ -80,21 +80,21 @@ public class MyReceiver extends BroadcastReceiver {
         String alert = intent.getStringExtra(JPushInterface.EXTRA_ALERT);
         Map<String, Object> extras = getNotificationExtras(intent);
 
-        Intent launch = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
+        Intent launch = context.getPackageManager().getLaunchIntentForPackage(
+            context.getPackageName());
         launch.addCategory(Intent.CATEGORY_LAUNCHER);
         launch.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
         JMessagePlugin.notificationAlert = alert;
         JMessagePlugin.notificationExtras = extras;
-
-        JMessagePlugin.transmitPushMessage(JPushInterface.ACTION_NOTIFICATION_RECEIVED, alert, extras);
+        JMessagePlugin.transmitPushMessage(
+            JPushInterface.ACTION_NOTIFICATION_RECEIVED, alert, extras);
 
         // JMessagePlugin.transmitReceive(alert, extras);
     }
 
     private Map<String, Object> getNotificationExtras(Intent intent) {
         Map<String, Object> extrasMap = new HashMap<String, Object>();
-
         for (String key : intent.getExtras().keySet()) {
             if (!IGNORED_EXTRAS_KEYS.contains(key)) {
                 Log.e("key", "key:" + key);
