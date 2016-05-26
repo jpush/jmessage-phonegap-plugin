@@ -10,7 +10,8 @@ module.exports = function (context) {
         config       = new ConfigParser(path.join(context.opts.projectRoot, "config.xml")),
         packageName = config.android_packageName() || config.packageName();
 
-    console.info("Running android-install.Hook: " + context.hook + ", Package: " + packageName + ", Path: " + projectRoot + ".");
+    console.info("Running android-install.Hook: " + context.hook + ", Package: "
+        + packageName + ", Path: " + projectRoot + ".");
 
     if (!packageName) {
         console.error("Package name could not be found!");
@@ -23,7 +24,8 @@ module.exports = function (context) {
         return ;
     }
 
-    var targetDir  = path.join(projectRoot, "platforms", "android", "src", "cn", "jmessage", "phonegap");
+    var targetDir = path.join(projectRoot, "platforms", "android", "src", "cn",
+        "jmessage", "phonegap");
         targetFile = path.join(targetDir, "JMessagePlugin.java");
         console.log(targetDir);
 
@@ -35,15 +37,14 @@ module.exports = function (context) {
     } else {
         // create directory
         shell.mkdir('-p', targetDir);
-
         // sync the content
-        fs.readFile(path.join(context.opts.plugin.dir, 'src', 'android', 'JMessagePlugin.java'), {encoding: 'utf-8'}, function (err, data) {
+        fs.readFile(path.join(context.opts.plugin.dir, 'src', 'android',
+            'JMessagePlugin.java'), {encoding: 'utf-8'}, function (err, data) {
             if (err) {
                 throw err;
             }
-
             data = data.replace(/^import __PACKAGE_NAME__.R;/m, 'import ' + packageName + '.R;');
             fs.writeFileSync(targetFile, data);
         });
-    }
+     }
 };

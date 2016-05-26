@@ -192,10 +192,10 @@ JMessagePlugin.prototype.setReceivePushCallbackChannel = function () {
 if (!window.plugins) {
     console.log('int window plugins');
     window.plugins = {};
-}
+};
 
 if (!window.plugins.jmessagePlugin) {
     window.plugins.jmessagePlugin = new JMessagePlugin();
-}
+};
 
 module.exports = new JMessagePlugin();

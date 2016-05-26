@@ -14,31 +14,34 @@
 package cn.jmessage.phonegap;
 
 import android.app.Activity;
+import android.media.MediaPlayer;
+import android.net.Uri;
+import android.text.TextUtils;
 import android.util.Log;
 
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import org.apache.cordova.CallbackContext;
-import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
-import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.LOG;
 import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
-
-import __PACKAGE_NAME__.R;
+import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import cn.jpush.android.api.BasicPushNotificationBuilder;
 import cn.jpush.android.api.JPushInterface;
@@ -58,13 +61,12 @@ import cn.jpush.im.api.BasicCallback;
 public class JMessagePlugin extends CordovaPlugin {
 
     private final static List<String> methodList = Arrays.asList(
-            /*JMessage*/
             "deleteSingleConversation",
             "getAllSingleConversation",
             "getSingleConversationHistoryMessage",
             "getUserInfo",
             "initPush",
-            "sendSingleCustomMessage"
+            "sendSingleCustomMessage",
             "sendSingleTextMessage",
             "sendSingleImageMessage",
             "sendSingleVoiceMessage",
@@ -80,30 +82,7 @@ public class JMessagePlugin extends CordovaPlugin {
             "updateUserPassword",
             "userRegister",
             "userLogin",
-            "userLogout",
-            /*push api*/
-            "addLocalNotification",
-            "clearAllNotification",
-            "clearNotificationById",
-            "clearLocalNotifications",
-            "getRegistrationID",
-            "init",
-            "isPushStopped",
-            "onResume",
-            "onPause",
-            "removeLocalNotification",
-            "reportNotificationOpened",
-            "resumePush",
-            "setAlias",
-            "setBasicPushNotificationBuilder",
-            "setCustomPushNotificationBuilder",
-            "setJPushDebugMode",
-            "setLatestNotificationNum",
-            "setPushTime",
-            "setPushReceiveCallbackChannel",
-            "setTags",
-            "setTagsWithAlias",
-            "stopPush"
+            "userLogout"
     );
 
     private ExecutorService threadPool = Executors.newFixedThreadPool(1);
@@ -256,10 +235,11 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     /**
-    * Update user password.
-    * @param data JSONArray; data.getString(0): old password, data.getString(1): new password.
-    * @param callbackContext result callback method.
-    */
+     * Update user password.
+     *
+     * @param data            JSONArray; data.getString(0): old password, data.getString(1): new password.
+     * @param callbackContext result callback method.
+     */
     public void updateUserPassword(JSONArray data, CallbackContext callbackContext) {
         final CallbackContext cb = callbackContext;
         try {
@@ -299,8 +279,8 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     /**
-     * @param data JSONArray.
-     *             data.getString(0):username, data.getJSONObject(1):custom key-values.
+     * @param data            JSONArray.
+     *                        data.getString(0):username, data.getJSONObject(1):custom key-values.
      * @param callbackContext CallbackContext.
      */
     public void sendSingleCustomMessage(JSONArray data, CallbackContext callbackContext) {
@@ -320,9 +300,8 @@ public class JMessagePlugin extends CordovaPlugin {
             Iterator<? extends String> keys = values.keys();
             Map<String, String> valuesMap = new HashMap<String, String>();
 
-            String key = null;
-            String value = null;
-            while(keys.hasNext()) {
+            String key, value;
+            while (keys.hasNext()) {
                 key = keys.next();
                 value = values.getString(key);
                 valuesMap.put(key, value);
@@ -363,8 +342,8 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     /**
-     * @param data JSONArray.
-     *        data.getString(0):username, data.getString(1):text
+     * @param data            JSONArray.
+     *                        data.getString(0):username, data.getString(1):text
      * @param callbackContext CallbackContext.
      */
     public void sendSingleImageMessage(JSONArray data, CallbackContext callbackContext) {
@@ -398,8 +377,8 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     /**
-     * @param data JSONArray.
-     *        data.getString(0):username, data.getString(1):voiceFileUrl.
+     * @param data            JSONArray.
+     *                        data.getString(0):username, data.getString(1):voiceFileUrl.
      * @param callbackContext CallbackContext.
      */
     public void sendSingleVoiceMessage(JSONArray data, CallbackContext callbackContext) {
@@ -440,8 +419,8 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     /**
-     * @param data JSONArray.
-     *             data.getLong(0):groupID, data.getJSONObject(1):custom key-values.
+     * @param data            JSONArray.
+     *                        data.getLong(0):groupID, data.getJSONObject(1):custom key-values.
      * @param callbackContext CallbackContext.
      */
     public void sendGroupCustomMessage(JSONArray data, CallbackContext callbackContext) {
@@ -477,8 +456,8 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     /**
-     * @param data JSONArray.
-     *             data.getLong(0):groupId, data.getString(1):text.
+     * @param data            JSONArray.
+     *                        data.getLong(0):groupId, data.getString(1):text.
      * @param callbackContext CallbackContext.
      */
     public void sendGroupTextMessage(JSONArray data, CallbackContext callbackContext) {
@@ -698,7 +677,8 @@ public class JMessagePlugin extends CordovaPlugin {
 
     /**
      * set user's avatar.
-     * @param data data.getString(0): the URL of the users avatar file.
+     *
+     * @param data            data.getString(0): the URL of the users avatar file.
      * @param callbackContext callback method.
      */
     public void setUserAvatar(JSONArray data, CallbackContext callbackContext) {
@@ -719,330 +699,6 @@ public class JMessagePlugin extends CordovaPlugin {
         } catch (JSONException e) {
             e.printStackTrace();
             callbackContext.error("Error reading alias JSON.");
-        }
-    }
-
-
-    // ------------ JPush API -------------
-
-    void getRegistrationID(JSONArray data, CallbackContext callbackContext) {
-        Log.i(TAG, "getRegistrationID");
-        String regID = JPushInterface.getRegistrationID(
-            cordovaActivity.getApplicationContext());
-        callbackContext.success(regID);
-    }
-
-    void setTags(JSONArray data, CallbackContext callbackContext) {
-        try {
-            HashSet<String> tags = new HashSet<String>();
-            for (int i = 0; i < data.length(); i++) {
-                tags.add(data.getString(i));
-            }
-            JPushInterface.setTags(cordovaActivity.getApplicationContext(),
-                tags, mTagWithAliasCallback);
-            callbackContext.success();
-        } catch (JSONException e) {
-            e.printStackTrace();
-            callbackContext.error("Error reading tags JSON");
-        }
-    }
-
-    void setAlias(JSONArray data, CallbackContext callbackContext) {
-        try {
-            String alias = data.getString(0);
-            JPushInterface.setAlias(cordovaActivity.getApplicationContext(),
-                alias, mTagWithAliasCallback);
-            callbackContext.success();
-        } catch (JSONException e) {
-            e.printStackTrace();
-            callbackContext.error("Error reading alias JSON");
-        }
-    }
-
-    void setTagsWithAlias(JSONArray data, CallbackContext callbackContext) {
-        HashSet<String> tags = new HashSet<String>();
-        String alias;
-        try {
-            alias = data.getString(0);
-            JSONArray tagsArray = data.getJSONArray(1);
-            for (int i = 0; i < tagsArray.length(); i++) {
-                tags.add(tagsArray.getString(i));
-            }
-            JPushInterface.setAliasAndTags(cordovaActivity.getApplicationContext(),
-                alias, tags, mTagWithAliasCallback);
-            callbackContext.success();
-        } catch (JSONException e) {
-            e.printStackTrace();
-            callbackContext.error("Error reading tagAlias JSON");
-        }
-    }
-
-    void setBasicPushNotificationBuilder(JSONArray data,
-            CallbackContext callbackContext) {
-        BasicPushNotificationBuilder builder = new BasicPushNotificationBuilder(
-                cordovaActivity);
-        builder.developerArg0 = "Basic builder 1";
-        JPushInterface.setPushNotificationBuilder(1, builder);
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put("id", 1);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        //callbackContext.success(obj);
-    }
-
-    void setCustomPushNotificationBuilder(JSONArray data,
-            CallbackContext callbackContext) {
-		// CustomPushNotificationBuilder builder = new CustomPushNotificationBuilder(
-		// 		this.cordova.getActivity(), R.layout.test_notification_layout,
-		// 		R.id.icon, R.id.title, R.id.text);
-		// builder.developerArg0 = "Custom Builder 1";
-		// builder.layoutIconDrawable = R.drawable.jpush_notification_icon;
-		// JPushInterface.setPushNotificationBuilder(2, builder);
-		// JSONObject obj = new JSONObject();
-		// try {
-		// 	obj.put("id", 2);
-		// } catch (JSONException e) {
-		// 	e.printStackTrace();
-		// }
-        //callbackContext.success(obj);
-    }
-
-    void clearAllNotification(JSONArray data, CallbackContext callbackContext) {
-        JPushInterface.clearAllNotifications(cordovaActivity);
-        //callbackContext.success();
-    }
-
-    void clearNotificationById(JSONArray data, CallbackContext callbackContext) {
-        int notificationId = -1;
-        try {
-            notificationId = data.getInt(0);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            callbackContext.error("error reading id json");
-        }
-        if (notificationId != -1) {
-            JPushInterface.clearNotificationById(cordovaActivity, notificationId);
-        } else {
-            callbackContext.error("error id");
-        }
-    }
-
-    void addLocalNotification(JSONArray data, CallbackContext callbackContext)
-            throws JSONException {
-        //builderId,content,title,notificaitonID,broadcastTime,extras
-        int builderId = data.getInt(0);
-        String content = data.getString(1);
-        String title = data.getString(2);
-        int notificationID = data.getInt(3);
-        int broadcastTime = data.getInt(4);
-        JSONObject extras = data.getJSONObject(5);
-
-        JPushLocalNotification ln = new JPushLocalNotification();
-        ln.setBuilderId(builderId);
-        ln.setContent(content);
-        ln.setTitle(title);
-        ln.setNotificationId(notificationID);
-        ln.setBroadcastTime(System.currentTimeMillis() + broadcastTime);
-        ln.setExtras(extras.toString());
-        JPushInterface.addLocalNotification(cordovaActivity, ln);
-    }
-
-    void removeLocalNotification(JSONArray data, CallbackContext callbackContext)
-            throws JSONException {
-        int notificationID = data.getInt(0);
-        JPushInterface.removeLocalNotification(cordovaActivity, notificationID);
-    }
-
-    void clearLocalNotifications(JSONArray data, CallbackContext callbackContext) {
-        JPushInterface.clearLocalNotifications(cordovaActivity);
-    }
-
-    private final TagAliasCallback mTagWithAliasCallback = new TagAliasCallback() {
-        @Override
-        public void gotResult(int code, String alias, Set<String> tags) {
-            if (instance == null) {
-                return;
-            }
-            JSONObject data = new JSONObject();
-            try {
-                data.put("resultCode", code);
-                data.put("tags", tags);
-                data.put("alias", alias);
-
-                String format = "cordova.fireDocumentEvent('jpush.setTagsWithAlias',%s)";
-                final String js = String.format(format, data.toString());
-                cordovaActivity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        webView.loadUrl("javascript:" + js);
-                    }
-                });
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    };
-
-    void setJPushDebugMode(JSONArray data, CallbackContext callbackContext) {
-        boolean mode;
-        try {
-            mode = data.getBoolean(0);
-            JPushInterface.setDebugMode(mode);
-            callbackContext.success();
-        } catch(JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    void stopPush(JSONArray data, CallbackContext callbackContext) {
-        JPushInterface.stopPush(cordovaActivity.getApplicationContext());
-        callbackContext.success();
-    }
-
-    void resumePush(JSONArray data, CallbackContext callbackContext) {
-        JPushInterface.resumePush(cordovaActivity.getApplicationContext());
-        callbackContext.success();
-    }
-
-    void isPushStopped(JSONArray data, CallbackContext callbackContext) {
-        boolean isStopped = JPushInterface.isPushStopped(
-            cordovaActivity.getApplicationContext());
-        if (isStopped) {
-            callbackContext.success(1);
-        } else {
-            callbackContext.success(0);
-        }
-    }
-
-    void setLatestNotificationNum(JSONArray data, CallbackContext callbackContext) {
-        int num = -1;
-        try {
-            num = data.getInt(0);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            callbackContext.error("error reading num json");
-        }
-        if (num != -1) {
-            JPushInterface.setLatestNotificationNumber(
-                cordovaActivity.getApplicationContext(), num);
-        } else {
-            callbackContext.error("error num");
-        }
-    }
-
-    void setPushTime(JSONArray data, CallbackContext callbackContext) {
-        Set<Integer> days = new HashSet<Integer>();
-        JSONArray dayArray;
-        int startHour = -1;
-        int endHour = -1;
-        try {
-            dayArray = data.getJSONArray(0);
-            for (int i = 0; i < dayArray.length(); i++) {
-                days.add(dayArray.getInt(i));
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-            callbackContext.error("error reading days json");
-        }
-        try {
-            startHour = data.getInt(1);
-            endHour = data.getInt(2);
-        } catch (JSONException e) {
-            callbackContext.error("error reading hour json");
-        }
-        JPushInterface.setPushTime(cordovaActivity.getApplicationContext(),
-            days, startHour, endHour);
-        callbackContext.success();
-    }
-
-    void onResume(JSONArray data, CallbackContext callbackContext) {
-        JPushInterface.onResume(cordovaActivity);
-    }
-
-    void onPause(JSONArray data, CallbackContext callbackContext) {
-        JPushInterface.onPause(cordovaActivity);
-    }
-
-    void reportNotificationOpened(JSONArray data, CallbackContext callbackContext) {
-        try {
-            String msgID;
-            msgID = data.getString(0);
-            JPushInterface.reportNotificationOpened(cordovaActivity, msgID);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    void onReceivePushMessage(JSONObject jsonData) {
-        Log.i(TAG, "onReceivePushMessage");
-        if (mJPushReceiveCallback == null) {
-            Log.i(TAG, "mJPushReceiveCallback is null");
-            return;
-        }
-        PluginResult dataResult = new PluginResult(PluginResult.Status.OK, jsonData);
-        dataResult.setKeepCallback(true);
-        mJPushReceiveCallback.sendPluginResult(dataResult);
-    }
-
-    //构造上传到 js 的 Push 数据
-    private static JSONObject basePushJsonObject(String message,
-            Map<String, Object> extras) {
-        JSONObject data = new JSONObject();
-        try {
-            JSONObject jExtras = new JSONObject();
-            for (Entry<String, Object> entry : extras.entrySet()) {
-                if (entry.getKey().equals("cn.jpush.android.EXTRA")) {
-                    JSONObject jo = new JSONObject((String) entry.getValue());
-                    jExtras.put("cn.jpush.android.EXTRA", jo);
-                } else {
-                    jExtras.put(entry.getKey(), entry.getValue());
-                }
-            }
-            if (jExtras.length() > 0) {
-                data.put("extras", jExtras);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return data;
-    }
-
-    private static JSONObject getPushObject(String messageWrapType,
-            String messageKeyword, String message, Map<String, Object> extras) {
-        JSONObject data = basePushJsonObject(message, extras);
-        JSONObject data2 = new JSONObject();
-        try {
-            data.put(messageKeyword, message);
-            data2.put("data", data);
-            data2.put("messageWrapType", messageWrapType);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return data2;
-    }
-
-    public static void transmitPushMessage(String action, String message,
-            Map<String, Object> extras) {
-        JSONObject data = null;
-        if (action.equals(JPushInterface.ACTION_MESSAGE_RECEIVED)) {
-            data = getPushObject("ACTION_MESSAGE_RECEIVED", "message", message, extras);
-        } else if (action.equals(JPushInterface.ACTION_NOTIFICATION_RECEIVED)) {
-            data = getPushObject("ACTION_NOTIFICATION_RECEIVED", "alert", message, extras);
-        } else if (action.equals(JPushInterface.ACTION_NOTIFICATION_OPENED)) {
-            data = getPushObject("ACTION_NOTIFICATION_OPENED", "alert", message, extras);
-        } else {
-            Log.w(TAG, "unknown push action.");
-        }
-
-        if (instance != null && data != null) {
-            instance.onReceivePushMessage(data);
-        } else {
-            if (instance == null) {
-                Log.w(TAG, "instance is null");
-            }
-            Log.w(TAG, " err when transmit Message to js.");
         }
     }
 
