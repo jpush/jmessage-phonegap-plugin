@@ -86,7 +86,7 @@
             <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS"/>
             <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
             <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
-            
+
             <uses-permission android:name="$PACKAGE_NAME.permission.JPUSH_MESSAGE"/>
 
             <permission
@@ -219,6 +219,7 @@
             <meta-data android:name="JPUSH_CHANNEL" android:value="developer-default"/>
         </config-file>
 
+        <source-file src="src/android/gson-2.3.1.jar" target-dir="libs"/>
         <source-file src="src/android/jmessage-android-1.2.0.jar" target-dir="libs"/>
         <source-file src="src/android/armeabi/libjpush207.so" target-dir="libs/armeabi"/>
         <source-file src="src/android/armeabi-v7a/libjpush207.so" target-dir="libs/armeabi-v7a"/>

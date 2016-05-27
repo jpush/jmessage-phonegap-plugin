@@ -1,5 +1,3 @@
-cordova.define("cordova-plugin-jmessage.JPushPlugin", function(require, exports, module) {
-
 
 var JPushPlugin = function(){
 };
@@ -361,5 +359,3 @@ if(!window.plugins.jPushPlugin) {
 };
 
 module.exports = new JPushPlugin();
-
-});

@@ -1,5 +1,4 @@
 
-
 var JMessagePlugin = function () {
     console.log("JMessagePlugin init");
     this.username = "";
@@ -18,8 +17,16 @@ JMessagePlugin.prototype.init = function () {
     }
 };
 
-JMessagePlugin.prototype.register = function (username, password, success, fail) {
-    cordova.exec(success, fail, "JMessagePlugin", "userRegister", [username, password]);
+JMessagePlugin.prototype.errorCallback = function(msg) {
+    console.log("JMessagePlugin callback error:" + msg);
+};
+
+JMessagePlugin.prototype.callNative = function(name, args, successCallback) {
+    cordova.exec(successCallback, this.errorCallback, "JMessagePlugin", args);
+};
+
+JMessagePlugin.prototype.register = function (username, password, success) {
+    this.callNative("userRegister", [username, password], success);
 };
 
 JMessagePlugin.prototype.login = function (username, password, success, fail) {
@@ -44,6 +51,42 @@ JMessagePlugin.prototype.setUserGender = function (gender, success, fail) {
 
 JMessagePlugin.prototype.updateUserPassword = function(oldPwd, newPwd, success, fail) {
     cordova.exec(success, fail, "JMessagePlugin", "updateUserPassword", [oldPwd, newPwd]);
+};
+
+
+// Group API.
+
+// userNameList 格式为 "userName1,userName2" 字符串。
+JMessagePlugin.prototype.addGroupMembers = function(groupId, userNameListStr,
+        success) {
+    this.callNative("addGroupMembers", [userNameListStr], success);
+};
+
+JMessagePlugin.prototype.removeGroupMembers = function(groupId, userNameListStr,
+        success) {
+    this.callNative("removeGroupMembers", [userNameListStr], success);
+};
+
+
+// Blacklist API.
+
+/**
+* usernameStr: 被 "," 分隔的用户名字符串，如 "username1,username2";
+*/
+JMessagePlugin.prototype.addUsersToBlacklist = function(usernameStr, success) {
+    this.callNative("addUsersToBlacklist", [usernameStr], success);
+};
+
+JMessagePlugin.prototype.delUsersFromBlacklist = function(usernameStr, success) {
+    this.callNative("delUsersFromBlacklist ", [usernameStr], success);
+};
+
+JMessagePlugin.prototype.getBlacklist = function(success) {
+    this.callNative("getBlacklist", [], success);
+};
+
+JMessagePlugin.prototype.setNotificationMode = function(mode, success) {
+    this.callNative("setNotificationMode", [mode], success);
 };
 
 
@@ -111,6 +154,10 @@ JMessagePlugin.prototype.getSingleConversationList = function (success, fail) {
 
 JMessagePlugin.prototype.deleteSingleConversation = function (username, success, fail) {
     cordova.exec(success, fail, "JMessagePlugin", "deleteSingleConversation", [username]);
+};
+
+JMessagePlugin.prototype.enterSingleConversation = function(username, success) {
+    this.callNative("enterSingleConversation", [username], success);
 };
 
 JMessagePlugin.prototype.onReceivedSingleConversationMessage = function (data) {
