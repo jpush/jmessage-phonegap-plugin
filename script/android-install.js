@@ -26,8 +26,8 @@ module.exports = function (context) {
 
     var targetDir = path.join(projectRoot, "platforms", "android", "src", "cn",
         "jmessage", "phonegap");
-        targetFile = path.join(targetDir, "JMessagePlugin.java");
-        console.log(targetDir);
+    targetFile = path.join(targetDir, "JMessagePlugin.java");
+    console.log(targetDir);
 
     if (['after_plugin_add', 'after_plugin_install', 'after_platform_add'].indexOf(context.hook) === -1) {
         // remove it?
