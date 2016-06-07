@@ -1,3 +1,5 @@
+var exec = require("cordova/exec");
+
 var JMessagePlugin = function () {
     this.NOTI_MODE_NO_NOTIFICATION = 0;
     this.NOTI_MODE_DEFAULT = 1;
@@ -9,7 +11,7 @@ var JMessagePlugin = function () {
     this.nickname = "";
     this.gender = 0;
     this.avatarUrl = "";
-    this.ReceiveMessageObj = "";
+    this.receiveMessageObj = "";
 
     this.textMessage = {};
     this.imageMessage = {};
@@ -18,143 +20,174 @@ var JMessagePlugin = function () {
 };
 
 JMessagePlugin.prototype.init = function () {
-    if (device.platform == "Android") {
-        this.setReceiveMessageCallbackChannel();
-        this.setReceivePushCallbackChannel();
-    }
+
 };
 
 JMessagePlugin.prototype.errorCallback = function(msg) {
     console.log("JMessagePlugin callback error:" + msg);
 };
 
-JMessagePlugin.prototype.callNative = function(name, args, successCallback) {
-    ret = cordova.exec(successCallback, this.errorCallback, "JMessagePlugin", args);
-    return ret;
+JMessagePlugin.prototype.callNative = function(name, args, successCallback,
+        errorCallback) {
+    if (errorCallback == null) {
+        exec(successCallback, this.errorCallback, "JMessagePlugin", name, args);
+    } else {
+        exec(successCallback, errorCallback, "JMessagePlugin", name, args);
+    }
 };
 
 
 // Login and register API.
 
-JMessagePlugin.prototype.register = function (username, password, successCallback) {
-    this.callNative("register", [username, password], successCallback);
+JMessagePlugin.prototype.register = function (username, password, successCallback,
+        errorCallback) {
+    this.callNative("register", [username, password], successCallback, errorCallback);
 };
 
-JMessagePlugin.prototype.login = function (username, password, successCallback) {
-    this.callNative("login", [username, password], successCallback);
+JMessagePlugin.prototype.login = function (username, password, successCallback,
+        errorCallback) {
+    this.callNative("login", [username, password], successCallback, errorCallback);
 };
 
-JMessagePlugin.prototype.logout = function(successCallback) {
-    this.callNative("logout", [], successCallback);
+JMessagePlugin.prototype.logout = function(successCallback, errorCallback) {
+    this.callNative("logout", [], successCallback, errorCallback);
 };
 
 
 // User info API.
 
 // 如果 appKey 为空，获取当前 AppKey 下的用户信息。
-JMessagePlugin.prototype.getUserInfo = function(username, appKey, successCallback) {
-    this.callNative("getUserInfo", [username, appKey], successCallback);
+JMessagePlugin.prototype.getUserInfo = function(username, appKey, successCallback,
+        errorCallback) {
+    this.callNative("getUserInfo", [username, appKey], successCallback, errorCallback);
 };
 
-JMessagePlugin.prototype.getMyInfo = function(successCallback) {
-    this.callNative("getMyInfo", [], successCallback);
+JMessagePlugin.prototype.getMyInfo = function(successCallback, errorCallback) {
+    this.callNative("getMyInfo", [], successCallback, errorCallback);
 };
 
 JMessagePlugin.prototype.updateUserInfo = function(username, appKey,
-        userInfoField, value, successCallback) {
+        userInfoField, value, successCallback, errorCallback) {
     this.callNative("updateUserInfo", [username, appKey, userInfoField, value],
-        successCallback);
+        successCallback, errorCallback);
+};
+
+JMessagePlugin.prototype.updateMyInfo = function(field, value, successCallback,
+        errorCallback) {
+    this.callNative("updateMyInfo", [field, value], successCallback, errorCallback);
 };
 
 JMessagePlugin.prototype.updateUserPassword = function(oldPwd, newPwd,
-        successCallback) {
-    this.callNative("updateUserPassword", [oldPwd, newPwd], successCallback);
+        successCallback, errorCallback) {
+    this.callNative("updateUserPassword", [oldPwd, newPwd], successCallback,
+        errorCallback);
 };
 
-JMessagePlugin.prototype.updateUserAvatar = function(avatarFileUrl, successCallback) {
-    this.callNative("updateUserAvatar", [avatarFileUrl], successCallback);
+JMessagePlugin.prototype.updateUserAvatar = function(avatarFileUrl, successCallback,
+        errorCallback) {
+    this.callNative("updateUserAvatar", [avatarFileUrl], successCallback, errorCallback);
 };
 
 
 // Message API.
 
 JMessagePlugin.prototype.sendSingleTextMessage = function (username, text,
-        successCallback) {
-    this.callNative("sendSingleTextMessage", [username, text], successCallback);
+        successCallback, errorCallback) {
+    this.callNative("sendSingleTextMessage", [username, text], successCallback,
+        errorCallback);
 };
 
 JMessagePlugin.prototype.sendSingleImageMessage = function (username, imageUrl,
-        successCallback) {
-    this.callNative("sendSingleImageMessage", [username, imageUrl], successCallback);
+        successCallback, errorCallback) {
+    this.callNative("sendSingleImageMessage", [username, imageUrl], successCallback,
+        errorCallback);
 };
 
 JMessagePlugin.prototype.sendSingleVoiceMessage = function (username, fileUrl,
-        successCallback) {
-    this.callNative("sendSingleVoiceMessage", [username, fileUrl], successCallback);
+        successCallback, errorCallback) {
+    this.callNative("sendSingleVoiceMessage", [username, fileUrl], successCallback,
+        errorCallback);
 };
 
 JMessagePlugin.prototype.sendSingleCustomMessage = function (username, jsonStr,
-        successCallback) {
-    this.callNative("sendSingleCustomMessage", [username, jsonStr], successCallback);
+        successCallback, errorCallback) {
+    this.callNative("sendSingleCustomMessage", [username, jsonStr], successCallback,
+        errorCallback);
 };
 
 JMessagePlugin.prototype.sendGroupTextMessage = function (username, text,
-        successCallback) {
-    this.callNative("sendGroupTextMessage", [username, text], successCallback);
+        successCallback, errorCallback) {
+    this.callNative("sendGroupTextMessage", [username, text], successCallback,
+        errorCallback);
 };
 
 JMessagePlugin.prototype.sendGroupImageMessage = function (username, imageUrl,
-        successCallback) {
-    this.callNative("sendGroupImageMessage", [username, imageUrl], successCallback);
+        successCallback, errorCallback) {
+    this.callNative("sendGroupImageMessage", [username, imageUrl], successCallback,
+        errorCallback);
 };
 
 JMessagePlugin.prototype.sendGroupVoiceMessage = function (username, fileUrl,
-        successCallback) {
-    this.callNative("sendGroupVoiceMessage", [username, fileUrl], successCallback);
+        successCallback, errorCallback) {
+    this.callNative("sendGroupVoiceMessage", [username, fileUrl], successCallback,
+        errorCallback);
 };
 
 JMessagePlugin.prototype.sendGroupCustomMessage = function (username, jsonStr,
-        successCallback) {
-    this.callNative("sendGroupCustomMessage", [username, jsonStr], successCallback);
+        successCallback, errorCallback) {
+    this.callNative("sendGroupCustomMessage", [username, jsonStr], successCallback,
+        errorCallback);
 };
 
 
 // Conversation API.
 
-JMessagePlugin.prototype.getConversationList = function(successCallback) {
-    this.callNative("getConversationList", [], successCallback);
+JMessagePlugin.prototype.getConversationList = function(successCallback,
+        errorCallback) {
+    this.callNative("getConversationList", [], successCallback, errorCallback);
 };
 
 JMessagePlugin.prototype.getSingleConversation = function(username, appKey,
-        successCallback) {
-    this.callNative("getSingleConversation", [username, appKey], successCallback);
+        successCallback, errorCallback) {
+    this.callNative("getSingleConversation", [username, appKey], successCallback,
+        errorCallback);
 };
 
-JMessagePlugin.prototype.getGroupConversation = function(groupId, successCallback) {
-    this.callNative("getGroupConversation", [groupId], successCallback);
+JMessagePlugin.prototype.getAllSingleConversation = function(successCallback,
+        errorCallback) {
+    this.callNative("getAllSingleConversation", [], successCallback, errorCallback);
+};
+
+JMessagePlugin.prototype.getGroupConversation = function(groupId, successCallback,
+        errorCallback) {
+    this.callNative("getGroupConversation", [groupId], successCallback, errorCallback);
 };
 
 JMessagePlugin.prototype.deleteSingleConversation = function(username, appKey,
-        successCallback) {
-    this.callNative("deleteSingleConversation", [username, appKey], successCallback);
+        successCallback, errorCallback) {
+    this.callNative("deleteSingleConversation", [username, appKey], successCallback,
+        errorCallback);
 };
 
 JMessagePlugin.prototype.deleteGroupConversation = function(groupId,
-        successCallback) {
-    this.callNative("deleteGroupConversation", [groupId], successCallback);
+        successCallback, errorCallback) {
+    this.callNative("deleteGroupConversation", [groupId], successCallback,
+        errorCallback);
 };
 
-JMessagePlugin.prototype.enterSingleConversation = function(username, appKey
-        successCallback) {
-    this.callNative("enterSingleConversation", [username, appKey], successCallback);
+JMessagePlugin.prototype.enterSingleConversation = function(username, appKey,
+        successCallback, errorCallback) {
+    this.callNative("enterSingleConversation", [username, appKey], successCallback,
+        errorCallback);
 };
 
-JMessagePlugin.prototype.enterGroupConversation = function(groupId, successCallback) {
-    this.callNative("enterGroupConversation", [groupId], successCallback);
+JMessagePlugin.prototype.enterGroupConversation = function(groupId, successCallback,
+        errorCallback) {
+    this.callNative("enterGroupConversation", [groupId], successCallback, errorCallback);
 };
 
-JMessagePlugin.prototype.exitConversation = function(successCallback) {
-    this.callNative("exitConversation", [], successCallback);
+JMessagePlugin.prototype.exitConversation = function(successCallback, errorCallback) {
+    this.callNative("exitConversation", [], successCallback, errorCallback);
 };
 
 JMessagePlugin.prototype.onReceivedSingleConversationMessage = function (data) {
@@ -192,26 +225,30 @@ JMessagePlugin.prototype.onSendSingleTextMessage = function (data) {
 // Group API.
 
 JMessagePlugin.prototype.createGroup = function(groupName, groupDesc,
-        successCallback) {
-    this.callNative("createGroup", [groupName, groupDesc], successCallback);
+        successCallback, errorCallback) {
+    this.callNative("createGroup", [groupName, groupDesc], successCallback,
+        errorCallback);
 };
 
-JMessagePlugin.prototype.getGroupIDList = function(successCallback) {
-    this.callNative("getGroupIDList", [], successCallback);
+JMessagePlugin.prototype.getGroupIDList = function(successCallback, errorCallback) {
+    this.callNative("getGroupIDList", [], successCallback, errorCallback);
 };
 
-JMessagePlugin.prototype.getGroupInfo = function(groupId, successCallback) {
-    this.callNative("getGroupInfo", [groupId], successCallback);
+JMessagePlugin.prototype.getGroupInfo = function(groupId, successCallback,
+        errorCallback) {
+    this.callNative("getGroupInfo", [groupId], successCallback, errorCallback);
 };
 
 JMessagePlugin.prototype.updateGroupName = function(groupId, groupNewName,
-        successCallback) {
-    this.callNative("updateGroupName", [groupId, groupNewName], successCallback);
+        successCallback, errorCallback) {
+    this.callNative("updateGroupName", [groupId, groupNewName], successCallback,
+        errorCallback);
 };
 
 JMessagePlugin.prototype.updateGroupDescription = function(groupId, groupNewDesc,
-        successCallback) {
-    this.callNative("updateGroupDescription", [groupId, groupNewDesc], successCallback);
+        successCallback, errorCallback) {
+    this.callNative("updateGroupDescription", [groupId, groupNewDesc],
+        successCallback, errorCallback);
 };
 
 // userNameList 格式为 "userName1,userName2" 字符串。
@@ -226,12 +263,14 @@ JMessagePlugin.prototype.removeGroupMembers = function(groupId, userNameListStr,
     this.callNative("removeGroupMembers", [userNameListStr], success);
 };
 
-JMessagePlugin.prototype.exitGroup = function(groupId, successCallback) {
-    this.callNative("exitGroup", [groupId], successCallback);
+JMessagePlugin.prototype.exitGroup = function(groupId, successCallback,
+        errorCallback) {
+    this.callNative("exitGroup", [groupId], successCallback, errorCallback);
 };
 
-JMessagePlugin.prototype.getGroupMembers = function(groupId, successCallback) {
-    this.callNative("getGroupMembers", [groupId], successCallback);
+JMessagePlugin.prototype.getGroupMembers = function(groupId, successCallback,
+        errorCallback) {
+    this.callNative("getGroupMembers", [groupId], successCallback, errorCallback);
 };
 
 
@@ -274,6 +313,11 @@ JMessagePlugin.prototype.setReceiveMessageCallbackChannel = function () {
 };
 
 // handle event.
+JMessagePlugin.prototype.onReceiveMessage = function(data) {
+    data = JSON.stringify(data);
+    this.receiveMessageObj = JSON.parse(data);
+    cordova.fireDocumentEvent("jmessage.onReceiveMessage", null);
+};
 
 JMessagePlugin.prototype.onReceiveTextMessage = function(data) {
     data = JSON.stringify(data);
@@ -348,7 +392,6 @@ JMessagePlugin.prototype.setReceivePushCallbackChannel = function () {
 };
 
 if (!window.plugins) {
-    console.log('int window plugins');
     window.plugins = {};
 };
 

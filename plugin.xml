@@ -17,11 +17,11 @@
     </engines>
 
     <js-module src="www/JMessagePlugin.js" name="JMessagePlugin">
-        <clobbers target="JMessagePlugin"/>
+        <clobbers target="window.JMessage"/>
     </js-module>
 
     <js-module src="www/JPushPlugin.js" name="JPushPlugin">
-        <clobbers target="JPushPlugin"/>
+        <clobbers target="window.JPush"/>
     </js-module>
 
     <platform name="ios">
@@ -63,7 +63,9 @@
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="JMessagePlugin">
                 <param name="android-package" value="cn.jmessage.phonegap.JMessagePlugin"/>
-                <param name="android-package" value="cn.jmessage.phonegap.JPushPlugin"/>
+            </feature>
+            <feature name="JPushPlugin">
+                <param name="android-package" value="cn.jmessage.phonegap.JPushPlugin" />
             </feature>
         </config-file>
 
