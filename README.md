@@ -1,7 +1,6 @@
 
 # jmessage-phonegap-plugin
 
-## 概要
 
 **jmessage-phonegap-plugin** 是基于[极光IM](http://docs.jpush.io/guideline/jmessage_guide/)的Cordova 插件。 目前支持 iOS , Android 平台。
 
