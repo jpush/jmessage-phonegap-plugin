@@ -10,7 +10,6 @@ import com.google.gson.Gson;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
-import org.apache.cordova.LOG;
 import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,7 +30,6 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import cn.jpush.android.api.JPushInterface;
 import cn.jpush.im.android.api.JMessageClient;
 import cn.jpush.im.android.api.callback.CreateGroupCallback;
 import cn.jpush.im.android.api.callback.GetBlacklistCallback;
@@ -46,7 +44,6 @@ import cn.jpush.im.android.api.content.MessageContent;
 import cn.jpush.im.android.api.content.TextContent;
 import cn.jpush.im.android.api.content.VoiceContent;
 import cn.jpush.im.android.api.enums.ConversationType;
-import cn.jpush.im.android.api.event.ConversationRefreshEvent;
 import cn.jpush.im.android.api.event.LoginStateChangeEvent;
 import cn.jpush.im.android.api.event.MessageEvent;
 import cn.jpush.im.android.api.model.Conversation;
@@ -80,6 +77,9 @@ public class JMessagePlugin extends CordovaPlugin {
             "sendGroupImageMessage",
             "sendGroupVoiceMessage",
             "sendGroupCustomMessage",
+            "getLatestMessage",
+            "getHistoryMessages",
+            "getAllMessages",
             // Conversation API.
             "getConversationList",
             "getSingleConversation",
@@ -358,7 +358,7 @@ public class JMessagePlugin extends CordovaPlugin {
             });
         } catch (JSONException e) {
             e.printStackTrace();
-            callback.error("json error.");
+            callback.error("Json error.");
         }
     }
 
@@ -385,7 +385,7 @@ public class JMessagePlugin extends CordovaPlugin {
             }
         } catch (JSONException e) {
             e.printStackTrace();
-            callback.error("json error.");
+            callback.error("Json error.");
         }
     }
 
@@ -404,7 +404,7 @@ public class JMessagePlugin extends CordovaPlugin {
             }
         } catch (JSONException e) {
             e.printStackTrace();
-            callback.error("json error.");
+            callback.error("Json error.");
         }
     }
 
@@ -462,7 +462,7 @@ public class JMessagePlugin extends CordovaPlugin {
     // Message API.
 
     public void sendSingleTextMessage(JSONArray data, CallbackContext callback) {
-        Log.i(TAG, " sendSingleTextMessage \n" + data);
+        Log.i(TAG, "sendSingleTextMessage \n" + data);
 
         final CallbackContext cb = callback;
         try {
@@ -481,7 +481,7 @@ public class JMessagePlugin extends CordovaPlugin {
             TextContent content = new TextContent(text);
             final Message msg = conversation.createSendMessage(content);
             JMessageClient.sendMessage(msg);
-            callback.success("正在发送");
+            callback.success(mGson.toJson(msg));
         } catch (JSONException e) {
             e.printStackTrace();
             callback.error("error reading id json.");
@@ -600,7 +600,7 @@ public class JMessagePlugin extends CordovaPlugin {
             callback.success("正在发送");
         } catch (JSONException e) {
             e.printStackTrace();
-            callback.error("json error.");
+            callback.error("Json error.");
         }
     }
 
@@ -653,7 +653,7 @@ public class JMessagePlugin extends CordovaPlugin {
             callback.success("发送成功");
         } catch (JSONException e) {
             e.printStackTrace();
-            callback.error("json error.");
+            callback.error("Json error.");
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (FileNotFoundException e) {
@@ -737,6 +737,108 @@ public class JMessagePlugin extends CordovaPlugin {
         }
     }
 
+    public void getLatestMessage(JSONArray data, CallbackContext callback) {
+        try {
+            String conversationType = data.getString(0);
+            String value = data.getString(1);
+            String appKey = data.getString(2);
+            Conversation conversation = getConversation(conversationType, value,
+                    appKey);
+            if (conversation == null) {
+                callback.error("Conversation is not exist.");
+                return;
+            }
+            Message msg = conversation.getLatestMessage();
+            String json = mGson.toJson(msg);
+            callback.success(json);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callback.error("Json error.");
+        }
+    }
+
+    public void getHistoryMessages(JSONArray data, CallbackContext callback) {
+        try {
+            String conversationType = data.getString(0);
+            Conversation conversation;
+            if (conversationType.equals("single")) {
+                String username = data.getString(1);
+                String appKey = data.getString(2);
+                Log.i(TAG, "username:" + username + "; appKey:" + appKey);
+                conversation = JMessageClient.getSingleConversation(
+                        username, appKey);
+                if (conversation == null) {
+                    conversation = Conversation.createSingleConversation(
+                            username, appKey);
+                }
+            } else if (conversationType.equals("group")){
+                long groupId = data.getLong(1);
+                conversation = JMessageClient.getGroupConversation(groupId);
+                if (conversation == null) {
+                    conversation = Conversation.createGroupConversation(groupId);
+                }
+            } else {
+                callback.error("Conversation type error.");
+                return;
+            }
+
+            if (conversation == null) {
+                callback.error("Can't get conversation.");
+                return;
+            }
+
+            int from = data.getInt(3);
+            int limit = data.getInt(4);
+
+            List<Message> messages = conversation.getMessagesFromNewest(
+                    from, limit);
+            Log.i(TAG, messages.size() + "");
+            String json = mGson.toJson(messages);
+            callback.success(json);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callback.error("Json error.");
+        }
+    }
+
+    public void getAllMessages(JSONArray data, CallbackContext callback) {
+        try {
+            String type = data.getString(0);
+            Conversation conversation;
+            if (type.equals("single")) {
+                String username = data.getString(1);
+                String appKey = data.getString(2);
+                conversation = JMessageClient.getSingleConversation(
+                        username, appKey);
+                if (conversation == null) {
+                    conversation = Conversation.createSingleConversation(
+                            username, appKey);
+                }
+            } else if (type.equals("group")) {
+                long groupId = data.getLong(1);
+                conversation = JMessageClient.getGroupConversation(groupId);
+                if (conversation == null) {
+                    conversation = Conversation.createGroupConversation(groupId);
+                }
+            } else {
+                callback.error("Conversation type error.");
+                return;
+            }
+
+            if (conversation == null) {
+                callback.error("Can't get conversation.");
+                return;
+            }
+
+            List<Message> messages = conversation.getAllMessage();
+            String json = mGson.toJson(messages);
+            callback.success(json);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callback.error("Json error.");
+        }
+    }
+
 
     // Conversation API.
 
@@ -744,9 +846,10 @@ public class JMessagePlugin extends CordovaPlugin {
         List<Conversation> conversationList = JMessageClient.getConversationList();
         if (conversationList != null) {
             String json = mGson.toJson(conversationList);
+            Log.i(TAG, "----->" + json);
             callback.success(json);
         } else {
-            callback.error("conversation list not find.");
+            callback.error("Conversation list not find.");
         }
     }
 
@@ -758,7 +861,7 @@ public class JMessagePlugin extends CordovaPlugin {
             callback.success();
         } catch (JSONException e) {
             e.printStackTrace();
-            callback.error("json error.");
+            callback.error("Json error.");
         }
     }
 
@@ -769,7 +872,7 @@ public class JMessagePlugin extends CordovaPlugin {
             callback.success();
         } catch (JSONException e) {
             e.printStackTrace();
-            callback.error("json error.");
+            callback.error("Json error.");
         }
     }
 
@@ -786,7 +889,7 @@ public class JMessagePlugin extends CordovaPlugin {
             }
         } catch (JSONException e) {
             e.printStackTrace();
-            callback.error("json error.");
+            callback.error("Json error.");
         }
     }
 
@@ -802,7 +905,7 @@ public class JMessagePlugin extends CordovaPlugin {
             }
         } catch (JSONException e) {
             e.printStackTrace();
-            callback.error("json error.");
+            callback.error("Json error.");
         }
     }
 
@@ -814,7 +917,7 @@ public class JMessagePlugin extends CordovaPlugin {
             callback.success();
         } catch (JSONException e) {
             e.printStackTrace();
-            callback.error("json error.");
+            callback.error("Json error.");
         }
     }
 
@@ -825,7 +928,7 @@ public class JMessagePlugin extends CordovaPlugin {
             callback.success();
         } catch (JSONException e) {
             e.printStackTrace();
-            callback.error("json error.");
+            callback.error("Json error.");
         }
     }
 
@@ -834,6 +937,26 @@ public class JMessagePlugin extends CordovaPlugin {
         callback.success();
     }
 
+    /**
+     * @param type 会话类型，'single' or 'group'。
+     * @param value 会话的唯一标识，如果类型为 'single' 则为 username；
+     *              如果类型为 'group' 则为 groupId。
+     * @param appKey 如果会话类型为 'single'，可以通过该属性获得跨应用会话。
+     * @return
+     */
+    private Conversation getConversation(String type, String value,
+            String appKey) {
+        Conversation conversation = null;
+        if (type.equals("single")) {
+            conversation = JMessageClient.getSingleConversation(value, appKey);
+        } else if (type.equals("group")) {
+            long groupId = Long.parseLong(value);
+            conversation = JMessageClient.getGroupConversation(groupId);
+        } else {
+            return null;
+        }
+        return conversation;
+    }
 
     // Group API.
 
@@ -855,7 +978,7 @@ public class JMessagePlugin extends CordovaPlugin {
             });
         } catch (JSONException e) {
             e.printStackTrace();
-            callback.error("json error.");
+            callback.error("Json error.");
         }
     }
 
@@ -889,7 +1012,7 @@ public class JMessagePlugin extends CordovaPlugin {
             });
         } catch (JSONException e) {
             e.printStackTrace();
-            callback.error("json error.");
+            callback.error("Json error.");
         }
     }
 
@@ -911,7 +1034,7 @@ public class JMessagePlugin extends CordovaPlugin {
             });
         } catch (JSONException e) {
             e.printStackTrace();
-            callback.error("json error.");
+            callback.error("Json error.");
         }
     }
 
@@ -935,7 +1058,7 @@ public class JMessagePlugin extends CordovaPlugin {
                     });
         } catch (JSONException e) {
             e.printStackTrace();
-            callback.error("json error.");
+            callback.error("Json error.");
         }
     }
 
@@ -961,7 +1084,7 @@ public class JMessagePlugin extends CordovaPlugin {
 
         } catch (JSONException e) {
             e.printStackTrace();
-            callback.error("json error.");
+            callback.error("Json error.");
         }
     }
 
@@ -1003,7 +1126,7 @@ public class JMessagePlugin extends CordovaPlugin {
             });
         } catch (JSONException e) {
             e.printStackTrace();
-            callback.error("json error.");
+            callback.error("Json error.");
         }
     }
 
@@ -1024,7 +1147,7 @@ public class JMessagePlugin extends CordovaPlugin {
             });
         } catch (JSONException e) {
             e.printStackTrace();
-            callback.error("json error.");
+            callback.error("Json error.");
         }
     }
 
@@ -1048,7 +1171,7 @@ public class JMessagePlugin extends CordovaPlugin {
             });
         } catch (JSONException e) {
             e.printStackTrace();
-            callback.error("json error.");
+            callback.error("Json error.");
         }
     }
 
@@ -1069,7 +1192,7 @@ public class JMessagePlugin extends CordovaPlugin {
             });
         } catch (JSONException e) {
             e.printStackTrace();
-            callback.error("json error.");
+            callback.error("Json error.");
         }
     }
 
@@ -1094,7 +1217,7 @@ public class JMessagePlugin extends CordovaPlugin {
             callback.success();
         } catch (JSONException e) {
             e.printStackTrace();
-            callback.error("json error.");
+            callback.error("Json error.");
         }
     }
 
@@ -1140,17 +1263,18 @@ public class JMessagePlugin extends CordovaPlugin {
     public void getSingleConversationHistoryMessage(JSONArray data,
             CallbackContext callback) {
         Log.i(TAG, "getSingleConversationHistoryMessage \n" + data);
-
         try {
             String username = data.getString(0);
             int from = data.getInt(1);
             int limit = data.getInt(2);
 
             if (limit <= 0 || from < 0) {
-                Log.w(TAG, "JMessageGetSingleHistoryMessage from: " + from + "limit" + limit);
+                Log.w(TAG, "JMessageGetSingleHistoryMessage from: " + from
+                        + "limit" + limit);
                 return;
             }
-            Conversation conversation = JMessageClient.getSingleConversation(username);
+            Conversation conversation = JMessageClient.getSingleConversation(
+                    username);
             if (conversation == null) {
                 conversation = Conversation.createSingleConversation(username);
             }

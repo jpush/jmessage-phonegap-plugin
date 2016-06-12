@@ -139,6 +139,27 @@ JMessagePlugin.prototype.sendGroupCustomMessage = function (username, jsonStr,
         errorCallback);
 };
 
+JMessagePlugin.prototype.getLatestMessage = function(conversationType, value,
+        appKey, successCallback, errorCallback) {
+    this.callNative("getLatestMessage", [conversationType, value, appKey],
+        successCallback, errorCallback);
+};
+
+// 获取指定 Conversation 的部分历史消息。conversationType: 'single' or 'group';
+// value: username if conversation type is 'single' or groupId if conversation type is 'group'.
+JMessagePlugin.prototype.getHistoryMessages = function(conversationType, value,
+        appKey, from, limit, successCallback, errorCallback) {
+    this.callNative("getHistoryMessages", [conversationType, value, appKey, from, limit],
+        successCallback, errorCallback);
+};
+
+// 获取指定 Conversation 的全部历史消息。
+JMessagePlugin.prototype.getAllMessages = function(conversationType, value,
+        appKey, successCallback, errorCallback) {
+    this.callNative("getAllMessages", [conversationType, value, appKey],
+        successCallback, errorCallback);
+};
+
 
 // Conversation API.
 
@@ -147,6 +168,7 @@ JMessagePlugin.prototype.getConversationList = function(successCallback,
     this.callNative("getConversationList", [], successCallback, errorCallback);
 };
 
+// username: 目标用户的用户名。
 JMessagePlugin.prototype.getSingleConversation = function(username, appKey,
         successCallback, errorCallback) {
     this.callNative("getSingleConversation", [username, appKey], successCallback,
@@ -314,31 +336,27 @@ JMessagePlugin.prototype.setReceiveMessageCallbackChannel = function () {
 
 // handle event.
 JMessagePlugin.prototype.onReceiveMessage = function(data) {
-    data = JSON.stringify(data);
+    console.log(data);
     this.receiveMessageObj = JSON.parse(data);
     cordova.fireDocumentEvent("jmessage.onReceiveMessage", null);
 };
 
 JMessagePlugin.prototype.onReceiveTextMessage = function(data) {
-    data = JSON.stringify(data);
     this.textMessage = JSON.parse(data);
     cordova.fireDocumentEvent("jmessage.onReceiveTextMessage", null);
 };
 
 JMessagePlugin.prototype.onReceiveImageMessage = function(data) {
-    data = JSON.stringify(data);
     this.imageMessage = JSON.parse(data);
     cordova.fireDocumentEvent("jmessage.onReceiveImageMessage", null);
 };
 
 JMessagePlugin.prototype.onReceiveVoiceMessage = function(data) {
-    data = JSON.stringify(data);
     this.voiceMessage = JSON.parse(data);
     cordova.fireDocumentEvent("jmessage.onReceiveVoiceMessage", null);
 };
 
 JMessagePlugin.prototype.onReceiveCustomMessage = function(data) {
-    data = JSON.stringify(data);
     this.customMessage = JSON.parse(data);
     cordova.fireDocumentEvent("jmessage.onReceiveCustomMessage", null);
 };

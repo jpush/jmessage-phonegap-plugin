@@ -2,9 +2,9 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="cordova-plugin-jmessage"
-        version="1.0.0">
+        version="2.0.0">
 
-    <name>JMessage Plugin</name>
+    <name>JMessage PhoneGap Plugin</name>
     <description>集成极光 IM 和推送功能</description>
     <author>JPush</author>
     <keywords>JMessage, JPush</keywords>
