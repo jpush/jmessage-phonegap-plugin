@@ -1,96 +1,61 @@
-
 # jmessage-phonegap-plugin
 
+jmessage-phonegap-plugin 是基于[极光 IM](http://docs.jpush.io/guideline/jmessage_guide/) 的 Cordova 插件，目前支持 iOS 和 Android 平台。
 
-**jmessage-phonegap-plugin** 是基于[极光IM](http://docs.jpush.io/guideline/jmessage_guide/)的Cordova 插件。 目前支持 iOS , Android 平台。
+除了支持 IM 功能外，还集成了 [jpush-phonegap-plugin](https://github.com/jpush/jpush-phonegap-plugin) 插件的功能，支持进行消息推送。
 
-**jmessage-phonegap-plugin**  除了支持IM 功能外，还集成了原 [**jpush-phonegap-plugin**](https://github.com/jpush/jpush-phonegap-plugin) 插件,  支持消息推送功能。
+>jmessage-phonegap-plugin 和 jpush-phonegap-plugin 这两个插件不能同时安装。
+迁移到 jmessage-phonegap-plugin 前要先删除 jpush-phonegap-plugin 插件，因为 jmessage-phonegap-plugin 中已经包含了 JPush 的相关功能了。
 
-**注意：**
+> **注意** 需要 Cordova 5.0.0 及以上版本。
 
-*jmessage-phonegap-plugin 和 jpush-phonegap-plugin 这两插件不能同时安装。
-迁移到jmessage-phonegap-plugin 前要先删除jpush-phonegap-plugin 插件。*
+## 集成步骤
+1. 先安装依赖的插件（若已安装，可忽略）
 
-	
-###功能和特性：
-	
->IM
- 	
->>+ 用户注册/登录
-+ 会话
-+ 会话列表
-+ 获取本地会话记录
-+ 设置用户基本信息昵称，性别等
+		cordova plugin add cordova-plugin-device
 
->Push
+2. 下载代码后本地安装
 
->>+ 发送推送通知
-+ 发送推送自定义消息
-+ 设置推送标签和别名
+		cordova plugin add  <jmessage-phonegap-plugin路径>   --variable APP_KEY=<your app key>
 
+ 	或在线安装
 
+		cordova plugin add  https://github.com/jpush/jmessage-phonegap-plugin.git --variable APP_KEY=<your app key>
 
-###开发环境：
+	> [点击这里](http://docs.jpush.io/guideline/statistical_report/)查看如何获取 APP_KEY。
 
->+ cordova 版本 5.0.0 及以上
+## Demo
+插件项目中的 /example 目录下包含一个简单的 Demo，可以将目录下的所有文件拷贝到具体 Cordova 项目的 /assets/www/ 目录下。
 
->+ iOS平台：xcode 版本 7.0 及以上
+## API
+API 分为 IM（聊天）和 Push（消息推送）两部分。具体可参考：
+### IM API
+- [公共 API](/doc/Common_detail_api.md)。
+- [Android API](/doc/Android_detail_api.md)。
+- [iOS API](/doc/iOS_detail_api.md)。
 
->+ Android 平台：Android Studio 1.5 及以上
+### Push API
+- [公共 API](https://github.com/jpush/jpush-phonegap-plugin/blob/master/doc/Common_detail_api.md)。
+- [Android API](https://github.com/jpush/jpush-phonegap-plugin/blob/master/doc/Android_detail_api.md)。
+- [iOS API](https://github.com/jpush/jpush-phonegap-plugin/blob/master/doc/iOS_API.md)。
 
+## 常见问题
+若要使用 CLI 来编译项目，注意应使用 cordova compile 而不是 cordova build 命令，因为 cordova build 会清除对插件文件的修改。具体 Cordova CLI 用法可参考 [Cordova CLI 官方文档](https://cordova.apache.org/docs/en/latest/reference/cordova-cli/index.html)。
 
-		
-## 安装
+### Android
+Eclipse 中 import PhoneGap 工程之后出现：Type CallbackContext cannot be resolved to a type。
 
-下载代码后，在本地安装（*推荐*）
+解决方案：Eclipse 中右键单击工程名，Build Path -> Config Build Path -> Projects -> 选中工程名称 -> CordovaLib -> 点击 add。
 
-```sh
-cordova plugin add  <jmessage-phonegap-plugin路径>   --variable APP_KEY=<your app key>
-```
+### iOS
+- 收不到推送：
+	请首先按照正确方式再次配置证书、描述文件，可参考 [iOS 证书设置指南](http://docs.jpush.io/client/ios_tutorials/#ios_1)。
+- 设置 PushConfig.plist:
+	- APP_KEY：应用标识；
+	- CHANNEL：渠道标识；
+	- IsProduction：是否为生产环境；
+	- IsIDFA：是否使用 IDFA 启动 SDK。
 
-或 在线安装
-
-```sh
-cordova plugin add  https://github.com/jpush/jmessage-phonegap-plugin.git --variable APP_KEY=<your app key>
-```
-
-查看如何获取APP_KEY,点击[这里](http://docs.jpush.io/guideline/statistical_report/)
-
-
-
-
-#### 安装依赖的其他 plugin
-
-+ org.apache.cordova.device
-
-```sh
-cordova plugin add org.apache.cordova.device
-```
-
-
-
-## 使用示例
-
-示例目录
-
-`jmessage-phonegap-plugin/example/`
-
-
-
-## API 
-
-API 分为IM（聊天）API 和  Push(消息推送)两部分
-
-+ [JMessage API](doc/JMessage_API.md)
-
-+ [Push API](doc/JPush_API.md)
-
-+ [API 返回错误码定义](http://docs.jpush.io/client/im_errorcode/)
-
-
-
-
-
-
-
-
+## 更多
+- [JPush 官网文档](http://docs.jpush.io/client/im_sdk_android/#api)。
+- 有问题可访问[极光社区]搜索或提问(http://community.jpush.cn/)。
