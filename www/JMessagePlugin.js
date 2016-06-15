@@ -1,17 +1,11 @@
 var exec = require("cordova/exec");
 
 var JMessagePlugin = function () {
-    this.NOTI_MODE_NO_NOTIFICATION = 0;
-    this.NOTI_MODE_DEFAULT = 1;
-    this.NOTI_MODE_NO_SOUND = 2;
-    this.NOTI_MODE_NO_VIBRATE = 3;
-    this.NOTI_MODE_SILENCE = 4;
-
     this.username = "";
     this.nickname = "";
-    this.gender = 0;
+    this.gender = "";
     this.avatarUrl = "";
-    this.receiveMessageObj = "";
+    this.message = "";
 
     this.textMessage = {};
     this.imageMessage = {};
@@ -91,28 +85,28 @@ JMessagePlugin.prototype.updateUserAvatar = function(avatarFileUrl, successCallb
 
 // Message API.
 
-JMessagePlugin.prototype.sendSingleTextMessage = function (username, text,
+JMessagePlugin.prototype.sendSingleTextMessage = function (username, text, appKey,
         successCallback, errorCallback) {
-    this.callNative("sendSingleTextMessage", [username, text], successCallback,
-        errorCallback);
+    this.callNative("sendSingleTextMessage", [username, text, appKey],
+        successCallback, errorCallback);
 };
 
 JMessagePlugin.prototype.sendSingleImageMessage = function (username, imageUrl,
-        successCallback, errorCallback) {
-    this.callNative("sendSingleImageMessage", [username, imageUrl], successCallback,
-        errorCallback);
+        appKey, successCallback, errorCallback) {
+    this.callNative("sendSingleImageMessage", [username, imageUrl, appKey],
+        successCallback, errorCallback);
 };
 
 JMessagePlugin.prototype.sendSingleVoiceMessage = function (username, fileUrl,
-        successCallback, errorCallback) {
-    this.callNative("sendSingleVoiceMessage", [username, fileUrl], successCallback,
-        errorCallback);
+        appKey, successCallback, errorCallback) {
+    this.callNative("sendSingleVoiceMessage", [username, fileUrl, appKey],
+        successCallback, errorCallback);
 };
 
 JMessagePlugin.prototype.sendSingleCustomMessage = function (username, jsonStr,
-        successCallback, errorCallback) {
-    this.callNative("sendSingleCustomMessage", [username, jsonStr], successCallback,
-        errorCallback);
+        appKey, successCallback, errorCallback) {
+    this.callNative("sendSingleCustomMessage", [username, jsonStr, appKey],
+        successCallback, errorCallback);
 };
 
 JMessagePlugin.prototype.sendGroupTextMessage = function (username, text,
@@ -180,9 +174,26 @@ JMessagePlugin.prototype.getAllSingleConversation = function(successCallback,
     this.callNative("getAllSingleConversation", [], successCallback, errorCallback);
 };
 
+JMessagePlugin.prototype.setSingleConversationUnreadMessageCount = function(username,
+        appKey, unreadMessageCount, successCallback, errorCallback) {
+    this.callNative("setSingleConversationUnreadMessageCount",
+        [username, appKey, unreadMessageCount], successCallback, errorCallback);
+};
+
 JMessagePlugin.prototype.getGroupConversation = function(groupId, successCallback,
         errorCallback) {
     this.callNative("getGroupConversation", [groupId], successCallback, errorCallback);
+};
+
+JMessagePlugin.prototype.getAllGroupConversation = function(successCallback,
+        errorCallback) {
+    this.callNative("getAllGroupConversation ", [], successCallback, errorCallback);
+};
+
+JMessagePlugin.prototype.setGroupConversationUnreadMessageCount = function(groupId,
+        unreadMessageCount, successCallback, errorCallback) {
+    this.callNative("setGroupConversationUnreadMessageCount",
+        [groupId, unreadMessageCount], successCallback, errorCallback);
 };
 
 JMessagePlugin.prototype.deleteSingleConversation = function(username, appKey,
@@ -210,37 +221,6 @@ JMessagePlugin.prototype.enterGroupConversation = function(groupId, successCallb
 
 JMessagePlugin.prototype.exitConversation = function(successCallback, errorCallback) {
     this.callNative("exitConversation", [], successCallback, errorCallback);
-};
-
-JMessagePlugin.prototype.onReceivedSingleConversationMessage = function (data) {
-    if (device.platform == "Android") {
-        var bToObj = window.plugins.jmessagePlugin.ReceiveMessageObj;
-    } else {
-        try {
-            bToObj = JSON.parse(data);
-        } catch (exception) {
-            console.log("onSingleConversationMessageReceived " + exception);
-        }
-    }
-    cordova.fireDocumentEvent('jmessage.singleReceiveMessage', bToObj);
-};
-
-JMessagePlugin.prototype.onSingleConversationChanged = function (data) {
-    try {
-        var bToObj = JSON.parse(data);
-        cordova.fireDocumentEvent('jmessage.conversationChange', bToObj);
-    } catch (exception) {
-        console.log("onSingleConversationChanged " + exception);
-    }
-};
-
-JMessagePlugin.prototype.onSendSingleTextMessage = function (data) {
-    try {
-        var bToObj = JSON.parse(data);
-        console.log(data);
-    } catch (exception) {
-        console.log("sendSingleTextMessageResponse " + exception);
-    }
 };
 
 
@@ -314,30 +294,10 @@ JMessagePlugin.prototype.getBlacklist = function(success) {
 };
 
 
-// Notification API.
-JMessagePlugin.prototype.setNotificationMode = function(mode, success) {
-    this.callNative("setNotificationMode", [mode], success);
-};
-
-JMessagePlugin.prototype.setReceiveMessageCallbackChannel = function () {
-    function AndroidReceiveMessageCallback(message) {
-        window.plugins.jmessagePlugin.ReceiveMessageObj = message;
-        window.plugins.jmessagePlugin.onReceivedSingleConversationMessage(null);
-        //cordova.fireDocumentEvent('jmessage.singleReceiveMessage', null);
-    }
-
-    function fail() {
-        console.log("setMessageCallbackChannel failed");
-    }
-
-    cordova.exec(AndroidReceiveMessageCallback, fail, "JMessagePlugin",
-        "setJMessageReceiveCallbackChannel", []);
-};
-
 // handle event.
 JMessagePlugin.prototype.onReceiveMessage = function(data) {
     console.log(data);
-    this.receiveMessageObj = JSON.parse(data);
+    this.message = JSON.parse(data);
     cordova.fireDocumentEvent("jmessage.onReceiveMessage", null);
 };
 
@@ -381,32 +341,8 @@ JMessagePlugin.prototype.onGroupMemberRemoved = function() {
     cordova.fireDocumentEvent("jmessage.onGroupMemberRemoved", null);
 };
 
-
-// handle android receive push
-
-JMessagePlugin.prototype.setReceivePushCallbackChannel = function () {
-    function AndroidReceivePushCallback(bToObj) {
-        console.log("### android receive push message");
-
-        var ss = JSON.stringify(bToObj);
-        var messageWrapType = bToObj.messageWrapType;
-        var realData = bToObj.data;
-
-        if (messageWrapType === "ACTION_MESSAGE_RECEIVED") {
-            window.plugins.jPushPlugin.onReceiveMessageInAndroid(realData);
-        } else if (messageWrapType === "ACTION_NOTIFICATION_OPENED") {
-            window.plugins.jPushPlugin.onOpenNotificationInAndroid(realData);
-        } else if (messageWrapType === "ACTION_NOTIFICATION_RECEIVED") {
-            window.plugins.jPushPlugin.onReceiveNotificationInAndroid(realData);
-        }
-    }
-
-    function fail() {
-        console.log("--- setPushReceiveCallbackChannel failed");
-    }
-
-    cordova.exec(AndroidReceivePushCallback, fail, "JMessagePlugin",
-        "setPushReceiveCallbackChannel", []);
+JMessagePlugin.prototype.onGroupMemberExit = function() {
+    cordova.fireDocumentEvent("jmessage.onGroupMemberExit", null);
 };
 
 if (!window.plugins) {

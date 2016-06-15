@@ -223,19 +223,19 @@
         </config-file>
 
         <source-file src="src/android/gson-2.3.1.jar" target-dir="libs"/>
-        <source-file src="src/android/jmessage-android-1.2.0.jar" target-dir="libs"/>
-        <source-file src="src/android/armeabi/libjpush207.so" target-dir="libs/armeabi"/>
-        <source-file src="src/android/armeabi-v7a/libjpush207.so" target-dir="libs/armeabi-v7a"/>
-        <source-file src="src/android/arm64-v8a/libjpush207.so" target-dir="libs/arm64-v8a"/>
-        <source-file src="src/android/x86_64/libjpush207.so" target-dir="libs/x86_64"/>
-        <source-file src="src/android/x86/libjpush207.so" target-dir="libs/x86"/>
-        <source-file src="src/android/mips64/libjpush207.so" target-dir="libs/mips64"/>
-        <source-file src="src/android/mips/libjpush207.so" target-dir="libs/mips"/>
+        <source-file src="src/android/jmessage-android-1.2.5.jar" target-dir="libs"/>
+
+        <source-file src="src/android/armeabi/libjpush211.so" target-dir="libs/armeabi"/>
+        <source-file src="src/android/armeabi-v7a/libjpush211.so" target-dir="libs/armeabi-v7a"/>
+        <source-file src="src/android/arm64-v8a/libjpush211.so" target-dir="libs/arm64-v8a"/>
+        <source-file src="src/android/x86_64/libjpush211.so" target-dir="libs/x86_64"/>
+        <source-file src="src/android/x86/libjpush211.so" target-dir="libs/x86"/>
+        <source-file src="src/android/mips64/libjpush211.so" target-dir="libs/mips64"/>
+        <source-file src="src/android/mips/libjpush211.so" target-dir="libs/mips"/>
 
         <source-file src="src/android/JMessagePlugin.java" target-dir="src/cn/jmessage/phonegap"/>
         <source-file src="src/android/JPushPlugin.java" target-dir="src/cn/jmessage/phonegap"/>
 
-        <!--<source-file src="src/android/JPushPlugin.java" target-dir="src/cn/jpush/phonegap"/>-->
         <source-file src="src/android/MyReceiver.java" target-dir="src/cn/jmessage/phonegap"/>
     	<source-file src="src/android/test_notification_layout.xml" target-dir="res/layout"/>
     	<source-file src="src/android/jpush_notification_icon.png" target-dir="res/drawable"/>

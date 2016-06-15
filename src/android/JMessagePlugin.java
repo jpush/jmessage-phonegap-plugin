@@ -195,6 +195,10 @@ public class JMessagePlugin extends CordovaPlugin {
                             // 群成员被踢事件（只有被踢的用户能收到此事件）。
                             fireEvent("onGroupMemberRemoved", null);
                             break;
+                        case group_member_exit:
+                            fireEvent("onGroupMemberExit", null);
+                            break;
+                        default:
                     }
                     break;
                 case unknown:
@@ -270,22 +274,6 @@ public class JMessagePlugin extends CordovaPlugin {
         JMessageClient.unRegisterEventReceiver(this);
     }
 
-    private void handleResult(String successString, int status, String desc,
-            CallbackContext cb) {
-        if (status == 0) {
-            cb.success(successString);
-        } else {
-            JSONObject data = new JSONObject();
-            try {
-                data.put("errorCode", status);
-                data.put("errorDescription", desc);
-                cb.error(data);
-            } catch (JSONException e) {
-                e.printStackTrace();
-                cb.error("error write json");
-            }
-        }
-    }
 
     // Login and register API.
 
@@ -300,7 +288,7 @@ public class JMessagePlugin extends CordovaPlugin {
             JMessageClient.register(username, password, new BasicCallback() {
                 @Override
                 public void gotResult(final int status, final String desc) {
-                    handleResult("注册成功", status, desc, cb);
+                    handleResult("", status, desc, cb);
                 }
             });
         } catch (JSONException e) {
@@ -320,8 +308,7 @@ public class JMessagePlugin extends CordovaPlugin {
             JMessageClient.login(username, password, new BasicCallback() {
                 @Override
                 public void gotResult(final int status, final String desc) {
-                    Log.i(TAG, "login callback " + status + desc);
-                    handleResult("登录成功", status, desc, cb);
+                    handleResult("", status, desc, cb);
                 }
             });
         } catch (JSONException e) {
@@ -331,10 +318,13 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     public void logout(JSONArray data, CallbackContext callback) {
-        Log.i(TAG, "JMessageLogout \n" + data);
-
-        JMessageClient.logout();
-        callback.success("退出成功");
+        Log.i(TAG, "Logout \n" + data);
+        try {
+            JMessageClient.logout();
+            callback.success();
+        } catch (Exception exception) {
+            callback.error(exception.toString());
+        }
     }
 
 
@@ -343,7 +333,7 @@ public class JMessagePlugin extends CordovaPlugin {
     public void getUserInfo(JSONArray data, final CallbackContext callback) {
         try {
             String username = data.getString(0);
-            String appKey = data.getString(1);
+            String appKey = data.isNull(1) ? "" : data.getString(1);
             JMessageClient.getUserInfo(username, appKey, new GetUserInfoCallback() {
                 @Override
                 public void gotResult(int responseCode, String responseDesc,
@@ -358,7 +348,7 @@ public class JMessagePlugin extends CordovaPlugin {
             });
         } catch (JSONException e) {
             e.printStackTrace();
-            callback.error("Json error.");
+            callback.error("Parameter error.");
         }
     }
 
@@ -385,14 +375,14 @@ public class JMessagePlugin extends CordovaPlugin {
             }
         } catch (JSONException e) {
             e.printStackTrace();
-            callback.error("Json error.");
+            callback.error("Parameter error.");
         }
     }
 
     public void updateUserInfo(JSONArray data, final CallbackContext callback) {
         try {
             String username = data.getString(0);
-            String appKey = data.getString(1);
+            String appKey = data.isNull(1) ? "" : data.getString(1);
             String field = data.getString(2);
             String value = data.getString(3);
 
@@ -404,7 +394,7 @@ public class JMessagePlugin extends CordovaPlugin {
             }
         } catch (JSONException e) {
             e.printStackTrace();
-            callback.error("Json error.");
+            callback.error("Parameter error.");
         }
     }
 
@@ -422,7 +412,7 @@ public class JMessagePlugin extends CordovaPlugin {
             JMessageClient.updateUserPassword(oldPwd, newPwd, new BasicCallback() {
                 @Override
                 public void gotResult(int status, String desc) {
-                    handleResult("密码修改成功", status, desc, cb);
+                    handleResult("", status, desc, cb);
                 }
             });
         } catch (JSONException e) {
@@ -449,7 +439,7 @@ public class JMessagePlugin extends CordovaPlugin {
             JMessageClient.updateUserAvatar(avatarFile, new BasicCallback() {
                 @Override
                 public void gotResult(int status, String errorDesc) {
-                    handleResult("修改头像成功", status, errorDesc, cb);
+                    handleResult("", status, errorDesc, cb);
                 }
             });
         } catch (JSONException e) {
@@ -464,14 +454,17 @@ public class JMessagePlugin extends CordovaPlugin {
     public void sendSingleTextMessage(JSONArray data, CallbackContext callback) {
         Log.i(TAG, "sendSingleTextMessage \n" + data);
 
-        final CallbackContext cb = callback;
         try {
             String username = data.getString(0);
             String text = data.getString(1);
+            String appKey = data.isNull(2) ? "" : data.getString(2);
+            Log.i(TAG, "appKey: " + appKey);
 
-            Conversation conversation = JMessageClient.getSingleConversation(username);
+            Conversation conversation = JMessageClient.getSingleConversation(
+                    username, appKey);
             if (conversation == null) {
-                conversation = Conversation.createSingleConversation(username);
+                conversation = Conversation.createSingleConversation(username,
+                        appKey);
             }
             if (conversation == null) {
                 callback.error("无法创建对话");
@@ -497,10 +490,13 @@ public class JMessagePlugin extends CordovaPlugin {
         try {
             String userName = data.getString(0);
             String imgUrlStr = data.getString(1);
+            String appKey = data.isNull(2) ? "" : data.getString(2);
 
-            Conversation conversation = JMessageClient.getSingleConversation(userName);
+            Conversation conversation = JMessageClient.getSingleConversation(
+                    userName, appKey);
             if (conversation == null) {
-                conversation = Conversation.createSingleConversation(userName);
+                conversation = Conversation.createSingleConversation(userName,
+                        appKey);
             }
             if (conversation == null) {
                 callback.error("无法创建对话");
@@ -511,7 +507,7 @@ public class JMessagePlugin extends CordovaPlugin {
             File imgFile = new File(imgUrl.getPath());
             Message msg = conversation.createSendImageMessage(imgFile);
             JMessageClient.sendMessage(msg);
-            callback.success("正在发送");
+            callback.success(mGson.toJson(msg));
         } catch (JSONException e) {
             e.printStackTrace();
             callback.error("json data error");
@@ -532,10 +528,13 @@ public class JMessagePlugin extends CordovaPlugin {
         try {
             String userName = data.getString(0);
             String voiceUrlStr = data.getString(1);
+            String appKey = data.isNull(2) ? "" : data.getString(2);
 
-            Conversation conversation = JMessageClient.getSingleConversation(userName);
+            Conversation conversation = JMessageClient.getSingleConversation(
+                    userName, appKey);
             if (conversation == null) {
-                conversation = Conversation.createSingleConversation(userName);
+                conversation = Conversation.createSingleConversation(userName,
+                        appKey);
             }
             if (conversation == null) {
                 callback.error("无法创建对话");
@@ -550,9 +549,10 @@ public class JMessagePlugin extends CordovaPlugin {
                     Uri.parse(voicePath));
             int duration = mediaPlayer.getDuration();
 
-            Message msg = JMessageClient.createSingleVoiceMessage(userName, file, duration);
+            Message msg = JMessageClient.createSingleVoiceMessage(userName, file,
+                    duration);
             JMessageClient.sendMessage(msg);
-            callback.success("正在发送");
+            callback.success(mGson.toJson(msg));
             mediaPlayer.release();
         } catch (JSONException e) {
             e.printStackTrace();
@@ -574,10 +574,12 @@ public class JMessagePlugin extends CordovaPlugin {
     public void sendSingleCustomMessage(JSONArray data, CallbackContext callback) {
         try {
             String userName = data.getString(0);
+            String appKey = data.isNull(2) ? "" : data.getString(2);
 
-            Conversation con = JMessageClient.getSingleConversation(userName);
+            Conversation con = JMessageClient.getSingleConversation(userName,
+                    appKey);
             if (con == null) {
-                con = Conversation.createSingleConversation(userName);
+                con = Conversation.createSingleConversation(userName, appKey);
             }
             if (con == null) {
                 callback.error("无法创建对话");
@@ -595,12 +597,13 @@ public class JMessagePlugin extends CordovaPlugin {
                 value = values.getString(key);
                 valuesMap.put(key, value);
             }
-            Message msg = JMessageClient.createSingleCustomMessage(userName, valuesMap);
+            Message msg = JMessageClient.createSingleCustomMessage(userName,
+                    valuesMap);
             JMessageClient.sendMessage(msg);
-            callback.success("正在发送");
+            callback.success();
         } catch (JSONException e) {
             e.printStackTrace();
-            callback.error("Json error.");
+            callback.error("Parameter error.");
         }
     }
 
@@ -625,7 +628,7 @@ public class JMessagePlugin extends CordovaPlugin {
 
             Message msg = JMessageClient.createGroupTextMessage(groupId, text);
             JMessageClient.sendMessage(msg);
-            callback.success("正在发送");
+            callback.success(mGson.toJson(msg));
         } catch (JSONException e) {
             e.printStackTrace();
             callback.error("error reading id json.");
@@ -650,10 +653,10 @@ public class JMessagePlugin extends CordovaPlugin {
             File imgFile = new File(imgUrl.getPath());
             Message msg = JMessageClient.createGroupImageMessage(groupId, imgFile);
             JMessageClient.sendMessage(msg);
-            callback.success("发送成功");
+            callback.success(mGson.toJson(msg));
         } catch (JSONException e) {
             e.printStackTrace();
-            callback.error("Json error.");
+            callback.error("Parameter error.");
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (FileNotFoundException e) {
@@ -686,7 +689,7 @@ public class JMessagePlugin extends CordovaPlugin {
 
             Message msg = JMessageClient.createGroupVoiceMessage(groupId, file, duration);
             JMessageClient.sendMessage(msg);
-            callback.success("正在发送");
+            callback.success(mGson.toJson(msg));
             mediaPlayer.release();
         } catch (JSONException e) {
             e.printStackTrace();
@@ -730,7 +733,7 @@ public class JMessagePlugin extends CordovaPlugin {
             }
             Message msg = JMessageClient.createGroupCustomMessage(groupId, valuesMap);
             JMessageClient.sendMessage(msg);
-            callback.success("正在发送");
+            callback.success(mGson.toJson(msg));
         } catch (JSONException e) {
             e.printStackTrace();
             callback.error("error reading id json.");
@@ -741,7 +744,7 @@ public class JMessagePlugin extends CordovaPlugin {
         try {
             String conversationType = data.getString(0);
             String value = data.getString(1);
-            String appKey = data.getString(2);
+            String appKey = data.isNull(2) ? "" : data.getString(2);
             Conversation conversation = getConversation(conversationType, value,
                     appKey);
             if (conversation == null) {
@@ -753,7 +756,7 @@ public class JMessagePlugin extends CordovaPlugin {
             callback.success(json);
         } catch (JSONException e) {
             e.printStackTrace();
-            callback.error("Json error.");
+            callback.error("Parameter error.");
         }
     }
 
@@ -763,7 +766,7 @@ public class JMessagePlugin extends CordovaPlugin {
             Conversation conversation;
             if (conversationType.equals("single")) {
                 String username = data.getString(1);
-                String appKey = data.getString(2);
+                String appKey = data.isNull(2) ? "" : data.getString(2);
                 Log.i(TAG, "username:" + username + "; appKey:" + appKey);
                 conversation = JMessageClient.getSingleConversation(
                         username, appKey);
@@ -771,7 +774,7 @@ public class JMessagePlugin extends CordovaPlugin {
                     conversation = Conversation.createSingleConversation(
                             username, appKey);
                 }
-            } else if (conversationType.equals("group")){
+            } else if (conversationType.equals("group")) {
                 long groupId = data.getLong(1);
                 conversation = JMessageClient.getGroupConversation(groupId);
                 if (conversation == null) {
@@ -797,7 +800,7 @@ public class JMessagePlugin extends CordovaPlugin {
             callback.success(json);
         } catch (JSONException e) {
             e.printStackTrace();
-            callback.error("Json error.");
+            callback.error("Parameter error.");
         }
     }
 
@@ -807,7 +810,7 @@ public class JMessagePlugin extends CordovaPlugin {
             Conversation conversation;
             if (type.equals("single")) {
                 String username = data.getString(1);
-                String appKey = data.getString(2);
+                String appKey = data.isNull(2) ? "" : data.getString(2);
                 conversation = JMessageClient.getSingleConversation(
                         username, appKey);
                 if (conversation == null) {
@@ -835,7 +838,7 @@ public class JMessagePlugin extends CordovaPlugin {
             callback.success(json);
         } catch (JSONException e) {
             e.printStackTrace();
-            callback.error("Json error.");
+            callback.error("Parameter error.");
         }
     }
 
@@ -853,15 +856,51 @@ public class JMessagePlugin extends CordovaPlugin {
         }
     }
 
+    // 设置会话本地未读消息数的接口。
+    public void setSingleConversationUnreadMessageCount(JSONArray data,
+            CallbackContext callback) {
+        try {
+            String username = data.getString(0);
+            String appKey = data.isNull(1) ? "" : data.getString(1);
+            int unreadMessageCount = data.getInt(2);
+            Conversation con = JMessageClient.getSingleConversation(username, appKey);
+            if (con == null) {
+                callback.error("Conversation is not exist.");
+                return;
+            }
+            con.setUnReadMessageCnt(unreadMessageCount);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callback.error("Parameter error.");
+        }
+    }
+
+    public void setGroupConversationUnreadMessageCount(JSONArray data,
+            CallbackContext callback) {
+        try {
+            long groupId = data.getLong(0);
+            int unreadMessageCount = data.getInt(1);
+            Conversation con = JMessageClient.getGroupConversation(groupId);
+            if (con == null) {
+                callback.error("Conversation is not exist.");
+                return;
+            }
+            con.setUnReadMessageCnt(unreadMessageCount);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callback.error("Parameter error.");
+        }
+    }
+
     public void enterSingleConversation(JSONArray data, CallbackContext callback) {
         try {
             String username = data.getString(0);
-            String appKey = data.getString(1);
+            String appKey = data.isNull(1) ? "" : data.getString(1);
             JMessageClient.enterSingleConversation(username, appKey);
             callback.success();
         } catch (JSONException e) {
             e.printStackTrace();
-            callback.error("Json error.");
+            callback.error("Parameter error.");
         }
     }
 
@@ -872,14 +911,14 @@ public class JMessagePlugin extends CordovaPlugin {
             callback.success();
         } catch (JSONException e) {
             e.printStackTrace();
-            callback.error("Json error.");
+            callback.error("Parameter error.");
         }
     }
 
     public void getSingleConversation(JSONArray data, CallbackContext callback) {
         try {
             String username = data.getString(0);
-            String appKey = data.getString(1);
+            String appKey = data.isNull(1) ? "" : data.getString(1);
             Conversation conversation = JMessageClient.getSingleConversation(username, appKey);
             if (conversation != null) {
                 String json = mGson.toJson(conversation);
@@ -889,7 +928,7 @@ public class JMessagePlugin extends CordovaPlugin {
             }
         } catch (JSONException e) {
             e.printStackTrace();
-            callback.error("Json error.");
+            callback.error("Parameter error.");
         }
     }
 
@@ -905,19 +944,19 @@ public class JMessagePlugin extends CordovaPlugin {
             }
         } catch (JSONException e) {
             e.printStackTrace();
-            callback.error("Json error.");
+            callback.error("Parameter error.");
         }
     }
 
     public void deleteSingleConversation(JSONArray data, CallbackContext callback) {
         try {
             String username = data.getString(0);
-            String appKey = data.getString(1);
+            String appKey = data.isNull(1) ? "" : data.getString(1);
             JMessageClient.deleteSingleConversation(username, appKey);
             callback.success();
         } catch (JSONException e) {
             e.printStackTrace();
-            callback.error("Json error.");
+            callback.error("Parameter error.");
         }
     }
 
@@ -928,34 +967,17 @@ public class JMessagePlugin extends CordovaPlugin {
             callback.success();
         } catch (JSONException e) {
             e.printStackTrace();
-            callback.error("Json error.");
+            callback.error("Parameter error.");
         }
     }
 
     public void exitConversation(JSONArray data, CallbackContext callback) {
-        JMessageClient.exitConversation();
-        callback.success();
-    }
-
-    /**
-     * @param type 会话类型，'single' or 'group'。
-     * @param value 会话的唯一标识，如果类型为 'single' 则为 username；
-     *              如果类型为 'group' 则为 groupId。
-     * @param appKey 如果会话类型为 'single'，可以通过该属性获得跨应用会话。
-     * @return
-     */
-    private Conversation getConversation(String type, String value,
-            String appKey) {
-        Conversation conversation = null;
-        if (type.equals("single")) {
-            conversation = JMessageClient.getSingleConversation(value, appKey);
-        } else if (type.equals("group")) {
-            long groupId = Long.parseLong(value);
-            conversation = JMessageClient.getGroupConversation(groupId);
-        } else {
-            return null;
+        try{
+            JMessageClient.exitConversation();
+            callback.success();
+        } catch (Exception exception) {
+            callback.error(exception.toString());
         }
-        return conversation;
     }
 
     // Group API.
@@ -966,19 +988,19 @@ public class JMessagePlugin extends CordovaPlugin {
             String groupDesc = data.getString(1);
             JMessageClient.createGroup(groupName, groupDesc,
                     new CreateGroupCallback() {
-                @Override
-                public void gotResult(int responseCode, String responseMsg,
-                        long groupId) {
-                    if (responseCode == 0) {
-                        callback.success();
-                    } else {
-                        callback.error(responseMsg);
-                    }
-                }
-            });
+                        @Override
+                        public void gotResult(int responseCode, String responseMsg,
+                                long groupId) {
+                            if (responseCode == 0) {
+                                callback.success();
+                            } else {
+                                callback.error(responseMsg);
+                            }
+                        }
+                    });
         } catch (JSONException e) {
             e.printStackTrace();
-            callback.error("Json error.");
+            callback.error("Parameter error.");
         }
     }
 
@@ -1012,7 +1034,7 @@ public class JMessagePlugin extends CordovaPlugin {
             });
         } catch (JSONException e) {
             e.printStackTrace();
-            callback.error("Json error.");
+            callback.error("Parameter error.");
         }
     }
 
@@ -1023,18 +1045,18 @@ public class JMessagePlugin extends CordovaPlugin {
 
             JMessageClient.updateGroupName(groupId, groupNewName,
                     new BasicCallback() {
-                @Override
-                public void gotResult(int responseCode, String responseDesc) {
-                    if (responseCode == 0) {
-                        callback.success();
-                    } else {
-                        callback.error(responseDesc);
-                    }
-                }
-            });
+                        @Override
+                        public void gotResult(int responseCode, String responseDesc) {
+                            if (responseCode == 0) {
+                                callback.success();
+                            } else {
+                                callback.error(responseDesc);
+                            }
+                        }
+                    });
         } catch (JSONException e) {
             e.printStackTrace();
-            callback.error("Json error.");
+            callback.error("Parameter error.");
         }
     }
 
@@ -1058,7 +1080,7 @@ public class JMessagePlugin extends CordovaPlugin {
                     });
         } catch (JSONException e) {
             e.printStackTrace();
-            callback.error("Json error.");
+            callback.error("Parameter error.");
         }
     }
 
@@ -1072,19 +1094,19 @@ public class JMessagePlugin extends CordovaPlugin {
             Collections.addAll(memberList, members);
             JMessageClient.addGroupMembers(groupId, memberList,
                     new BasicCallback() {
-                @Override
-                public void gotResult(int responseCode, String responseDesc) {
-                    if (responseCode == 0) {
-                        callback.success();
-                    } else {
-                        callback.error(responseDesc);
-                    }
-                }
-            });
+                        @Override
+                        public void gotResult(int responseCode, String responseDesc) {
+                            if (responseCode == 0) {
+                                callback.success();
+                            } else {
+                                callback.error(responseDesc);
+                            }
+                        }
+                    });
 
         } catch (JSONException e) {
             e.printStackTrace();
-            callback.error("Json error.");
+            callback.error("Parameter error.");
         }
     }
 
@@ -1097,15 +1119,15 @@ public class JMessagePlugin extends CordovaPlugin {
             List<String> userNamesList = Arrays.asList(userNamesArr);
             JMessageClient.removeGroupMembers(groupId, userNamesList,
                     new BasicCallback() {
-                @Override
-                public void gotResult(int responseCode, String responseDesc) {
-                    if (responseCode == 0) {
-                        callback.success();
-                    } else {
-                        callback.error(responseDesc);
-                    }
-                }
-            });
+                        @Override
+                        public void gotResult(int responseCode, String responseDesc) {
+                            if (responseCode == 0) {
+                                callback.success();
+                            } else {
+                                callback.error(responseDesc);
+                            }
+                        }
+                    });
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -1126,7 +1148,7 @@ public class JMessagePlugin extends CordovaPlugin {
             });
         } catch (JSONException e) {
             e.printStackTrace();
-            callback.error("Json error.");
+            callback.error("Parameter error.");
         }
     }
 
@@ -1147,7 +1169,7 @@ public class JMessagePlugin extends CordovaPlugin {
             });
         } catch (JSONException e) {
             e.printStackTrace();
-            callback.error("Json error.");
+            callback.error("Parameter error.");
         }
     }
 
@@ -1171,7 +1193,7 @@ public class JMessagePlugin extends CordovaPlugin {
             });
         } catch (JSONException e) {
             e.printStackTrace();
-            callback.error("Json error.");
+            callback.error("Parameter error.");
         }
     }
 
@@ -1192,7 +1214,7 @@ public class JMessagePlugin extends CordovaPlugin {
             });
         } catch (JSONException e) {
             e.printStackTrace();
-            callback.error("Json error.");
+            callback.error("Parameter error.");
         }
     }
 
@@ -1217,7 +1239,7 @@ public class JMessagePlugin extends CordovaPlugin {
             callback.success();
         } catch (JSONException e) {
             e.printStackTrace();
-            callback.error("Json error.");
+            callback.error("Parameter error.");
         }
     }
 
@@ -1302,37 +1324,30 @@ public class JMessagePlugin extends CordovaPlugin {
         Log.i(TAG, "getAllSingleConversation \n" + data);
 
         List<Conversation> list = JMessageClient.getConversationList();
-        JSONArray jsonResult = new JSONArray();
+        List<Conversation> singleConversationList = new ArrayList<>();
 
         for (int i = 0; i < list.size(); ++i) {
             Conversation con = list.get(i);
             if (con.getType() == ConversationType.single) {
-                UserInfo info = (UserInfo) con.getTargetInfo();
-                Message msg = con.getLatestMessage();
-                String contentText = "";
-                if (msg != null) {
-                    switch (msg.getContentType()) {
-                        case text:
-                            contentText = ((TextContent) msg.getContent()).getText();
-                            break;
-                        default:
-                            break;
-                    }
-                }
-                JSONObject jsonItem = new JSONObject();
-                try {
-                    jsonItem.put("username", info.getUserName());
-                    jsonItem.put("nickname", info.getNickname());
-                    //jsonItem.put("avatar", info.getAvatar());
-                    jsonItem.put("lastMessage", contentText);
-                    jsonItem.put("unreadCount", con.getUnReadMsgCnt());
-                    jsonResult.put(jsonItem);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                singleConversationList.add(con);
             }
         }
-        callback.success(jsonResult);
+        callback.success(mGson.toJson(singleConversationList));
+    }
+
+    public void getAllGroupConversation(JSONArray data, CallbackContext callback) {
+        Log.i(TAG, "getAllSingleConversation \n" + data);
+
+        List<Conversation> list = JMessageClient.getConversationList();
+        List<Conversation> groupConversationList = new ArrayList<>();
+
+        for (int i = 0; i < list.size(); ++i) {
+            Conversation con = list.get(i);
+            if (con.getType() == ConversationType.group) {
+                groupConversationList.add(con);
+            }
+        }
+        callback.success(mGson.toJson(groupConversationList));
     }
 
     public void setJMessageReceiveCallbackChannel(JSONArray data,
@@ -1347,6 +1362,39 @@ public class JMessagePlugin extends CordovaPlugin {
         mJMessageReceiveCallback.sendPluginResult(dataResult);
     }
 
+    /**
+     * @param type   会话类型，'single' or 'group'。
+     * @param value  会话的唯一标识，如果类型为 'single' 则为 username；
+     *               如果类型为 'group' 则为 groupId。
+     * @param appKey 如果会话类型为 'single'，可以通过该属性获得跨应用会话。
+     * @return
+     */
+    private Conversation getConversation(String type, String value,
+            String appKey) {
+        Conversation conversation = null;
+        if (type.equals("single")) {
+            conversation = JMessageClient.getSingleConversation(value, appKey);
+        } else if (type.equals("group")) {
+            long groupId = Long.parseLong(value);
+            conversation = JMessageClient.getGroupConversation(groupId);
+        } else {
+            return null;
+        }
+        return conversation;
+    }
+
+    private void handleResult(String successString, int status, String desc,
+            CallbackContext callback) {
+        if (status == 0) {
+            if (TextUtils.isEmpty(successString)) {
+                callback.success();
+            } else {
+                callback.success(successString);
+            }
+        } else {
+            callback.error(desc);
+        }
+    }
 
     private UserInfo getUserInfo(String username, String appKey) {
         final UserInfo[] userInfos = new UserInfo[1];
@@ -1381,12 +1429,16 @@ public class JMessagePlugin extends CordovaPlugin {
                         userInfo.setGender(UserInfo.Gender.male);
                         break;
                     case "female":
-                        userInfo.setGender(UserInfo.Gender.male);
+                        userInfo.setGender(UserInfo.Gender.female);
                         break;
                     default:
                         userInfo.setGender(UserInfo.Gender.unknown);
                         break;
                 }
+                result[0] = true;
+                break;
+            case "signature":
+                userInfo.setSignature(value);
                 result[0] = true;
                 break;
             case "region":

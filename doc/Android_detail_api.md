@@ -1,185 +1,913 @@
-## adnroid API简介
+# Android API
+
+- [注册与登录](#注册与登录)
+- [用户属性维护](#用户属性维护)
+- [发送消息](#发送消息)
+- [获取历史消息](#获取历史消息)
+- [聊天会话](#聊天会话)
+	- [单聊](#单聊)
+	- [群聊](#群聊)
+- [黑名单](#黑名单)
+- [事件处理](#事件处理)
+	- [消息事件](#消息事件)
+	- [用户状态变更事件](#用户状态变更事件)
+	- [群组事件](#群组事件)
 
 
+## 注册与登录
+### API - register
+用户注册。
 
-### 获取集成日志
+#### 接口定义
 
-#### API - setDebugMode
+	window.JMessage.register(username, password, successCallback, errorCallback)
 
-用于开启调试模式，可以查看集成JPush过程中的log，如果集成失败，可方便定位问题所在
+#### 参数定义
+- username：用户名。
+- password：密码。
+- successCallback：注册成功的回调函数，无返回信息。
+- errorCallback：注册失败的回调函数，以参数形式返回错误信息。如果为 null，默认打印失败信息日志。
+
+#### 代码示例
+
+	window.JMessage.register('username', 'password',
+		function() {
+			// 注册成功。
+		}, function(errorStr) {
+			console.log(errorStr);	// 输出错误信息。
+		});
+
+### API - login
+用户登录。
+
+#### 接口定义
+
+	window.JMessage.login(username, password, successCallback, errorCallback)
+
+#### 参数定义
+- username：用户名。
+- password：密码。
+- successCallback：登录成功的回调函数，无返回信息。
+- errorCallback：登录失败的回调函数，以参数形式返回错误信息。如果为 null，默认打印失败信息日志。
+
+#### 代码示例
+
+	window.JMessage.login('username', 'password',
+		function() {
+			//  登录成功。
+		}, function(errorStr) {
+			console.log(errorStr);	// 输出错误信息。
+		});
+
+### API - logout
+用户登出。
+
+#### 接口定义
+
+	window.JMessage.logout(successCallback, errorCallback)
+
+#### 参数定义
+- successCallback：登出成功的回调函数，无返回信息。
+- errorCallback：登出失败的回调函数，以参数形式返回错误信息。如果为 null，默认打印失败信息日志。
+
+#### 代码示例
+
+	window.JMessage.logout(function() {
+			// 登出成功。
+		}, function(errorStr) {
+			console.log(errorStr);	// 输出错误信息。
+		});
+
+
+## 用户属性维护
+### API - getUserInfo
+获取用户信息。
+
+#### 接口定义
+
+	window.JMessage.getUserInfo(username, appKey, successCallback, errorCallback)
+
+#### 参数说明
+- username：用户名。
+- appKey：目标用户所属应用的 AppKey，可以使用此参数获取不同应用下的用户信息。如果为空，默认获取当前应用下的用户信息。
+- successCallback：获取成功的回调函数，返回用户信息对象的 JSON 字符串。
+- errorCallback：获取失败的回调函数，以参数形式返回错误信息。如果为 null，默认打印失败信息日志。
+
+#### 代码示例
+
+	window.JMessage.getUserInfo('username', null,
+		function(response) {
+			var userInfo = JSON.parse(response);
+		}, function(errorStr) {
+			console.log(errorStr);	// 输出错误信息。
+		});
+
+### API - getMyInfo
+获取当前用户的信息。
+
+#### 接口定义
+
+	window.JMessage.getMyInfo(successCallback, errorCallback)
+
+#### 参数说明
+- successCallback：获取成功的回调函数，返回当前用户信息对象的 JSON 字符串。
+- errorCallback：获取失败的回调函数，以参数形式返回错误信息。如果为 null，默认打印失败信息日志。
+
+#### 代码示例
+
+	window.JMessage.getMyInfo(function(response) {
+		var myInfo = JSON.parse(response);
+	}, function(errorStr) {
+		console.log(errorStr);	// 输出错误信息。
+	});
+
+
+### API - updateUserInfo
+更新特定用户信息。
+
+#### 接口定义
+
+	window.JMessage.updateUserInfo(username, appKey, userInfoField, value, successCallback, errorCallback)
+
+#### 参数说明
+- username：用户名。
+- appKey：目标用户所属应用的 AppKey，可以使用此参数获取不同应用下的用户信息。如果为空，默认获取当前应用下的用户信息。
+- userInfoField：需要更新的用户信息字段。包括：
+	- nickname：昵称。
+	- birthday：生日。
+	- signature：个性签名。
+	- gender：性别。
+	- region：地区。
+- value：更新的值。
+- successCallback：更新成功的回调函数，无返回值。
+- errorCallback：更新失败的回调函数，以参数形式返回错误信息。如果为 null，默认打印失败信息日志。
+
+#### 代码示例
+
+	// AppKey 为 null，更新当前应用下特定用户的信息。
+	window.JMessage.updateUserInfo('username', null, 'nickname', 'yourNickname',
+		function() {
+			// 更新成功。
+		}, function(errorMsg) {
+			console.log(errorMsg);	// 输出错误信息。
+		});
+
+
+### API - updateMyInfo
+更新当前用户信息。
+
+#### 接口定义
+
+	window.JMessage.updateMyInfo(userInfoField, value, successCallback, errorCallback)
+
+#### 参数说明
+- userInfoField：需要更新的用户信息字段。包括：
+	- nickname：昵称。
+	- birthday：生日。
+	- signature：个性签名。
+	- gender：性别。
+	- region：地区。
+- value：更新的值。
+- successCallback：获取成功的回调函数，无返回值。
+- errorCallback：更新失败的回调函数，以参数形式返回错误信息。如果为 null，默认打印失败信息日志。
+
+#### 代码示例
+
+	window.JMessage.updateMyInfo('nickname', 'yourNickname',
+		function() {
+			// 更新成功。
+		}, function(errorMsg) {
+			console.log(errorMsg);	// 输出错误信息。
+		});
+
+### API - updateUserPassword
+更新当前用户密码。
+
+#### 接口定义
+
+	window.JMessage.updateUserPassword(oldPassword, newPassword, successCallback, errorCallback)
+
+#### 参数说明
+- oldPassword：更新前的密码。
+- newPassword：更新后的密码。
+- successCallback：更新成功的回调函数，无返回值。
+- errorCallback：更新失败的回调函数，以参数形式返回错误信息。如果为 null，默认打印失败信息日志。
+
+#### 代码示例
+
+	window.JMessage.updateUserPassword('oldPassword', 'newPassword',
+		function() {
+			// 更新成功。
+		}, function(errorMsg) {
+			console.log(errorMsg);	// 输出错误信息。
+		});
+
+### API - updateUserAvatar
+更新当前用户头像。
+
+#### 接口定义
+
+	window.JMessage.updateUserAvatar(avatarFileUrl, successCallback, errorCallback)
+
+#### 参数说明
+- avatarFileUrl：头像文件的 URL。
+- successCallback：更新成功的回调函数，无返回值。
+- errorCallback：更新失败的回调函数，以参数形式返回错误信息。如果为 null，默认打印失败信息日志。
+
+#### 代码示例
+
+	window.JMessage.updateUserAvatar('avatarFileUrl', function() {
+		// 更新成功。
+	}, function(errorMsg) {
+		console.log(errorMsg);
+	});
+
+
+## 发送消息
+### API - sendSingleTextMessage
+发送一条单聊文本消息。
+
+#### 接口定义
+
+	window.JMessage.sendSingleTextMessage(username, text, appKey, successCallback, errorCallback)
+
+#### 参数说明
+- username：用户名。
+- text：文本内容。
+- appKey：目标用户所属应用的 AppKey。如果为空，默认发送给本应用下对应的用户。
+- successCallback：发送成功的回调函数，以参数形式返回消息对象的 JSON 字符串。
+- errorCallback：发送失败的回调函数，以参数形式返回错误信息。如果为 null，默认打印失败信息日志。
+
+#### 代码示例
+
+	window.JMessage.sendSingleTextMessage('username', 'content', null,
+		function(response) {
+			var message = JSON.parse(response);
+		}, function(errorMsg) {
+			console.log(errorMsg);	// 输出错误信息。
+		});
+
+### API - sendSingleImageMessage
+发送一条单聊图片消息。
+
+#### 接口定义
+
+	window.JMessage.sendSingleImageMessage(username, imageUrl, appKey, successCallback, errorCallback)
+
+#### 参数说明
+- username：用户名。
+- imageUrl：图片文件的 URL。
+- appKey：目标用户所属应用的 AppKey。如果为空，默认发送给本应用下的用户。
+- successCallback：发送成功的回调函数，以参数形式返回消息对象的 JSON 字符串。
+- errorCallback：发送失败的回调函数，以参数形式返回错误信息。如果为 null，默认打印失败信息日志。
+
+#### 代码示例
+
+	window.JMessage.sendSingleImageMessage('username', 'imageUrl', null,
+		function(response) {
+			var message = JSON.parse(response);
+		}, function(errorMsg) {
+			console.log(errorMsg);	// 输出错误信息。
+		});
+
+### API - sendSingleVoiceMessage
+发送一条单聊语音消息。
+
+#### 接口定义
+
+	window.JMessage.sendSingleVoiceMessage(username, voiceFileUrl, appKey, successCallback, errorCallback)
+
+#### 参数说明
+- username：用户名。
+- voiceFileUrl：语音文件的 URL。
+- appKey：目标用户所属应用的 AppKey。如果为空，默认发送给本应用下的用户。
+- successCallback：发送成功的回调函数，以参数形式返回消息对象的 JSON 字符串。
+- errorCallback：发送失败的回调函数，以参数形式返回错误信息。如果为 null，默认打印失败信息日志。
+
+#### 代码示例
+
+	window.JMessage.sendSingleVoiceMessage('username', 'voiceFileUrl', null,
+		function(response) {
+			var message = JSON.parse(response);
+		}, function(errorMsg) {
+			console.log(errorMsg);	// 输出错误信息。
+		});
+
+### API - sendSingleCustomMessage
+发送一条单聊自定义消息。
+
+#### 接口定义
+
+	window.JMessage.sendSingleCustomMessage(username, jsonStr, appKey, successCallback, errorCallback)
+
+#### 参数说明
+- username：用户名。
+- jsonStr：自定义消息要携带的数据的 JSON 字符串。
+- appKey：目标用户所属应用的 AppKey。如果为空，默认发送给本应用下的用户。
+- successCallback：发送成功的回调函数，以参数形式返回消息对象的 JSON 字符串。
+- errorCallback：发送失败的回调函数，以参数形式返回错误信息。如果为 null，默认打印失败信息日志。
+
+#### 代码示例
+
+	window.JMessage.sendSingleCustomMessage('username', 'yourJsonStr', null,
+		function(response) {
+			var message = JSON.parse(response);
+		}, function(errorMsg) {
+			console.log(errorMsg);	// 输出错误信息。
+		});
+
+### API - sendGroupTextMessage
+发送一条群聊文本消息。
+
+#### 接口定义
+
+	window.JMessage.sendGroupTextMessage(username, text, successCallback, errorCallback)
+
+#### 参数说明
+- username：用户名。
+- text：文本内容。
+- successCallback：发送成功的回调函数，以参数形式返回消息对象的 JSON 字符串。
+- errorCallback：发送失败的回调函数，以参数形式返回错误信息。如果为 null，默认打印失败信息日志。
+
+#### 代码示例
+
+	window.JMessage.sendSingleTextMessage('username', 'content',
+		function(response) {
+			var message = JSON.parse(response);
+		}, function(errorMsg) {
+			console.log(errorMsg);	// 输出错误信息。
+		});
+
+### API - sendGroupImageMessage
+发送一条群聊图片消息。
+
+#### 接口定义
+
+	window.JMessage.sendGroupTextMessage(username, imageUrl, successCallback, errorCallback)
+
+#### 参数说明
+- username：用户名。
+- imageUrl：图片文件的 URL。
+- successCallback：发送成功的回调函数，以参数形式返回消息对象的 JSON 字符串。
+- errorCallback：发送失败的回调函数，以参数形式返回错误信息。如果为 null，默认打印失败信息日志。
+
+#### 代码示例
+
+	window.JMessage.sendGroupImageMessage('username', 'imageUrl',
+		function(response) {
+			var message = JSON.parse(response);
+		}, function(errorMsg) {
+			console.log(errorMsg);	// 输出错误信息。
+		});
+
+### API - sendGroupVoiceMessage
+发送一条群聊语音消息。
+
+#### 接口定义
+
+	window.JMessage.sendGroupVoiceMessage(username, voiceFileUrl, successCallback, errorCallback)
+
+#### 参数说明
+- username：用户名。
+- voiceFileUrl：语音文件的 URL。
+- successCallback：发送成功的回调函数，以参数形式返回消息对象的 JSON 字符串。
+- errorCallback：发送失败的回调函数，以参数形式返回错误信息。如果为 null，默认打印失败信息日志。
+
+#### 代码示例
+
+	window.JMessage.sendGroupVoiceMessage('username', 'voiceFileUrl',
+		function(response) {
+			var message = JSON.parse(response);
+		}, function(errorMsg) {
+			console.log(errorMsg);	// 输出错误信息。
+		});
+
+### API - sendGroupCustomMessage
+发送一条群聊自定义消息。
+
+#### 接口定义
+
+	window.JMessage.sendGroupCustomMessage(username, jsonStr, successCallback, errorCallback)
+
+#### 参数说明
+- username：用户名。
+- jsonStr：自定义消息要携带的数据的 JSON 字符串。
+- successCallback：发送成功的回调函数，以参数形式返回消息对象的 JSON 字符串。
+- errorCallback：发送失败的回调函数，以参数形式返回错误信息。如果为 null，默认打印失败信息日志。
+
+#### 代码示例
+
+	window.JMessage.sendGroupCustomMessage('username', 'yourJsonStr',
+		function(response) {
+			var message = JSON.parse(response);
+		}, function(errorMsg) {
+			console.log(errorMsg);	// 输出错误信息。
+		});
+
+## 获取历史消息
+### API - getLatestMessage
+获取指定会话中最近的消息。
+
+#### 接口定义
+
+	window.JMessage.getLatestMessage(conversationType, value, appKey, successCallback, errorCallback)
+
+#### 参数说明
+- conversationType：会话类型。有"single", "group"两种。
+- value：确定指定会话的参数。如果 conversationType 为 single，即为 username；如果为 group，则为 groupId。
+- appKey：当 conversationType 为 single 时，目标用户所属应用的 AppKey。如果为空，默认获得本应用下的会话消息。
+- successCallback：发送成功的回调函数，以参数形式返回消息对象的 JSON 字符串。
+- errorCallback：发送失败的回调函数，以参数形式返回错误信息。如果为 null，默认打印失败信息日志。
+
+#### 代码示例
+
+	window.JMessage.getLatestMessage('single', 'targetUsername', 'targetAppKey',
+		function(response) {
+			var msg = JSON.parse(response);
+		}, function(errorMsg) {
+			console.log(errorMsg);	// 输出错误信息。
+		});
+
+	window.JMessage.getLatestMessage('group', 'targetGroupId', null,
+		function(response) {
+			var msg = JSON.parse(response);
+		}, function(errorMsg) {
+			console.log(errorMsg);	// 输出错误信息。
+		});
+
+### API - getHistoryMessages
+获取指定会话中从新到旧的部分历史消息。
+
+#### 接口定义
+
+	window.JMessage.getHistoryMessages(conversationType, value, appKey, from, limit, successCallback, errorCallback)
+
+#### 参数说明
+- conversationType：会话类型。有"single"，"group"两种。
+- value：确定指定会话的参数。当会话类型为 single 时，为 username；会话类型为 group 时，则为 groupId。
+- appKey：当 conversationType 为 single 时，目标会话用户所属应用的 AppKey。如果为空，默认获取本应用下的会话消息。
+- from：从第几条开始获取历史消息。
+- limit：要获取的历史消息数量。
+- successCallback：发送成功的回调函数，以参数形式返回消息数组对象的 JSON 字符串。
+- errorCallback：发送失败的回调函数，以参数形式返回错误信息。如果为 null，默认打印失败信息日志。
+
+#### 代码示例
+
+	// 获取从最新消息开始的 50 条历史消息。
+	window.JMessage.getHistoryMessages('single', 'targetUsername', 'targetAppKey', 0, 50,
+		function(response) {
+			var messages = JSON.parse(response);
+		}, function(errorMsg) {
+			console.log(errorMsg);	// 输出错误信息。
+		});
+
+	window.JMessage.getHistoryMessages('group', 'targetGroupId', null, 0, 50,
+		function(response) {
+			var messages = JSON.parse(response);
+		}, function(errorMsg) {
+			console.log(errorMsg);	// 输出错误信息。
+		});
+
+### API - getAllMessages
+获取指定会话中的所有消息。
+
+#### 接口定义
+
+	window.JMessage.getAllMessages(conversationType, value, appKey, successCallback, errorCallback)
+
+#### 参数说明
+- conversationType：会话类型。有"single"，"group"两种。
+- value：确定指定会话的参数。当会话类型为 single 时，为 username；会话类型为 group 时，则为 groupId。
+- appKey：当 conversationType 为 single 时，目标会话用户所属应用的 AppKey。如果为空，默认获取本应用下的会话消息。
+- successCallback：发送成功的回调函数，以参数形式返回消息数组对象的 JSON 字符串。
+- errorCallback：发送失败的回调函数，以参数形式返回错误信息。如果为 null，默认打印失败信息日志。
+
+#### 代码示例
+
+	window.JMessage.getAllMessages('single', 'targetUsername', 'targetAppKey',
+		function(response) {
+			var messages = JSON.parse(response);
+		}, function(errorMsg) {
+			console.log(errorMsg);	// 输出错误信息。
+		});
+
+	window.JMessage.getAllMessages('group', 'targetGroupId', null,
+		function(response) {
+			var messages = JSON.parse(response);
+		}, function(errorMsg) {
+			console.log(errorMsg);	// 输出错误信息。
+		});
+
+
+## 聊天会话
+### API - getConversationList
+获取当前用户的所有会话列表。从本地数据库获得，同步返回。
+
+#### 接口定义
+
+	window.JMessage.getConversationList(successCallback, errorCallback)
+
+#### 参数说明
+- successCallback：发送成功的回调函数，以参数形式返回会话数组对象的 JSON 字符串。
+- errorCallback：发送失败的回调函数，以参数形式返回错误信息。如果为 null，默认打印失败信息日志。
+
+#### 代码示例
+
+	window.JMessage.getConversationList(function(response) {
+		var conversations = JSON.parse(response);
+	}, function(errorMsg) {
+		console.log(errorMsg);	// 输出错误信息。
+	});
+
+### API - exitConversation
+退出当前会话。在退出会话界面是需要调用该函数。
+
+#### 接口定义
+
+	window.JMessage.exitConversation(successCallback, errorCallback)
+
+#### 参数说明
+- successCallback：发送成功的回调函数，无返回值。
+- errorCallback：发送失败的回调函数，以参数形式返回错误信息。如果为 null，默认打印失败信息日志。
+
+#### 代码示例
+
+	window.JMessage.exitConversation(function() {
+		// 退出成功。
+	}, function(errorMsg) {
+		console.log(errorMsg);	// 输出错误信息。
+	});
+
+### 单聊
+#### API - enterSingleConversation
+进入单聊会话。
 
 ##### 接口定义
 
-	window.plugins.jPushPlugin.setDebugMode (mode)
+	window.JMessage.enterSingleConversation(username, appKey, successCallback, errorCallback)
 
 ##### 参数说明
-
-- mode的值
-
-	- true  显示集成日志
-	- false 不显示集成日志
-
-
-###  接收消息和点击通知事件
-#### API - receiveMessageInAndroidCallback
-
-用于android收到应用内消息的回调函数(请注意和通知的区别)，该函数不需要主动调用
-
-##### 接口定义
-
-	window.plugins.jPushPlugin.receiveMessageInAndroidCallback = function(data)
-	
-##### 参数说明
-- data 接收到的js字符串，包含的key:value请进入该函数体查看
+- username：目标用户的用户名。
+- appKey：目标用户所属应用的 AppKey。如果为空，默认得到本应用下特定用户的单聊会话。
+- successCallback：进入成功的回调函数，无返回值。
+- errorCallback：进入失败的回调函数，以参数形式返回错误信息。如果为 null，默认打印失败信息日志。
 
 ##### 代码示例
 
-#### API - openNotificationInAndroidCallback
+	window.JMessage.enterSingleConversation('targetUsername', 'targetAppKey',
+		function() {
+			// 进入会话成功。
+		}, function(errorMsg) {
+			console.log(errorMsg);
+		});
 
-当点击android手机的通知栏进入应用程序时,会调用这个函数，这个函数不需要主动调用，是作为回调函数来用的
 
+#### API - getSingleConversation
+获取和特定目标用户的单聊会话。
 
 ##### 接口定义
 
-	window.plugins.jPushPlugin.openNotificationInAndroidCallback = function(data)
-	
+	window.JMessage.getSingleConversation(username, appKey, successCallback, errorCallback)
+
 ##### 参数说明
-- data js字符串
+- username：目标用户的用户名。
+- appKey：目标用户所属应用的 AppKey。如果为空，默认得到本应用下特定用户的单聊会话。
+- successCallback：发送成功的回调函数，以参数形式返回会话数组对象的 JSON 字符串。
+- errorCallback：发送失败的回调函数，以参数形式返回错误信息。如果为 null，默认打印失败信息日志。
 
 ##### 代码示例
 
-###  统计分析 API
-
-#### API - onResume / onPause
-这是一个 android local api，不是js的api，请注意
-本 API 用于“用户使用时长”，“活跃用户”，“用户打开次数”的统计，并上报到服务器，在 Portal 上展示给开发者。
-
-
-
-####接口定义
-
-		public static void onResume(final Activity activity)
-		public static void onPause(final Activity activity)
-####参数说明
-
- ＋ Activity activity 当前所在的Activity。
-####调用说明
-
-应在所有的 Activity 的 onResume / onPause 方法里调用。
-
-####代码示例
-
-	@Override
-	protected void onResume() {
-	    super.onResume();
-	    JPushInterface.onResume(this);
-	}
-	@Override
-	protected void onPause() {
-	    super.onPause();
-	    JPushInterface.onPause(this);
-	}
+	window.JMessage.getSingleConversation('targetUsername', 'targetAppKey',
+		function(response) {
+			 var singleConversation = JSON.parse(response);
+		}, function(errorMsg) {
+			console.log(errorMsg);	// 输出错误信息。
+		});
 
 
-#### API - reportNotificationOpened
-
-用于上报用户的通知栏被打开，或者用于上报用户自定义消息被展示等客户端需要统计的事件。
-
+#### API - getAllSingleConversation
+获取当前用户的所有单聊会话。
 
 ##### 接口定义
 
-	window.plugins.jPushPlugin.reportNotificationOpened(msgID)
-	
+	window.JMessage.getAllSingleConversation(successCallback, errorCallback)
+
 ##### 参数说明
-- msgID
-	-收到的通知或者自定义消息的id 	
+- successCallback：发送成功的回调函数，以参数形式返回会话列表的 JSON 字符串。
+- errorCallback：发送失败的回调函数，以参数形式返回错误信息。如果为 null，默认打印失败信息日志。
 
+##### 代码示例
 
-###  清除通知 API
+	window.JMessage.getAllSingleConversation(function() {
+		function(response) {
+			 var singleConversations = JSON.parse(response);
+		}, function(errorMsg) {
+			console.log(errorMsg);	// 输出错误信息。
+		});
 
-#### API - clearAllNotification
-
-推送通知到客户端时，由 JPush SDK 展现通知到通知栏上。
-
-此 API 提供清除通知的功能，包括：清除所有 JPush 展现的通知（不包括非 JPush SDK 展现的）
-
+#### API - deleteSingleConversation
+删除特定单聊会话。
 
 ##### 接口定义
 
-	window.plugins.jPushPlugin.clearAllNotification = function()
+	window.JMessage.deleteSingleConversation(username, appKey, successCallback, errorCallback)
 
-###  设置允许推送时间 API
-###  设置通知静默时间 API
-###  通知栏样式定制 API
+##### 参数说明
+- username：目标用户名。
+- appKey：目标用户所属应用的 AppKey，可以使用此参数获取和不同应用下用户的单聊会话。如果为空，默认删除和当前应用下的用户单聊会话。
+- successCallback：获取成功的回调函数，无返回值。
+- errorCallback：获取失败的回调函数，以参数形式返回错误信息。如果为 null，默认打印失败信息日志。
 
-#### API - setBasicPushNotificationBuilder,setCustomPushNotificationBuilder
+##### 代码示例
 
-当用户需要定制默认的通知栏样式时，则可调用此方法。
-极光 Push SDK 提供了 2 个用于定制通知栏样式的构建类：
+	window.JMessage.deleteSingleConversation('targetUsername', null,
+		function() {
+			// 删除成功
+		}, function(errorMsg) {
+			console.log(errorMsg);
+		});
 
-- setBasicPushNotificationBuilder 
-	- Basic 用于定制 Android Notification 里的 defaults / flags / icon 等基础样式（行为）
-- setCustomPushNotificationBuilder
-	- 继承 Basic 进一步让开发者定制 Notification Layout
-	
-如果不调用此方法定制，则极光Push SDK 默认的通知栏样式是：Android标准的通知栏提示。
-
-##### 接口定义 
-
-	window.plugins.jPushPlugin.setBasicPushNotificationBuilder = function()
-	window.plugins.jPushPlugin.setCustomPushNotificationBuilder = function()
-
-
-###  设置保留最近通知条数 API
-
-#### API - setLatestNotificationNum
-
-通过极光推送，推送了很多通知到客户端时，如果用户不去处理，就会有很多保留在那里。
-
-新版本 SDK (v1.3.0) 增加此功能，限制保留的通知条数。默认为保留最近 5 条通知。
-
-开发者可通过调用此 API 来定义为不同的数量。
+#### API - setSingleConversationUnreadMessageCount
+设置指定单聊会话的未读消息数。
 
 ##### 接口定义
 
-	window.plugins.jPushPlugin.setLatestNotificationNum(num)
-	
-##### 参数说明
-
-- num 保存的条数
-
-
-###  本地通知API
-#### API - addLocalNotification,removeLocalNotification,clearLocalNotifications
-
-
-本地通知API不依赖于网络，无网条件下依旧可以触发
-
-本地通知与网络推送的通知是相互独立的，不受保留最近通知条数上限的限制
-
-本地通知的定时时间是自发送时算起的，不受中间关机等操作的影响
-
-
-三个接口的功能分别为：添加一个本地通知，删除一个本地通知，删除所有的本地通知
-
-#####接口定义
-
-	window.plugins.jPushPlugin.addLocalNotification = function(builderId,
-											    content,
-												title,
-												notificaitonID,
-												broadcastTime,
-												extras)
-	window.plugins.jPushPlugin.removeLocalNotification = function(notificationID)
-	window.plugins.jPushPlugin.clearLocalNotifications = function()
+	window.JMessage.setSingleConversationUnreadMessageCount(username, appKey, unreadCount, successCallback, errorCallback)
 
 ##### 参数说明
+- username：目标用户名。
+- appKey：目标用户所属应用的 AppKey，可以使用此参数获取和不同应用下用户的单聊会话。如果为空，默认删除和当前应用下的用户单聊会话。
+- unreadCount：未读消息数。
+- successCallback：设置成功的回调函数，无返回值。
+- errorCallback：设置失败的回调函数，以参数形式返回错误信息。如果为 null，默认打印失败信息日志。
 
-- builderId 设置本地通知样式
-- content 设置本地通知的content
-- title 设置本地通知的title
-- notificaitonID 设置本地通知的ID
-- broadcastTime 设置本地通知触发时间，为距离当前时间的数值，单位是毫秒
-- extras 设置额外的数据信息extras为json字符串
+##### 代码示例
+
+	window.JMessage.setSingleConversationUnreadMessageCount('targetUsername', 'targetAppKey', 10,
+		function() {
+			// 设置成功。
+		}, function(errorMsg) {
+			console.log(errorMsg);
+		});
 
 
+### 群聊
+#### API - enterGroupConversation
+进入特定群聊会话。
+
+##### 接口定义
+
+	window.JMessage.enterGroupConversation(groupId, successCallback, errorCallback)
+
+##### 参数说明
+- groupId：目标群组 ID。
+- successCallback：获取成功的回调函数，无返回值。
+- errorCallback：获取失败的回调函数，以参数形式返回错误信息。如果为 null，默认打印失败信息日志。
+
+##### 代码示例
+
+	window.JMessage.enterGroupConversation('targetGroupId',
+		function() {
+			// 进入会话成功。
+		}, function(errorMsg) {
+			console.log(errorMsg);
+		});
+
+#### API - getGroupConversation
+获取和特定群组的群聊会话。
+
+##### 接口定义
+
+	window.JMessage.getGroupConversation(groupId, successCallback, errorCallback)
+
+##### 参数说明
+- groupId：群组 ID。
+- successCallback：发送成功的回调函数，以参数形式返回会话对象的 JSON 字符串。
+- errorCallback：发送失败的回调函数，以参数形式返回错误信息。如果为 null，默认打印失败信息日志。
+
+##### 代码示例
+
+	window.JMessage.getGroupConversation('targetGroupId',
+		function(response) {
+			var groupConversation = JSON.parse(reponse);
+		}, function(errorMsg) {
+			console.log(errorMsg);	// 输出错误信息。
+		});
+
+#### API - getAllGroupConversation
+获取当前用户所有的群聊会话。
+
+##### 接口定义
+
+	window.JMessage.getAllGroupConversation(successCallback, errorCallback)
+
+##### 参数说明
+- successCallback：发送成功的回调函数，以参数形式返回会话列表对象的 JSON 字符串。
+- errorCallback：发送失败的回调函数，以参数形式返回错误信息。如果为 null，默认打印失败信息日志。
+
+##### 代码示例
+
+	window.JMessage.getAllGroupConversation(function(response) {
+		var groupConversations = JSON.parse(response);
+	}, function(errorMsg) {
+		console.log(errorMsg);
+	});
+
+#### API - deleteGroupConversation
+删除指定的群聊会话。
+
+##### 接口定义
+
+	window.JMessage.deleteGroupConversation(groupId, successCallback, errorCallback)
+
+##### 参数说明
+- groupId：群组 ID。
+- successCallback：删除成功的回调函数，无返回值。
+- errorCallback：删除失败的回调函数，以参数形式返回错误信息。如果为 null，默认打印失败信息日志。
+
+##### 代码示例
+
+	window.JMessage.deleteGroupConversation('targetGroupId',
+		function() {
+
+		}, function(errorMsg) {
+			console.log(errorMsg);
+		});
+
+#### API - setGroupConversationUnreadMessageCount
+设置指定单聊会话的未读消息数。
+
+##### 接口定义
+
+	window.JMessage.setGroupConversationUnreadMessageCount(groupId, unreadCount, successCallback, errorCallback)
+
+##### 参数说明
+- groupId：群组 ID。
+- unreadCount：未读消息数。
+- successCallback：设置成功的回调函数，无返回值。
+- errorCallback：设置失败的回调函数，以参数形式返回错误信息。如果为 null，默认打印失败信息日志。
+
+##### 代码示例
+
+	window.JMessage.setGroupConversationUnreadMessageCount('targetGroupId', 10,
+		function() {
+			// 设置成功。
+		}, function(errorMsg) {
+			console.log(errorMsg);
+		});
+
+
+## 黑名单
+### API - addUsersToBlacklist
+将用户添加进黑名单。
+
+#### 接口定义
+
+	window.JMessage.addUsersToBlacklist(usernamesStr, successCallback, errorCallback)
+
+#### 参数说明
+- usernamesStr：用户名字符串。形如："username1, username2"。
+- successCallback：添加成功的回调函数，无返回值。
+- errorCallback：添加失败的回调函数，以参数形式返回错误信息。如果为 null，默认打印失败信息日志。
+
+#### 代码示例
+
+	window.JMessage.addUsersToBlacklist('username1, username2',
+		function() {
+			// 添加成功。
+		}, function(errorMsg) {
+			console.log(errorMsg);
+		});
+
+### API - delUsersFromBlacklist
+从当前用户的黑名单中删除部分用户。
+
+#### 接口定义
+
+	window.JMessage.delUsersFromBlacklist(usernamesStr, successCallback, errorCallback)
+
+#### 参数说明
+- usernamesStr：用户名字符串。形如："username1, username2"。
+- successCallback：删除成功的回调函数，无返回值。
+- errorCallback：删除失败的回调函数，以参数形式返回错误信息。如果为 null，默认打印失败信息日志。
+
+#### 代码示例
+
+	window.JMessage.delUsersFromBlacklist('username1, username2',
+		function() {
+			// 删除成功。
+		}, function(errorMsg) {
+			console.log(errorMsg);
+		});
+
+### API - getBlacklist
+获取当前用户的黑名单。
+
+#### 接口定义
+
+	window.JMessage.getBlacklist(successCallback, errorCallback)
+
+#### 参数说明
+- successCallback：操作成功的回调函数，以参数形式返回黑名单用户信息列表的 JSON 格式字符串。
+- errorCallback：操作失败的回调函数，以参数形式返回错误信息。如果为 null，默认打印失败信息日志。
+
+#### 代码示例
+
+	window.JMessage.getBlacklist(function(response) {
+			var userInfos = JSON.parse(response);
+		}, function(errorMsg) {
+			console.log(errorMsg);
+		});
+
+
+## 事件处理
+### 消息事件
+#### API - jmessage.onReceiveMessage
+收到消息时触发。
+
+##### 代码示例
+
+	document.addEventListener('jmessage.onReceiveMessage', function() {
+		var msg = window.JMessage.message;
+	}, false);
+
+#### API - jmessage.onReceiveTextMessage
+收到文本消息触发。
+
+##### 代码示例
+
+	document.addEventListener('jmessage.onReceiveTextMessage', function() {
+		var msg = window.JMessage.textMessage;
+	}, false);
+
+#### API - jmessage.onReceiveImageMessage
+收到图片消息触发。
+
+##### 代码示例
+
+	document.addEventListener('jmessage.onReceiveImagetMessage', function() {
+		var msg = window.JMessage.imageMessage;
+	}, false);
+
+#### API - jmessage.onReceiveVoiceMessage
+收到语音消息触发。
+
+##### 代码示例
+
+	document.addEventListener('jmessage.onReceiveVoicetMessage', function() {
+		var msg = window.JMessage.voiceMessage;
+	}, false);
+
+#### API - jmessage.onReceiveCustomMessage
+收到自定义消息触发。
+
+##### 代码示例
+
+	document.addEventListener('jmessage.onReceiveCustomtMessage', function() {
+		var msg = window.JMessage.customMessage;
+	}, false);
+
+### 用户状态变更事件
+#### API - jmessage.onUserPasswordChanged
+当用户密码在服务器端被修改时触发。
+
+##### 代码示例
+
+	document.addEventListener('jmessage.onUserPasswordChanged', yourFunction, false);
+
+#### API - jmessage.onUserLogout
+当用户换设备登录时触发。
+
+##### 代码示例
+
+	document.addEventListener('jmessage.onUserLogout', yourFunction, false);
+
+#### API - jmessage.onUserDeleted
+当用户被删除时触发。
+
+##### 代码示例
+
+	document.addEventListener('jmessage.onUserDeleted', yourFunction, false);
+
+
+### 群组事件
+#### API - jmessage.onGroupMemberAdded
+群成员加群时触发。
+
+##### 代码示例
+
+	document.addEventListener('jmessage.onGroupMemberAdded', yourFunction, false);
+
+#### API - jmessage.onGroupMemberRemoved
+群成员被踢时触发。
+
+##### 代码示例
+
+	document.addEventListener('jmessage.onGroupMemberRemoved', yourFunction, false);
+
+#### API - jmessage.onGroupMemberExit
+群成员退群时触发。
+
+##### 代码示例
+
+	document.addEventListener('jmessage.onGroupMemberExit', yourFunction, false);

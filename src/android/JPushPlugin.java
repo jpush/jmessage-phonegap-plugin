@@ -208,7 +208,7 @@ public class JPushPlugin extends CordovaPlugin {
             return;
         }
         JSONObject data = getMessageObject(message, extras);
-        String format = "window.plugins.jPushPlugin.receiveMessageInAndroidCallback(%s);";
+        String format = "window.JPush.receiveMessageInAndroidCallback(%s);";
         final String js = String.format(format, data.toString());
         cordovaActivity.runOnUiThread(new Runnable() {
             @Override
@@ -224,7 +224,7 @@ public class JPushPlugin extends CordovaPlugin {
             return;
         }
         JSONObject data = getNotificationObject(title, alert, extras);
-        String format = "window.plugins.jPushPlugin.openNotificationInAndroidCallback(%s);";
+        String format = "window.JPush.openNotificationInAndroidCallback(%s);";
         final String js = String.format(format, data.toString());
         cordovaActivity.runOnUiThread(new Runnable() {
             @Override
@@ -242,7 +242,7 @@ public class JPushPlugin extends CordovaPlugin {
             return;
         }
         JSONObject data = getNotificationObject(title, alert, extras);
-        String format = "window.plugins.jPushPlugin.receiveNotificationInAndroidCallback(%s);";
+        String format = "window.JPush.receiveNotificationInAndroidCallback(%s);";
         final String js = String.format(format, data.toString());
         cordovaActivity.runOnUiThread(new Runnable() {
             @Override

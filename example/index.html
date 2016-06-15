@@ -18,18 +18,17 @@
         var usernameForConversation;
 
         function onDeviceReady() {
-            window.plugins.jPushPlugin.init();
+            window.JPush.init();
             checkIsLogin();
             getPushRegistrationID();
         }
-
 
         <!-- Login page -->
         function register() {
             var username = $("#registerUsername").val();
             var password = $("#registerPassword").val();
 
-            window.plugins.jmessagePlugin.register(username, password,
+            window.JMessage.register(username, password,
                 function (response) {
                     console.log("login callback success" + response);
                     alert("register ok");
@@ -42,33 +41,33 @@
 
         function checkIsLogin() {
             console.log("checkIsLogin...");
-            window.plugins.jmessagePlugin.getMyInfo(function (response) {
+            window.JMessage.getMyInfo(function (response) {
                 console.log("user is login" + response);
 
                 var myInfo = JSON.parse(response);
-                window.plugins.jmessagePlugin.username = myInfo.userName;
-                window.plugins.jmessagePlugin.nickname = myInfo.nickname;
-                window.plugins.jmessagePlugin.gender = myInfo.mGender;
+                window.JMessage.username = myInfo.userName;
+                window.JMessage.nickname = myInfo.nickname;
+                window.JMessage.gender = myInfo.mGender;
 
                 usernameForConversation = myInfo.userName;
                 gotoConversation();
             }, function (response) {
                 console.log("User is not login.");
-                window.plugins.jmessagePlugin.username = "";
-                window.plugins.jmessagePlugin.nickname = "";
-                window.plugins.jmessagePlugin.gender = 0;
+                window.JMessage.username = "";
+                window.JMessage.nickname = "";
+                window.JMessage.gender = "unknown";
             });
         }
 
         function updateUserInfo() {
-            window.plugins.jmessagePlugin.getMyInfo(
+            window.JMessage.getMyInfo(
                 function (response) {
                     var myInfo = JSON.parse(response);
-                    console.log("user is login" + responseString);
+                    console.log("user is login" + response);
 
-                    window.plugins.jmessagePlugin.username = myInfo.userName;
-                    window.plugins.jmessagePlugin.nickname = myInfo.nickname;
-                    window.plugins.jmessagePlugin.gender = myInfo.mGender;
+                    window.JMessage.username = myInfo.userName;
+                    window.JMessage.nickname = myInfo.nickname;
+                    window.JMessage.gender = myInfo.mGender;
 
                     $('#myInfoUsername').val(myInfo.userName);
                     $('#myInfoNickname').val(myInfo.nickname);
@@ -77,10 +76,10 @@
         }
 
         function getUserDisplayName() {
-            if (window.plugins.jmessagePlugin.nickname.length == 0) {
-                return window.plugins.jmessagePlugin.username;
+            if (window.JMessage.nickname.length == 0) {
+                return window.JMessage.username;
             } else {
-                return window.plugins.jmessagePlugin.nickname;
+                return window.JMessage.nickname;
             }
         }
 
@@ -88,9 +87,9 @@
             var username = $("#loginUsername").val();
             var password = $("#loginPassword").val();
 
-            window.plugins.jmessagePlugin.login(username, password,
+            window.JMessage.login(username, password,
                 function (response) {
-                    window.plugins.jmessagePlugin.username = username;
+                    window.JMessage.username = username;
                     alert("login ok");
                     gotoConversation();
                 }, null);
@@ -105,15 +104,9 @@
 
         $(document).on("pageshow", "#conversationListPage", function () {
             updateConversationList();
-            document.addEventListener("jmessage.conversationChange",
-                onConversationChange, false);
             document.addEventListener("jmessage.onReceiveSingleMessage",
                 updateConversationList, false);
         });
-
-        function onConversationChange(data) {
-            updateConversationList();
-        }
 
         function gotoAddConversation() {
             $.mobile.navigate("#addConversationPage", {transition: "slide"});
@@ -123,14 +116,14 @@
             $('#conversationList').empty().listview('refresh');
             console.log("updateConversationList");
 
-            window.plugins.jmessagePlugin.getConversationList(
+            window.JMessage.getConversationList(
                 function (response) {
                     var conversations = JSON.parse(response);
                     for(var i = 0; i < conversations.length; i++) {
                         insertConversation(conversations[i]);
                     }
                 }, function (response) {
-                    alert("getAllSingleConversation failed");
+                    alert("Get conversation list failed.");
                     console.log(response);
                 });
         }
@@ -177,7 +170,7 @@
             console.log("onReceiveSingleMessage");
 
             if (device.platform == "Android") {
-                message = window.plugins.jmessagePlugin.receiveMessageObj;
+                message = window.JMessage.message;
                 console.log(JSON.stringify(message));
             }
             messageArray.unshift(message);
@@ -187,7 +180,7 @@
         function getMessageHistory(username) {
             $('#messageList').empty().listview('refresh');
             //读取的是从 0 开始的 50 条聊天记录，可按实现需求传不同的值。
-            window.plugins.jmessagePlugin.getHistoryMessages("single", username,
+            window.JMessage.getHistoryMessages("single", username,
                 '', 0, 50, function (response) {
                     console.log("getMessageHistory ok: " + response);
                     messageArray = JSON.parse(response);
@@ -201,8 +194,8 @@
 
         function sendMessage() {
             var messageContentString = $("#messageContent").val();
-            window.plugins.jmessagePlugin.sendSingleTextMessage(
-                usernameForConversation, messageContentString,
+            window.JMessage.sendSingleTextMessage(
+                usernameForConversation, messageContentString, null,
                 function (response) {
                     var msg = JSON.parse(response);
                     messageArray.unshift(msg);
@@ -221,7 +214,7 @@
             var createTime = message.createTimeInMillis;
             var createTimeStr = new Date(createTime).toLocaleString();
 
-            if(message.from_id == window.plugins.jmessagePlugin.username) {
+            if(message.from_id == window.JMessage.username) {
                 var insertString = '<li style="text-align:right"><span style="font-size:12px">'
                     + createTimeStr
                     + "</span><br>"
@@ -254,7 +247,7 @@
         $(document).on("pageshow", "#pushPage", function () {
             console.log("pushPage show username:" + usernameForConversation);
             try {
-                window.plugins.jPushPlugin.getRegistrationID(onGetRegistrationID);
+                window.JPush.getRegistrationID(onGetRegistrationID);
             } catch (exception) {
                 console.log(exception);
             }
@@ -267,12 +260,12 @@
 
         function getPushRegistrationID() {
             try {
-                window.plugins.jPushPlugin.getRegistrationID(onGetRegistrationID);
+                window.JPush.getRegistrationID(onGetRegistrationID);
                 if (device.platform != "Android") {
-                    window.plugins.jPushPlugin.setDebugModeFromIos();
-                    window.plugins.jPushPlugin.setApplicationIconBadgeNumber(0);
+                    window.JPush.setDebugModeFromIos();
+                    window.JPush.setApplicationIconBadgeNumber(0);
                 } else {
-                    window.plugins.jPushPlugin.setDebugMode(true);
+                    window.JPush.setDebugMode(true);
                 }
             } catch (exception) {
                 console.log(exception);
@@ -284,7 +277,7 @@
             try {
                 var alertContent;
                 if (device.platform == "Android") {
-                    alertContent = event.alert;
+                    alertContent = window.JPush.openNotification.alert;
                 } else {
                     alertContent = event.aps.alert;
                 }
@@ -299,7 +292,7 @@
             try {
                 var alertContent;
                 if (device.platform == "Android") {
-                    alertContent = event.alert;
+                    alertContent = window.JPush.receiveNotification.alert;
                 } else {
                     alertContent = event.aps.alert;
                 }
@@ -354,7 +347,7 @@
                 if (tag3 != "") {
                     dd.push(tag3);
                 }
-                window.plugins.jPushPlugin.setTagsWithAlias(dd, alias);
+                window.JPush.setTagsWithAlias(dd, alias);
             } catch (exception) {
                 console.log(exception);
             }
@@ -363,14 +356,14 @@
 
         <!-- My info page -->
         $(document).on("pageshow", "#myInfoPage", function () {
-            $("#myInfoUsername").text(window.plugins.jmessagePlugin.username);
-            $("#myInfoNickname").val(window.plugins.jmessagePlugin.nickname);
-            $("#myInfoGender").val(window.plugins.jmessagePlugin.gender);
+            $("#myInfoUsername").text(window.JMessage.username);
+            $("#myInfoNickname").val(window.JMessage.nickname);
+            $("#myInfoGender").val(window.JMessage.gender);
         });
 
         function logout() {
             console.log("logout");
-            window.plugins.jmessagePlugin.logout(function(response) {
+            window.JMessage.logout(function(response) {
                 $.mobile.navigate("#loginPage", {transition: "pop"});
             }, function (response) {
                 alert("logout fail");
@@ -379,7 +372,7 @@
 
         function setUserNickname() {
             var nickname = $("#myInfoNickname").val();
-            window.plugins.jmessagePlugin.updateMyInfo("nickname", nickname,
+            window.JMessage.updateMyInfo("nickname", nickname,
                 function(response) {
                     updateUserInfo();
                     alert("update ok");
@@ -391,7 +384,7 @@
 
         function setUserGender() {
             var gender = $("#myInfoGender").val();
-            window.plugins.jmessagePlugin.updateMyInfo("gender", gender,
+            window.JMessage.updateMyInfo("gender", gender,
                 function (response) {
                     console.log(response);
                     updateUserInfo();

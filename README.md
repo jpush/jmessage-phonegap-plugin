@@ -7,7 +7,7 @@ jmessage-phonegap-plugin 是基于[极光 IM](http://docs.jpush.io/guideline/jme
 >jmessage-phonegap-plugin 和 jpush-phonegap-plugin 这两个插件不能同时安装。
 迁移到 jmessage-phonegap-plugin 前要先删除 jpush-phonegap-plugin 插件，因为 jmessage-phonegap-plugin 中已经包含了 JPush 的相关功能了。
 
-> **注意** 需要 Cordova 5.0.0 及以上版本。
+> **注意**：需要 Cordova 5.0.0 或以上版本。
 
 ## 集成步骤
 1. 先安装依赖的插件（若已安装，可忽略）
@@ -25,12 +25,11 @@ jmessage-phonegap-plugin 是基于[极光 IM](http://docs.jpush.io/guideline/jme
 	> [点击这里](http://docs.jpush.io/guideline/statistical_report/)查看如何获取 APP_KEY。
 
 ## Demo
-插件项目中的 /example 目录下包含一个简单的 Demo，可以将目录下的所有文件拷贝到具体 Cordova 项目的 /assets/www/ 目录下。
+插件项目中的 /example 目录下包含一个简单的 Demo，如果想参考可以将目录下的所有文件拷贝到具体 Cordova 项目的 /assets/www/ 目录下。
 
 ## API
 API 分为 IM（聊天）和 Push（消息推送）两部分。具体可参考：
 ### IM API
-- [公共 API](/doc/Common_detail_api.md)。
 - [Android API](/doc/Android_detail_api.md)。
 - [iOS API](/doc/iOS_detail_api.md)。
 
@@ -43,7 +42,7 @@ API 分为 IM（聊天）和 Push（消息推送）两部分。具体可参考�
 若要使用 CLI 来编译项目，注意应使用 cordova compile 而不是 cordova build 命令，因为 cordova build 会清除对插件文件的修改。具体 Cordova CLI 用法可参考 [Cordova CLI 官方文档](https://cordova.apache.org/docs/en/latest/reference/cordova-cli/index.html)。
 
 ### Android
-Eclipse 中 import PhoneGap 工程之后出现：Type CallbackContext cannot be resolved to a type。
+Eclipse 中 import PhoneGap 工程之后出现：*Type CallbackContext cannot be resolved to a type*。
 
 解决方案：Eclipse 中右键单击工程名，Build Path -> Config Build Path -> Projects -> 选中工程名称 -> CordovaLib -> 点击 add。
 
@@ -51,11 +50,11 @@ Eclipse 中 import PhoneGap 工程之后出现：Type CallbackContext cannot be 
 - 收不到推送：
 	请首先按照正确方式再次配置证书、描述文件，可参考 [iOS 证书设置指南](http://docs.jpush.io/client/ios_tutorials/#ios_1)。
 - 设置 PushConfig.plist:
-	- APP_KEY：应用标识；
-	- CHANNEL：渠道标识；
-	- IsProduction：是否为生产环境；
+	- APP_KEY：应用标识。
+	- CHANNEL：渠道标识。
+	- IsProduction：是否为生产环境。
 	- IsIDFA：是否使用 IDFA 启动 SDK。
 
 ## 更多
 - [JPush 官网文档](http://docs.jpush.io/client/im_sdk_android/#api)。
-- 有问题可访问[极光社区]搜索或提问(http://community.jpush.cn/)。
+- 有问题可访问[极光社区](http://community.jpush.cn/)搜索或提问。
