@@ -177,16 +177,16 @@ function insertCodeForAppdelegateHeader(str) {
         return str;
     }
 
-    var regRexClassName = /[\s]*@interface[\s]*AppDelegate[\s]*:[\s]*NSObject/;
+    var regRexClassName = /[\s]*@interface[\s]*AppDelegate[\s]*:[\s]*CDVAppDelegate/;
 
-    var insertHeaderCode = "\n\#import \"JMessageHelper.h\" //JMessage add \n @interface AppDelegate : NSObject";
+    var insertHeaderCode = "\n\#import \"JMessageHelper.h\" //JMessage add \n@interface AppDelegate : CDVAppDelegate";
 
     var result = str.replace(regRexClassName, insertHeaderCode);
 
 
     var regRexEnd = /@end/;
 
-    var insertProperty = "\n@property (nonatomic, strong)  JMessageHelper * jmessage; //JMessage add \n @end";
+    var insertProperty = "\n@property (nonatomic, strong)  JMessageHelper * jmessage; //JMessage add \n@end";
 
     var result2 = result.replace(regRexEnd, insertProperty);
 
