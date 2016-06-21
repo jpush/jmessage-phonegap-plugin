@@ -822,6 +822,82 @@
 
 ## 事件处理
 ### 消息事件
+#### 消息对象的 JSON 数据格式
+
+	{
+	    "content": {
+	        "text": "content",
+	        "booleanExtras": { },
+	        "contentType": "text",
+	        "extras": {
+	            "a": { }
+	        },
+	        "numExtras": { },
+	        "stringExtras": { }
+	    },
+	    "contentType": "text",
+	    "createTimeInSeconds": 1466496463,
+	    "direct": "receive",
+	    "fromAppkey": "fromUserAppKey",
+	    "fromID": "fromUserID",
+	    "fromName": "fromUsername",
+	    "fromType": "user",
+	    "fromUser": {
+	        "address": "",
+	        "appkey": "yourAppKey",
+	        "birthday": "",
+	        "gender": "0",
+	        "mGender": "male",
+	        "nickname": "targetNickname",
+	        "noteText": "",
+	        "notename": "",
+	        "region": "",
+	        "signature": "",
+	        "userName": "testUsername",
+	        "userID": testUserID,
+	        "blacklist": 0,
+	        "noDisturb": 0,
+	        "star": 0
+	    },
+	    "from_platform": "a",
+	    "msgTypeString": "text",
+	    "serverMessageId": 73511240,
+	    "status": "receive_success",
+	    "targetAppkey": "targetAppkey",
+	    "targetID": "targetUserId",
+	    "targetInfo": {
+	        "address": "",
+	        "appkey": "targetAppKey",
+	        "birthday": "",
+	        "gender": "0",
+	        "mGender": "female",
+	        "nickname": "testNickname",
+	        "noteText": "",
+	        "notename": "",
+	        "region": "",
+	        "signature": "",
+	        "userName": "testUsername",
+	        "userID": testUserID,
+	        "blacklist": 0,
+	        "noDisturb": 0,
+	        "star": 0
+	    },
+	    "targetName": "",
+	    "targetType": "single",
+	    "version": 1,
+	    "_id": 7,
+	    "createTimeInMillis": 1466496463000
+	}
+
+#### API - jmessage.onOpenMessage
+点击通知栏中的消息通知时触发。
+
+##### 代码示例
+
+	document.addEventListener('jmessage.onOpenMessage', function() {
+		var msg = window.JMessage.openedMessage;
+	}, false);
+
 #### API - jmessage.onReceiveMessage
 收到消息时触发。
 

@@ -226,8 +226,15 @@ public class JMessagePlugin extends CordovaPlugin {
         }
     }
 
+    // 触发通知栏点击事件。
+    public void onEvent(NotificationClickEvent event) {
+        Message msg = event.getMessage();
+        String json = mGson.toJson(msg);
+        fireEvent("onOpenMessage", json);
+    }
+
     private void fireEvent(String eventName, String jsonStr) {
-        String format = "window.plugins.jmessagePlugin." + eventName + "(%s);";
+        String format = "window.JMessage." + eventName + "(%s);";
         String js;
         if (jsonStr != null) {
             js = String.format(format, jsonStr);
