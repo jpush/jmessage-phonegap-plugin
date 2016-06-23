@@ -1,4 +1,9 @@
-# jmessage-phonegap-plugin
+# JMessage PhoneGap / Cordova Plugin
+
+[![QQ Group](https://img.shields.io/badge/QQ%20Group-413602425-red.svg)]()
+[![platforms](https://img.shields.io/badge/platforms-iOS%7CAndroid-lightgrey.svg)](https://github.com/jpush/jpush-phonegap-plugin)
+[![release](https://img.shields.io/badge/release-1.0.0-blue.svg)](https://github.com/jpush/jmessage-phonegap-plugin/releases)
+[![weibo](https://img.shields.io/badge/weibo-JPush-blue.svg)](http://weibo.com/jpush?refer_flag=1001030101_&is_all=1)
 
 jmessage-phonegap-plugin 是基于[极光 IM](http://docs.jpush.io/guideline/jmessage_guide/) 的 Cordova 插件，目前支持 iOS 和 Android 平台。
 
