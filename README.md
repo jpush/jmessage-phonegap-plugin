@@ -16,19 +16,15 @@ JMessage PhoneGap / Cordova Plugin 是基于[极光 IM](http://docs.jpush.io/gui
 > **注意**：需要 Cordova 5.0.0 或以上版本。
 
 ## 集成步骤
-1. 先安装依赖的插件（若已安装，可忽略）：
+- 在线安装
 
-		cordova plugin add cordova-plugin-device
+		cordova plugin add https://github.com/jpush/jmessage-phonegap-plugin.git --variable APP_KEY=Your_app_key
 
-2. 在线安装：
+- 本地安装
 
-		cordova plugin add https://github.com/jpush/jmessage-phonegap-plugin.git --variable APP_KEY=Your app key
+		cordova plugin add <Plugin Path> --variable APP_KEY=Your_app_key
 
-	或下载代码后本地安装：
-
-		cordova plugin add <Plugin Path> --variable APP_KEY=Your app key
-
-	> [点击这里](http://docs.jpush.io/guideline/statistical_report/)查看如何获取 APP_KEY。
+> [点击这里](http://docs.jpush.io/guideline/statistical_report/)查看如何获取 APP_KEY。
 
 ## API
 API 分为 IM（聊天）和 Push（消息推送）两部分。具体可参考：
