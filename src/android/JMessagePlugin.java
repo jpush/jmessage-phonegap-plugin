@@ -232,6 +232,12 @@ public class JMessagePlugin extends CordovaPlugin {
         Message msg = event.getMessage();
         String json = mGson.toJson(msg);
         fireEvent("onOpenMessage", json);
+
+        Intent launch = cordova.getActivity().getPackageManager()
+            .getLaunchIntentForPackage(cordova.getActivity().getPackageName());
+        launch.addCategory(Intent.CATEGORY_LAUNCHER);
+        launch.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        cordova.getActivity().startActivity(launch);
     }
 
     private void fireEvent(String eventName, String jsonStr) {
