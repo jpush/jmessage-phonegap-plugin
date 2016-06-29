@@ -1,6 +1,7 @@
 package cn.jmessage.phonegap;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.text.TextUtils;
@@ -234,7 +235,7 @@ public class JMessagePlugin extends CordovaPlugin {
         fireEvent("onOpenMessage", json);
 
         Intent launch = cordova.getActivity().getPackageManager()
-            .getLaunchIntentForPackage(cordova.getActivity().getPackageName());
+                .getLaunchIntentForPackage(cordova.getActivity().getPackageName());
         launch.addCategory(Intent.CATEGORY_LAUNCHER);
         launch.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         cordova.getActivity().startActivity(launch);
