@@ -72,15 +72,15 @@ JMessagePlugin.prototype.updateMyInfo = function(field, value, successCallback,
     this.callNative("updateMyInfo", [field, value], successCallback, errorCallback);
 };
 
-JMessagePlugin.prototype.updateUserPassword = function(oldPwd, newPwd,
+JMessagePlugin.prototype.updateMyPassword = function(oldPwd, newPwd,
         successCallback, errorCallback) {
-    this.callNative("updateUserPassword", [oldPwd, newPwd], successCallback,
+    this.callNative("updateMyPassword", [oldPwd, newPwd], successCallback,
         errorCallback);
 };
 
-JMessagePlugin.prototype.updateUserAvatar = function(avatarFileUrl, successCallback,
+JMessagePlugin.prototype.updateMyAvatar = function(avatarFileUrl, successCallback,
         errorCallback) {
-    this.callNative("updateUserAvatar", [avatarFileUrl], successCallback, errorCallback);
+    this.callNative("updateMyAvatar", [avatarFileUrl], successCallback, errorCallback);
 };
 
 

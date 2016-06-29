@@ -414,12 +414,12 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     /**
-     * Update user password.
+     * Update my password.
      *
      * @param data     JSONArray; data.getString(0): old password, data.getString(1): new password.
      * @param callback result callback method.
      */
-    public void updateUserPassword(JSONArray data, CallbackContext callback) {
+    public void updateMyPassword(JSONArray data, CallbackContext callback) {
         final CallbackContext cb = callback;
         try {
             String oldPwd = data.getString(0);
@@ -437,12 +437,12 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     /**
-     * update user's avatar.
+     * update my avatar.
      *
      * @param data     data.getString(0): the URL of the users avatar file.
      * @param callback callback method.
      */
-    public void updateUserAvatar(JSONArray data, CallbackContext callback) {
+    public void updateMyAvatar(JSONArray data, CallbackContext callback) {
         final CallbackContext cb = callback;
         try {
             String avatarPath = data.getString(0);
