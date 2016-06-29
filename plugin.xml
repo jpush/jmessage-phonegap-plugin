@@ -45,17 +45,19 @@
         <resource-file src="src/ios/JMessageConfig.plist" />
 
         <framework src="src/ios/lib/JMessage.framework" custom="true" />
-        <framework src="CFNetwork.framework" weak="true" />
         <framework src="CoreFoundation.framework" weak="true" />
         <framework src="CoreTelephony.framework" weak="true" />
-        <framework src="SystemConfiguration.framework" weak="true" />
+        <framework src="CoreAudio.framework" weak="true" />
         <framework src="CoreGraphics.framework" weak="true" />
         <framework src="Foundation.framework" weak="true" />
+        <framework src="SystemConfiguration.framework" weak="true" />
+        <framework src="CFNetwork.framework" weak="true" />
         <framework src="UIKit.framework" weak="true" />
         <framework src="Security.framework" weak="true" />
-        <framework src="libz.tbd" weak="true" />
-        <framework src="libsqlite3.0.tbd" weak="true" />
-
+        <framework src="AudioToolbox.framework" weak="true" />
+        <framework src="MobileCoreServices.framework" weak="true" />
+        <framework src="libz.tbd"/>
+        <framework src="libsqlite3.0.tbd"/>
         <config-file target="*JMessageConfig.plist" parent="APP_KEY">
           <string>$APP_KEY</string>
         </config-file>

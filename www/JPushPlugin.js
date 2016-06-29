@@ -61,6 +61,9 @@ JPushPlugin.prototype.isPushStopped = function(callback) {
 };
 
 // iOS methods
+
+//iOS - tag & alias
+
 JPushPlugin.prototype.setTagsWithAlias = function(tags, alias) {
 	try {
   		if(tags == null) {
@@ -95,6 +98,8 @@ JPushPlugin.prototype.setAlias = function(alias) {
 	}
 };
 
+//iOS - badge
+
 JPushPlugin.prototype.setBadge = function(value) {
 	if(this.isPlatformIOS()) {
 		try {
@@ -116,6 +121,20 @@ JPushPlugin.prototype.resetBadge = function() {
 	}
 };
 
+JPushPlugin.prototype.setApplicationIconBadgeNumber = function(badge) {
+  	if(this.isPlatformIOS()) {
+		this.call_native("setApplicationIconBadgeNumber", [badge], null);
+	}
+};
+
+JPushPlugin.prototype.getApplicationIconBadgeNumber = function(callback) {
+	if(this.isPlatformIOS()) {
+		this.call_native("getApplicationIconBadgeNumber", [], callback);
+	}
+};
+
+//iOS - log
+
 JPushPlugin.prototype.setDebugModeFromIos = function() {
 	if(this.isPlatformIOS()) {
 		var data = [];
@@ -136,6 +155,8 @@ JPushPlugin.prototype.setCrashLogON = function() {
         this.call_native("crashLogON", [data], null);
     }
 };
+
+//iOS - local notification
 
 JPushPlugin.prototype.addLocalNotificationForIOS = function(delayTime, content,
 	badge, notificationID, extras) {
@@ -167,16 +188,7 @@ JPushPlugin.prototype.setLocation = function(latitude, longitude){
     }
 };
 
-JPushPlugin.prototype.receiveMessageIniOSCallback = function(data) {
-	try {
-		console.log("JPushPlugin:receiveMessageIniOSCallback--data:" + data);
-		var bToObj = JSON.parse(data);
-		var content = bToObj.content;
-    	console.log(content);
-	} catch(exception) {
-		console.log("JPushPlugin:receiveMessageIniOSCallback" + exception);
-	}
-};
+//iOS - page count
 
 JPushPlugin.prototype.startLogPageView = function(pageName) {
 	if(this.isPlatformIOS()) {
@@ -196,16 +208,37 @@ JPushPlugin.prototype.beginLogPageView = function(pageName, duration) {
 	}
 };
 
-JPushPlugin.prototype.setApplicationIconBadgeNumber = function(badge) {
-  	if(this.isPlatformIOS()) {
-		this.call_native("setApplicationIconBadgeNumber", [badge], null);
+//iOS - callback
+
+JPushPlugin.prototype.receiveMessageIniOSCallback = function(data) {
+	try {
+		console.log("JPushPlugin:receiveMessageIniOSCallback--data:" + data);
+		var bToObj = JSON.parse(data);
+		var content = bToObj.content;
+    	console.log(content);
+	} catch(exception) {
+		console.log("JPushPlugin:receiveMessageIniOSCallback" + exception);
 	}
 };
 
-JPushPlugin.prototype.getApplicationIconBadgeNumber = function(callback) {
-	if(this.isPlatformIOS()) {
-		this.call_native("getApplicationIconBadgeNumber", [], callback);
-	}
+JPushPlugin.prototype.onReceiveMessageIniOS = function (data) {
+    var bToObj = JSON.parse(data);
+    cordova.fireDocumentEvent('jpush.receiveMessage', bToObj);
+};
+
+JPushPlugin.prototype.onOpenNofiticationIniOS = function (data) {
+    var bToObj = JSON.parse(data);
+    cordova.fireDocumentEvent('jpush.openNotification', bToObj);
+};
+
+JPushPlugin.prototype.onReceiveNofiticationIniOS = function (data) {
+    var bToObj = JSON.parse(data);
+    cordova.fireDocumentEvent('jpush.receiveNotification', bToObj);
+};
+
+JPushPlugin.prototype.onBackgoundNotificationIniOS = function (data) {
+    var bToObj = JSON.parse(data);
+    cordova.fireDocumentEvent('jpush.backgroundNotification', bToObj);
 };
 
 // Android methods
