@@ -86,6 +86,8 @@ public class JMessagePlugin extends CordovaPlugin {
             "getConversationList",
             "getSingleConversation",
             "getGroupConversation",
+            "setSingleConversationUnreadMessageCount",
+            "setGroupConversationUnreadMessageCount",
             "deleteSingleConversation",
             "deleteGroupConversation",
             "getAllSingleConversation",
@@ -704,8 +706,8 @@ public class JMessagePlugin extends CordovaPlugin {
 
             Message msg = JMessageClient.createGroupVoiceMessage(groupId, file, duration);
             JMessageClient.sendMessage(msg);
-            callback.success(mGson.toJson(msg));
             mediaPlayer.release();
+            callback.success(mGson.toJson(msg));
         } catch (JSONException e) {
             e.printStackTrace();
             callback.error("json data error");
@@ -864,7 +866,6 @@ public class JMessagePlugin extends CordovaPlugin {
         List<Conversation> conversationList = JMessageClient.getConversationList();
         if (conversationList != null) {
             String json = mGson.toJson(conversationList);
-            Log.i(TAG, "----->" + json);
             callback.success(json);
         } else {
             callback.error("Conversation list not find.");
@@ -884,6 +885,7 @@ public class JMessagePlugin extends CordovaPlugin {
                 return;
             }
             con.setUnReadMessageCnt(unreadMessageCount);
+            callback.success();
         } catch (JSONException e) {
             e.printStackTrace();
             callback.error("Parameter error.");
@@ -901,6 +903,7 @@ public class JMessagePlugin extends CordovaPlugin {
                 return;
             }
             con.setUnReadMessageCnt(unreadMessageCount);
+            callback.success();
         } catch (JSONException e) {
             e.printStackTrace();
             callback.error("Parameter error.");
