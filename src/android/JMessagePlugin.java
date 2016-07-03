@@ -236,11 +236,12 @@ public class JMessagePlugin extends CordovaPlugin {
         String json = mGson.toJson(msg);
         fireEvent("onOpenMessage", json);
 
-        Intent launch = cordova.getActivity().getPackageManager()
-                .getLaunchIntentForPackage(cordova.getActivity().getPackageName());
+        Intent launch = cordova.getActivity().getApplicationContext()
+                .getPackageManager().getLaunchIntentForPackage(
+                        cordova.getActivity().getApplicationContext().getPackageName());
         launch.addCategory(Intent.CATEGORY_LAUNCHER);
         launch.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        cordova.getActivity().startActivity(launch);
+        cordova.getActivity().getApplicationContext().startActivity(launch);
     }
 
     private void fireEvent(String eventName, String jsonStr) {
@@ -1342,7 +1343,7 @@ public class JMessagePlugin extends CordovaPlugin {
         Log.i(TAG, "getAllSingleConversation \n" + data);
 
         List<Conversation> list = JMessageClient.getConversationList();
-        List<Conversation> singleConversationList = new ArrayList<>();
+        List<Conversation> singleConversationList = new ArrayList<Conversation>();
 
         for (int i = 0; i < list.size(); ++i) {
             Conversation con = list.get(i);
@@ -1357,7 +1358,7 @@ public class JMessagePlugin extends CordovaPlugin {
         Log.i(TAG, "getAllSingleConversation \n" + data);
 
         List<Conversation> list = JMessageClient.getConversationList();
-        List<Conversation> groupConversationList = new ArrayList<>();
+        List<Conversation> groupConversationList = new ArrayList<Conversation>();
 
         for (int i = 0; i < list.size(); ++i) {
             Conversation con = list.get(i);
