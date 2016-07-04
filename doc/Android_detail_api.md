@@ -180,12 +180,12 @@
 			console.log(errorMsg);	// 输出错误信息。
 		});
 
-### API - updateUserPassword
+### API - updateMyPassword
 更新当前用户密码。
 
 #### 接口定义
 
-	window.JMessage.updateUserPassword(oldPassword, newPassword, successCallback, errorCallback)
+	window.JMessage.updateMyPassword(oldPassword, newPassword, successCallback, errorCallback)
 
 #### 参数说明
 - oldPassword：更新前的密码。
@@ -195,19 +195,19 @@
 
 #### 代码示例
 
-	window.JMessage.updateUserPassword('oldPassword', 'newPassword',
+	window.JMessage.updateMyPassword('oldPassword', 'newPassword',
 		function() {
 			// 更新成功。
 		}, function(errorMsg) {
 			console.log(errorMsg);	// 输出错误信息。
 		});
 
-### API - updateUserAvatar
+### API - updateMyAvatar
 更新当前用户头像。
 
 #### 接口定义
 
-	window.JMessage.updateUserAvatar(avatarFileUrl, successCallback, errorCallback)
+	window.JMessage.updateMyAvatar(avatarFileUrl, successCallback, errorCallback)
 
 #### 参数说明
 - avatarFileUrl：头像文件的 URL。
@@ -216,7 +216,7 @@
 
 #### 代码示例
 
-	window.JMessage.updateUserAvatar('avatarFileUrl', function() {
+	window.JMessage.updateMyAvatar('avatarFileUrl', function() {
 		// 更新成功。
 	}, function(errorMsg) {
 		console.log(errorMsg);

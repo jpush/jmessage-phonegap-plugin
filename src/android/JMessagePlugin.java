@@ -68,8 +68,8 @@ public class JMessagePlugin extends CordovaPlugin {
             "getMyInfo",
             "updateMyInfo",
             "updateUserInfo",
-            "updateUserPassword",
-            "updateUserAvatar",
+            "updateMyPassword",
+            "updateMyAvatar",
             // Message API.
             "sendSingleTextMessage",
             "sendSingleImageMessage",
@@ -448,12 +448,14 @@ public class JMessagePlugin extends CordovaPlugin {
     public void updateMyAvatar(JSONArray data, CallbackContext callback) {
         final CallbackContext cb = callback;
         try {
-            String avatarPath = data.getString(0);
-            if (TextUtils.isEmpty(avatarPath)) {
-                callback.error("Avatar path is empty!");
+            String avatarUrlStr = data.getString(0);
+            if (TextUtils.isEmpty(avatarUrlStr)) {
+                callback.error("Avatar URL is empty!");
                 return;
             }
-            File avatarFile = new File(avatarPath);
+            URL url = new URL(avatarUrlStr);
+            String path = url.getPath();
+            File avatarFile = new File(path);
             JMessageClient.updateUserAvatar(avatarFile, new BasicCallback() {
                 @Override
                 public void gotResult(int status, String errorDesc) {
@@ -462,7 +464,10 @@ public class JMessagePlugin extends CordovaPlugin {
             });
         } catch (JSONException e) {
             e.printStackTrace();
-            callback.error("Error reading alias JSON.");
+            callback.error("Reading alias JSON error.");
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            callback.error("Avatar URL error.");
         }
     }
 
