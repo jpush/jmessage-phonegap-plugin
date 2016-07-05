@@ -24,7 +24,7 @@ JMessage PhoneGap / Cordova Plugin 是基于[极光 IM](http://docs.jpush.io/gui
 
 		cordova plugin add <Plugin Path> --variable APP_KEY=Your_app_key
 
-> [点击这里](http://docs.jpush.io/guideline/statistical_report/)查看如何获取 APP_KEY。
+	> [点击这里](http://docs.jpush.io/guideline/statistical_report/)查看如何获取 APP_KEY。
 
 ## API
 API 分为 IM（聊天）和 Push（消息推送）两部分。具体可参考：
@@ -41,7 +41,8 @@ API 分为 IM（聊天）和 Push（消息推送）两部分。具体可参考�
 插件项目中的 */example* 目录下包含一个简单的示例，如果想参考可以将目录下的所有文件拷贝到具体 Cordova 项目的 */assets/www/* 目录下。
 
 ## 常见问题
-若要使用 CLI 来编译项目，注意应使用 *cordova compile* 而不是 *cordova build* 命令，因为 *cordova build* 会清除对插件文件的修改。具体的 Cordova CLI 用法可参考 [Cordova CLI 官方文档](https://cordova.apache.org/docs/en/latest/reference/cordova-cli/index.html)。
+若要使用 CLI 来编译项目，注意应使用 *cordova compile* 而不是 *cordova build* 命令，因为 *cordova build* 可能会清除对插件文件中 AndroidManifest.xml 文件的修改。
+具体的 Cordova CLI 用法可参考 [Cordova CLI 官方文档](https://cordova.apache.org/docs/en/latest/reference/cordova-cli/index.html)。
 
 ### Android
 Eclipse 中 import PhoneGap 工程之后出现：*Type CallbackContext cannot be resolved to a type*。
