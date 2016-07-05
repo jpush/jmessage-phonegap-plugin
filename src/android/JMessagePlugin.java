@@ -60,9 +60,9 @@ public class JMessagePlugin extends CordovaPlugin {
 
     private final static List<String> methodList = Arrays.asList(
             // Login and register API.
-            "register",
-            "login",
-            "logout",
+            "userRegister",
+            "userLogin",
+            "userLogout",
             // User info API.
             "getUserInfo",
             "getMyInfo",
@@ -295,7 +295,7 @@ public class JMessagePlugin extends CordovaPlugin {
 
     // Login and register API.
 
-    public void register(JSONArray data, CallbackContext callback) {
+    public void userRegister(JSONArray data, CallbackContext callback) {
         Log.i(TAG, " JMessageRegister \n" + data);
 
         final CallbackContext cb = callback;
@@ -315,7 +315,7 @@ public class JMessagePlugin extends CordovaPlugin {
         }
     }
 
-    public void login(JSONArray data, CallbackContext callback) {
+    public void userLogin(JSONArray data, CallbackContext callback) {
         Log.i(TAG, "  userLogin \n" + data);
 
         final CallbackContext cb = callback;
@@ -335,7 +335,7 @@ public class JMessagePlugin extends CordovaPlugin {
         }
     }
 
-    public void logout(JSONArray data, CallbackContext callback) {
+    public void userLogout(JSONArray data, CallbackContext callback) {
         Log.i(TAG, "Logout \n" + data);
         try {
             JMessageClient.logout();
