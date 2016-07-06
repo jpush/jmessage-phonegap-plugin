@@ -474,14 +474,13 @@ public class JMessagePlugin extends CordovaPlugin {
 
     // Message API.
 
-    public void sendSingleTextMessage(JSONArray data, CallbackContext callback) {
+    public void sendSingleTextMessage(JSONArray data, final CallbackContext callback) {
         Log.i(TAG, "sendSingleTextMessage \n" + data);
 
         try {
             String username = data.getString(0);
             String text = data.getString(1);
             String appKey = data.isNull(2) ? "" : data.getString(2);
-            Log.i(TAG, "appKey: " + appKey);
 
             Conversation conversation = JMessageClient.getSingleConversation(
                     username, appKey);
@@ -496,8 +495,17 @@ public class JMessagePlugin extends CordovaPlugin {
 
             TextContent content = new TextContent(text);
             final Message msg = conversation.createSendMessage(content);
+            msg.setOnSendCompleteCallback(new BasicCallback() {
+                @Override
+                public void gotResult(int status, String desc) {
+                    if (status == 0) {
+                        callback.success(mGson.toJson(msg));
+                    } else {
+                        callback.error(status + ": " + desc);
+                    }
+                }
+            });
             JMessageClient.sendMessage(msg);
-            callback.success(mGson.toJson(msg));
         } catch (JSONException e) {
             e.printStackTrace();
             callback.error("error reading id json.");
@@ -509,7 +517,7 @@ public class JMessagePlugin extends CordovaPlugin {
      *                 data.getString(0):username, data.getString(1):text
      * @param callback CallbackContext.
      */
-    public void sendSingleImageMessage(JSONArray data, CallbackContext callback) {
+    public void sendSingleImageMessage(JSONArray data, final CallbackContext callback) {
         try {
             String userName = data.getString(0);
             String imgUrlStr = data.getString(1);
@@ -528,9 +536,18 @@ public class JMessagePlugin extends CordovaPlugin {
 
             URL imgUrl = new URL(imgUrlStr);
             File imgFile = new File(imgUrl.getPath());
-            Message msg = conversation.createSendImageMessage(imgFile);
+            final Message msg = conversation.createSendImageMessage(imgFile);
+            msg.setOnSendCompleteCallback(new BasicCallback() {
+                @Override
+                public void gotResult(int status, String desc) {
+                    if (status == 0) {
+                        callback.success(mGson.toJson(msg));
+                    } else {
+                        callback.error(status + ": " + desc);
+                    }
+                }
+            });
             JMessageClient.sendMessage(msg);
-            callback.success(mGson.toJson(msg));
         } catch (JSONException e) {
             e.printStackTrace();
             callback.error("json data error");
@@ -547,7 +564,7 @@ public class JMessagePlugin extends CordovaPlugin {
      *                 data.getString(0):username, data.getString(1):voiceFileUrl.
      * @param callback CallbackContext.
      */
-    public void sendSingleVoiceMessage(JSONArray data, CallbackContext callback) {
+    public void sendSingleVoiceMessage(JSONArray data, final CallbackContext callback) {
         try {
             String userName = data.getString(0);
             String voiceUrlStr = data.getString(1);
@@ -572,10 +589,19 @@ public class JMessagePlugin extends CordovaPlugin {
                     Uri.parse(voicePath));
             int duration = mediaPlayer.getDuration();
 
-            Message msg = JMessageClient.createSingleVoiceMessage(userName, file,
+            final Message msg = JMessageClient.createSingleVoiceMessage(userName, file,
                     duration);
+            msg.setOnSendCompleteCallback(new BasicCallback() {
+                @Override
+                public void gotResult(int status, String desc) {
+                    if (status == 0) {
+                        callback.success(mGson.toJson(msg));
+                    } else {
+                        callback.error(status + ": " + desc);
+                    }
+                }
+            });
             JMessageClient.sendMessage(msg);
-            callback.success(mGson.toJson(msg));
             mediaPlayer.release();
         } catch (JSONException e) {
             e.printStackTrace();
@@ -594,7 +620,7 @@ public class JMessagePlugin extends CordovaPlugin {
      *                 data.getString(0):username, data.getJSONObject(1):custom key-values.
      * @param callback CallbackContext.
      */
-    public void sendSingleCustomMessage(JSONArray data, CallbackContext callback) {
+    public void sendSingleCustomMessage(JSONArray data, final CallbackContext callback) {
         try {
             String userName = data.getString(0);
             String appKey = data.isNull(2) ? "" : data.getString(2);
@@ -620,10 +646,19 @@ public class JMessagePlugin extends CordovaPlugin {
                 value = values.getString(key);
                 valuesMap.put(key, value);
             }
-            Message msg = JMessageClient.createSingleCustomMessage(userName,
+            final Message msg = JMessageClient.createSingleCustomMessage(userName,
                     valuesMap);
+            msg.setOnSendCompleteCallback(new BasicCallback() {
+                @Override
+                public void gotResult(int status, String desc) {
+                    if (status == 0) {
+                        callback.success(mGson.toJson(msg));
+                    } else {
+                        callback.error(status + ": " + desc);
+                    }
+                }
+            });
             JMessageClient.sendMessage(msg);
-            callback.success();
         } catch (JSONException e) {
             e.printStackTrace();
             callback.error("Parameter error.");
@@ -635,7 +670,7 @@ public class JMessagePlugin extends CordovaPlugin {
      *                 data.getLong(0):groupId, data.getString(1):text.
      * @param callback CallbackContext.
      */
-    public void sendGroupTextMessage(JSONArray data, CallbackContext callback) {
+    public void sendGroupTextMessage(JSONArray data, final CallbackContext callback) {
         try {
             long groupId = data.getLong(0);
             String text = data.getString(1);
@@ -649,16 +684,25 @@ public class JMessagePlugin extends CordovaPlugin {
                 return;
             }
 
-            Message msg = JMessageClient.createGroupTextMessage(groupId, text);
+            final Message msg = JMessageClient.createGroupTextMessage(groupId, text);
+            msg.setOnSendCompleteCallback(new BasicCallback() {
+                @Override
+                public void gotResult(int status, String desc) {
+                    if (status == 0) {
+                        callback.success(mGson.toJson(msg));
+                    } else {
+                        callback.error(status + ": " + desc);
+                    }
+                }
+            });
             JMessageClient.sendMessage(msg);
-            callback.success(mGson.toJson(msg));
         } catch (JSONException e) {
             e.printStackTrace();
             callback.error("error reading id json.");
         }
     }
 
-    public void sendGroupImageMessage(JSONArray data, CallbackContext callback) {
+    public void sendGroupImageMessage(JSONArray data, final CallbackContext callback) {
         try {
             long groupId = data.getLong(0);
             String imgUrlStr = data.getString(1);
@@ -674,7 +718,17 @@ public class JMessagePlugin extends CordovaPlugin {
 
             URL imgUrl = new URL(imgUrlStr);
             File imgFile = new File(imgUrl.getPath());
-            Message msg = JMessageClient.createGroupImageMessage(groupId, imgFile);
+            final Message msg = JMessageClient.createGroupImageMessage(groupId, imgFile);
+            msg.setOnSendCompleteCallback(new BasicCallback() {
+                @Override
+                public void gotResult(int status, String desc) {
+                    if (status == 0) {
+                        callback.success(mGson.toJson(msg));
+                    } else {
+                        callback.error(status + ": " + desc);
+                    }
+                }
+            });
             JMessageClient.sendMessage(msg);
             callback.success(mGson.toJson(msg));
         } catch (JSONException e) {
@@ -688,7 +742,7 @@ public class JMessagePlugin extends CordovaPlugin {
         }
     }
 
-    public void sendGroupVoiceMessage(JSONArray data, CallbackContext callback) {
+    public void sendGroupVoiceMessage(JSONArray data, final CallbackContext callback) {
         try {
             long groupId = data.getLong(0);
             String voiceUrlStr = data.getString(1);
@@ -710,10 +764,19 @@ public class JMessagePlugin extends CordovaPlugin {
                     Uri.parse(voicePath));
             int duration = mediaPlayer.getDuration();
 
-            Message msg = JMessageClient.createGroupVoiceMessage(groupId, file, duration);
+            final Message msg = JMessageClient.createGroupVoiceMessage(groupId, file, duration);
+            msg.setOnSendCompleteCallback(new BasicCallback() {
+                @Override
+                public void gotResult(int status, String desc) {
+                    if (status == 0) {
+                        callback.success(mGson.toJson(msg));
+                    } else {
+                        callback.error(status + ": " + desc);
+                    }
+                }
+            });
             JMessageClient.sendMessage(msg);
             mediaPlayer.release();
-            callback.success(mGson.toJson(msg));
         } catch (JSONException e) {
             e.printStackTrace();
             callback.error("json data error");
@@ -731,7 +794,7 @@ public class JMessagePlugin extends CordovaPlugin {
      *                 data.getLong(0):groupID, data.getJSONObject(1):custom key-values.
      * @param callback CallbackContext.
      */
-    public void sendGroupCustomMessage(JSONArray data, CallbackContext callback) {
+    public void sendGroupCustomMessage(JSONArray data, final CallbackContext callback) {
         try {
             long groupId = data.getLong(0);
 
@@ -754,9 +817,18 @@ public class JMessagePlugin extends CordovaPlugin {
                 value = customValues.getString(key);
                 valuesMap.put(key, value);
             }
-            Message msg = JMessageClient.createGroupCustomMessage(groupId, valuesMap);
+            final Message msg = JMessageClient.createGroupCustomMessage(groupId, valuesMap);
+            msg.setOnSendCompleteCallback(new BasicCallback() {
+                @Override
+                public void gotResult(int status, String desc) {
+                    if (status == 0) {
+                        callback.success(mGson.toJson(msg));
+                    } else {
+                        callback.error(status + ": " + desc);
+                    }
+                }
+            });
             JMessageClient.sendMessage(msg);
-            callback.success(mGson.toJson(msg));
         } catch (JSONException e) {
             e.printStackTrace();
             callback.error("error reading id json.");
@@ -775,8 +847,12 @@ public class JMessagePlugin extends CordovaPlugin {
                 return;
             }
             Message msg = conversation.getLatestMessage();
-            String json = mGson.toJson(msg);
-            callback.success(json);
+            if (msg != null) {
+                String json = mGson.toJson(msg);
+                callback.success(json);
+            } else {
+                callback.error("Conversation is not contain message.");
+            }
         } catch (JSONException e) {
             e.printStackTrace();
             callback.error("Parameter error.");
@@ -818,9 +894,12 @@ public class JMessagePlugin extends CordovaPlugin {
 
             List<Message> messages = conversation.getMessagesFromNewest(
                     from, limit);
-            Log.i(TAG, messages.size() + "");
-            String json = mGson.toJson(messages);
-            callback.success(json);
+            if (!messages.isEmpty()) {
+                String json = mGson.toJson(messages);
+                callback.success(json);
+            } else {
+                callback.error("Conversation isn't contain message.");
+            }
         } catch (JSONException e) {
             e.printStackTrace();
             callback.error("Parameter error.");
@@ -857,8 +936,12 @@ public class JMessagePlugin extends CordovaPlugin {
             }
 
             List<Message> messages = conversation.getAllMessage();
-            String json = mGson.toJson(messages);
-            callback.success(json);
+            if (!messages.isEmpty()) {
+                String json = mGson.toJson(messages);
+                callback.success(json);
+            } else {
+                callback.error("Conversation isn't contain message.");
+            }
         } catch (JSONException e) {
             e.printStackTrace();
             callback.error("Parameter error.");
