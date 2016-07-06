@@ -413,15 +413,11 @@ JMessagePlugin.prototype.loginUserKicked = function (data) {
 };
 
 JMessagePlugin.prototype.onReceivedSingleConversationMessage = function (data) {
-    if (device.platform == "Android") {
-        var bToObj = window.plugins.jmessagePlugin.ReceiveMessageObj;
-    } else {
-        try {
-             bToObj = JSON.parse(data);
-        }
-        catch (exception) {
-            console.log("onSingleConversationMessageReceived " + exception);
-        }
+    try {
+        bToObj = JSON.parse(data);
+    }
+    catch (exception) {
+        console.log("onSingleConversationMessageReceived " + exception);
     }
     cordova.fireDocumentEvent('jmessage.singleReceiveMessage', bToObj);
 };
