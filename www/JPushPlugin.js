@@ -21,7 +21,11 @@ JPushPlugin.prototype.error_callback = function(msg) {
 };
 
 JPushPlugin.prototype.call_native = function(name, args, callback) {
-	ret = cordova.exec(callback, this.error_callback, 'JPushPlugin', name, args);
+	if (this.isPlatformIOS()) {
+		ret = cordova.exec(callback, this.error_callback, 'JMessagePlugin', name, args);
+    }else{
+		ret = cordova.exec(callback, this.error_callback, 'JPushPlugin', name, args);
+	}
 	return ret;
 };
 

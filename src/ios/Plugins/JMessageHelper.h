@@ -21,3 +21,27 @@
 - (void)didReceiveRemoteNotification:(NSDictionary *)userInfo;
 
 @end
+
+
+#pragma mark - Category
+
+@interface NSDictionary (JPush)
+-(NSString*)toJsonString;
+@end
+
+@interface NSString (JPush)
+-(NSDictionary*)toDictionary;
+@end
+
+@interface JMSGConversation (JPush)
+-(NSMutableDictionary*)conversationToDictionary;
+@end
+
+@interface JMSGUser (JPush)
+-(NSMutableDictionary*)userToDictionary;
+@end
+
+@interface JMSGGroup (JPush)
+-(NSMutableDictionary*)groupToDictionary;
+@end
+
