@@ -17,10 +17,21 @@
 
 
 #define kJJMessageReceiveMessage @"kJJMessageReceiveMessage"
-#define kJJMessageConversationChange @"kJJMessageConversationChange"
 #define kJJMessageSendSingleMessageRespone @"kJJMessageSendSingleMessageRespone"
+
+//Conversation 回调
+#define kJJMessageConversationChanged @"kJJMessageConversationChanged"
+#define kJJMessageUnreadChanged @"kJJMessageUnreadChanged"
+
+//Group 回调
+#define kJJMessageGroupInfoChanged @"kJJMessageGroupInfoChanged"
+
+//User 回调
+#define kJJMessageLoginUserKicked @"kJJMessageLoginUserKicked"
+
 #define kJJPushReceiveNotification @"kJJPushReceiveNotification"
 #define kJJPushReceiveMessage @"kJJPushReceiveMessage"
+
 
 
 static NSInteger  errorNoFound =  kJMSGErrorSDKUserNotLogin;
@@ -55,6 +66,13 @@ static NSString *const JM_APP_CHANNEL = @"CHANNEL";
 
 static NSString *const JMessageConfigFileName = @"JMessageConfig";
 
+//Group
+static NSString *const KEY_GROUP_GID = @"gid";
+static NSString *const KEY_GROUP_NAME = @"name";
+static NSString *const KEY_GROUP_DESC = @"desc";
+static NSString *const KEY_GROUP_LEVEL = @"level";
+static NSString *const KEY_GROUP_GLAG = @"flag";
+static NSString *const KEY_GROUP_OWNER = @"owner";
 
 
 #endif /* ConstantDef_h */

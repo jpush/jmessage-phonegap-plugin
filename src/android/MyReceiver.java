@@ -1,16 +1,3 @@
-//	            __    __                ________
-//	| |    | |  \ \  / /  | |    | |   / _______|
-//	| |____| |   \ \/ /   | |____| |  / /
-//	| |____| |    \  /    | |____| |  | |   _____
-//	| |    | |    /  \    | |    | |  | |  |____ |
-//  | |    | |   / /\ \   | |    | |  \ \______| |
-//  | |    | |  /_/  \_\  | |    | |   \_________|
-//
-//	Copyright (c) 2012年 HXHG. All rights reserved.
-//	http://www.jpush.cn
-//  Created by zhangqinghe
-//  modify by liangjianguo
-
 package cn.jmessage.phonegap;
 
 
@@ -27,80 +14,83 @@ import android.content.Intent;
 import android.util.Log;
 
 public class MyReceiver extends BroadcastReceiver {
-    private static String TAG = "MyReceiver";
+    private static String TAG = "JMessagePlugin";
+    private static final List<String> IGNORED_EXTRAS_KEYS = Arrays.asList(
+            "cn.jpush.android.TITLE",
+            "cn.jpush.android.MESSAGE",
+            "cn.jpush.android.APPKEY",
+            "cn.jpush.android.NOTIFICATION_CONTENT_TITLE"
+    );
 
     @Override
     public void onReceive(Context context, Intent intent) {
-
-        if (JPushInterface.ACTION_REGISTRATION_ID.equals(intent.getAction())) {
-
-        } else if (JPushInterface.ACTION_MESSAGE_RECEIVED.equals(intent.getAction())) {
-            handlingReceivedMessage(intent);
-        } else if (JPushInterface.ACTION_NOTIFICATION_RECEIVED.equals(intent.getAction())) {
+        String action = intent.getAction();
+        if (JPushInterface.ACTION_MESSAGE_RECEIVED.equals(action)) {
+            handlingMessageReceive(intent);
+        } else if (JPushInterface.ACTION_NOTIFICATION_RECEIVED.equals(action)) {
             handlingNotificationReceive(context, intent);
-
-        } else if (JPushInterface.ACTION_NOTIFICATION_OPENED.equals(intent.getAction())) {
+        } else if (JPushInterface.ACTION_NOTIFICATION_OPENED.equals(action)) {
             handlingNotificationOpen(context, intent);
-        } else if (JPushInterface.ACTION_RICHPUSH_CALLBACK.equals(intent.getAction())) {
+        } else if (JPushInterface.ACTION_RICHPUSH_CALLBACK.equals(action)) {
+            // 当在 HTML 页面中调用 JPushWeb.triggerNativeAction(String params) 方法时触发此方法，
+            // 再进行相关的操作。
 
         } else {
-            Log.d(TAG, "Unhandled intent - " + intent.getAction());
+            Log.d(TAG, "Unhandled intent - " + action);
         }
     }
 
-    private void handlingReceivedMessage(Intent intent) {
+    private void handlingMessageReceive(Intent intent) {
         String msg = intent.getStringExtra(JPushInterface.EXTRA_MESSAGE);
         Map<String, Object> extras = getNotificationExtras(intent);
-
-        JMessagePlugin.transmitPushMessage(JPushInterface.ACTION_MESSAGE_RECEIVED, msg, extras);
-
-        //JMessagePlugin.transmitMessage(msg, extras);
+        JPushPlugin.transmitMessageReceive(msg, extras);
     }
 
     private void handlingNotificationOpen(Context context, Intent intent) {
-        Log.i(TAG, "handlingNotificationOpen");
+        Log.i(TAG, "----------------  handlingNotificationOpen");
+
+        String title = intent.getStringExtra(JPushInterface.EXTRA_NOTIFICATION_TITLE);
+        JPushPlugin.openNotificationTitle = title;
 
         String alert = intent.getStringExtra(JPushInterface.EXTRA_ALERT);
-        Map<String, Object> extras = getNotificationExtras(intent);
+        JPushPlugin.openNotificationAlert = alert;
 
-        Intent launch = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
+        Map<String, Object> extras = getNotificationExtras(intent);
+        JPushPlugin.openNotificationExtras = extras;
+
+        JPushPlugin.transmitNotificationOpen(title, alert, extras);
+
+        Intent launch = context.getPackageManager().getLaunchIntentForPackage(
+                context.getPackageName());
         launch.addCategory(Intent.CATEGORY_LAUNCHER);
         launch.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        JMessagePlugin.openNotificationAlert = alert;
-        JMessagePlugin.openNotificationExtras = extras;
-        // JMessagePlugin.transmitOpen(alert, extras);
-
-        JMessagePlugin.transmitPushMessage(JPushInterface.ACTION_NOTIFICATION_OPENED, alert, extras);
-
-
         context.startActivity(launch);
     }
 
     private void handlingNotificationReceive(Context context, Intent intent) {
+        Log.i(TAG, "----------------  handlingNotificationReceive");
 
-        Log.i(TAG, "handlingNotificationReceive");
-
-        String alert = intent.getStringExtra(JPushInterface.EXTRA_ALERT);
-        Map<String, Object> extras = getNotificationExtras(intent);
-
-        Intent launch = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
+        Intent launch = context.getPackageManager().getLaunchIntentForPackage(
+                context.getPackageName());
         launch.addCategory(Intent.CATEGORY_LAUNCHER);
         launch.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
-        JMessagePlugin.notificationAlert = alert;
-        JMessagePlugin.notificationExtras = extras;
+        String title = intent.getStringExtra(JPushInterface.EXTRA_NOTIFICATION_TITLE);
+        JPushPlugin.notificationTitle = title;
 
-        JMessagePlugin.transmitPushMessage(JPushInterface.ACTION_NOTIFICATION_RECEIVED, alert, extras);
+        String alert = intent.getStringExtra(JPushInterface.EXTRA_ALERT);
+        JPushPlugin.notificationAlert = alert;
 
-        // JMessagePlugin.transmitReceive(alert, extras);
+        Map<String, Object> extras = getNotificationExtras(intent);
+        JPushPlugin.notificationExtras = extras;
+
+        JPushPlugin.transmitNotificationReceive(title, alert, extras);
     }
 
     private Map<String, Object> getNotificationExtras(Intent intent) {
         Map<String, Object> extrasMap = new HashMap<String, Object>();
-
         for (String key : intent.getExtras().keySet()) {
             if (!IGNORED_EXTRAS_KEYS.contains(key)) {
-                Log.e("key", "key:" + key);
                 if (key.equals(JPushInterface.EXTRA_NOTIFICATION_ID)) {
                     extrasMap.put(key, intent.getIntExtra(key, 0));
                 } else {
@@ -111,6 +101,4 @@ public class MyReceiver extends BroadcastReceiver {
         return extrasMap;
     }
 
-    private static final List<String> IGNORED_EXTRAS_KEYS =
-            Arrays.asList("cn.jpush.android.TITLE", "cn.jpush.android.MESSAGE", "cn.jpush.android.APPKEY", "cn.jpush.android.NOTIFICATION_CONTENT_TITLE");
 }
