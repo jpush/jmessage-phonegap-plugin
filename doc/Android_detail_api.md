@@ -520,7 +520,7 @@
 	});
 
 ### API - exitConversation
-退出当前会话。在退出会话界面是需要调用该函数。
+退出当前会话。在退出会话界面时需要调用该函数，与 enterSingleConversation / enterGroupConversation 函数配套使用。
 
 #### 接口定义
 
@@ -540,7 +540,7 @@
 
 ### 单聊
 #### API - enterSingleConversation
-进入单聊会话。
+进入单聊会话，调用后在收到指定会话消息时不会再弹出通知。
 
 ##### 接口定义
 
@@ -653,7 +653,7 @@
 
 ### 群聊
 #### API - enterGroupConversation
-进入特定群聊会话。
+进入特定群聊会话，调用后收到指定会话消息时不会再弹出通知。
 
 ##### 接口定义
 
