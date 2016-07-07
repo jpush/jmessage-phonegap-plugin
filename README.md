@@ -58,5 +58,6 @@ Eclipse 中 import PhoneGap 工程之后出现：*Type CallbackContext cannot be
 	- IsIDFA：是否使用 IDFA 启动 SDK。
 
 ## 更多
+- QQ 群：413602425。
 - [极光官网文档](http://docs.jiguang.cn/guideline/jmessage_guide/)。
 - 有问题可访问[极光社区](http://community.jpush.cn/)搜索和提问。
