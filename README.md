@@ -15,6 +15,8 @@ JMessage PhoneGap / Cordova Plugin 是基于[极光 IM](http://docs.jpush.io/gui
 
 > **注意**：需要 Cordova 5.0.0 或以上版本。
 
+> QQ 交流群：413602425
+
 ## 集成步骤
 - 在线安装
 
