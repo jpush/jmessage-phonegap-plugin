@@ -15,6 +15,8 @@ JMessage PhoneGap / Cordova Plugin 是基于[极光 IM](http://docs.jpush.io/gui
 
 > **注意**：需要 Cordova 5.0.0 或以上版本。
 
+> QQ 交流群：413602425
+
 ## 集成步骤
 - 在线安装
 
@@ -58,5 +60,6 @@ Eclipse 中 import PhoneGap 工程之后出现：*Type CallbackContext cannot be
 	- IsIDFA：是否使用 IDFA 启动 SDK。
 
 ## 更多
+- QQ 群：413602425。
 - [极光官网文档](http://docs.jiguang.cn/guideline/jmessage_guide/)。
 - 有问题可访问[极光社区](http://community.jpush.cn/)搜索和提问。
