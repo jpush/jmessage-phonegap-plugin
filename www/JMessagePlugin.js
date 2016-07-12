@@ -412,14 +412,25 @@ JMessagePlugin.prototype.loginUserKicked = function (data) {
     }
 };
 
-JMessagePlugin.prototype.onReceivedSingleConversationMessage = function (data) {
+JMessagePlugin.prototype.onReceiveConversationMessage = function (data) {
     try {
         bToObj = JSON.parse(data);
     }
     catch (exception) {
-        console.log("onSingleConversationMessageReceived " + exception);
+        console.log("onConversationMessageReceived " + exception);
     }
-    cordova.fireDocumentEvent('jmessage.singleReceiveMessage', bToObj);
+    cordova.fireDocumentEvent('jmessage.onReceiveMessage', bToObj);
+};
+
+JMessagePlugin.prototype.onSendMessage = function (data) {
+    try {
+        var bToObj = JSON.parse(data);
+        console.log(data);
+    }
+    catch (exception) {
+        console.log("onSendMessage " + exception);
+    }
+    cordova.fireDocumentEvent('jmessage.onSendMessage', bToObj);
 };
 
 //---------- iOS only end ----------//
