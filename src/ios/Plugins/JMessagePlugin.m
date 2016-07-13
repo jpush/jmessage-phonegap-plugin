@@ -147,6 +147,8 @@
 - (void)didReceiveJMessageMessage:(NSNotification *)notification {
     NSDictionary *userInfo = [notification object];
     NSString *jsonString = [userInfo toJsonString];
+    jsonString = [jsonString stringByReplacingOccurrencesOfString:@"\"{" withString:@"{"];
+    jsonString = [jsonString stringByReplacingOccurrencesOfString:@"}\"" withString:@"}"];
     NSLog(@"JMessagePlugin Plugin didReceiveJMessageMessage  %@",jsonString);
     dispatch_async(dispatch_get_main_queue(), ^{
         [self commonSendMessage:@"onReceiveConversationMessage" jsonParm:jsonString];

@@ -414,7 +414,7 @@ JMessagePlugin.prototype.loginUserKicked = function (data) {
 
 JMessagePlugin.prototype.onReceiveConversationMessage = function (data) {
     try {
-        bToObj = JSON.parse(data);
+        var bToObj = JSON.parse(data);
     }
     catch (exception) {
         console.log("onConversationMessageReceived " + exception);
