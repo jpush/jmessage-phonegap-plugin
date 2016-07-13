@@ -17,7 +17,7 @@
 
 
 #define kJJMessageReceiveMessage @"kJJMessageReceiveMessage"
-#define kJJMessageSendSingleMessageRespone @"kJJMessageSendSingleMessageRespone"
+#define kJJMessageSendMessageRespone @"kJJMessageSendMessageRespone"
 
 //Conversation 回调
 #define kJJMessageConversationChanged @"kJJMessageConversationChanged"

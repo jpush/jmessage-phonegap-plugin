@@ -16,14 +16,12 @@
         <engine name="cordova" version=">=3.0"/>
     </engines>
 
-    <dependency id="org.apache.cordova.device" url="https://github.com/apache/cordova-plugin-device.git"  />
-
     <js-module src="www/JMessagePlugin.js" name="JMessagePlugin">
-        <clobbers target="window.JMessage"/>
+        <clobbers target="JMessage"/>
     </js-module>
 
     <js-module src="www/JPushPlugin.js" name="JPushPlugin">
-        <clobbers target="window.JPush"/>
+        <clobbers target="JPush"/>
     </js-module>
 
     <platform name="ios">
@@ -238,9 +236,9 @@
         <source-file src="src/android/JMessagePlugin.java" target-dir="src/cn/jmessage/phonegap"/>
         <source-file src="src/android/JPushPlugin.java" target-dir="src/cn/jmessage/phonegap"/>
         <source-file src="src/android/MyReceiver.java" target-dir="src/cn/jmessage/phonegap"/>
-        
-    	<source-file src="src/android/test_notification_layout.xml" target-dir="res/layout"/>
-    	<source-file src="src/android/jpush_notification_icon.png" target-dir="res/drawable"/>
+
+    	  <source-file src="src/android/test_notification_layout.xml" target-dir="res/layout"/>
+    	  <source-file src="src/android/jpush_notification_icon.png" target-dir="res/drawable"/>
 
         <!-- Rich Push resources  -->
         <source-file src="src/android/ic_richpush_actionbar_back.png" target-dir="res/drawable" />

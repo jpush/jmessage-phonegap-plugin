@@ -79,8 +79,8 @@
                         object:nil];
 
     [defaultCenter addObserver:self
-                      selector:@selector(didSendSingleTextMessage:)
-                          name:kJJMessageSendSingleMessageRespone
+                      selector:@selector(didSendMessage:)
+                          name:kJJMessageSendMessageRespone
                         object:nil];
 
     [defaultCenter addObserver:self
@@ -109,10 +109,10 @@
 
 #pragma mark IM - Notifications
 
--(void)didSendSingleTextMessage:(NSNotification *)notification {
+-(void)didSendMessage:(NSNotification *)notification {
     NSLog(@"JMessagePlugin didReceiveJMessageMessage  %@",[notification.object toJsonString]);
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self commonSendMessage:@"onSendSingleTextMessage" jsonParm:[notification.object toJsonString]];
+        [self commonSendMessage:@"onSendMessage" jsonParm:[notification.object toJsonString]];
     });
 }
 
@@ -146,10 +146,12 @@
 //didReceiveJMessageMessage change name
 - (void)didReceiveJMessageMessage:(NSNotification *)notification {
     NSDictionary *userInfo = [notification object];
-    NSString *jsonString = [userInfo valueForKey:KEY_CONTENT];
+    NSString *jsonString = [userInfo toJsonString];
+    jsonString = [jsonString stringByReplacingOccurrencesOfString:@"\"{" withString:@"{"];
+    jsonString = [jsonString stringByReplacingOccurrencesOfString:@"}\"" withString:@"}"];
     NSLog(@"JMessagePlugin Plugin didReceiveJMessageMessage  %@",jsonString);
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self commonSendMessage:@"onReceivedSingleConversationMessage" jsonParm:jsonString];
+        [self commonSendMessage:@"onReceiveConversationMessage" jsonParm:jsonString];
     });
 }
 

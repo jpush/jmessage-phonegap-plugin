@@ -72,6 +72,7 @@
 - (void)onReceiveMessage:(JMSGMessage *)message error:(NSError *)error{
     NSString * jsonString =  [message toJsonString];
     NSMutableDictionary * dict = [NSMutableDictionary new];
+    [dict setValue:message.msgId forKey:KEY_MSGID];
     [dict setValue:jsonString forKey:KEY_CONTENT];
     [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageReceiveMessage object:dict];
 }
@@ -87,7 +88,7 @@
         dict[KEY_ERRORCODE]    = [NSNumber numberWithLong:error.code];
         dict[KEY_ERRORDESCRIP] = error.description;
     }
-    [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageSendSingleMessageRespone object:dict];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageSendMessageRespone object:dict];
 }
 
 - (void)onReceiveMessageDownloadFailed:(JMSGMessage *)message{

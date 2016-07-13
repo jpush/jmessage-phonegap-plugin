@@ -82,10 +82,6 @@ public class JPushPlugin extends CordovaPlugin {
     @Override
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
         super.initialize(cordova, webView);
-
-        Log.i(TAG, "---------------- initialize" + "-" + openNotificationAlert
-                + "-" + notificationAlert);
-
         cordovaActivity = cordova.getActivity();
 
         //如果同时缓存了打开事件 openNotificationAlert 和 消息事件 notificationAlert，只向 UI 发打开事件。
