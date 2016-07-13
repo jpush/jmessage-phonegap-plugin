@@ -47,9 +47,18 @@ API 分为 IM（聊天）和 Push（消息推送）两部分。具体可参考�
 具体的 Cordova CLI 用法可参考 [Cordova CLI 官方文档](https://cordova.apache.org/docs/en/latest/reference/cordova-cli/index.html)。
 
 ### Android
-Eclipse 中 import PhoneGap 工程之后出现：*Type CallbackContext cannot be resolved to a type*。
+- Eclipse 中 import PhoneGap 工程之后出现：*Type CallbackContext cannot be resolved to a type*。
 
 解决方案：Eclipse 中右键单击工程名，Build Path -> Config Build Path -> Projects -> 选中工程名称 -> CordovaLib -> 点击 add。
+
+- 若用命令行编译报错 -source 1.6，请修改项目中的 *platforms/android/build.gradle* 文件：
+
+        ...
+        compileOptions {
+          sourceCompatibility JavaVersion.VERSION_1_7   // 1_6 改为 1_7
+          targetCompatibility JavaVersion.VERSION_1_7   // 1_6 改为 1_7
+        }
+        ...
 
 ### iOS
 - 收不到推送：请首先按照正确方式再次配置证书、描述文件，可参考 [iOS 证书设置指南](http://docs.jpush.io/client/ios_tutorials/#ios_1)。

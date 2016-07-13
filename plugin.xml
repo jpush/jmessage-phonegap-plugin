@@ -239,8 +239,8 @@
         <source-file src="src/android/JPushPlugin.java" target-dir="src/cn/jmessage/phonegap"/>
         <source-file src="src/android/MyReceiver.java" target-dir="src/cn/jmessage/phonegap"/>
 
-    	<source-file src="src/android/test_notification_layout.xml" target-dir="res/layout"/>
-    	<source-file src="src/android/jpush_notification_icon.png" target-dir="res/drawable"/>
+    	  <source-file src="src/android/test_notification_layout.xml" target-dir="res/layout"/>
+    	  <source-file src="src/android/jpush_notification_icon.png" target-dir="res/drawable"/>
 
         <!-- Rich Push resources  -->
         <source-file src="src/android/ic_richpush_actionbar_back.png" target-dir="res/drawable" />
