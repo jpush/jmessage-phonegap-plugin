@@ -70,10 +70,33 @@
 }
 
 - (void)onReceiveMessage:(JMSGMessage *)message error:(NSError *)error{
-    NSString * jsonString =  [message toJsonString];
-    NSMutableDictionary * dict = [NSMutableDictionary new];
+    NSString *jsonString = [message toJsonString];
+    NSMutableDictionary *dict = [NSMutableDictionary new];
     [dict setValue:message.msgId forKey:KEY_MSGID];
     [dict setValue:jsonString forKey:KEY_CONTENT];
+    if (message.contentType == kJMSGContentTypeImage) {
+        [(JMSGImageContent*)message.content thumbImageData:^(NSData *data, NSString *objectId, NSError *error) {
+            if (!error) {
+                if (data) {
+                    NSString *dataStr = [NSString stringWithFormat:@"%@",data];
+                    NSDictionary *dict = @{@"objectId":objectId, @"data":dataStr};
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageReceiveImageData object:dict];
+                }
+            }
+        }];
+    }
+    if (message.contentType == kJMSGContentTypeVoice) {
+        [(JMSGVoiceContent*)message.content voiceData:^(NSData *data, NSString *objectId, NSError *error) {
+            if (!error) {
+                if (data) {
+                    NSString *dataStr = [NSString stringWithFormat:@"%@",data];
+                    NSDictionary *dict = @{@"objectId":objectId, @"data":dataStr};
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageReceiveVoiceData object:dict];
+                }
+            }
+
+        }];
+    }
     [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageReceiveMessage object:dict];
 }
 
