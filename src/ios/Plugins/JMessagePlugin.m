@@ -293,10 +293,12 @@
     [JMSGConversation createSingleConversationWithUsername:username completionHandler:^(id resultObject, NSError *error) {
         if (error == nil) {
             JMSGConversation *conversation = resultObject;
+            JMSGMessage *voiceMessage = nil;
             AVAudioPlayer *play = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL fileURLWithPath:voiceUrl] error:nil];
-            NSString *durationStr = [NSString stringWithFormat:@"%.1f", play.duration];
-            NSNumber *durationNum = [NSNumber numberWithInteger:[durationStr integerValue]];
-            [conversation sendVoiceMessage:[play data] duration:durationNum];
+            JMSGVoiceContent *voiceContent = [[JMSGVoiceContent alloc] initWithVoiceData:[NSData dataWithContentsOfFile:voiceUrl]
+                                                                           voiceDuration:[NSNumber numberWithInteger:play.duration]];
+            voiceMessage = [conversation createMessageWithContent:voiceContent];
+            [conversation sendMessage:voiceMessage];
         }
         [weakSelf handleResultWithValue:@"send single voice message" command:command error:error log:@"send single voice message"];
     }];
@@ -338,10 +340,12 @@
     [JMSGConversation createGroupConversationWithGroupId:gid completionHandler:^(id resultObject, NSError *error) {
         if (error == nil) {
             JMSGConversation *conversation = resultObject;
+            JMSGMessage *voiceMessage = nil;
             AVAudioPlayer *play = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL fileURLWithPath:voiceUrl] error:nil];
-            NSString *durationStr = [NSString stringWithFormat:@"%.1f", play.duration];
-            NSNumber *durationNum = [NSNumber numberWithInteger:[durationStr integerValue]];
-            [conversation sendVoiceMessage:[play data] duration:durationNum];
+            JMSGVoiceContent *voiceContent = [[JMSGVoiceContent alloc] initWithVoiceData:[NSData dataWithContentsOfFile:voiceUrl]
+                                                                           voiceDuration:[NSNumber numberWithInteger:play.duration]];
+            voiceMessage = [conversation createMessageWithContent:voiceContent];
+            [conversation sendMessage:voiceMessage];
         }
         [weakSelf handleResultWithValue:@"send single voice message" command:command error:error log:@"send single voice message"];
     }];
