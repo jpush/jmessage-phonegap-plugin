@@ -33,6 +33,7 @@ import java.util.concurrent.Executors;
 
 import cn.jpush.im.android.api.JMessageClient;
 import cn.jpush.im.android.api.callback.CreateGroupCallback;
+import cn.jpush.im.android.api.callback.DownloadCompletionCallback;
 import cn.jpush.im.android.api.callback.GetBlacklistCallback;
 import cn.jpush.im.android.api.callback.GetGroupIDListCallback;
 import cn.jpush.im.android.api.callback.GetGroupInfoCallback;
@@ -117,61 +118,54 @@ public class JMessagePlugin extends CordovaPlugin {
     private static JMessagePlugin instance;
     private ExecutorService threadPool = Executors.newFixedThreadPool(1);
     private Gson mGson = new Gson();
-    private CallbackContext mJMessageReceiveCallback = null;
     private Activity mCordovaActivity;
+    private Message mCurrentMsg; // 当前消息。
+    private int[] mMsgIds;
 
     public JMessagePlugin() {
         instance = this;
     }
 
     protected void pluginInitialize() {
-        Log.i(TAG, "Plugin initialize");
-
         mCordovaActivity = cordova.getActivity();
-
         JMessageClient.init(this.cordova.getActivity().getApplicationContext());
         JMessageClient.registerEventReceiver(this);
     }
 
     public void onEvent(MessageEvent event) {
         final Message msg = event.getMessage();
-        Log.i(TAG, "onEvent:" + msg.toString());
-
-        String jsonStr = mGson.toJson(msg);
-        fireEvent("onReceiveMessage", jsonStr);
-
+        mCurrentMsg = msg;
         try {
+            String jsonStr = mGson.toJson(msg);
+            JSONObject msgJson = new JSONObject(jsonStr);
             switch (msg.getContentType()) {
-                case text:  // 处理文字消息。
-                    TextContent textContent = (TextContent) msg.getContent();
-                    String text = textContent.getText();
-                    JSONObject textJson = new JSONObject();
-                    textJson.put("text", text);
-                    fireEvent("onReceiveTextMessage", textJson.toString());
-                    break;
                 case image:
                     ImageContent imageContent = (ImageContent) msg.getContent();
-                    String imagePath = imageContent.getLocalPath();
-                    String thumbnailPath = imageContent.getLocalThumbnailPath();
-                    JSONObject imageJson = new JSONObject();
-                    imageJson.put("imagePath", imagePath);
-                    imageJson.put("thumbnailPath", thumbnailPath);
-                    fireEvent("onReceiveImageMessage", imageJson.toString());
+                    imageContent.downloadOriginImage(msg, new DownloadCompletionCallback() {
+                        @Override
+                        public void onComplete(int status, String desc, File file) {
+
+                        }
+                    });
+                    String imgPath = imageContent.getLocalPath();
+                    String imgLink = imageContent.getImg_link();
+                    msgJson.getJSONObject("content").put("imagePath", imgPath);
+                    msgJson.getJSONObject("content").put("imageLink", imgLink);
+                    fireEvent("onReceiveImageMessage", msgJson.toString());
                     break;
                 case voice:
                     VoiceContent voiceContent = (VoiceContent) msg.getContent();
                     String voicePath = voiceContent.getLocalPath();
                     int duration = voiceContent.getDuration();
-                    JSONObject voiceJson = new JSONObject();
-                    voiceJson.put("voicePath", voicePath);
-                    voiceJson.put("duration", duration);
-                    fireEvent("onReceiveVoiceMessage", voiceJson.toString());
+                    msgJson.getJSONObject("content").put("voicePath", voicePath);
+                    msgJson.getJSONObject("content").put("duration", duration);
+                    fireEvent("onReceiveVoiceMessage", msgJson.toString());
                     break;
                 case custom:
                     CustomContent customContent = (CustomContent) msg.getContent();
-                    // 获取自定义的值。
                     JSONObject customJson = new JSONObject();
 
+                    // 获取自定义的值。
                     Map<String, String> strMap = customContent.getAllStringValues();
                     for (String key : strMap.keySet()) {
                         customJson.put(key, strMap.get(key));
@@ -186,7 +180,8 @@ public class JMessagePlugin extends CordovaPlugin {
                     for (String key : boolMap.keySet()) {
                         customJson.put(key, boolMap.get(key));
                     }
-                    fireEvent("onReceiveCustomMessage", customJson.toString());
+                    msgJson.getJSONObject("content").put("customValues", customJson);
+                    fireEvent("onReceiveCustomMessage", msgJson.toString());
                     break;
                 case eventNotification:
                     EventNotificationContent content = (EventNotificationContent)
@@ -209,6 +204,7 @@ public class JMessagePlugin extends CordovaPlugin {
                     break;
                 default:
             }
+            fireEvent("onReceiveMessage", msgJson.toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -264,7 +260,7 @@ public class JMessagePlugin extends CordovaPlugin {
 
     @Override
     public boolean execute(final String action, final JSONArray data,
-            final CallbackContext callback) throws JSONException {
+                           final CallbackContext callback) throws JSONException {
         if (!methodList.contains(action)) {
             return false;
         }
@@ -355,7 +351,7 @@ public class JMessagePlugin extends CordovaPlugin {
             JMessageClient.getUserInfo(username, appKey, new GetUserInfoCallback() {
                 @Override
                 public void gotResult(int responseCode, String responseDesc,
-                        UserInfo userInfo) {
+                                      UserInfo userInfo) {
                     if (responseCode == 0) {
                         String json = mGson.toJson(userInfo);
                         callback.success(json);
@@ -440,7 +436,7 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     /**
-     * update my avatar.
+     * Update my avatar.
      *
      * @param data     data.getString(0): the URL of the users avatar file.
      * @param callback callback method.
@@ -534,8 +530,10 @@ public class JMessagePlugin extends CordovaPlugin {
                 return;
             }
 
-            URL imgUrl = new URL(imgUrlStr);
-            File imgFile = new File(imgUrl.getPath());
+            // Todo:修改回来。
+//            URL imgUrl = new URL(imgUrlStr);
+//            File imgFile = new File(imgUrl.getPath());
+            File imgFile = new File(imgUrlStr);
             final Message msg = conversation.createSendImageMessage(imgFile);
             msg.setOnSendCompleteCallback(new BasicCallback() {
                 @Override
@@ -554,8 +552,6 @@ public class JMessagePlugin extends CordovaPlugin {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             callback.error("文件不存在");
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
         }
     }
 
@@ -963,7 +959,7 @@ public class JMessagePlugin extends CordovaPlugin {
 
     // 设置会话本地未读消息数的接口。
     public void setSingleConversationUnreadMessageCount(JSONArray data,
-            CallbackContext callback) {
+                                                        CallbackContext callback) {
         try {
             String username = data.getString(0);
             String appKey = data.isNull(1) ? "" : data.getString(1);
@@ -982,7 +978,7 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     public void setGroupConversationUnreadMessageCount(JSONArray data,
-            CallbackContext callback) {
+                                                       CallbackContext callback) {
         try {
             long groupId = data.getLong(0);
             int unreadMessageCount = data.getInt(1);
@@ -1079,7 +1075,7 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     public void exitConversation(JSONArray data, CallbackContext callback) {
-        try{
+        try {
             JMessageClient.exitConversation();
             callback.success();
         } catch (Exception exception) {
@@ -1097,7 +1093,7 @@ public class JMessagePlugin extends CordovaPlugin {
                     new CreateGroupCallback() {
                         @Override
                         public void gotResult(int responseCode, String responseMsg,
-                                long groupId) {
+                                              long groupId) {
                             if (responseCode == 0) {
                                 callback.success();
                             } else {
@@ -1115,7 +1111,7 @@ public class JMessagePlugin extends CordovaPlugin {
         JMessageClient.getGroupIDList(new GetGroupIDListCallback() {
             @Override
             public void gotResult(int responseCode, String responseMsg,
-                    List<Long> list) {
+                                  List<Long> list) {
                 if (responseCode == 0) {
                     callback.success(list.toString());
                 } else {
@@ -1131,7 +1127,7 @@ public class JMessagePlugin extends CordovaPlugin {
             JMessageClient.getGroupInfo(groupId, new GetGroupInfoCallback() {
                 @Override
                 public void gotResult(int responseCode, String responseMsg,
-                        GroupInfo groupInfo) {
+                                      GroupInfo groupInfo) {
                     if (responseCode == 0) {
                         callback.success(mGson.toJson(groupInfo));
                     } else {
@@ -1168,7 +1164,7 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     public void updateGroupDescription(JSONArray data,
-            final CallbackContext callback) {
+                                       final CallbackContext callback) {
         try {
             long groupId = data.getLong(0);
             String groupNewDesc = data.getString(1);
@@ -1177,7 +1173,7 @@ public class JMessagePlugin extends CordovaPlugin {
                     new BasicCallback() {
                         @Override
                         public void gotResult(int responseCode,
-                                String responseMsg) {
+                                              String responseMsg) {
                             if (responseCode == 0) {
                                 callback.success();
                             } else {
@@ -1265,7 +1261,7 @@ public class JMessagePlugin extends CordovaPlugin {
             JMessageClient.getGroupMembers(groupId, new GetGroupMembersCallback() {
                 @Override
                 public void gotResult(int responseCode, String responseDesc,
-                        List<UserInfo> list) {
+                                      List<UserInfo> list) {
                     if (responseCode == 0) {
                         String json = new Gson().toJson(list);
                         callback.success(json);
@@ -1329,7 +1325,7 @@ public class JMessagePlugin extends CordovaPlugin {
         JMessageClient.getBlacklist(new GetBlacklistCallback() {
             @Override
             public void gotResult(int responseCode, String responseDesc,
-                    List<UserInfo> list) {
+                                  List<UserInfo> list) {
                 if (responseCode == 0) {
                     callback.success(mGson.toJson(list));
                 } else {
@@ -1348,6 +1344,10 @@ public class JMessagePlugin extends CordovaPlugin {
             e.printStackTrace();
             callback.error("Parameter error.");
         }
+    }
+
+    public void downloadOriginImage(JSONArray data, CallbackContext callback) {
+
     }
 
     private JSONObject getJSonFormMessage(Message msg) {
@@ -1390,7 +1390,7 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     public void getSingleConversationHistoryMessage(JSONArray data,
-            CallbackContext callback) {
+                                                    CallbackContext callback) {
         Log.i(TAG, "getSingleConversationHistoryMessage \n" + data);
         try {
             String username = data.getString(0);
@@ -1458,15 +1458,14 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     public void setJMessageReceiveCallbackChannel(JSONArray data,
-            CallbackContext callback) {
+                                                  CallbackContext callback) {
         Log.i(TAG, "setJMessageReceiveCallbackChannel:"
                 + callback.getCallbackId());
 
-        mJMessageReceiveCallback = callback;
         PluginResult dataResult = new PluginResult(PluginResult.Status.OK,
                 "js call init ok");
         dataResult.setKeepCallback(true);
-        mJMessageReceiveCallback.sendPluginResult(dataResult);
+        callback.sendPluginResult(dataResult);
     }
 
     /**
@@ -1477,7 +1476,7 @@ public class JMessagePlugin extends CordovaPlugin {
      * @return
      */
     private Conversation getConversation(String type, String value,
-            String appKey) {
+                                         String appKey) {
         Conversation conversation = null;
         if (type.equals("single")) {
             conversation = JMessageClient.getSingleConversation(value, appKey);
@@ -1491,7 +1490,7 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     private void handleResult(String successString, int status, String desc,
-            CallbackContext callback) {
+                              CallbackContext callback) {
         if (status == 0) {
             if (TextUtils.isEmpty(successString)) {
                 callback.success();
@@ -1508,7 +1507,7 @@ public class JMessagePlugin extends CordovaPlugin {
         JMessageClient.getUserInfo(username, appKey, new GetUserInfoCallback() {
             @Override
             public void gotResult(int responseCode, String responseDesc,
-                    UserInfo userInfo) {
+                                  UserInfo userInfo) {
                 if (responseCode == 0) {
                     userInfos[0] = userInfo;
                 }
@@ -1520,40 +1519,38 @@ public class JMessagePlugin extends CordovaPlugin {
     private boolean updateUserInfo(UserInfo userInfo, String field, String value) {
         final boolean[] result = {false};
 
-        switch (field) {
-            case "nickname":
-                userInfo.setNickname(value);
-                result[0] = true;
-                break;
-            case "birthday":
-                long birthday = Long.parseLong(value);
-                userInfo.setBirthday(birthday);
-                result[0] = true;
-                break;
-            case "gender":
-                switch (value) {
-                    case "male":
-                        userInfo.setGender(UserInfo.Gender.male);
-                        break;
-                    case "female":
-                        userInfo.setGender(UserInfo.Gender.female);
-                        break;
-                    default:
-                        userInfo.setGender(UserInfo.Gender.unknown);
-                        break;
-                }
-                result[0] = true;
-                break;
-            case "signature":
-                userInfo.setSignature(value);
-                result[0] = true;
-                break;
-            case "region":
-                userInfo.setRegion(value);
-                result[0] = true;
-                break;
-            default:
-                return result[0];
+        if (field.equals("nickname")) {
+            userInfo.setNickname(value);
+            result[0] = true;
+
+        } else if (field.equals("birthday")) {
+            long birthday = Long.parseLong(value);
+            userInfo.setBirthday(birthday);
+            result[0] = true;
+
+        } else if (field.equals("gender")) {
+            if (value.equals("male")) {
+                userInfo.setGender(UserInfo.Gender.male);
+
+            } else if (value.equals("female")) {
+                userInfo.setGender(UserInfo.Gender.female);
+
+            } else {
+                userInfo.setGender(UserInfo.Gender.unknown);
+
+            }
+            result[0] = true;
+
+        } else if (field.equals("signature")) {
+            userInfo.setSignature(value);
+            result[0] = true;
+
+        } else if (field.equals("region")) {
+            userInfo.setRegion(value);
+            result[0] = true;
+
+        } else {
+            return result[0];
         }
 
         JMessageClient.updateMyInfo(UserInfo.Field.valueOf(field), userInfo,

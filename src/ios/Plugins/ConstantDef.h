@@ -32,6 +32,10 @@
 #define kJJPushReceiveNotification @"kJJPushReceiveNotification"
 #define kJJPushReceiveMessage @"kJJPushReceiveMessage"
 
+//image voice 消息 回调
+#define kJJMessageReceiveImageData @"kJJMessageReceiveImageData"
+#define kJJMessageReceiveVoiceData @"kJJMessageReceiveVoiceData"
+
 
 
 static NSInteger  errorNoFound =  kJMSGErrorSDKUserNotLogin;

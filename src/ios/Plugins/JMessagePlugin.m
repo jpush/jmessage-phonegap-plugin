@@ -36,7 +36,6 @@
     NSLog(@"### initWithWebView ");
     if (self=[super initWithWebView:theWebView]) {
         [self initNotifications];
-
     }
     return self;
 }
@@ -104,6 +103,14 @@
                       selector:@selector(groupInfoChanged:)
                           name:kJJMessageGroupInfoChanged
                         object:nil];
+    [defaultCenter addObserver:self
+                      selector:@selector(onReceiveImageData:)
+                          name:kJJMessageReceiveImageData
+                        object:nil];
+    [defaultCenter addObserver:self
+                      selector:@selector(onReceiveVoiceData:)
+                          name:kJJMessageReceiveVoiceData
+                        object:nil];
 
 }
 
@@ -152,6 +159,20 @@
     NSLog(@"JMessagePlugin Plugin didReceiveJMessageMessage  %@",jsonString);
     dispatch_async(dispatch_get_main_queue(), ^{
         [self commonSendMessage:@"onReceiveConversationMessage" jsonParm:jsonString];
+    });
+}
+
+-(void)onReceiveImageData:(NSNotification*)notification{
+    NSLog(@"JMessagePlugin onReceiveImageData");
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self commonSendMessage:@"onReceiveImageData" jsonParm:[notification.object toJsonString]];
+    });
+}
+
+-(void)onReceiveVoiceData:(NSNotification*)notification{
+    NSLog(@"JMessagePlugin onReceiveVoiceData");
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self commonSendMessage:@"onReceiveVoiceData" jsonParm:[notification.object toJsonString]];
     });
 }
 
@@ -372,7 +393,7 @@
             NSArray * conversationArr = resultObject;
             for (JMSGConversation *conversation in conversationArr) {
                 if (conversation.conversationType == kJMSGConversationTypeSingle) {
-                    [resultArr addObject:[conversation conversationToDictionary]];
+//                    [resultArr addObject:[conversation conversationToDictionary]];
                 }
             }
         }
@@ -984,6 +1005,10 @@
 
     WEAK_SELF(weakSelf);
     [weakSelf.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+}
+
+-(void)nativeLog:(CDVInvokedUrlCommand*)command{
+    NSLog(@"%@",command.arguments[0]);
 }
 
 @end

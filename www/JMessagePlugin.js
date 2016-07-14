@@ -433,6 +433,28 @@ JMessagePlugin.prototype.onSendMessage = function (data) {
     cordova.fireDocumentEvent('jmessage.onSendMessage', bToObj);
 };
 
+JMessagePlugin.prototype.onReceiveImageData = function (data) {
+    try {
+        var bToObj = JSON.parse(data);
+        console.log(data);
+    }
+    catch (exception) {
+        console.log("onReceiveImageData " + exception);
+    }
+    cordova.fireDocumentEvent('jmessage.onReceiveImageData', bToObj);
+};
+
+JMessagePlugin.prototype.onReceiveVoiceData = function (data) {
+    try {
+        var bToObj = JSON.parse(data);
+        console.log(data);
+    }
+    catch (exception) {
+        console.log("onReceiveVoiceData " + exception);
+    }
+    cordova.fireDocumentEvent('jmessage.onReceiveVoiceData', bToObj);
+};
+
 //---------- iOS only end ----------//
 
 if (!window.plugins) {
