@@ -137,7 +137,7 @@ API 目录：
 	window.JMessage.deleteSingleConversation(username, appKey, successCallback, errorCallback);
 
 ### API - getGroupConversationHistoryMessage
-获取多条群聊消息（同步接口）。参数同 [获取多条单聊消息](#API - getSingleConversationHistoryMessage)
+获取多条群聊消息（同步接口）。参数同 [获取多条单聊消息](#api---getSingleConversationHistoryMessage)
 #### 接口定义
 	window.JMessage.getGroupConversationHistoryMessage(username, from, limit, successCallback, errorCallback);
 	
@@ -221,7 +221,7 @@ API 目录：
 	window.JMessage.cross_sendSingleImageMessage = function (username, appKey, imageUrl, successCallback, errorCallback);
 	
 ### API - cross_getSingleConversationHistoryMessage
-获取跨应用单聊历史消息（多条）。参数同 [获取多条单聊消息](#API - getSingleConversationHistoryMessage)
+获取跨应用单聊历史消息（多条）。参数同 [获取多条单聊消息](#api---getSingleConversationHistoryMessage)
 #### 接口定义
 	window.JMessage.cross_getSingleConversationHistoryMessage = function (username, appKey, from, limit, successCallback, errorCallback);
 	
