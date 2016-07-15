@@ -229,8 +229,8 @@
     [JMSGConversation createSingleConversationWithUsername:username completionHandler:^(id resultObject, NSError *error) {
         NSMutableDictionary *dict = [NSMutableDictionary dictionary];
         if (error == nil) {
-            JMSGConversation *conversation = resultObject;
-            dict = [conversation conversationToDictionary];
+            JMSGUser *user = ((JMSGConversation*)resultObject).target;
+            dict = [user userToDictionary];
         }
         [self handleResultWithValue:dict command:command error:error];
     }];
@@ -397,7 +397,7 @@
             NSArray * conversationArr = resultObject;
             for (JMSGConversation *conversation in conversationArr) {
                 if (conversation.conversationType == kJMSGConversationTypeSingle) {
-//                    [resultArr addObject:[conversation conversationToDictionary]];
+                    [resultArr addObject:[conversation conversationToDictionary]];
                 }
             }
         }
