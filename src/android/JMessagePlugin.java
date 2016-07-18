@@ -526,10 +526,8 @@ public class JMessagePlugin extends CordovaPlugin {
                 return;
             }
 
-            // Todo:修改回来。
-//            URL imgUrl = new URL(imgUrlStr);
-//            File imgFile = new File(imgUrl.getPath());
-            File imgFile = new File(imgUrlStr);
+            URL imgUrl = new URL(imgUrlStr);
+            File imgFile = new File(imgUrl.getPath());
             final Message msg = conversation.createSendImageMessage(imgFile);
             msg.setOnSendCompleteCallback(new BasicCallback() {
                 @Override
@@ -548,6 +546,9 @@ public class JMessagePlugin extends CordovaPlugin {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             callback.error("文件不存在");
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            callback.error("URL error.");
         }
     }
 
