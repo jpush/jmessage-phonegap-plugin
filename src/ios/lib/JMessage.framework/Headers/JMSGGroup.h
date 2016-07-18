@@ -75,7 +75,7 @@ JMSG_ASSUME_NONNULL_BEGIN
 /*!
  * @abstract 获取我的群组列表
  *
- * @param handler 结果回调。正常返回时 resultObject 的类型是 NSArray，数组里的成员类型是 JMSGGroup
+ * @param handler 结果回调。正常返回时 resultObject 的类型是 NSArray，数组里的成员类型是JMSGGroup的gid
  *
  * @discussion 该接口总是向服务器端发起请求。
  */
@@ -127,6 +127,44 @@ JMSG_ASSUME_NONNULL_BEGIN
  */
 @property(nonatomic, copy, readonly) NSString *owner;
 
+/*!
+ * @abstract 群主的appKey
+ *
+ * @discussion 当有跨应用群成员与群主同名(username相同)时，可结合用这个ownerAppKey来判断群主。
+ */
+@property(nonatomic, copy, readonly) NSString *ownerAppKey;
+
+/*!
+ * @abstract 群组人数上限，
+ *
+ * @discussion 表示当前群组人数上限，客户端不可更改。。
+ */
+@property(nonatomic, strong, readonly) NSString *maxMemberCount;
+
+/*!
+ * @abstract 该群是否已被设置为免打扰
+ *
+ * @discussion YES:是 , NO: 否
+ */
+@property(nonatomic, assign, readonly) BOOL isNoDisturb;
+
+/*!
+ * @abstract 设置群组消息免打扰（支持跨应用设置）
+ *
+ * @param isNoDisturb 是否免打扰 YES:是 NO: 否
+ * @param handler 结果回调。回调参数：
+ *
+ * - resultObject 相应对象
+ * - error 错误信息
+ *
+ * 如果 error 为 nil, 表示设置成功
+ * 如果 error 不为 nil,表示设置失败
+ *
+ * @discussion 针对单个群组设置免打扰
+ * 这个接口支持跨应用设置免打扰
+ */
+- (void)setIsNoDisturb:(BOOL)isNoDisturb handler:(JMSGCompletionHandler)handler;
+
 
 ///----------------------------------------------------
 /// @name Group members maintenance 群组成员维护
@@ -153,12 +191,32 @@ JMSG_ASSUME_NONNULL_BEGIN
                   completionHandler:(JMSGCompletionHandler JMSG_NULLABLE)handler;
 
 /*!
+ * @abstract 添加群组跨应用成员
+ *
+ * @param usernameArray 用户名数组。数组里的成员类型是 NSString
+ * @param handler 结果回调。正常返回时 resultObject 为 nil.
+ */
+- (void)addMembersWithUsernameArray:(NSArray JMSG_GENERIC(__kindof NSString *) *)usernameArray
+                             appKey:(NSString *)userAppKey
+                  completionHandler:(JMSGCompletionHandler JMSG_NULLABLE)handler;
+
+/*!
  * @abstract 删除群组成员
  *
  * @param usernameArray 用户名数据. 数组里的成员类型是 NSString
  * @param handler 结果回调。正常返回时 resultObject 为 nil.
  */
 - (void)removeMembersWithUsernameArray:(NSArray JMSG_GENERIC(__kindof NSString *) *)usernameArray
+                     completionHandler:(JMSGCompletionHandler JMSG_NULLABLE)handler;
+
+/*!
+ * @abstract 删除群组跨应用成员
+ *
+ * @param usernameArray 用户名数据. 数组里的成员类型是 NSString
+ * @param handler 结果回调。正常返回时 resultObject 为 nil.
+ */
+- (void)removeMembersWithUsernameArray:(NSArray JMSG_GENERIC(__kindof NSString *) *)usernameArray
+                                appKey:(NSString *)userAppKey
                      completionHandler:(JMSGCompletionHandler JMSG_NULLABLE)handler;
 
 /*!

@@ -67,6 +67,7 @@ JMSG_ASSUME_NONNULL_BEGIN
  */
 + (JMSGMessage *)createSingleMessageWithContent:(JMSGAbstractContent *)content
                                        username:(NSString *)username;
+
 /*!
  * @abstract 创建群聊消息
  *
@@ -99,6 +100,18 @@ JMSG_ASSUME_NONNULL_BEGIN
                        toUser:(NSString *)username;
 
 /*!
+ * @abstract 发送跨应用单聊文本消息
+ *
+ * @param text 文本内容
+ * @param username 单聊对象 username
+ *
+ * @discussion 快捷方法，不需要先创建消息而直接发送。
+ */
++ (void)sendSingleTextMessage:(NSString *)text
+                       toUser:(NSString *)username
+                       appKey:(NSString *)userAppKey;
+
+/*!
  * @abstract 发送单聊图片消息
  *
  * @param imageData 图片数据
@@ -108,6 +121,18 @@ JMSG_ASSUME_NONNULL_BEGIN
  */
 + (void)sendSingleImageMessage:(NSData *)imageData
                         toUser:(NSString *)username;
+
+/*!
+ * @abstract 发送跨应用单聊图片消息
+ *
+ * @param imageData 图片数据
+ * @param username 单聊对象 username
+ *
+ * @discussion 快捷方法，不需要先创建消息而直接发送。
+ */
++ (void)sendSingleImageMessage:(NSData *)imageData
+                        toUser:(NSString *)username
+                        appKey:(NSString *)userAppKey;
 
 /*!
  * @abstract 发送单聊语音消息
@@ -121,6 +146,20 @@ JMSG_ASSUME_NONNULL_BEGIN
 + (void)sendSingleVoiceMessage:(NSData *)voiceData
                  voiceDuration:(NSNumber *)duration
                         toUser:(NSString *)username;
+
+/*!
+ * @abstract 发送跨应用单聊语音消息
+ *
+ * @param voiceData 语音数据
+ * @param duration 语音时长
+ * @param username 单聊对象 username
+ *
+ * @discussion 快捷方法，不需要先创建消息而直接发送。
+ */
++ (void)sendSingleVoiceMessage:(NSData *)voiceData
+                 voiceDuration:(NSNumber *)duration
+                        toUser:(NSString *)username
+                        appKey:(NSString *)userAppKey;
 
 /*!
  * @abstract 发送群聊文本消息

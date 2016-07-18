@@ -32,6 +32,24 @@
 - (nullable instancetype)init NS_UNAVAILABLE;
 
 /*!
+ * @abstract 获取事件发起者的用户名
+ * @return 正常返回事件发起者的用户名，如果是系统事件则返回“系统消息”
+ *
+ * @discussion 如果设置了nickname，则返回nickname，否则返回username
+ * 可以用于定制 event message，拼接成完整的事件描述信息。
+ */
+- (NSString *JMSG_NULLABLE)getEventFromUsername;
+
+/*!
+ * @abstract 获取事件作用对象用户名列表
+ * @return 返回类型为 NSArray，数组成员为事件作用对象的用户名
+ *
+ * @discussion 如果设置了nickname，则返回nickname，否则返回username
+ * 可以用于定制 event message，拼接成完整的事件描述信息。
+ */
+- (NSArray *JMSG_NULLABLE)getEventToUsernameList;
+
+/*!
  @abstract 展示此事件的文本描述
 
  @discussion SDK 根据事件类型，拼接成完整的事件描述信息。
