@@ -22,20 +22,20 @@ API 目录：
 
 ## User
 
-### API - userRegister
+### API - register
 新用户注册
 #### 接口定义
-	window.JMessage.userRegister(username, password, successCallback, errorCallback);
+	window.JMessage.register(username, password, successCallback, errorCallback);
 
-### API - userLogin
+### API - login
 用户登录
 #### 接口定义
-	window.JMessage.userLogin(username, password, successCallback, errorCallback);
+	window.JMessage.login(username, password, successCallback, errorCallback);
 	
-### API - userLogout
+### API - logout
 当前用户退出登录
 #### 接口定义
-	window.JMessage.userLogout(successCallback, errorCallback);
+	window.JMessage.logout(successCallback, errorCallback);
 	
 ### API - getMyInfo
 获取我的信息（当前登录用户）
