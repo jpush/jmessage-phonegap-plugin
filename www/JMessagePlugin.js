@@ -242,37 +242,37 @@ JMessagePlugin.prototype.getBlacklist = function(success) {
 JMessagePlugin.prototype.onOpenMessage = function(data) {
     data = JSON.stringify(data);
     this.openedMessage = JSON.parse(data);
-    cordova.fireDocumentEvent("jmessage.onOpenMessage", null);
+    cordova.fireDocumentEvent("jmessage.onOpenMessage", this.openedMessage);
 };
 
 JMessagePlugin.prototype.onReceiveMessage = function(data) {
     data = JSON.stringify(data);
     this.message = JSON.parse(data);
-    cordova.fireDocumentEvent("jmessage.onReceiveMessage", null);
+    cordova.fireDocumentEvent("jmessage.onReceiveMessage", this.message);
 };
 
 JMessagePlugin.prototype.onReceiveTextMessage = function(data) {
     data = JSON.stringify(data);
     this.textMessage = JSON.parse(data);
-    cordova.fireDocumentEvent("jmessage.onReceiveTextMessage", null);
+    cordova.fireDocumentEvent("jmessage.onReceiveTextMessage", this.textMessage);
 };
 
 JMessagePlugin.prototype.onReceiveImageMessage = function(data) {
     data = JSON.stringify(data);
     this.imageMessage = JSON.parse(data);
-    cordova.fireDocumentEvent("jmessage.onReceiveImageMessage", null);
+    cordova.fireDocumentEvent("jmessage.onReceiveImageMessage", this.imageMessage);
 };
 
 JMessagePlugin.prototype.onReceiveVoiceMessage = function(data) {
     data = JSON.stringify(data);
     this.voiceMessage = JSON.parse(data);
-    cordova.fireDocumentEvent("jmessage.onReceiveVoiceMessage", null);
+    cordova.fireDocumentEvent("jmessage.onReceiveVoiceMessage", this.voiceMessage);
 };
 
 JMessagePlugin.prototype.onReceiveCustomMessage = function(data) {
     data = JSON.stringify(data);
     this.customMessage = JSON.parse(data);
-    cordova.fireDocumentEvent("jmessage.onReceiveCustomMessage", null);
+    cordova.fireDocumentEvent("jmessage.onReceiveCustomMessage", this.customMessage);
 };
 
 JMessagePlugin.prototype.onUserPasswordChanged = function() {
