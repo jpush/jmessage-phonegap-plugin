@@ -242,37 +242,37 @@ JMessagePlugin.prototype.getBlacklist = function(success) {
 JMessagePlugin.prototype.onOpenMessage = function(data) {
     data = JSON.stringify(data);
     this.openedMessage = JSON.parse(data);
-    cordova.fireDocumentEvent("jmessage.onOpenMessage", null);
+    cordova.fireDocumentEvent("jmessage.onOpenMessage", this.openedMessage);
 };
 
 JMessagePlugin.prototype.onReceiveMessage = function(data) {
     data = JSON.stringify(data);
     this.message = JSON.parse(data);
-    cordova.fireDocumentEvent("jmessage.onReceiveMessage", null);
+    cordova.fireDocumentEvent("jmessage.onReceiveMessage", this.message);
 };
 
 JMessagePlugin.prototype.onReceiveTextMessage = function(data) {
     data = JSON.stringify(data);
     this.textMessage = JSON.parse(data);
-    cordova.fireDocumentEvent("jmessage.onReceiveTextMessage", null);
+    cordova.fireDocumentEvent("jmessage.onReceiveTextMessage", this.textMessage);
 };
 
 JMessagePlugin.prototype.onReceiveImageMessage = function(data) {
     data = JSON.stringify(data);
     this.imageMessage = JSON.parse(data);
-    cordova.fireDocumentEvent("jmessage.onReceiveImageMessage", null);
+    cordova.fireDocumentEvent("jmessage.onReceiveImageMessage", this.imageMessage);
 };
 
 JMessagePlugin.prototype.onReceiveVoiceMessage = function(data) {
     data = JSON.stringify(data);
     this.voiceMessage = JSON.parse(data);
-    cordova.fireDocumentEvent("jmessage.onReceiveVoiceMessage", null);
+    cordova.fireDocumentEvent("jmessage.onReceiveVoiceMessage", this.voiceMessage);
 };
 
 JMessagePlugin.prototype.onReceiveCustomMessage = function(data) {
     data = JSON.stringify(data);
     this.customMessage = JSON.parse(data);
-    cordova.fireDocumentEvent("jmessage.onReceiveCustomMessage", null);
+    cordova.fireDocumentEvent("jmessage.onReceiveCustomMessage", this.customMessage);
 };
 
 JMessagePlugin.prototype.onUserPasswordChanged = function() {
@@ -301,8 +301,13 @@ JMessagePlugin.prototype.onGroupMemberExit = function() {
 
 //---------- iOS only ----------//
 /*
-    iOS API 文档参考 http://docs.jiguang.cn/client/im_sdk_ios/
-    参数名后缀为 array 则需要传数组
+JPush 推送功能相关 API 说明可参照 https:## github.com/jpush/jpush-phonegap-plugin/blob/master/doc/iOS_API.md
+
+API 统一说明：
+    iOS 中跨应用接口均以 `cross_` 开头，需要传有效的 `appkey`，其余方法的 `appkey` 参数一律传 `null`
+    参数 `successCallback`、`errorCallback` 分别为成功、失败回调
+    参数名为 `xxxArray` 则传数组，其余无特殊说明传字符串
+    调用示例：`window.JMessage.funcName(args, successCallback, errorCallback)`
 */
 
 //User
@@ -334,6 +339,10 @@ JMessagePlugin.prototype.updateGroupInfo = function(groupId, name, desc, success
 
 JMessagePlugin.prototype.myGroupArray = function(groupId, successCallback, errorCallback) {
     this.callNative("myGroupArray", [groupId], successCallback, errorCallback);
+};
+
+JMessagePlugin.prototype.memberArray = function(groupId, successCallback, errorCallback) {
+    this.callNative("memberArray", [groupId], successCallback, errorCallback);
 };
 
 JMessagePlugin.prototype.addMembers = function(memberArray, successCallback, errorCallback) {

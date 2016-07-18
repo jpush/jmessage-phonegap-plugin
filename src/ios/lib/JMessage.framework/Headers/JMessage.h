@@ -24,6 +24,7 @@
 #import <JMessage/JMSGTextContent.h>
 #import <JMessage/JMSGVoiceContent.h>
 #import <JMessage/JMessageDelegate.h>
+#import <JMessage/JMSGConstants.h>
 
 @protocol JMSGMessageDelegate;
 @protocol JMessageDelegate;
@@ -38,10 +39,10 @@
 @interface JMessage : NSObject
 
 /*! JMessage SDK 版本号。用于展示 SDK 的版本信息 */
-#define JMESSAGE_VERSION @"2.1.1"
+#define JMESSAGE_VERSION @"2.1.3"
 
 /*! JMessage SDK 构建ID. 每次构建都会增加 */
-#define JMESSAGE_BUILD 32
+#define JMESSAGE_BUILD 61
 
 /*! API Version - int for program logic. SDK API 有变更时会增加 */
 extern NSInteger const JMESSAGE_API_VERSION;
@@ -153,7 +154,7 @@ extern NSInteger const JMESSAGE_API_VERSION;
  */
 + (void)testDBMigrating;
 
-/**
+/*!
  *  @abstract 验证此 appKey 是否为当前应用 appKey
  *
  *  @param appKey
@@ -161,6 +162,59 @@ extern NSInteger const JMESSAGE_API_VERSION;
  *  @return 是否为当前应用 appKey
  */
 + (BOOL)isMainAppKey:(NSString *)appKey;
+
+/*!
+ * @abstract 用户免打扰列表
+ *
+ * @param handler 结果回调。回调参数：
+ *
+ * - resultObject 类型为 NSArray，数组里成员的类型为 JMSGUser、JMSGGroup
+ * - error 错误信息
+ *
+ * 如果 error 为 nil, 表示设置成功
+ * 如果 error 不为 nil,表示设置失败
+ *
+ * @discussion 从服务器获取，返回用户的免打扰列表。
+ */
++ (void)noDisturbList:(JMSGCompletionHandler)handler;
+
+/*!
+ * @abstract 设置是否全局免打扰
+ *
+ * @param isNoDisturb 是否全局免打扰 YES:是 NO: 否
+ * @param handler 结果回调。回调参数：
+ *
+ * - resultObject 相应返回对象
+ * - error 错误信息
+ *
+ * 如果 error 为 nil, 表示设置成功
+ * 如果 error 不为 nil,表示设置失败
+ *
+ * @discussion 此函数为设置全局的消息免打扰
+ */
++ (void)setIsGlobalNoDisturb:(BOOL)isNoDisturb handler:(JMSGCompletionHandler)handler;
+
+/*!
+ * @abstract 判断是否设置全局免打扰
+ *
+ * @return YES/NO
+ */
++ (BOOL)isSetGlobalNoDisturb;
+
+/*!
+ * @abstract 黑名单列表
+ *
+ * @param handler 结果回调。回调参数：
+ *
+ * - resultObject 类型为 NSArray，数组里成员的类型为 JMSGUser
+ * - error 错误信息
+ *
+ * 如果 error 为 nil, 表示设置成功
+ * 如果 error 不为 nil,表示设置失败
+ *
+ * @discussion 从服务器获取，返回用户的黑名单列表。
+ */
++ (void)blackList:(JMSGCompletionHandler)handler;
 
 @end
 

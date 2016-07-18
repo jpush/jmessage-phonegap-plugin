@@ -33,7 +33,6 @@ import java.util.concurrent.Executors;
 
 import cn.jpush.im.android.api.JMessageClient;
 import cn.jpush.im.android.api.callback.CreateGroupCallback;
-import cn.jpush.im.android.api.callback.DownloadCompletionCallback;
 import cn.jpush.im.android.api.callback.GetBlacklistCallback;
 import cn.jpush.im.android.api.callback.GetGroupIDListCallback;
 import cn.jpush.im.android.api.callback.GetGroupInfoCallback;
@@ -139,14 +138,11 @@ public class JMessagePlugin extends CordovaPlugin {
             String jsonStr = mGson.toJson(msg);
             JSONObject msgJson = new JSONObject(jsonStr);
             switch (msg.getContentType()) {
+                case text:
+                    fireEvent("onReceiveTextMessage", jsonStr);
+                    break;
                 case image:
                     ImageContent imageContent = (ImageContent) msg.getContent();
-                    imageContent.downloadOriginImage(msg, new DownloadCompletionCallback() {
-                        @Override
-                        public void onComplete(int status, String desc, File file) {
-
-                        }
-                    });
                     String imgPath = imageContent.getLocalPath();
                     String imgLink = imageContent.getImg_link();
                     msgJson.getJSONObject("content").put("imagePath", imgPath);
@@ -530,10 +526,8 @@ public class JMessagePlugin extends CordovaPlugin {
                 return;
             }
 
-            // Todo:修改回来。
-//            URL imgUrl = new URL(imgUrlStr);
-//            File imgFile = new File(imgUrl.getPath());
-            File imgFile = new File(imgUrlStr);
+            URL imgUrl = new URL(imgUrlStr);
+            File imgFile = new File(imgUrl.getPath());
             final Message msg = conversation.createSendImageMessage(imgFile);
             msg.setOnSendCompleteCallback(new BasicCallback() {
                 @Override
@@ -552,6 +546,9 @@ public class JMessagePlugin extends CordovaPlugin {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             callback.error("文件不存在");
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            callback.error("URL error.");
         }
     }
 
@@ -958,8 +955,7 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     // 设置会话本地未读消息数的接口。
-    public void setSingleConversationUnreadMessageCount(JSONArray data,
-                                                        CallbackContext callback) {
+    public void setSingleConversationUnreadMessageCount(JSONArray data, CallbackContext callback) {
         try {
             String username = data.getString(0);
             String appKey = data.isNull(1) ? "" : data.getString(1);
@@ -977,8 +973,7 @@ public class JMessagePlugin extends CordovaPlugin {
         }
     }
 
-    public void setGroupConversationUnreadMessageCount(JSONArray data,
-                                                       CallbackContext callback) {
+    public void setGroupConversationUnreadMessageCount(JSONArray data, CallbackContext callback) {
         try {
             long groupId = data.getLong(0);
             int unreadMessageCount = data.getInt(1);
@@ -1092,8 +1087,7 @@ public class JMessagePlugin extends CordovaPlugin {
             JMessageClient.createGroup(groupName, groupDesc,
                     new CreateGroupCallback() {
                         @Override
-                        public void gotResult(int responseCode, String responseMsg,
-                                              long groupId) {
+                        public void gotResult(int responseCode, String responseMsg, long groupId) {
                             if (responseCode == 0) {
                                 callback.success();
                             } else {
@@ -1389,8 +1383,7 @@ public class JMessagePlugin extends CordovaPlugin {
         return jsonItem;
     }
 
-    public void getSingleConversationHistoryMessage(JSONArray data,
-                                                    CallbackContext callback) {
+    public void getSingleConversationHistoryMessage(JSONArray data, CallbackContext callback) {
         Log.i(TAG, "getSingleConversationHistoryMessage \n" + data);
         try {
             String username = data.getString(0);
@@ -1457,8 +1450,7 @@ public class JMessagePlugin extends CordovaPlugin {
         callback.success(mGson.toJson(groupConversationList));
     }
 
-    public void setJMessageReceiveCallbackChannel(JSONArray data,
-                                                  CallbackContext callback) {
+    public void setJMessageReceiveCallbackChannel(JSONArray data, CallbackContext callback) {
         Log.i(TAG, "setJMessageReceiveCallbackChannel:"
                 + callback.getCallbackId());
 
@@ -1475,8 +1467,7 @@ public class JMessagePlugin extends CordovaPlugin {
      * @param appKey 如果会话类型为 'single'，可以通过该属性获得跨应用会话。
      * @return
      */
-    private Conversation getConversation(String type, String value,
-                                         String appKey) {
+    private Conversation getConversation(String type, String value, String appKey) {
         Conversation conversation = null;
         if (type.equals("single")) {
             conversation = JMessageClient.getSingleConversation(value, appKey);
@@ -1489,8 +1480,7 @@ public class JMessagePlugin extends CordovaPlugin {
         return conversation;
     }
 
-    private void handleResult(String successString, int status, String desc,
-                              CallbackContext callback) {
+    private void handleResult(String successString, int status, String desc, CallbackContext callback) {
         if (status == 0) {
             if (TextUtils.isEmpty(successString)) {
                 callback.success();

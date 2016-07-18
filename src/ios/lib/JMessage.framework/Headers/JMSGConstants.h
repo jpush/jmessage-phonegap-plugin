@@ -180,6 +180,10 @@ typedef NS_ENUM(NSInteger, JMSGEventNotificationType) {
   kJMSGEventNotificationRemoveGroupMembers = 11,
   /// 事件类型: 群信息更新
   kJMSGEventNotificationUpdateGroupInfo = 12,
+  /// 事件类型: 免打扰变更
+  kJMSGEventNotificationNoDisturbChange = 37,
+  /// 事件类型: 黑名单变更
+  kJMSGEventNotificationBlacklistChange = 38,
 };
 
 ///----------------------------------------------------
@@ -398,6 +402,9 @@ static NSString *const KEY_SIGNATURE = @"signature";
 static NSString *const KEY_STAR = @"star";
 static NSString *const KEY_UID = @"uid";
 static NSString *const KEY_ADDRESS = @"address";
+static NSString *const KEY_NO_DISTURB = @"no_disturb";
+static NSString *const KEY_BLACKLIST = @"blicklist";
+
 
 
 #endif

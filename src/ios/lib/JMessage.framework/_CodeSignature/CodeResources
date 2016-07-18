@@ -10,7 +10,7 @@
 		</data>
 		<key>Headers/JMSGConstants.h</key>
 		<data>
-		f7Zga1FYBrIbIt/q7Vu4FVHWgMo=
+		Gi+rckhhIqWzThP2SPELEjTqMjI=
 		</data>
 		<key>Headers/JMSGConversation.h</key>
 		<data>
@@ -30,11 +30,11 @@
 		</data>
 		<key>Headers/JMSGEventContent.h</key>
 		<data>
-		oZ/6x9wyAwhrPuo/ROgokr6i3Vs=
+		M8iky+M4vCoo20dMOmMiWOvSdvw=
 		</data>
 		<key>Headers/JMSGGroup.h</key>
 		<data>
-		tEIh6JNkPAPXFFvdC7rYCbBDVH8=
+		h024jEII8jzayEzjxFV8BSc3a3s=
 		</data>
 		<key>Headers/JMSGGroupDelegate.h</key>
 		<data>
@@ -50,7 +50,7 @@
 		</data>
 		<key>Headers/JMSGMessage.h</key>
 		<data>
-		ie3fWwiPIQ0V45wvur8kjNgpQc0=
+		RoffHwlprp8sGJgiJEHX06S4clQ=
 		</data>
 		<key>Headers/JMSGMessageDelegate.h</key>
 		<data>
@@ -62,7 +62,7 @@
 		</data>
 		<key>Headers/JMSGUser.h</key>
 		<data>
-		Ba9oCEY7aXPtQgwOVZjz3xJ5DOA=
+		wz09/0Lq3kFIgnXh746YhQTid0s=
 		</data>
 		<key>Headers/JMSGUserDelegate.h</key>
 		<data>
@@ -74,7 +74,7 @@
 		</data>
 		<key>Headers/JMessage.h</key>
 		<data>
-		DIjTqgUCkPGiMteAS1OC1dJfZlE=
+		SKO3vX0VXbs7R3JlgaegJL6e/xk=
 		</data>
 		<key>Headers/JMessageDelegate.h</key>
 		<data>
@@ -82,7 +82,7 @@
 		</data>
 		<key>Headers/JPUSHService.h</key>
 		<data>
-		Q1miqBxUBv3hXqM2YVBOse0pH4c=
+		X8iyO5gPEQ0p0kb8RgpLN1qYF2I=
 		</data>
 		<key>Info.plist</key>
 		<data>
@@ -101,7 +101,7 @@
 		</data>
 		<key>Headers/JMSGConstants.h</key>
 		<data>
-		f7Zga1FYBrIbIt/q7Vu4FVHWgMo=
+		Gi+rckhhIqWzThP2SPELEjTqMjI=
 		</data>
 		<key>Headers/JMSGConversation.h</key>
 		<data>
@@ -121,11 +121,11 @@
 		</data>
 		<key>Headers/JMSGEventContent.h</key>
 		<data>
-		oZ/6x9wyAwhrPuo/ROgokr6i3Vs=
+		M8iky+M4vCoo20dMOmMiWOvSdvw=
 		</data>
 		<key>Headers/JMSGGroup.h</key>
 		<data>
-		tEIh6JNkPAPXFFvdC7rYCbBDVH8=
+		h024jEII8jzayEzjxFV8BSc3a3s=
 		</data>
 		<key>Headers/JMSGGroupDelegate.h</key>
 		<data>
@@ -141,7 +141,7 @@
 		</data>
 		<key>Headers/JMSGMessage.h</key>
 		<data>
-		ie3fWwiPIQ0V45wvur8kjNgpQc0=
+		RoffHwlprp8sGJgiJEHX06S4clQ=
 		</data>
 		<key>Headers/JMSGMessageDelegate.h</key>
 		<data>
@@ -153,7 +153,7 @@
 		</data>
 		<key>Headers/JMSGUser.h</key>
 		<data>
-		Ba9oCEY7aXPtQgwOVZjz3xJ5DOA=
+		wz09/0Lq3kFIgnXh746YhQTid0s=
 		</data>
 		<key>Headers/JMSGUserDelegate.h</key>
 		<data>
@@ -165,7 +165,7 @@
 		</data>
 		<key>Headers/JMessage.h</key>
 		<data>
-		DIjTqgUCkPGiMteAS1OC1dJfZlE=
+		SKO3vX0VXbs7R3JlgaegJL6e/xk=
 		</data>
 		<key>Headers/JMessageDelegate.h</key>
 		<data>
@@ -173,7 +173,7 @@
 		</data>
 		<key>Headers/JPUSHService.h</key>
 		<data>
-		Q1miqBxUBv3hXqM2YVBOse0pH4c=
+		X8iyO5gPEQ0p0kb8RgpLN1qYF2I=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
