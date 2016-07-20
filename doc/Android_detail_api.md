@@ -510,18 +510,18 @@
 #### 参数说明
 - successCallback：发送成功的回调函数，以参数形式返回会话数组对象的 JSON 字符串。
 
-      [
-        {
-          "id": "56740fc3-25e0-468d-a490-d644470d63d2", // Conversation ID
-          "latestType": "最近一条消息的类型",
-          "latestText": "最近一条消息的内容",
-          "targetId": "目标用户的用户名",
-          "title": "会话标题",
-          "type": "会话类型（single / group）",
-          "unReadMsgCnt": 0,  // 未读消息数
-          "lastMsgDate": 1468983461848  // 最近消息的收到时间，单位为 ms
-        }
-      ]
+        [
+          {
+            "id": "56740fc3-25e0-468d-a490-d644470d63d2", // Conversation ID
+            "latestType": "最近一条消息的类型",
+            "latestText": "最近一条消息的内容",
+            "targetId": "目标用户的用户名",
+            "title": "会话标题",
+            "type": "会话类型（single / group）",
+            "unReadMsgCnt": 0,  // 未读消息数
+            "lastMsgDate": 1468983461848  // 最近消息的收到时间，单位为 ms
+          }
+        ]
 
 - errorCallback：发送失败的回调函数，以参数形式返回错误信息。如果为 null，默认打印失败信息日志。
 
@@ -954,7 +954,7 @@
 ##### 代码示例
 
 	document.addEventListener('jmessage.onReceiveCustomtMessage', function(msg) {
-    
+
 	}, false);
 
 ### 用户状态变更事件
