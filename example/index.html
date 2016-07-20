@@ -277,7 +277,7 @@
             try {
                 var alertContent;
                 if (device.platform == "Android") {
-                    alertContent = window.JPush.openNotification.alert;
+                    alertContent = event.alert;
                 } else {
                     alertContent = event.aps.alert;
                 }
@@ -292,7 +292,7 @@
             try {
                 var alertContent;
                 if (device.platform == "Android") {
-                    alertContent = window.JPush.receiveNotification.alert;
+                    alertContent = event.alert;
                 } else {
                     alertContent = event.aps.alert;
                 }
