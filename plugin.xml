@@ -2,7 +2,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="cordova-plugin-jmessage"
-        version="2.0.0">
+        version="2.1.0">
 
     <name>JMessage PhoneGap Plugin</name>
     <description>集成极光 IM 和推送功能</description>
@@ -15,6 +15,9 @@
     <engines>
         <engine name="cordova" version=">=3.0"/>
     </engines>
+
+    <!-- dependencies -->
+    <dependency id="cordova-plugin-device" />
 
     <js-module src="www/JMessagePlugin.js" name="JMessagePlugin">
         <clobbers target="JMessage"/>
@@ -223,15 +226,15 @@
         </config-file>
 
         <source-file src="src/android/gson-2.3.1.jar" target-dir="libs"/>
-        <source-file src="src/android/jmessage-android-1.2.5.jar" target-dir="libs"/>
+        <source-file src="src/android/jmessage-android-1.3.0.jar" target-dir="libs"/>
 
-        <source-file src="src/android/armeabi/libjpush211.so" target-dir="libs/armeabi"/>
-        <source-file src="src/android/armeabi-v7a/libjpush211.so" target-dir="libs/armeabi-v7a"/>
-        <source-file src="src/android/arm64-v8a/libjpush211.so" target-dir="libs/arm64-v8a"/>
-        <source-file src="src/android/x86_64/libjpush211.so" target-dir="libs/x86_64"/>
-        <source-file src="src/android/x86/libjpush211.so" target-dir="libs/x86"/>
-        <source-file src="src/android/mips64/libjpush211.so" target-dir="libs/mips64"/>
-        <source-file src="src/android/mips/libjpush211.so" target-dir="libs/mips"/>
+        <source-file src="src/android/armeabi/libjpush216.so" target-dir="libs/armeabi"/>
+        <source-file src="src/android/armeabi-v7a/libjpush216.so" target-dir="libs/armeabi-v7a"/>
+        <source-file src="src/android/arm64-v8a/libjpush216.so" target-dir="libs/arm64-v8a"/>
+        <source-file src="src/android/x86_64/libjpush216.so" target-dir="libs/x86_64"/>
+        <source-file src="src/android/x86/libjpush216.so" target-dir="libs/x86"/>
+        <source-file src="src/android/mips64/libjpush216.so" target-dir="libs/mips64"/>
+        <source-file src="src/android/mips/libjpush216.so" target-dir="libs/mips"/>
 
         <source-file src="src/android/JMessagePlugin.java" target-dir="src/cn/jmessage/phonegap"/>
         <source-file src="src/android/JPushPlugin.java" target-dir="src/cn/jmessage/phonegap"/>

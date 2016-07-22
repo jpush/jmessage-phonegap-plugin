@@ -1,21 +1,73 @@
 # Android API
 
 - [注册与登录](#注册与登录)
+	- [register](#api-register)
+	- [login](#api-login)
+	- [logout](#api-logout)
 - [用户属性维护](#用户属性维护)
+	- [getUserInfo](#api-getuserinfo)
+	- [getMyInfo](#api-getmyinfo)
+	- [updateUserInfo](#api-updateuserinfo)
+	- [updateMyInfo](#api-updatemyinfo)
+	- [updateMyPassword](#api-updatemypassword)
+	- [updateMyAvatar](#api-updatemyavatar)
+	- [getUserAvatar](#api-getuseravatar)
+	- [getOriginalUserAvatar](#api-getoriginaluseravatar)
 - [发送消息](#发送消息)
+	- [sendSingleTextMessage](#api-sendsingletextmessage)
+	- [sendSingleImageMessage](#api-sendsingleimagemessage)
+	- [sendSingleVoiceMessage](#api-sendsinglevoicemessage)
+	- [sendSingleCustomMessage](#api-sendsinglecustommessage)
+	- [sendGroupTextMessage](#api-sendgrouptextmessage)
+	- [sendGroupImageMessage](#api-sendgroupimagemessage)
+	- [sendGroupVoiceMessage](#api-sendgroupvoicemessage)
+	- [sendGroupCustomMessage](#api-sendgroupcustommessage)
 - [获取历史消息](#获取历史消息)
+	- [getLatestMessage](#api-getlatestmessage)
+	- [getHistoryMessages](#api-gethistorymessages)
+	- [getAllMessages](#api-getallmessages)
+	- [getOriginImageInSingleConversation](#api-getoriginimageinsingleconversation)
+	- [getOriginImageInGroupConversation](#api-getoriginimageingroupconversation)
 - [聊天会话](#聊天会话)
+	- [getConversationList](#api-getconversationlist)
+	- [exitConversation](#api-exitconversation)
 	- [单聊](#单聊)
+		- [enterSingleConversation](#api-entersingleconversation)
+		- [getSingleConversation](#api-getsingleconversation)
+		- [getAllSingleConversation](#api-getallsingleconversation)
+		- [deleteSingleConversation](#api-deletesingleconversation)
+		- [setSingleConversationUnreadMessageCount](#api-setsingleconversationunreadmessagecount)
 	- [群聊](#群聊)
+		- [enterGroupConversation](#api-entergroupconversation)
+		- [getGroupConversation](#api-getgroupconversation)
+		- [getAllGroupConversation](#api-getallgroupconversation)
+		- [deleteGroupConversation](#api-deletegroupconversation)
+		- [setGroupConversationUnreadMessageCount](#api-setgroupconversationunreadmessagecount)
 - [黑名单](#黑名单)
+	- [addUsersToBlacklist](#api-adduserstoblacklist)
+	- [delUsersFromBlacklist](#api-delusersfromblacklist)
+	- [getBlacklist](#api-getblacklist)
 - [事件处理](#事件处理)
 	- [消息事件](#消息事件)
+		- [消息对象的 JSON 数据格式](#消息对象的-json-数据格式)
+		- [jmessage.onOpenMessage](#api-jmessageonopenmessage)
+		- [jmessage.onReceiveMessage](#api-jmessageonreceivemessage)
+		- [jmessage.onReceiveTextMessage](#api-jmessageonreceivetextmessage)
+		- [jmessage.onReceiveImageMessage](#api-jmessageonreceiveimagemessage)
+		- [jmessage.onReceiveVoiceMessage](#api-jmessageonreceivevoicemessage)
+		- [jmessage.onReceiveCustomMessage](#api-jmessageonreceivecustommessage)
 	- [用户状态变更事件](#用户状态变更事件)
+		- [jmessage.onUserPasswordChanged](#api-jmessageonuserpasswordchanged)
+		- [jmessage.onUserLogout](#api-jmessageonuserlogout)
+		- [jmessage.onUserDeleted](#api-jmessageonuserdeleted)
 	- [群组事件](#群组事件)
+		- [jmessage.onGroupMemberAdded](#api-jmessageongroupmemberadded)
+		- [jmessage.onGroupMemberRemoved](#api-jmessageongroupmemberremoved)
+		- [jmessage.onGroupMemberExit](#api-jmessageongroupmemberexit)
 
 
 ## 注册与登录
-### API - register
+### register
 用户注册。
 
 #### 接口定义
@@ -37,7 +89,7 @@
 			console.log(errorStr);	// 输出错误信息。
 		});
 
-### API - login
+### login
 用户登录。
 
 #### 接口定义
@@ -59,7 +111,7 @@
 			console.log(errorStr);	// 输出错误信息。
 		});
 
-### API - logout
+### logout
 用户登出。
 
 #### 接口定义
@@ -80,7 +132,7 @@
 
 
 ## 用户属性维护
-### API - getUserInfo
+### getUserInfo
 获取用户信息。
 
 #### 接口定义
@@ -102,7 +154,7 @@
 			console.log(errorStr);	// 输出错误信息。
 		});
 
-### API - getMyInfo
+### getMyInfo
 获取当前用户的信息。
 
 #### 接口定义
@@ -122,7 +174,7 @@
 	});
 
 
-### API - updateUserInfo
+### updateUserInfo
 更新特定用户信息。
 
 #### 接口定义
@@ -153,7 +205,7 @@
 		});
 
 
-### API - updateMyInfo
+### updateMyInfo
 更新当前用户信息。
 
 #### 接口定义
@@ -180,7 +232,7 @@
 			console.log(errorMsg);	// 输出错误信息。
 		});
 
-### API - updateMyPassword
+### updateMyPassword
 更新当前用户密码。
 
 #### 接口定义
@@ -202,7 +254,7 @@
 			console.log(errorMsg);	// 输出错误信息。
 		});
 
-### API - updateMyAvatar
+### updateMyAvatar
 更新当前用户头像。
 
 #### 接口定义
@@ -222,9 +274,48 @@
 		console.log(errorMsg);
 	});
 
+### getUserAvatar
+获取指定用户的头像缩略图。
+
+#### 接口定义
+
+    window.JMessage.getUserAvatar(username, successCallback, errorCallback)
+
+#### 参数说明
+- username：指定用户的用户名，如果为空，默认就为当前用户。
+- successCallback：以参数形式返回图片路径。
+- errorCallback：以参数形式返回错误信息。
+
+#### 代码示例
+
+    window.JMessage.getUserAvatar('targetUsername', function (path) {
+      // Success callback.
+    }, function (response) {
+      // Error callback.
+    })
+
+### getOriginalUserAvatar
+获取指定用户的头像原图，如果在上传用户头像时没有做约束，调用该方法可能会导致 OOM。
+
+#### 接口定义
+
+    window.JMessage.getOriginalUserAvatar(username, successCallback, errorCallback)
+
+#### 参数说明
+- username：指定用户的用户名，如果为空，默认就为当前用户。
+- successCallback：以参数形式返回图片路径。
+- errorCallback：以参数形式返回错误信息。
+
+#### 代码示例
+
+    window.JMessage.getOriginalUserAvatar('targetUsername', function (path) {
+      // Success callback.
+    }, function (response) {
+      // Error callback.
+    })
 
 ## 发送消息
-### API - sendSingleTextMessage
+### sendSingleTextMessage
 发送一条单聊文本消息。
 
 #### 接口定义
@@ -242,12 +333,12 @@
 
 	window.JMessage.sendSingleTextMessage('username', 'content', null,
 		function(response) {
-			var message = JSON.parse(response);
+			var message = JSON.parse(response)
 		}, function(errorMsg) {
-			console.log(errorMsg);	// 输出错误信息。
-		});
+			console.log(errorMsg)	// 输出错误信息。
+		})
 
-### API - sendSingleImageMessage
+### sendSingleImageMessage
 发送一条单聊图片消息。
 
 #### 接口定义
@@ -270,7 +361,7 @@
 			console.log(errorMsg);	// 输出错误信息。
 		});
 
-### API - sendSingleVoiceMessage
+### sendSingleVoiceMessage
 发送一条单聊语音消息。
 
 #### 接口定义
@@ -293,7 +384,7 @@
 			console.log(errorMsg);	// 输出错误信息。
 		});
 
-### API - sendSingleCustomMessage
+### sendSingleCustomMessage
 发送一条单聊自定义消息。
 
 #### 接口定义
@@ -316,7 +407,7 @@
 			console.log(errorMsg);	// 输出错误信息。
 		});
 
-### API - sendGroupTextMessage
+### sendGroupTextMessage
 发送一条群聊文本消息。
 
 #### 接口定义
@@ -338,7 +429,7 @@
 			console.log(errorMsg);	// 输出错误信息。
 		});
 
-### API - sendGroupImageMessage
+### sendGroupImageMessage
 发送一条群聊图片消息。
 
 #### 接口定义
@@ -360,7 +451,7 @@
 			console.log(errorMsg);	// 输出错误信息。
 		});
 
-### API - sendGroupVoiceMessage
+### sendGroupVoiceMessage
 发送一条群聊语音消息。
 
 #### 接口定义
@@ -382,7 +473,7 @@
 			console.log(errorMsg);	// 输出错误信息。
 		});
 
-### API - sendGroupCustomMessage
+### sendGroupCustomMessage
 发送一条群聊自定义消息。
 
 #### 接口定义
@@ -405,7 +496,7 @@
 		});
 
 ## 获取历史消息
-### API - getLatestMessage
+### getLatestMessage
 获取指定会话中最近的消息。
 
 #### 接口定义
@@ -435,7 +526,7 @@
 			console.log(errorMsg);	// 输出错误信息。
 		});
 
-### API - getHistoryMessages
+### getHistoryMessages
 获取指定会话中从新到旧的部分历史消息。
 
 #### 接口定义
@@ -468,7 +559,7 @@
 			console.log(errorMsg);	// 输出错误信息。
 		});
 
-### API - getAllMessages
+### getAllMessages
 获取指定会话中的所有消息。
 
 #### 接口定义
@@ -486,21 +577,63 @@
 
 	window.JMessage.getAllMessages('single', 'targetUsername', 'targetAppKey',
 		function(response) {
-			var messages = JSON.parse(response);
+			var messages = JSON.parse(response)
 		}, function(errorMsg) {
-			console.log(errorMsg);	// 输出错误信息。
-		});
+			console.log(errorMsg)	// 输出错误信息。
+		})
 
 	window.JMessage.getAllMessages('group', 'targetGroupId', null,
 		function(response) {
-			var messages = JSON.parse(response);
+			var messages = JSON.parse(response)
 		}, function(errorMsg) {
-			console.log(errorMsg);	// 输出错误信息。
-		});
+			console.log(errorMsg)	// 输出错误信息。
+		})
+
+### getOriginImageInSingleConversation
+获取指定单聊会话中的指定图片消息原图。
+
+#### 接口定义
+
+    window.JMessage.getOriginImageInSingleConversation(username, serverMessageId, successCallback, errorCallback)
+
+#### 参数说明
+- username：指定会话的对方用户名。
+- serverMessageId：图片消息的 serverMessageId。
+- successCallback：以参数形式返回图片地址。
+- errorCallback：以参数形式返回错误信息。
+
+#### 代码示例
+
+    window.JMessage.getOriginImageInSingleConversation('username', 83708669, function (path) {
+      // Success callback.
+    }, function (errorMsg) {
+      // Error callback.
+    })
+
+### getOriginImageInGroupConversation
+获取指定群聊会话中的指定图片消息原图。
+
+#### 接口定义
+
+    window.JMessage.getOriginImageInGroupConversation(groupId, serverMessageId, successCallback, errorCallback)
+
+#### 参数说明
+- groupId：指定群聊会话的 Group ID。
+- serverMessageId：图片消息的 serverMessageId。
+- successCallback：以参数形式返回图片地址。
+- errorCallback：以参数形式返回错误信息。
+
+#### 代码示例
+
+    window.JMessage.getOriginImageInGroupConversation(151231241, 83708669, function (path) {
+      // Success callback.
+    }, function (errorMsg) {
+      // Error callback.
+    })
 
 
 ## 聊天会话
-### API - getConversationList
+### getConversationList
 获取当前用户的所有会话列表。从本地数据库获得，同步返回。
 
 #### 接口定义
@@ -533,7 +666,7 @@
 		console.log(errorMsg);	// 输出错误信息。
 	});
 
-### API - exitConversation
+### exitConversation
 退出当前会话。在退出会话界面时需要调用该函数，与 enterSingleConversation / enterGroupConversation 函数配套使用。
 
 #### 接口定义
@@ -553,7 +686,7 @@
 	});
 
 ### 单聊
-#### API - enterSingleConversation
+#### enterSingleConversation
 进入单聊会话，调用后在收到指定会话消息时不会再弹出通知。
 
 ##### 接口定义
@@ -576,7 +709,7 @@
 		});
 
 
-#### API - getSingleConversation
+#### getSingleConversation
 获取和特定目标用户的单聊会话。
 
 ##### 接口定义
@@ -599,7 +732,7 @@
 		});
 
 
-#### API - getAllSingleConversation
+#### getAllSingleConversation
 获取当前用户的所有单聊会话。
 
 ##### 接口定义
@@ -619,7 +752,7 @@
 			console.log(errorMsg);	// 输出错误信息。
 		});
 
-#### API - deleteSingleConversation
+#### deleteSingleConversation
 删除特定单聊会话。
 
 ##### 接口定义
@@ -641,7 +774,7 @@
 			console.log(errorMsg);
 		});
 
-#### API - setSingleConversationUnreadMessageCount
+#### setSingleConversationUnreadMessageCount
 设置指定单聊会话的未读消息数。
 
 ##### 接口定义
@@ -666,7 +799,7 @@
 
 
 ### 群聊
-#### API - enterGroupConversation
+#### enterGroupConversation
 进入特定群聊会话，调用后收到指定会话消息时不会再弹出通知。
 
 ##### 接口定义
@@ -684,10 +817,10 @@
 		function() {
 			// 进入会话成功。
 		}, function(errorMsg) {
-			console.log(errorMsg);
-		});
+			console.log(errorMsg)
+		})
 
-#### API - getGroupConversation
+#### getGroupConversation
 获取和特定群组的群聊会话。
 
 ##### 接口定义
@@ -708,7 +841,7 @@
 			console.log(errorMsg);	// 输出错误信息。
 		});
 
-#### API - getAllGroupConversation
+#### getAllGroupConversation
 获取当前用户所有的群聊会话。
 
 ##### 接口定义
@@ -727,7 +860,7 @@
 		console.log(errorMsg);
 	});
 
-#### API - deleteGroupConversation
+#### deleteGroupConversation
 删除指定的群聊会话。
 
 ##### 接口定义
@@ -748,7 +881,7 @@
 			console.log(errorMsg);
 		});
 
-#### API - setGroupConversationUnreadMessageCount
+#### setGroupConversationUnreadMessageCount
 设置指定单聊会话的未读消息数。
 
 ##### 接口定义
@@ -772,7 +905,7 @@
 
 
 ## 黑名单
-### API - addUsersToBlacklist
+### addUsersToBlacklist
 将用户添加进黑名单。
 
 #### 接口定义
@@ -793,7 +926,7 @@
 			console.log(errorMsg);
 		});
 
-### API - delUsersFromBlacklist
+### delUsersFromBlacklist
 从当前用户的黑名单中删除部分用户。
 
 #### 接口定义
@@ -814,7 +947,7 @@
 			console.log(errorMsg);
 		});
 
-### API - getBlacklist
+### getBlacklist
 获取当前用户的黑名单。
 
 #### 接口定义
@@ -871,7 +1004,8 @@
 	        "userID": testUserID,
 	        "blacklist": 0,
 	        "noDisturb": 0,
-	        "star": 0
+	        "star": 0,
+          "avatarPath": "/data/user/0/io.cordova.hellocordova/files/images/small-avatar/avatarName"  // 发送用户的头像缩略图。
 	    },
 	    "from_platform": "a",
 	    "msgTypeString": "text",
@@ -894,7 +1028,8 @@
 	        "userID": testUserID,
 	        "blacklist": 0,
 	        "noDisturb": 0,
-	        "star": 0
+	        "star": 0,
+          "avatarPath": "/data/user/0/io.cordova.hellocordova/files/images/small-avatar/avatarName"  // 接收用户的头像缩略图。
 	    },
 	    "targetName": "",
 	    "targetType": "single",
@@ -903,7 +1038,7 @@
 	    "createTimeInMillis": 1466496463000
 	}
 
-#### API - jmessage.onOpenMessage
+#### jmessage.onOpenMessage
 点击通知栏中的消息通知时触发。
 
 ##### 代码示例
@@ -912,7 +1047,7 @@
 
 	}, false);
 
-#### API - jmessage.onReceiveMessage
+#### jmessage.onReceiveMessage
 收到消息时触发。
 
 ##### 代码示例
@@ -921,7 +1056,7 @@
 
 	}, false);
 
-#### API - jmessage.onReceiveTextMessage
+#### jmessage.onReceiveTextMessage
 收到文本消息触发。
 
 ##### 代码示例
@@ -930,7 +1065,7 @@
 
 	}, false);
 
-#### API - jmessage.onReceiveImageMessage
+#### jmessage.onReceiveImageMessage
 收到图片消息触发。
 
 ##### 代码示例
@@ -939,7 +1074,7 @@
 
 	}, false);
 
-#### API - jmessage.onReceiveVoiceMessage
+#### jmessage.onReceiveVoiceMessage
 收到语音消息触发。
 
 ##### 代码示例
@@ -948,7 +1083,7 @@
 
 	}, false);
 
-#### API - jmessage.onReceiveCustomMessage
+#### jmessage.onReceiveCustomMessage
 收到自定义消息触发。
 
 ##### 代码示例
@@ -958,21 +1093,21 @@
 	}, false);
 
 ### 用户状态变更事件
-#### API - jmessage.onUserPasswordChanged
+#### jmessage.onUserPasswordChanged
 当用户密码在服务器端被修改时触发。
 
 ##### 代码示例
 
 	document.addEventListener('jmessage.onUserPasswordChanged', yourFunction, false);
 
-#### API - jmessage.onUserLogout
+#### jmessage.onUserLogout
 当用户换设备登录时触发。
 
 ##### 代码示例
 
 	document.addEventListener('jmessage.onUserLogout', yourFunction, false);
 
-#### API - jmessage.onUserDeleted
+#### jmessage.onUserDeleted
 当用户被删除时触发。
 
 ##### 代码示例
@@ -981,21 +1116,21 @@
 
 
 ### 群组事件
-#### API - jmessage.onGroupMemberAdded
+#### jmessage.onGroupMemberAdded
 群成员加群时触发。
 
 ##### 代码示例
 
 	document.addEventListener('jmessage.onGroupMemberAdded', yourFunction, false);
 
-#### API - jmessage.onGroupMemberRemoved
+#### jmessage.onGroupMemberRemoved
 群成员被踢时触发。
 
 ##### 代码示例
 
 	document.addEventListener('jmessage.onGroupMemberRemoved', yourFunction, false);
 
-#### API - jmessage.onGroupMemberExit
+#### jmessage.onGroupMemberExit
 群成员退群时触发。
 
 ##### 代码示例
