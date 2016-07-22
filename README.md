@@ -1,6 +1,6 @@
 # JMessage PhoneGap / Cordova Plugin
 
-[![release](https://img.shields.io/badge/release-1.0.0-blue.svg)](https://github.com/jpush/jmessage-phonegap-plugin/releases)
+[![release](https://img.shields.io/badge/release-2.1.0-blue.svg)](https://github.com/jpush/jmessage-phonegap-plugin/releases)
 [![platforms](https://img.shields.io/badge/platforms-iOS%7CAndroid-lightgrey.svg)](https://github.com/jpush/jmessage-phonegap-plugin)
 [![QQ Group](https://img.shields.io/badge/QQ%20Group-413602425-red.svg)](https://github.com/jpush/jmessage-phonegap-plugin)
 [![weibo](https://img.shields.io/badge/weibo-JPush-blue.svg)](http://weibo.com/jpush?refer_flag=1001030101_&is_all=1)
@@ -13,9 +13,9 @@ JMessage PhoneGap / Cordova Plugin 是基于[极光 IM](http://docs.jpush.io/gui
 
 >迁移到 JMessage Phonegap Plugin 前要先删除 JPush PhoneGap Plugin 插件，因为 JMessage PhoneGap Plugin 中已经包含了 JPush 的相关功能了。
 
-> **注意**：需要 Cordova 5.0.0 或以上版本。
-
 > QQ 交流群：413602425
+
+> 有问题建议先到[极光社区](http://community.jpush.cn/)搜索提问。
 
 ## 集成步骤
 - 在线安装
