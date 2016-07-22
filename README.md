@@ -63,12 +63,12 @@ API 分为 IM（聊天）和 Push（消息推送）两部分。具体可参考�
 ### iOS
 - 收不到推送：请首先按照正确方式再次配置证书、描述文件，可参考 [iOS 证书设置指南](http://docs.jpush.io/client/ios_tutorials/#ios_1)。
 - 设置 PushConfig.plist:
-	- APP_KEY：应用标识。
-	- CHANNEL：渠道标识。
-	- IsProduction：是否为生产环境。
-	- IsIDFA：是否使用 IDFA 启动 SDK。
+	- APP_KEY：应用标识
+	- CHANNEL：渠道标识
+	- IsProduction：是否为生产环境
+	- IsIDFA：是否使用 IDFA 启动 SDK
 
 ## 更多
-- QQ 群：413602425。
-- [极光官网文档](http://docs.jiguang.cn/guideline/jmessage_guide/)。
-- 有问题可访问[极光社区](http://community.jpush.cn/)搜索和提问。
+- QQ 群：413602425
+- [极光官网文档](http://docs.jiguang.cn/guideline/jmessage_guide/)
+- 有问题可访问[极光社区](http://community.jpush.cn/)搜索和提问
