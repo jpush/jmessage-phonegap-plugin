@@ -31,13 +31,13 @@ JMessage PhoneGap / Cordova Plugin 是基于[极光 IM](http://docs.jpush.io/gui
 ## API
 API 分为 IM（聊天）和 Push（消息推送）两部分。具体可参考：
 ### IM
-- [Android API](/doc/Android_detail_api.md)。
-- [iOS API](/doc/iOS_API.md)。
+- [Android API](/doc/Android_detail_api.md)
+- [iOS API](/doc/iOS_API.md)
 
 ### Push
-- [公共 API](https://github.com/jpush/jpush-phonegap-plugin/blob/master/doc/Common_detail_api.md)。
-- [Android API](https://github.com/jpush/jpush-phonegap-plugin/blob/master/doc/Android_detail_api.md)。
-- [iOS API](https://github.com/jpush/jpush-phonegap-plugin/blob/master/doc/iOS_API.md)。
+- [公共 API](https://github.com/jpush/jpush-phonegap-plugin/blob/master/doc/Common_detail_api.md)
+- [Android API](https://github.com/jpush/jpush-phonegap-plugin/blob/master/doc/Android_detail_api.md)
+- [iOS API](https://github.com/jpush/jpush-phonegap-plugin/blob/master/doc/iOS_API.md)
 
 ## Demo
 插件项目中的 */example* 目录下包含一个简单的示例，如果想参考可以将目录下的所有文件拷贝到具体 Cordova 项目的 */assets/www/* 目录下。
