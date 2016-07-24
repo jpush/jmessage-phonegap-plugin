@@ -1197,7 +1197,7 @@ public class JMessagePlugin extends CordovaPlugin {
                         @Override
                         public void gotResult(int responseCode, String responseMsg, long groupId) {
                             if (responseCode == 0) {
-                                callback.success();
+                                callback.success(String.valueOf(groupId));
                             } else {
                                 callback.error(responseMsg);
                             }
@@ -1215,7 +1215,7 @@ public class JMessagePlugin extends CordovaPlugin {
             public void gotResult(int responseCode, String responseMsg,
                                   List<Long> list) {
                 if (responseCode == 0) {
-                    callback.success(list.toString());
+                    callback.success(mGson.toJson(list));
                 } else {
                     callback.error(responseMsg);
                 }
