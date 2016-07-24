@@ -202,6 +202,7 @@ JMessagePlugin.prototype.exitConversation = function (successCallback, errorCall
 
 // Group API.
 
+// successCallback：以参数形式返回 Group ID.
 JMessagePlugin.prototype.createGroup = function (groupName, groupDesc, successCallback, errorCallback) {
   this.callNative('createGroup', [groupName, groupDesc], successCallback, errorCallback)
 }
@@ -238,10 +239,6 @@ JMessagePlugin.prototype.exitGroup = function (groupId, successCallback, errorCa
 
 JMessagePlugin.prototype.getGroupMembers = function (groupId, successCallback, errorCallback) {
   this.callNative('getGroupMembers', [groupId], successCallback, errorCallback)
-}
-
-JMessagePlugin.prototype.addMembers = function (membersArray, successCallback, errorCallback) {
-  this.callNative('addMembers', [membersArray], successCallback, errorCallback)
 }
 
 // Blacklist API.

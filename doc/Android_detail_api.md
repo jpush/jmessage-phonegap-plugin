@@ -43,6 +43,16 @@
 		- [getAllGroupConversation](#getallgroupconversation)
 		- [deleteGroupConversation](#deletegroupconversation)
 		- [setGroupConversationUnreadMessageCount](#setgroupconversationunreadmessagecount)
+- [群组](#群组)
+	- [createGroup](#creategroup)
+	- [getGroupIDList](#getgroupidlist)
+	- [getGroupInfo](#getgroupinfo)
+	- [updateGroupName](#updategroupname)
+	- [updateGroupDescription](#updategroupdescription)
+	- [addGroupMembers](#addgroupmembers)
+	- [removeGroupMembers](#removegroupmembers)
+	- [exitGroup](#exitgroup)
+	- [getGroupMembers](#getgroupmembers)
 - [黑名单](#黑名单)
 	- [addUsersToBlacklist](#adduserstoblacklist)
 	- [delUsersFromBlacklist](#delusersfromblacklist)
@@ -64,7 +74,6 @@
 		- [jmessage.onGroupMemberAdded](#jmessageongroupmemberadded)
 		- [jmessage.onGroupMemberRemoved](#jmessageongroupmemberremoved)
 		- [jmessage.onGroupMemberExit](#jmessageongroupmemberexit)
-
 
 ## 注册与登录
 ### register
@@ -902,6 +911,190 @@
 		}, function(errorMsg) {
 			console.log(errorMsg);
 		});
+
+## 群组
+### createGroup
+创建群组。
+
+#### 接口定义
+
+    window.JMessage.createGroup(groupName, groupDesc, successCallback, errorCallback)
+
+#### 参数说明
+- groupName：群组名。
+- groupDesc：群组描述。
+- successCallback：以参数形式返回 group ID。
+- errorCallback：以参数形式返回错误信息。
+
+#### 代码示例
+
+    window.JMessage.createGroup('groupName', 'groupDesc', function (groupId) {
+      // Success callback.
+    }, function (errorMsg) {
+      // Error callback.
+    })
+
+### getGroupIDList
+得到当前用户加入的所有 Group ID。
+
+#### 接口定义
+
+    window.JMessage.getGroupIDList(successCallback, errorCallback)
+
+#### 参数说明
+- successCallback：以参数形式返回所有 Group ID 的 JSON 字符串。
+- errorCallback：以参数形式返回错误信息。
+
+#### 代码示例
+
+    window.JMessage.getGroupIDList(function (json) {
+      // Success callback.
+    }, function (errorMsg) {
+      // Error callback.
+    })
+
+### getGroupInfo
+获取群组信息。
+
+#### 接口定义
+
+    window.JMessage.getGroupInfo(successCallback, errorCallback)
+
+#### 参数说明
+- successCallback：以参数形式返回群组信息的 JSON 字符串。
+- errorCallback：以参数形式返回错误信息。
+
+#### 代码示例
+
+    window.JMessage.getGroupInfo(function (json) {
+      // Success callback.
+    }, function (errorMsg) {
+      // Error callback.
+    })
+
+### updateGroupName
+更新群组名称。
+
+#### 接口定义
+
+    window.JMessage.updateGroupName(groupId, groupNewName, successCallback, errorCallback)
+
+#### 参数说明
+- groupId：long，群组 ID。
+- groupNewName：String，群组新名称。
+- successCallback：无返回值。
+- errorCallback：以参数形式返回错误信息。
+
+#### 代码示例
+
+    window.JMessage.updateGroupName(14123123, 'newName', function () {
+      // Success callback.
+    }, function (errorMsg) {
+      // Error callback.
+    })
+
+### updateGroupDescription
+更新群组说明。
+
+#### 接口定义
+
+    window.JMessage.updateGroupDescription(groupId, groupNewDesc, successCallback, errorCallback)
+
+#### 参数说明
+- groupId：群组 ID。
+- groupNewDesc：群组描述。
+- successCallback：无返回值。
+- errorCallback：以参数形式返回错误码。
+
+#### 代码示例
+
+    window.JMessage.updateGroupDescription(115123121, 'newDesc', function () {
+      // Success callback.
+    }, function (errorMsg) {
+      // Error callback.
+    })
+
+### addGroupMembers
+向群组中添加用户。
+
+#### 接口定义
+
+    window.JMessage.addGroupMembers(groupId, usernameStr, successCallback, errorCallback)
+
+#### 参数说明
+- groupId：群组 ID。
+- usernameStr：要添加的用户名字符串，形如：'username1,username2'。
+- successCallback：无返回值。
+- errorCallback：以参数形式返回错误码。
+
+#### 代码示例
+
+    window.JMessage.addGroupMembers(15131231, 'username1,username2', function () {
+      // Success callback.
+    }, function (errorMsg) {
+      // Error callback.
+    })
+
+### removeGroupMembers
+从群组中删除指定用户。
+
+#### 接口定义
+
+    window.JMessage.removeGroupMembers(groupId, usernameStr, successCallback, errorCallback)
+
+#### 参数说明
+- groupId：群组 ID。
+- usernameStr：要删除的用户名字符串，形如：'username1,username2'。
+- successCallback：无返回值。
+- errorCallback：以参数形式返回错误码。
+
+#### 代码示例
+
+    window.JMessage.addGroupMembers(15131231, 'username1,username2', function () {
+      // Success callback.
+    }, function (errorMsg) {
+      // Error callback.
+    })
+
+### exitGroup
+退出指定群组。
+
+#### 接口定义
+
+    window.JMessage.exitGroup(groupId, successCallback, errorCallback)
+
+#### 参数说明
+- groupId：群组 ID。
+- successCallback：无返回值。
+- errorCallback：以参数形式返回错误码。
+
+#### 代码示例
+
+    window.JMessage.addGroupMembers(15131231, function () {
+      // Success callback.
+    }, function (errorMsg) {
+      // Error callback.
+    })
+
+### getGroupMembers
+获取指定群组中的所有用户信息。
+
+#### 接口定义
+
+    window.JMessage.getGroupMembers(groupId, successCallback, errorCallback)
+
+#### 参数说明
+- groupId：群组 ID。
+- successCallback：以参数形式返回用户信息的 JSON 字符串。
+- errorCallback：以参数形式返回错误码。
+
+#### 代码示例
+
+    window.JMessage.getGroupMembers(15131231, function (json) {
+      // Success callback.
+    }, function (errorMsg) {
+      // Error callback.
+    })
 
 
 ## 黑名单
