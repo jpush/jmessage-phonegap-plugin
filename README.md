@@ -20,6 +20,10 @@ JMessage PhoneGap / Cordova Plugin 是基于[极光 IM](http://docs.jpush.io/gui
 ## 集成步骤
 - 在线安装
 
+		cordova plugin add jmessage-phonegap-plugin --variable APP_KEY=Your_app_key
+
+	或
+
 		cordova plugin add https://github.com/jpush/jmessage-phonegap-plugin.git --variable APP_KEY=Your_app_key
 
 - 本地安装
