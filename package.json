@@ -3,7 +3,7 @@
   "version": "2.1.0",
   "description": "JMessage Cordova Plugin.",
   "cordova": {
-    "id": "jmessage-phonegap-plugin",
+    "id": "cordova-plugin-jmessage",
     "platforms": [
       "ios",
       "android"
@@ -18,7 +18,9 @@
     "IM",
     "im",
     "JPush",
-    "cordova-plugin"
+    "cordova-plugin",
+    "JiGuang",
+    "Jiguang"
   ],
   "engines": [
     {
