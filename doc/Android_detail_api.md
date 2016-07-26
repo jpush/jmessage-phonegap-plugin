@@ -7,7 +7,6 @@
 - [用户属性维护](#用户属性维护)
 	- [getUserInfo](#getuserinfo)
 	- [getMyInfo](#getmyinfo)
-	- [updateUserInfo](#updateuserinfo)
 	- [updateMyInfo](#updatemyinfo)
 	- [updateMyPassword](#updatemypassword)
 	- [updateMyAvatar](#updatemyavatar)
@@ -181,38 +180,6 @@
 	}, function(errorStr) {
 		console.log(errorStr);	// 输出错误信息。
 	});
-
-
-### updateUserInfo
-更新特定用户信息。
-
-#### 接口定义
-
-	window.JMessage.updateUserInfo(username, appKey, userInfoField, value, successCallback, errorCallback)
-
-#### 参数说明
-- username：用户名。
-- appKey：目标用户所属应用的 AppKey，可以使用此参数获取不同应用下的用户信息。如果为空，默认获取当前应用下的用户信息。
-- userInfoField：需要更新的用户信息字段。包括：
-	- nickname：昵称。
-	- birthday：生日。
-	- signature：个性签名。
-	- gender：性别。
-	- region：地区。
-- value：更新的值。
-- successCallback：更新成功的回调函数，无返回值。
-- errorCallback：更新失败的回调函数，以参数形式返回错误信息。如果为 null，默认打印失败信息日志。
-
-#### 代码示例
-
-	// AppKey 为 null，更新当前应用下特定用户的信息。
-	window.JMessage.updateUserInfo('username', null, 'nickname', 'yourNickname',
-		function() {
-			// 更新成功。
-		}, function(errorMsg) {
-			console.log(errorMsg);	// 输出错误信息。
-		});
-
 
 ### updateMyInfo
 更新当前用户信息。

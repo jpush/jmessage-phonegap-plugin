@@ -374,34 +374,6 @@ public class JMessagePlugin extends CordovaPlugin {
         }
     }
 
-    public void updateUserInfo(JSONArray data, final CallbackContext callback) {
-        try {
-            String username = data.getString(0);
-            String appKey = data.isNull(1) ? "" : data.getString(1);
-            final String field = data.getString(2);
-            final String value = data.getString(3);
-
-            JMessageClient.getUserInfo(username, appKey, new GetUserInfoCallback() {
-                @Override
-                public void gotResult(int status, String desc, UserInfo userInfo) {
-                    if (status == 0) {
-                        String result = updateUserInfo(userInfo, field, value);
-                        if (result == null) {
-                            callback.success();
-                        } else {
-                            callback.error(result);
-                        }
-                    } else {
-                        callback.error(status);
-                    }
-                }
-            });
-        } catch (JSONException e) {
-            e.printStackTrace();
-            callback.error("Parameter error.");
-        }
-    }
-
     /**
      * Update my password.
      *
