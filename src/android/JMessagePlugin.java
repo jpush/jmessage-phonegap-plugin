@@ -362,10 +362,11 @@ public class JMessagePlugin extends CordovaPlugin {
             String value = data.getString(1);
 
             UserInfo myInfo = JMessageClient.getMyInfo();
-            if (updateUserInfo(myInfo, field, value)) {
+            String result = updateUserInfo(myInfo, field, value);
+            if (result == null) {
                 callback.success();
             } else {
-                callback.error("Update my info error.");
+                callback.error(result);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -377,15 +378,24 @@ public class JMessagePlugin extends CordovaPlugin {
         try {
             String username = data.getString(0);
             String appKey = data.isNull(1) ? "" : data.getString(1);
-            String field = data.getString(2);
-            String value = data.getString(3);
+            final String field = data.getString(2);
+            final String value = data.getString(3);
 
-            UserInfo userInfo = getUserInfo(username, appKey);
-            if (updateUserInfo(userInfo, field, value)) {
-                callback.success();
-            } else {
-                callback.error("Update user info error.");
-            }
+            JMessageClient.getUserInfo(username, appKey, new GetUserInfoCallback() {
+                @Override
+                public void gotResult(int status, String desc, UserInfo userInfo) {
+                    if (status == 0) {
+                        String result = updateUserInfo(userInfo, field, value);
+                        if (result == null) {
+                            callback.success();
+                        } else {
+                            callback.error(result);
+                        }
+                    } else {
+                        callback.error(status);
+                    }
+                }
+            });
         } catch (JSONException e) {
             e.printStackTrace();
             callback.error("Parameter error.");
@@ -1678,62 +1688,38 @@ public class JMessagePlugin extends CordovaPlugin {
         }
     }
 
-    private UserInfo getUserInfo(String username, String appKey) {
-        final UserInfo[] userInfos = new UserInfo[1];
-        JMessageClient.getUserInfo(username, appKey, new GetUserInfoCallback() {
-            @Override
-            public void gotResult(int responseCode, String responseDesc,
-                                  UserInfo userInfo) {
-                if (responseCode == 0) {
-                    userInfos[0] = userInfo;
-                }
-            }
-        });
-        return userInfos[0];
-    }
-
-    private boolean updateUserInfo(UserInfo userInfo, String field, String value) {
-        final boolean[] result = {false};
+    private String updateUserInfo(UserInfo userInfo, String field, String value) {
+        final String[] result = {null};
 
         if (field.equals("nickname")) {
             userInfo.setNickname(value);
-            result[0] = true;
-
         } else if (field.equals("birthday")) {
             long birthday = Long.parseLong(value);
             userInfo.setBirthday(birthday);
-            result[0] = true;
-
         } else if (field.equals("gender")) {
             if (value.equals("male")) {
                 userInfo.setGender(UserInfo.Gender.male);
-
             } else if (value.equals("female")) {
                 userInfo.setGender(UserInfo.Gender.female);
 
             } else {
                 userInfo.setGender(UserInfo.Gender.unknown);
-
             }
-            result[0] = true;
-
         } else if (field.equals("signature")) {
             userInfo.setSignature(value);
-            result[0] = true;
-
         } else if (field.equals("region")) {
             userInfo.setRegion(value);
-            result[0] = true;
-
         } else {
-            return result[0];
+            return "Field name error.";
         }
 
         JMessageClient.updateMyInfo(UserInfo.Field.valueOf(field), userInfo,
                 new BasicCallback() {
                     @Override
                     public void gotResult(int responseCode, String responseDesc) {
-                        result[0] = responseCode == 0;
+                        if (responseCode != 0) {
+                            result[0] = responseDesc;
+                        }
                     }
                 });
         return result[0];
