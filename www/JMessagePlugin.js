@@ -53,11 +53,6 @@ JMessagePlugin.prototype.getMyInfo = function (successCallback, errorCallback) {
   this.callNative('getMyInfo', [], successCallback, errorCallback)
 }
 
-JMessagePlugin.prototype.updateUserInfo = function (username, appKey, userInfoField, value,
-    successCallback, errorCallback) {
-  this.callNative('updateUserInfo', [username, appKey, userInfoField, value], successCallback, errorCallback)
-}
-
 JMessagePlugin.prototype.updateMyInfo = function (field, value, successCallback, errorCallback) {
   this.callNative('updateMyInfo', [field, value], successCallback, errorCallback)
 }
