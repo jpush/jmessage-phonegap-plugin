@@ -321,7 +321,7 @@ public class JMessagePlugin extends CordovaPlugin {
                             String json = mGson.toJson(userInfo);
                             JSONObject jsonObject = new JSONObject(json);
                             String avatarPath = "";
-                            if (userInfo.getAvatarFile().exists()) {
+                            if (userInfo.getAvatarFile() != null) {
                                 avatarPath = userInfo.getAvatarFile().getAbsolutePath();
                             }
                             jsonObject.put("avatarPath", avatarPath);
