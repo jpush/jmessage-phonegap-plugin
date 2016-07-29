@@ -320,9 +320,12 @@ public class JMessagePlugin extends CordovaPlugin {
                         try {
                             String json = mGson.toJson(userInfo);
                             JSONObject jsonObject = new JSONObject(json);
-                            String avatarPath = userInfo.getAvatarFile().getAbsolutePath();
+                            String avatarPath = "";
+                            if (userInfo.getAvatarFile().exists()) {
+                                avatarPath = userInfo.getAvatarFile().getAbsolutePath();
+                            }
                             jsonObject.put("avatarPath", avatarPath);
-                            callback.success(mGson.toJson(jsonObject));
+                            callback.success(jsonObject.toString());
                         } catch (JSONException e) {
                             e.printStackTrace();
                             callback.error(e.getMessage());
@@ -344,9 +347,12 @@ public class JMessagePlugin extends CordovaPlugin {
             try {
                 String json = mGson.toJson(myInfo);
                 JSONObject jsonObject = new JSONObject(json);
-                String avatarPath = myInfo.getAvatarFile().getAbsolutePath();
+                String avatarPath = "";
+                if (myInfo.getAvatarFile() != null) {
+                    avatarPath = myInfo.getAvatarFile().getAbsolutePath();
+                }
                 jsonObject.put("avatarPath", avatarPath);
-                callback.success(mGson.toJson(jsonObject));
+                callback.success(jsonObject.toString());
             } catch (JSONException e) {
                 e.printStackTrace();
                 callback.error(e.getMessage());
@@ -459,14 +465,22 @@ public class JMessagePlugin extends CordovaPlugin {
             if (TextUtils.isEmpty(username)) {  // 取得当前登录用户的头像缩略图地址
                 UserInfo myInfo = JMessageClient.getMyInfo();
                 File avatarFile = myInfo.getAvatarFile();
-                callback.success(avatarFile.getAbsolutePath());
+                String path = "";
+                if (avatarFile != null) {
+                    path = avatarFile.getAbsolutePath();
+                }
+                callback.success(path);
             } else {    // 取得指定用户的头像缩略图地址
                 JMessageClient.getUserInfo(username, new GetUserInfoCallback() {
                     @Override
                     public void gotResult(int status, String desc, UserInfo userInfo) {
                         if (status == 0) {
                             File avatarFile = userInfo.getAvatarFile();
-                            callback.success(avatarFile.getAbsolutePath());
+                            String path = "";
+                            if (avatarFile != null) {
+                                path = avatarFile.getAbsolutePath();
+                            }
+                            callback.success(path);
                         } else {
                             Log.i(TAG, "getUserAvatar: " + status + " - " + desc);
                             callback.error(status);
@@ -933,7 +947,7 @@ public class JMessagePlugin extends CordovaPlugin {
                 String json = mGson.toJson(msg);
                 callback.success(json);
             } else {
-                callback.error("Conversation is not contain message.");
+                callback.success("");
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -1022,7 +1036,7 @@ public class JMessagePlugin extends CordovaPlugin {
                 String json = mGson.toJson(messages);
                 callback.success(json);
             } else {
-                callback.error("Conversation isn't contain message.");
+                callback.success("");
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -1040,7 +1054,7 @@ public class JMessagePlugin extends CordovaPlugin {
             Log.i(TAG, "Conversation list: " + json);
             callback.success(json);
         } else {
-            callback.error("Conversation list not find.");
+            callback.success("");
         }
     }
 
@@ -1112,7 +1126,7 @@ public class JMessagePlugin extends CordovaPlugin {
                 String json = mGson.toJson(conversation);
                 callback.success(json);
             } else {
-                callback.error("conversation not find.");
+                callback.success("");
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -1128,7 +1142,7 @@ public class JMessagePlugin extends CordovaPlugin {
                 String json = mGson.toJson(conversation);
                 callback.success(json);
             } else {
-                callback.error("conversation not find.");
+                callback.success("");
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -1181,7 +1195,7 @@ public class JMessagePlugin extends CordovaPlugin {
                             if (responseCode == 0) {
                                 callback.success(String.valueOf(groupId));
                             } else {
-                                callback.error(responseMsg);
+                                callback.error(responseCode);
                             }
                         }
                     });
@@ -1199,7 +1213,7 @@ public class JMessagePlugin extends CordovaPlugin {
                 if (responseCode == 0) {
                     callback.success(mGson.toJson(list));
                 } else {
-                    callback.error(responseMsg);
+                    callback.error(responseCode);
                 }
             }
         });
@@ -1215,7 +1229,7 @@ public class JMessagePlugin extends CordovaPlugin {
                     if (responseCode == 0) {
                         callback.success(mGson.toJson(groupInfo));
                     } else {
-                        callback.error(responseMsg);
+                        callback.error(responseCode);
                     }
                 }
             });
@@ -1237,7 +1251,7 @@ public class JMessagePlugin extends CordovaPlugin {
                             if (responseCode == 0) {
                                 callback.success();
                             } else {
-                                callback.error(responseDesc);
+                                callback.error(responseCode);
                             }
                         }
                     });
@@ -1256,8 +1270,7 @@ public class JMessagePlugin extends CordovaPlugin {
             JMessageClient.updateGroupDescription(groupId, groupNewDesc,
                     new BasicCallback() {
                         @Override
-                        public void gotResult(int responseCode,
-                                              String responseMsg) {
+                        public void gotResult(int responseCode, String responseMsg) {
                             if (responseCode == 0) {
                                 callback.success();
                             } else {
