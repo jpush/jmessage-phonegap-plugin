@@ -86,12 +86,32 @@ JMessagePlugin.prototype.sendSingleTextMessage = function (username, text, appKe
   this.callNative('sendSingleTextMessage', [username, text, appKey], successCallback, errorCallback)
 }
 
-JMessagePlugin.prototype.sendSingleImageMessage = function (username, imageUrl, appKey, successCallback, errorCallback) {
+JMessagePlugin.prototype.sendSingleTextMessageWithExtras = function(username, text, json, appKey,
+    successCallback, errorCallback) {
+  this.callNative('sendSingleTextMessageWithJson', [username, text, json, appKey], successCallback,
+    errorCallback);
+}
+
+JMessagePlugin.prototype.sendSingleImageMessage = function (username, imageUrl, appKey, successCallback,
+    errorCallback) {
   this.callNative('sendSingleImageMessage', [username, imageUrl, appKey], successCallback, errorCallback)
 }
 
-JMessagePlugin.prototype.sendSingleVoiceMessage = function (username, fileUrl, appKey, successCallback, errorCallback) {
+JMessagePlugin.prototype.sendSingleImageMessageWithExtras = function(username, imageUrl, json, appKey,
+    successCallback, errorCallback) {
+  this.callNative('sendSingleImageMessageWithJson', [username, imageUrl, json, appKey],
+    successCallback, errorCallback);
+}
+
+JMessagePlugin.prototype.sendSingleVoiceMessage = function (username, fileUrl, appKey, successCallback,
+    errorCallback) {
   this.callNative('sendSingleVoiceMessage', [username, fileUrl, appKey], successCallback, errorCallback)
+}
+
+JMessagePlugin.prototype.sendSingleVoiceMessageWithExtras = function(username, fileUrl, json, appKey,
+    successCallback, errorCallback) {
+  this.callNative('sendSingleVoiceMessageWithJson', [username, fileUrl, json, appKey],
+    successCallback, errorCallback);
 }
 
 JMessagePlugin.prototype.sendSingleCustomMessage = function (username, jsonStr, appKey, successCallback, errorCallback) {
@@ -102,16 +122,24 @@ JMessagePlugin.prototype.sendGroupTextMessage = function (groupId, text, success
   this.callNative('sendGroupTextMessage', [groupId, text], successCallback, errorCallback)
 }
 
+JMessagePlugin.prototype.sendGroupTextMessageWithExtras = function (groupId, text, extrasJson, successCallback, errorCallback) {
+  this.callNative('sendGroupTextMessageWithExtras', [groupId, text, extrasJson], successCallback, errorCallback)
+}
+
 JMessagePlugin.prototype.sendGroupImageMessage = function (groupId, imageUrl, successCallback, errorCallback) {
   this.callNative('sendGroupImageMessage', [groupId, imageUrl], successCallback, errorCallback)
+}
+
+JMessagePlugin.prototype.sendGroupImageMessageWithExtras = function (groupId, imageUrl, extrasJson, successCallback, errorCallback) {
+  this.callNative('sendGroupImageMessageWithExtras', [groupId, imageUrl, extrasJson], successCallback, errorCallback)
 }
 
 JMessagePlugin.prototype.sendGroupVoiceMessage = function (username, fileUrl, successCallback, errorCallback) {
   this.callNative('sendGroupVoiceMessage', [username, fileUrl], successCallback, errorCallback)
 }
 
-JMessagePlugin.prototype.sendGroupCustomMessage = function (username, jsonStr, successCallback, errorCallback) {
-  this.callNative('sendGroupCustomMessage', [username, jsonStr], successCallback, errorCallback)
+JMessagePlugin.prototype.sendGroupVoiceMessageWithExtras = function (groupId, fileUrl, extrasJson, successCallback, errorCallback) {
+  this.callNative('sendGroupVoiceMessageWithExtras', [groupId, fileUrl, extrasJson], successCallback, errorCallback)
 }
 
 JMessagePlugin.prototype.getLatestMessage = function (conversationType, value, appKey, successCallback, errorCallback) {
@@ -378,12 +406,15 @@ JMessagePlugin.prototype.cross_sendSingleImageMessage = function (username, appK
   this.callNative('cross_sendSingleImageMessage', [username, imageUrl, appKey], successCallback, errorCallback)
 }
 
-JMessagePlugin.prototype.cross_sendSingleVoiceMessage = function (username, appKey, fileUrl, successCallback, errorCallback) {
+JMessagePlugin.prototype.cross_sendSingleVoiceMessage = function (username, appKey, fileUrl,
+    successCallback, errorCallback) {
   this.callNative('cross_sendSingleVoiceMessage', [username, fileUrl, appKey], successCallback, errorCallback)
 }
 
-JMessagePlugin.prototype.cross_getSingleConversationHistoryMessage = function (username, appKey, from, limit, successCallback, errorCallback) {
-  this.callNative('cross_getSingleConversationHistoryMessage', [username, appKey, from, limit], successCallback, errorCallback)
+JMessagePlugin.prototype.cross_getSingleConversationHistoryMessage = function (username, appKey,
+    from, limit, successCallback, errorCallback) {
+  this.callNative('cross_getSingleConversationHistoryMessage', [username, appKey, from, limit],
+    successCallback, errorCallback)
 }
 
 JMessagePlugin.prototype.cross_deleteSingleConversation = function (username, appKey, successCallback, errorCallback) {
