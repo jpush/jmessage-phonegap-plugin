@@ -1140,7 +1140,10 @@
 	            "a": { }
 	        },
 	        "numExtras": { },
-	        "stringExtras": { }
+	        "stringExtras": {	// 附加字段。
+						"key1": "value1",
+						"key2": "value2"
+					}
 	    },
 	    "contentType": "text",
 	    "createTimeInSeconds": 1466496463,

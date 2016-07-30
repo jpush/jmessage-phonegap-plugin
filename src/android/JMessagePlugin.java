@@ -45,7 +45,6 @@ import cn.jpush.im.android.api.callback.GetGroupIDListCallback;
 import cn.jpush.im.android.api.callback.GetGroupInfoCallback;
 import cn.jpush.im.android.api.callback.GetGroupMembersCallback;
 import cn.jpush.im.android.api.callback.GetUserInfoCallback;
-import cn.jpush.im.android.api.content.CustomContent;
 import cn.jpush.im.android.api.content.EventNotificationContent;
 import cn.jpush.im.android.api.content.ImageContent;
 import cn.jpush.im.android.api.content.MessageContent;
@@ -86,7 +85,6 @@ public class JMessagePlugin extends CordovaPlugin {
     public void onEvent(MessageEvent event) {
         final Message msg = event.getMessage();
         mCurrentMsg = msg;
-        msg.getFromUser().getAvatar();
         try {
             String jsonStr = mGson.toJson(msg);
             JSONObject msgJson = new JSONObject(jsonStr);
@@ -128,25 +126,6 @@ public class JMessagePlugin extends CordovaPlugin {
                     fireEvent("onReceiveVoiceMessage", msgJson.toString());
                     break;
                 case custom:
-                    CustomContent customContent = (CustomContent) msg.getContent();
-                    JSONObject customJson = new JSONObject();
-
-                    // 获取自定义的值。
-                    Map<String, String> strMap = customContent.getAllStringValues();
-                    for (String key : strMap.keySet()) {
-                        customJson.put(key, strMap.get(key));
-                    }
-
-                    Map<String, Number> numMap = customContent.getAllNumberValues();
-                    for (String key : strMap.keySet()) {
-                        customJson.put(key, numMap.get(key));
-                    }
-
-                    Map<String, Boolean> boolMap = customContent.getAllBooleanValues();
-                    for (String key : boolMap.keySet()) {
-                        customJson.put(key, boolMap.get(key));
-                    }
-                    msgJson.getJSONObject("content").put("customValues", customJson);
                     fireEvent("onReceiveCustomMessage", msgJson.toString());
                     break;
                 case eventNotification:
@@ -314,8 +293,7 @@ public class JMessagePlugin extends CordovaPlugin {
             String appKey = data.isNull(1) ? "" : data.getString(1);
             JMessageClient.getUserInfo(username, appKey, new GetUserInfoCallback() {
                 @Override
-                public void gotResult(int responseCode, String responseDesc,
-                                      UserInfo userInfo) {
+                public void gotResult(int responseCode, String responseDesc, UserInfo userInfo) {
                     if (responseCode == 0) {
                         try {
                             String json = mGson.toJson(userInfo);
@@ -607,6 +585,53 @@ public class JMessagePlugin extends CordovaPlugin {
         }
     }
 
+    public void sendSingleTextMessageWithExtras(JSONArray data, final CallbackContext callback) {
+        try {
+            String username = data.getString(0);
+            String text = data.getString(1);
+            String json = data.getString(2);    // 自定义信息的 Json 数据。
+            String appkey = data.isNull(3) ? "" : data.getString(3);
+
+            Conversation conversation = getConversation("single", username, appkey);
+            if (conversation == null) {
+                callback.error("无法创建会话");
+                return;
+            }
+
+            TextContent content = new TextContent(text);
+
+            if (!TextUtils.isEmpty(json)) {
+                JSONObject values = new JSONObject(json);
+                Iterator<? extends String> keys = values.keys();
+                Map<String, String> valuesMap = new HashMap<String, String>();
+
+                String key, value;
+                while (keys.hasNext()) {
+                    key = keys.next();
+                    value = values.getString(key);
+                    valuesMap.put(key, value);
+                }
+                content.setExtras(valuesMap);
+            }
+
+            final Message msg = conversation.createSendMessage(content);
+            msg.setOnSendCompleteCallback(new BasicCallback() {
+                @Override
+                public void gotResult(int status, String desc) {
+                    if (status == 0) {
+                        callback.success(mGson.toJson(msg));
+                    } else {
+                        callback.error(status + ": " + desc);
+                    }
+                }
+            });
+            JMessageClient.sendMessage(msg);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callback.error(e.toString());
+        }
+    }
+
     /**
      * @param data     JSONArray.
      *                 data.getString(0):username, data.getString(1):text
@@ -632,6 +657,66 @@ public class JMessagePlugin extends CordovaPlugin {
             URL imgUrl = new URL(imgUrlStr);
             File imgFile = new File(imgUrl.getPath());
             final Message msg = conversation.createSendImageMessage(imgFile);
+            msg.setOnSendCompleteCallback(new BasicCallback() {
+                @Override
+                public void gotResult(int status, String desc) {
+                    if (status == 0) {
+                        callback.success(mGson.toJson(msg));
+                    } else {
+                        callback.error(status + ": " + desc);
+                    }
+                }
+            });
+            JMessageClient.sendMessage(msg);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callback.error("json data error");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            callback.error("文件不存在");
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            callback.error("URL error.");
+        }
+    }
+
+    public void sendSingleImageMessageWithExtras(JSONArray data, final CallbackContext callback) {
+        try {
+            String userName = data.getString(0);
+            String imgUrlStr = data.getString(1);
+            String json = data.getString(2);
+            String appKey = data.isNull(3) ? "" : data.getString(3);
+
+            Conversation conversation = JMessageClient.getSingleConversation(
+                    userName, appKey);
+            if (conversation == null) {
+                conversation = Conversation.createSingleConversation(userName,
+                        appKey);
+            }
+            if (conversation == null) {
+                callback.error("无法创建对话");
+                return;
+            }
+
+            URL imgUrl = new URL(imgUrlStr);
+            File imgFile = new File(imgUrl.getPath());
+            ImageContent content = new ImageContent(imgFile);
+
+            if (!TextUtils.isEmpty(json)) {
+                JSONObject values = new JSONObject(json);
+                Iterator<? extends String> keys = values.keys();
+                Map<String, String> valuesMap = new HashMap<String, String>();
+
+                String key, value;
+                while (keys.hasNext()) {
+                    key = keys.next();
+                    value = values.getString(key);
+                    valuesMap.put(key, value);
+                }
+                content.setExtras(valuesMap);
+            }
+
+            final Message msg = conversation.createSendMessage(content);
             msg.setOnSendCompleteCallback(new BasicCallback() {
                 @Override
                 public void gotResult(int status, String desc) {
@@ -687,6 +772,73 @@ public class JMessagePlugin extends CordovaPlugin {
 
             final Message msg = JMessageClient.createSingleVoiceMessage(userName, file,
                     duration);
+            msg.setOnSendCompleteCallback(new BasicCallback() {
+                @Override
+                public void gotResult(int status, String desc) {
+                    if (status == 0) {
+                        callback.success(mGson.toJson(msg));
+                    } else {
+                        callback.error(status + ": " + desc);
+                    }
+                }
+            });
+            JMessageClient.sendMessage(msg);
+            mediaPlayer.release();
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callback.error("json data error");
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            callback.error("file url error");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            callback.error("file not found.");
+        }
+    }
+
+    public void sendSingleVoiceMessageWithExtras(JSONArray data, final CallbackContext callback) {
+        try {
+            String userName = data.getString(0);
+            String voiceUrlStr = data.getString(1);
+            String json = data.getString(2);
+            String appKey = data.isNull(3) ? "" : data.getString(3);
+
+            Conversation conversation = JMessageClient.getSingleConversation(
+                    userName, appKey);
+            if (conversation == null) {
+                conversation = Conversation.createSingleConversation(userName,
+                        appKey);
+            }
+            if (conversation == null) {
+                callback.error("无法创建对话");
+                return;
+            }
+
+            URL url = new URL(voiceUrlStr);
+            String voicePath = url.getPath();
+            File file = new File(voicePath);
+
+            MediaPlayer mediaPlayer = MediaPlayer.create(this.cordova.getActivity(),
+                    Uri.parse(voicePath));
+            int duration = mediaPlayer.getDuration();
+
+            VoiceContent content = new VoiceContent(file, duration);
+
+            if (!TextUtils.isEmpty(json)) {
+                JSONObject values = new JSONObject(json);
+                Iterator<? extends String> keys = values.keys();
+                Map<String, String> valuesMap = new HashMap<String, String>();
+
+                String key, value;
+                while (keys.hasNext()) {
+                    key = keys.next();
+                    value = values.getString(key);
+                    valuesMap.put(key, value);
+                }
+                content.setExtras(valuesMap);
+            }
+
+            final Message msg = conversation.createSendMessage(content);
             msg.setOnSendCompleteCallback(new BasicCallback() {
                 @Override
                 public void gotResult(int status, String desc) {
@@ -798,6 +950,44 @@ public class JMessagePlugin extends CordovaPlugin {
         }
     }
 
+    public void sendGroupTextMessageWithExtras(JSONArray data, final CallbackContext callback) {
+        try {
+            long groupId = data.getLong(0);
+            String text = data.getString(1);
+            String json = data.getString(2);
+
+            Conversation conversation = JMessageClient.getGroupConversation(groupId);
+            if (conversation == null) {
+                conversation = Conversation.createGroupConversation(groupId);
+            }
+            if (conversation == null) {
+                callback.error("无法创建对话");
+                return;
+            }
+
+            TextContent content = new TextContent(text);
+            if (!TextUtils.isEmpty(json)) {
+                content.setExtras(getExtras(json));
+            }
+
+            final Message msg = conversation.createSendMessage(content);
+            msg.setOnSendCompleteCallback(new BasicCallback() {
+                @Override
+                public void gotResult(int status, String desc) {
+                    if (status == 0) {
+                        callback.success(mGson.toJson(msg));
+                    } else {
+                        callback.error(status + ": " + desc);
+                    }
+                }
+            });
+            JMessageClient.sendMessage(msg);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callback.error("error reading id json.");
+        }
+    }
+
     public void sendGroupImageMessage(JSONArray data, final CallbackContext callback) {
         try {
             long groupId = data.getLong(0);
@@ -815,6 +1005,53 @@ public class JMessagePlugin extends CordovaPlugin {
             URL imgUrl = new URL(imgUrlStr);
             File imgFile = new File(imgUrl.getPath());
             final Message msg = JMessageClient.createGroupImageMessage(groupId, imgFile);
+            msg.setOnSendCompleteCallback(new BasicCallback() {
+                @Override
+                public void gotResult(int status, String desc) {
+                    if (status == 0) {
+                        callback.success(mGson.toJson(msg));
+                    } else {
+                        callback.error(status + ": " + desc);
+                    }
+                }
+            });
+            JMessageClient.sendMessage(msg);
+            callback.success(mGson.toJson(msg));
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callback.error("Parameter error.");
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            callback.error("file not found.");
+        }
+    }
+
+    public void sendGroupImageMessageWithExtras(JSONArray data, final CallbackContext callback) {
+        try {
+            long groupId = data.getLong(0);
+            String imgUrlStr = data.getString(1);
+            String json = data.getString(2);
+
+            Conversation conversation = JMessageClient.getGroupConversation(groupId);
+            if (conversation == null) {
+                conversation = Conversation.createGroupConversation(groupId);
+            }
+            if (conversation == null) {
+                callback.error("无法创建对话");
+                return;
+            }
+
+            URL imgUrl = new URL(imgUrlStr);
+            File imgFile = new File(imgUrl.getPath());
+            ImageContent content = new ImageContent(imgFile);
+
+            if (!TextUtils.isEmpty(json)) {
+                content.setExtras(getExtras(json));
+            }
+
+            final Message msg = conversation.createSendMessage(content);
             msg.setOnSendCompleteCallback(new BasicCallback() {
                 @Override
                 public void gotResult(int status, String desc) {
@@ -859,6 +1096,59 @@ public class JMessagePlugin extends CordovaPlugin {
             MediaPlayer mediaPlayer = MediaPlayer.create(this.cordova.getActivity(),
                     Uri.parse(voicePath));
             int duration = mediaPlayer.getDuration();
+
+            final Message msg = JMessageClient.createGroupVoiceMessage(groupId, file, duration);
+            msg.setOnSendCompleteCallback(new BasicCallback() {
+                @Override
+                public void gotResult(int status, String desc) {
+                    if (status == 0) {
+                        callback.success(mGson.toJson(msg));
+                    } else {
+                        callback.error(status + ": " + desc);
+                    }
+                }
+            });
+            JMessageClient.sendMessage(msg);
+            mediaPlayer.release();
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callback.error("json data error");
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            callback.error("file url error");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            callback.error("file not found.");
+        }
+    }
+
+    public void sendGroupVoiceMessageWithExtras(JSONArray data, final CallbackContext callback) {
+        try {
+            long groupId = data.getLong(0);
+            String voiceUrlStr = data.getString(1);
+            String json = data.getString(2);
+
+            Conversation conversation = JMessageClient.getGroupConversation(groupId);
+            if (conversation == null) {
+                conversation = Conversation.createGroupConversation(groupId);
+            }
+            if (conversation == null) {
+                callback.error("无法创建对话");
+                return;
+            }
+
+            URL url = new URL(voiceUrlStr);
+            String voicePath = url.getPath();
+            File file = new File(voicePath);
+
+            MediaPlayer mediaPlayer = MediaPlayer.create(this.cordova.getActivity(),
+                    Uri.parse(voicePath));
+            int duration = mediaPlayer.getDuration();
+
+            VoiceContent content = new VoiceContent(file, duration);
+            if (!TextUtils.isEmpty(json)) {
+               content.setExtras(getExtras(json));
+            }
 
             final Message msg = JMessageClient.createGroupVoiceMessage(groupId, file, duration);
             msg.setOnSendCompleteCallback(new BasicCallback() {
@@ -991,8 +1281,11 @@ public class JMessagePlugin extends CordovaPlugin {
             List<Message> messages = conversation.getMessagesFromNewest(
                     from, limit);
             if (!messages.isEmpty()) {
-                String json = mGson.toJson(messages);
-                callback.success(json);
+//                JSONArray jsons = new JSONArray();
+//                for (Message msg : messages) {
+//                    jsons.put(getMessageJSONObject(msg));
+//                }
+                callback.success(mGson.toJson(messages));
             } else {
                 callback.success("");
             }
@@ -1033,8 +1326,11 @@ public class JMessagePlugin extends CordovaPlugin {
 
             List<Message> messages = conversation.getAllMessage();
             if (!messages.isEmpty()) {
-                String json = mGson.toJson(messages);
-                callback.success(json);
+//                JSONArray jsons = new JSONArray();
+//                for (Message msg : messages) {
+//                    jsons.put(getMessageJSONObject(msg));
+//                }
+                callback.success(mGson.toJson(messages));
             } else {
                 callback.success("");
             }
@@ -1740,6 +2036,61 @@ public class JMessagePlugin extends CordovaPlugin {
             e.printStackTrace();
             return "";
         }
+    }
+
+    private JSONObject getMessageJSONObject(Message msg) throws JSONException {
+        String jsonStr = mGson.toJson(msg);
+        JSONObject msgJson = new JSONObject(jsonStr);
+
+        // Add user avatar path.
+        UserInfo fromUser = msg.getFromUser();
+        String avatarPath = "";
+        File avatarFile = fromUser.getAvatarFile(); // 获取用户头像缩略图文件
+        if (avatarFile != null) {
+            avatarPath = avatarFile.getAbsolutePath();
+        }
+        msgJson.getJSONObject("fromUser").put("avatarPath", avatarPath);
+
+        File myAvatarFile = JMessageClient.getMyInfo().getAvatarFile();
+        String myAvatarPath = "";
+        if (myAvatarFile != null) {
+            myAvatarPath = myAvatarFile.getAbsolutePath();
+        }
+        msgJson.getJSONObject("targetInfo").put("avatarPath", myAvatarPath);
+
+        switch (msg.getContentType()) {
+            case image:
+                ImageContent imageContent = (ImageContent) msg.getContent();
+                String imgPath = imageContent.getLocalPath();
+                String imgLink = imageContent.getImg_link();
+                msgJson.getJSONObject("content").put("imagePath", imgPath);
+                msgJson.getJSONObject("content").put("imageLink", imgLink);
+                break;
+            case voice:
+                VoiceContent voiceContent = (VoiceContent) msg.getContent();
+                String voicePath = voiceContent.getLocalPath();
+                int duration = voiceContent.getDuration();
+                msgJson.getJSONObject("content").put("voicePath", voicePath);
+                msgJson.getJSONObject("content").put("duration", duration);
+                break;
+            case custom:
+                break;
+        }
+        return msgJson;
+    }
+
+    private Map<String, String> getExtras(String json) throws JSONException {
+        JSONObject values = new JSONObject(json);
+        Iterator<? extends String> keys = values.keys();
+        Map<String, String> valuesMap = new HashMap<String, String>();
+
+        String key, value;
+        while (keys.hasNext()) {
+            key = keys.next();
+            value = values.getString(key);
+            valuesMap.put(key, value);
+        }
+        return valuesMap;
     }
 
 }
