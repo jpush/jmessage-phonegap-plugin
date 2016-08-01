@@ -396,12 +396,12 @@ JMessagePlugin.prototype.memberArray = function (groupId, successCallback, error
   this.callNative('memberArray', [groupId], successCallback, errorCallback)
 }
 
-JMessagePlugin.prototype.addMembers = function (memberArray, successCallback, errorCallback) {
-  this.callNative('addMembers', [memberArray], successCallback, errorCallback)
+JMessagePlugin.prototype.addMembers = function (groupId, memberArray, successCallback, errorCallback) {
+  this.callNative('addMembers', [groupId, memberArray], successCallback, errorCallback)
 }
 
-JMessagePlugin.prototype.removeMembers = function (memberArray, successCallback, errorCallback) {
-  this.callNative('removeMembers', [memberArray], successCallback, errorCallback)
+JMessagePlugin.prototype.removeMembers = function (groupId, memberArray, successCallback, errorCallback) {
+  this.callNative('removeMembers', [groupId, memberArray], successCallback, errorCallback)
 }
 
 // Cross App
