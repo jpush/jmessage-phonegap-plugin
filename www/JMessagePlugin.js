@@ -363,12 +363,20 @@ JMessagePlugin.prototype.getSingleConversationHistoryMessage = function (usernam
   this.callNative('getSingleConversationHistoryMessage', [username, from, limit], successCallback, errorCallback)
 }
 
-JMessagePlugin.prototype.getGroupConversationHistoryMessage = function (username, from, limit, successCallback, errorCallback) {
-  this.callNative('getGroupConversationHistoryMessage', [username, from, limit], successCallback, errorCallback)
+JMessagePlugin.prototype.getGroupConversationHistoryMessage = function (groupId, from, limit, successCallback, errorCallback) {
+  this.callNative('getGroupConversationHistoryMessage', [groupId, from, limit], successCallback, errorCallback)
 }
 
 JMessagePlugin.prototype.getAllConversation = function (successCallback, errorCallback) {
   this.callNative('getAllConversation', [], successCallback, errorCallback)
+}
+
+JMessagePlugin.prototype.clearSingleUnreadCount = function (username, successCallback, errorCallback) {
+  this.callNative('clearSingleUnreadCount', [username], successCallback, errorCallback)
+}
+
+JMessagePlugin.prototype.clearGroupUnreadCount = function (groupId, successCallback, errorCallback) {
+  this.callNative('clearGroupUnreadCount', [groupId], successCallback, errorCallback)
 }
 
 // Group
@@ -419,6 +427,10 @@ JMessagePlugin.prototype.cross_getSingleConversationHistoryMessage = function (u
 
 JMessagePlugin.prototype.cross_deleteSingleConversation = function (username, appKey, successCallback, errorCallback) {
   this.callNative('cross_deleteSingleConversation', [username, appKey], successCallback, errorCallback)
+}
+
+JMessagePlugin.prototype.cross_getUserInfoArray = function (username, appkey, successCallback, errorCallback) {
+  this.callNative('cross_getUserInfoArray', [username, appkey], successCallback, errorCallback)
 }
 
 JMessagePlugin.prototype.cross_getUserInfoArray = function (nameArray, appKey, successCallback, errorCallback) {
