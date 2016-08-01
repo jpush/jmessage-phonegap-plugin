@@ -925,15 +925,16 @@
 
 #### 接口定义
 
-    window.JMessage.getGroupInfo(successCallback, errorCallback)
+    window.JMessage.getGroupInfo(groupId, successCallback, errorCallback)
 
 #### 参数说明
+- groupId：目标群组的 ID。
 - successCallback：以参数形式返回群组信息的 JSON 字符串。
 - errorCallback：以参数形式返回错误信息。
 
 #### 代码示例
 
-    window.JMessage.getGroupInfo(function (json) {
+    window.JMessage.getGroupInfo(1512314121, function (json) {
       // Success callback.
     }, function (errorMsg) {
       // Error callback.
