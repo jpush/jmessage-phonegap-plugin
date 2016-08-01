@@ -248,12 +248,12 @@ JMessagePlugin.prototype.updateGroupDescription = function (groupId, groupNewDes
 
 // userNameList 格式为 "userName1,userName2" 字符串。
 JMessagePlugin.prototype.addGroupMembers = function (groupId, userNameListStr, successCallback, errorCallback) {
-  this.callNative('addGroupMembers', [userNameListStr], successCallback, errorCallback)
+  this.callNative('addGroupMembers', [groupId, userNameListStr], successCallback, errorCallback)
 }
 
 // userNameList 格式为 "userName1,userName2" 字符串。
 JMessagePlugin.prototype.removeGroupMembers = function (groupId, userNameListStr, successCallback, errorCallback) {
-  this.callNative('removeGroupMembers', [userNameListStr], successCallback, errorCallback)
+  this.callNative('removeGroupMembers', [groupId, userNameListStr], successCallback, errorCallback)
 }
 
 JMessagePlugin.prototype.exitGroup = function (groupId, successCallback, errorCallback) {
