@@ -190,7 +190,7 @@ API 目录：
 ### API - myGroupArray
 获取我的群组列表
 #### 接口定义
-	window.JMessage.myGroupArray(groupId, successCallback, errorCallback);
+	window.JMessage.myGroupArray(successCallback, errorCallback);
 	
 ### API - memberArray
 获取当前群组成员列表

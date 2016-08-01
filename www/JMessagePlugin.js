@@ -388,8 +388,8 @@ JMessagePlugin.prototype.updateGroupInfo = function (groupId, name, desc, succes
   this.callNative('updateGroupInfo', [groupId, name, desc], successCallback, errorCallback)
 }
 
-JMessagePlugin.prototype.myGroupArray = function (groupId, successCallback, errorCallback) {
-  this.callNative('myGroupArray', [groupId], successCallback, errorCallback)
+JMessagePlugin.prototype.myGroupArray = function (successCallback, errorCallback) {
+  this.callNative('myGroupArray', [], successCallback, errorCallback)
 }
 
 JMessagePlugin.prototype.memberArray = function (groupId, successCallback, errorCallback) {
