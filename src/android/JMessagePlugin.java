@@ -1256,8 +1256,8 @@ public class JMessagePlugin extends CordovaPlugin {
                 conversation = JMessageClient.getSingleConversation(
                         username, appKey);
                 if (conversation == null) {
-                    conversation = Conversation.createSingleConversation(
-                            username, appKey);
+                    callback.error("Conversation is not exist.");
+                    return;
                 }
             } else if (conversationType.equals("group")) {
                 long groupId = data.getLong(1);
@@ -1270,21 +1270,11 @@ public class JMessagePlugin extends CordovaPlugin {
                 return;
             }
 
-            if (conversation == null) {
-                callback.error("Can't get conversation.");
-                return;
-            }
-
             int from = data.getInt(3);
             int limit = data.getInt(4);
 
-            List<Message> messages = conversation.getMessagesFromNewest(
-                    from, limit);
+            List<Message> messages = conversation.getMessagesFromNewest(from, limit);
             if (!messages.isEmpty()) {
-//                JSONArray jsons = new JSONArray();
-//                for (Message msg : messages) {
-//                    jsons.put(getMessageJSONObject(msg));
-//                }
                 callback.success(mGson.toJson(messages));
             } else {
                 callback.success("");
@@ -1305,8 +1295,8 @@ public class JMessagePlugin extends CordovaPlugin {
                 conversation = JMessageClient.getSingleConversation(
                         username, appKey);
                 if (conversation == null) {
-                    conversation = Conversation.createSingleConversation(
-                            username, appKey);
+                    callback.error("Conversation is not exist.");
+                    return;
                 }
             } else if (type.equals("group")) {
                 long groupId = data.getLong(1);
@@ -1319,18 +1309,10 @@ public class JMessagePlugin extends CordovaPlugin {
                 return;
             }
 
-            if (conversation == null) {
-                callback.error("Can't get conversation.");
-                return;
-            }
-
             List<Message> messages = conversation.getAllMessage();
-            if (!messages.isEmpty()) {
-//                JSONArray jsons = new JSONArray();
-//                for (Message msg : messages) {
-//                    jsons.put(getMessageJSONObject(msg));
-//                }
-                callback.success(mGson.toJson(messages));
+            if (messages != null && !messages.isEmpty()) {
+                String json = mGson.toJson(messages);
+                callback.success(json);
             } else {
                 callback.success("");
             }
@@ -1342,6 +1324,37 @@ public class JMessagePlugin extends CordovaPlugin {
 
 
     // Conversation API.
+
+    public void isSingleConversationExist(JSONArray data, CallbackContext callback) {
+        try {
+            String username = data.getString(0);
+            String appKey = data.isNull(1) ? "" : data.getString(1);
+            Conversation con = JMessageClient.getSingleConversation(username, appKey);
+            if (con == null) {
+                callback.success(0);
+            } else {
+                callback.success(1);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callback.error("Parameter error.");
+        }
+    }
+
+    public void isGroupConversationExist(JSONArray data, CallbackContext callback) {
+        try {
+            long groupId = data.getLong(0);
+            Conversation con = JMessageClient.getGroupConversation(groupId);
+            if (con == null) {
+                callback.success(0);
+            } else {
+                callback.success(1);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callback.error("Parameter error.");
+        }
+    }
 
     public void getConversationList(JSONArray data, CallbackContext callback) {
         List<Conversation> conversationList = JMessageClient.getConversationList();

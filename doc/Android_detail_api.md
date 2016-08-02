@@ -28,6 +28,8 @@
 	- [getOriginImageInSingleConversation](#getoriginimageinsingleconversation)
 	- [getOriginImageInGroupConversation](#getoriginimageingroupconversation)
 - [聊天会话](#聊天会话)
+	- [isSingleConversationExist](#isSingleConversationExist)
+	- [isGroupConversationExist](#isGroupConversationExist)
 	- [getConversationList](#getconversationlist)
 	- [exitConversation](#exitconversation)
 	- [单聊](#单聊)
@@ -388,17 +390,17 @@
 
 #### 接口定义
 
-	window.JMessage.sendGroupTextMessage(username, text, successCallback, errorCallback)
+	window.JMessage.sendGroupTextMessage(groupId, text, successCallback, errorCallback)
 
 #### 参数说明
-- username：用户名。
+- groupId：群组 ID，数值类型。
 - text：文本内容。
 - successCallback：发送成功的回调函数，以参数形式返回消息对象的 JSON 字符串。
 - errorCallback：发送失败的回调函数，以参数形式返回错误信息。如果为 null，默认打印失败信息日志。
 
 #### 代码示例
 
-	window.JMessage.sendSingleTextMessage('username', 'content',
+	window.JMessage.sendSingleTextMessage(5124132141, 'content',
 		function(response) {
 			var message = JSON.parse(response);
 		}, function(errorMsg) {
@@ -410,17 +412,17 @@
 
 #### 接口定义
 
-	window.JMessage.sendGroupTextMessage(username, imageUrl, successCallback, errorCallback)
+	window.JMessage.sendGroupTextMessage(groupId, imageUrl, successCallback, errorCallback)
 
 #### 参数说明
-- username：用户名。
+- groupId：群组 ID，数值类型。
 - imageUrl：图片文件的 URL。
 - successCallback：发送成功的回调函数，以参数形式返回消息对象的 JSON 字符串。
 - errorCallback：发送失败的回调函数，以参数形式返回错误信息。如果为 null，默认打印失败信息日志。
 
 #### 代码示例
 
-	window.JMessage.sendGroupImageMessage('username', 'imageUrl',
+	window.JMessage.sendGroupImageMessage(512412412, 'imageUrl',
 		function(response) {
 			var message = JSON.parse(response);
 		}, function(errorMsg) {
@@ -432,17 +434,17 @@
 
 #### 接口定义
 
-	window.JMessage.sendGroupVoiceMessage(username, voiceFileUrl, successCallback, errorCallback)
+	window.JMessage.sendGroupVoiceMessage(groupId, voiceFileUrl, successCallback, errorCallback)
 
 #### 参数说明
-- username：用户名。
+- groupId：群组 ID，数值类型。
 - voiceFileUrl：语音文件的 URL。
 - successCallback：发送成功的回调函数，以参数形式返回消息对象的 JSON 字符串。
 - errorCallback：发送失败的回调函数，以参数形式返回错误信息。如果为 null，默认打印失败信息日志。
 
 #### 代码示例
 
-	window.JMessage.sendGroupVoiceMessage('username', 'voiceFileUrl',
+	window.JMessage.sendGroupVoiceMessage(151231231, 'voiceFileUrl',
 		function(response) {
 			var message = JSON.parse(response);
 		}, function(errorMsg) {
@@ -454,17 +456,17 @@
 
 #### 接口定义
 
-	window.JMessage.sendGroupCustomMessage(username, jsonStr, successCallback, errorCallback)
+	window.JMessage.sendGroupCustomMessage(groupId, jsonStr, successCallback, errorCallback)
 
 #### 参数说明
-- username：用户名。
+- groupId：群组 ID，数值类型。
 - jsonStr：自定义消息要携带的数据的 JSON 字符串。
 - successCallback：发送成功的回调函数，以参数形式返回消息对象的 JSON 字符串。
 - errorCallback：发送失败的回调函数，以参数形式返回错误信息。如果为 null，默认打印失败信息日志。
 
 #### 代码示例
 
-	window.JMessage.sendGroupCustomMessage('username', 'yourJsonStr',
+	window.JMessage.sendGroupCustomMessage(151231231, 'yourJsonStr',
 		function(response) {
 			var message = JSON.parse(response);
 		}, function(errorMsg) {
@@ -609,6 +611,31 @@
 
 
 ## 聊天会话
+### isSingleConversationExist
+判断指定单聊会话是否存在。
+
+#### 接口定义
+
+	window.JMessage.isSingleConversationExist(username, appKey, successCallback, errorCallback)
+
+#### 参数说明
+- username：对方用户的用户名，字符串类型。
+- appKey：对方用户所在应用的 AppKey，若为空则默认为当前应用。
+- successCallback：以参数形式返回结果。0: 不存在；1：存在。
+- errorCallback：以参数形式返回错误信息。
+
+### isGroupConversationExist
+判断指定群聊会话是否存在。
+
+#### 接口定义
+
+	window.JMessage.isGroupConversationExist(groupId, successCallback, errorCallback)
+
+#### 参数说明
+- groupId：群组 ID，数值类型。
+- successCallback：以参数形式返回结果。0: 不存在；1：存在。
+- errorCallback：以参数形式返回错误信息。
+
 ### getConversationList
 获取当前用户的所有会话列表。从本地数据库获得，同步返回。
 
