@@ -277,6 +277,7 @@
     NSString *username = [command argumentAtIndex:0];
     NSString *text     = [command argumentAtIndex:1];
     WEAK_SELF(weak_self);
+
     [JMSGConversation createSingleConversationWithUsername:username completionHandler:^(id resultObject, NSError *error) {
         if (error == nil) {
             JMSGConversation *conversation = resultObject;
@@ -481,6 +482,19 @@
         [weakSelf handleResultWithValue:resultArr command:command error:error];
     }];
 }
+
+-(void)clearSingleUnreadCount:(CDVInvokedUrlCommand *)command{
+    NSString *username = [command argumentAtIndex:0];
+    JMSGConversation *conversation =  [JMSGConversation singleConversationWithUsername:username];
+    [conversation clearUnreadCount];
+}
+
+-(void)clearGroupUnreadCount:(CDVInvokedUrlCommand *)command{
+    NSString *gid = [command argumentAtIndex:0];
+    JMSGConversation *conversation =  [JMSGConversation groupConversationWithGroupId:gid];
+    [conversation clearUnreadCount];
+}
+
 
 #pragma mark IM - Group
 
@@ -691,6 +705,13 @@
     NSString *appkey   = [command argumentAtIndex:1];
     BOOL       success = [JMSGConversation deleteSingleConversationWithUsername:username appKey:appkey];
     [self handleResultWithValue:[NSNumber numberWithBool:success] command:command log:@"delete cross single conversation"];
+}
+
+-(void)cross_clearSingleUnreadCount:(CDVInvokedUrlCommand *)command{
+    NSString *username = [command argumentAtIndex:0];
+    NSString *appkey   = [command argumentAtIndex:1];
+    JMSGConversation *conversation =  [JMSGConversation singleConversationWithUsername:username appKey:appkey];
+    [conversation clearUnreadCount];
 }
 
 #pragma mark CrossApp - User
@@ -1016,7 +1037,4 @@
 }
 
 @end
-
-
-
 

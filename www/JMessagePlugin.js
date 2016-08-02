@@ -171,6 +171,18 @@ JMessagePlugin.prototype.getOriginImageInGroupConversation = function(groupId, m
 
 // Conversation API.
 
+// 判断单聊会话是否存在。返回值：0 - 不存在；1 - 存在。
+JMessagePlugin.prototype.isSingleConversationExist = function(username, appKey, successCallback,
+    errorCallback) {
+  this.callNative('isSingleConversationExist', [username, appKey], successCallback, errorCallback)
+}
+
+// 判断群聊会话是否存在。返回值：0 - 不存在；1 - 存在。
+JMessagePlugin.prototype.isGroupConversationExist = function(groupId, successCallback,
+    errorCallback) {
+  this.callNative('isGroupConversationExist', [groupId], successCallback, errorCallback)
+}
+
 JMessagePlugin.prototype.getConversationList = function (successCallback, errorCallback) {
   this.callNative('getConversationList', [], successCallback, errorCallback)
 }
@@ -363,12 +375,20 @@ JMessagePlugin.prototype.getSingleConversationHistoryMessage = function (usernam
   this.callNative('getSingleConversationHistoryMessage', [username, from, limit], successCallback, errorCallback)
 }
 
-JMessagePlugin.prototype.getGroupConversationHistoryMessage = function (username, from, limit, successCallback, errorCallback) {
-  this.callNative('getGroupConversationHistoryMessage', [username, from, limit], successCallback, errorCallback)
+JMessagePlugin.prototype.getGroupConversationHistoryMessage = function (groupId, from, limit, successCallback, errorCallback) {
+  this.callNative('getGroupConversationHistoryMessage', [groupId, from, limit], successCallback, errorCallback)
 }
 
 JMessagePlugin.prototype.getAllConversation = function (successCallback, errorCallback) {
   this.callNative('getAllConversation', [], successCallback, errorCallback)
+}
+
+JMessagePlugin.prototype.clearSingleUnreadCount = function (username, successCallback, errorCallback) {
+  this.callNative('clearSingleUnreadCount', [username], successCallback, errorCallback)
+}
+
+JMessagePlugin.prototype.clearGroupUnreadCount = function (groupId, successCallback, errorCallback) {
+  this.callNative('clearGroupUnreadCount', [groupId], successCallback, errorCallback)
 }
 
 // Group
@@ -380,20 +400,20 @@ JMessagePlugin.prototype.updateGroupInfo = function (groupId, name, desc, succes
   this.callNative('updateGroupInfo', [groupId, name, desc], successCallback, errorCallback)
 }
 
-JMessagePlugin.prototype.myGroupArray = function (groupId, successCallback, errorCallback) {
-  this.callNative('myGroupArray', [groupId], successCallback, errorCallback)
+JMessagePlugin.prototype.myGroupArray = function (successCallback, errorCallback) {
+  this.callNative('myGroupArray', [], successCallback, errorCallback)
 }
 
 JMessagePlugin.prototype.memberArray = function (groupId, successCallback, errorCallback) {
   this.callNative('memberArray', [groupId], successCallback, errorCallback)
 }
 
-JMessagePlugin.prototype.addMembers = function (memberArray, successCallback, errorCallback) {
-  this.callNative('addMembers', [memberArray], successCallback, errorCallback)
+JMessagePlugin.prototype.addMembers = function (groupId, memberArray, successCallback, errorCallback) {
+  this.callNative('addMembers', [groupId, memberArray], successCallback, errorCallback)
 }
 
-JMessagePlugin.prototype.removeMembers = function (memberArray, successCallback, errorCallback) {
-  this.callNative('removeMembers', [memberArray], successCallback, errorCallback)
+JMessagePlugin.prototype.removeMembers = function (groupId, memberArray, successCallback, errorCallback) {
+  this.callNative('removeMembers', [groupId, memberArray], successCallback, errorCallback)
 }
 
 // Cross App
@@ -419,6 +439,10 @@ JMessagePlugin.prototype.cross_getSingleConversationHistoryMessage = function (u
 
 JMessagePlugin.prototype.cross_deleteSingleConversation = function (username, appKey, successCallback, errorCallback) {
   this.callNative('cross_deleteSingleConversation', [username, appKey], successCallback, errorCallback)
+}
+
+JMessagePlugin.prototype.cross_getUserInfoArray = function (username, appkey, successCallback, errorCallback) {
+  this.callNative('cross_getUserInfoArray', [username, appkey], successCallback, errorCallback)
 }
 
 JMessagePlugin.prototype.cross_getUserInfoArray = function (nameArray, appKey, successCallback, errorCallback) {

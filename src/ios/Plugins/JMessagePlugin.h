@@ -51,6 +51,9 @@
 
 -(void)getAllConversation:(CDVInvokedUrlCommand *)command;//new
 
+-(void)clearSingleUnreadCount:(CDVInvokedUrlCommand *)command;//new
+-(void)clearGroupUnreadCount:(CDVInvokedUrlCommand *)command;//new
+
 //Group
 -(void)createGroupIniOS:(CDVInvokedUrlCommand *)command;//new
 -(void)updateGroupInfo:(CDVInvokedUrlCommand *)command;//new
@@ -69,6 +72,7 @@
 -(void)cross_sendSingleImageMessage:(CDVInvokedUrlCommand *)command;//new
 -(void)cross_getSingleConversationHistoryMessage:(CDVInvokedUrlCommand *)command;//new
 -(void)cross_deleteSingleConversation:(CDVInvokedUrlCommand *)command;//new
+-(void)cross_clearSingleUnreadCount:(CDVInvokedUrlCommand *)command;//new
 
 //Cross - User
 -(void)cross_getUserInfoArray:(CDVInvokedUrlCommand *)command;//new

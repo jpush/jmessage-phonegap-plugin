@@ -155,6 +155,16 @@ API 目录：
 获取全部单聊、群里会话信息
 #### 接口定义
 	window.JMessage.getAllConversation(successCallback, errorCallback);
+	
+### API - clearSingleUnreadCount
+清除单聊会话未读数
+#### 接口定义
+	window.JMessage.clearSingleUnreadCount(username, successCallback, errorCallback);
+	
+### API - clearGroupUnreadCount
+清除群聊会话未读数
+#### 接口定义
+	window.JMessage.clearGroupUnreadCount(groupId, successCallback, errorCallback);
 
 
 ## Group
@@ -180,7 +190,7 @@ API 目录：
 ### API - myGroupArray
 获取我的群组列表
 #### 接口定义
-	window.JMessage.myGroupArray(groupId, successCallback, errorCallback);
+	window.JMessage.myGroupArray(successCallback, errorCallback);
 	
 ### API - memberArray
 获取当前群组成员列表
@@ -190,12 +200,12 @@ API 目录：
 ### API - addMembers
 添加群组成员
 #### 接口定义
-	window.JMessage.addMembers(memberArray, successCallback, errorCallback) ;
+	window.JMessage.addMembers(groupId, memberArray, successCallback, errorCallback) ;
 
 ### API - removeMembers
 删除群组成员
 #### 接口定义
-	window.JMessage.removeMembers(memberArray, successCallback, errorCallback);
+	window.JMessage.removeMembers(groupId, memberArray, successCallback, errorCallback);
 	
 ### API - exitGroup
 退出群组（当前用户）
@@ -229,6 +239,11 @@ API 目录：
 删除跨应用单聊会话
 #### 接口定义
 	window.JMessage.cross_deleteSingleConversation = function (username, appKey, successCallback, errorCallback);
+	
+### API - cross_clearSingleUnreadCount
+清除跨应用单聊会话未读数
+#### 接口定义
+	window.JMessage.cross_clearSingleUnreadCount(username, appkey, successCallback, errorCallback);
 
 ### API - cross_getUserInfoArray
 批量获取跨应用用户信息
