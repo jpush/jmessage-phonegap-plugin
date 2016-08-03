@@ -78,8 +78,11 @@
         [(JMSGImageContent*)message.content thumbImageData:^(NSData *data, NSString *objectId, NSError *error) {
             if (!error) {
                 if (data) {
-                    NSString *dataStr = [NSString stringWithFormat:@"%@",data];
-                    NSDictionary *dict = @{@"objectId":objectId, @"data":dataStr};
+                    NSString *resourcePath;
+                    Ivar ivar = class_getInstanceVariable([message.content class], "_resourcePath");
+                    resourcePath = object_getIvar(message.content, ivar);
+                    [dict setValue:objectId forKey:@"objectId"];
+                    [dict setValue:resourcePath forKey:@"resourcePath"];
                     [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageReceiveImageData object:dict];
                 }
             }
@@ -89,8 +92,11 @@
         [(JMSGVoiceContent*)message.content voiceData:^(NSData *data, NSString *objectId, NSError *error) {
             if (!error) {
                 if (data) {
-                    NSString *dataStr = [NSString stringWithFormat:@"%@",data];
-                    NSDictionary *dict = @{@"objectId":objectId, @"data":dataStr};
+                    NSString *resourcePath;
+                    Ivar ivar = class_getInstanceVariable([message.content class], "_resourcePath");
+                    resourcePath = object_getIvar(message.content, ivar);
+                    [dict setValue:objectId forKey:@"objectId"];
+                    [dict setValue:resourcePath forKey:@"resourcePath"];
                     [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageReceiveVoiceData object:dict];
                 }
             }
