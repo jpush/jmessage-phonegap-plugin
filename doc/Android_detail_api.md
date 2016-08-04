@@ -1177,8 +1177,6 @@
 	    "createTimeInSeconds": 1466496463,
 	    "direct": "receive",
 	    "fromAppkey": "fromUserAppKey",
-	    "fromID": "fromUserID",
-	    "fromName": "fromUsername",
 	    "fromType": "user",
 	    "fromUser": {
 	        "address": "",
@@ -1203,7 +1201,6 @@
 	    "serverMessageId": 73511240,
 	    "status": "receive_success",
 	    "targetAppkey": "targetAppkey",
-	    "targetID": "targetUserId",
 	    "targetInfo": {
 	        "address": "",
 	        "appkey": "targetAppKey",
