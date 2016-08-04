@@ -88,7 +88,7 @@ JMessagePlugin.prototype.sendSingleTextMessage = function (username, text, appKe
 
 JMessagePlugin.prototype.sendSingleTextMessageWithExtras = function(username, text, json, appKey,
     successCallback, errorCallback) {
-  this.callNative('sendSingleTextMessageWithJson', [username, text, json, appKey], successCallback,
+  this.callNative('sendSingleTextMessageWithExtras', [username, text, json, appKey], successCallback,
     errorCallback);
 }
 
@@ -99,7 +99,7 @@ JMessagePlugin.prototype.sendSingleImageMessage = function (username, imageUrl, 
 
 JMessagePlugin.prototype.sendSingleImageMessageWithExtras = function(username, imageUrl, json, appKey,
     successCallback, errorCallback) {
-  this.callNative('sendSingleImageMessageWithJson', [username, imageUrl, json, appKey],
+  this.callNative('sendSingleImageMessageWithExtras', [username, imageUrl, json, appKey],
     successCallback, errorCallback);
 }
 
@@ -110,7 +110,7 @@ JMessagePlugin.prototype.sendSingleVoiceMessage = function (username, fileUrl, a
 
 JMessagePlugin.prototype.sendSingleVoiceMessageWithExtras = function(username, fileUrl, json, appKey,
     successCallback, errorCallback) {
-  this.callNative('sendSingleVoiceMessageWithJson', [username, fileUrl, json, appKey],
+  this.callNative('sendSingleVoiceMessageWithExtras', [username, fileUrl, json, appKey],
     successCallback, errorCallback);
 }
 
