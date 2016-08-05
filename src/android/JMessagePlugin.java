@@ -637,6 +637,9 @@ public class JMessagePlugin extends CordovaPlugin {
 
             Conversation conversation = getConversation("single", username, appkey);
             if (conversation == null) {
+                conversation = Conversation.createSingleConversation(username, appkey);
+            }
+            if (conversation == null) {
                 callback.error("无法创建会话");
                 return;
             }
