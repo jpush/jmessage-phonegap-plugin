@@ -86,11 +86,6 @@ public class JMessagePlugin extends CordovaPlugin {
         mCordovaActivity = cordova.getActivity();
         JMessageClient.init(this.cordova.getActivity().getApplicationContext());
         JMessageClient.registerEventReceiver(this);
-
-        if (mBufMsg != null) {
-            Log.i(TAG, (mBufMsg == null) + "");
-            triggerMessageClickEvent(mBufMsg);
-        }
     }
 
     public void onEvent(MessageEvent event) {
