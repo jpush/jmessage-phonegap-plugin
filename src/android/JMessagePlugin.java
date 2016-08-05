@@ -86,6 +86,11 @@ public class JMessagePlugin extends CordovaPlugin {
         mCordovaActivity = cordova.getActivity();
         JMessageClient.init(this.cordova.getActivity().getApplicationContext());
         JMessageClient.registerEventReceiver(this);
+
+        if (mBufMsg != null) {
+            Log.i(TAG, (mBufMsg == null) + "");
+            triggerMessageClickEvent(mBufMsg);
+        }
     }
 
     public void onEvent(MessageEvent event) {
@@ -105,7 +110,7 @@ public class JMessagePlugin extends CordovaPlugin {
             String fromName = TextUtils.isEmpty(fromUser.getNickname()) ? fromUser.getUserName()
                     : fromUser.getNickname();
             msgJson.put("fromName", fromName);
-            msgJson.put("fromID", fromUser.getUserID());
+            msgJson.put("fromID", fromUser.getUserName());
 
             UserInfo myInfo = JMessageClient.getMyInfo();
             String myInfoJson = mGson.toJson(myInfo);
@@ -124,7 +129,7 @@ public class JMessagePlugin extends CordovaPlugin {
             if (msg.getTargetType().equals(ConversationType.single)) {
                 targetName = TextUtils.isEmpty(myInfo.getNickname())
                         ? myInfo.getUserName() : myInfo.getNickname();
-                msgJson.put("targetID", myInfo.getUserID());
+                msgJson.put("targetID", myInfo.getUserName());
 
             } else if (msg.getTargetType().equals(ConversationType.group)) {
                 GroupInfo targetInfo = (GroupInfo) msg.getTargetInfo();
