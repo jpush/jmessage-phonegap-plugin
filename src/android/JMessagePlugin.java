@@ -12,7 +12,9 @@ import android.util.Log;
 import com.google.gson.Gson;
 
 import org.apache.cordova.CallbackContext;
+import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
+import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -70,13 +72,17 @@ public class JMessagePlugin extends CordovaPlugin {
     private Gson mGson = new Gson();
     private Activity mCordovaActivity;
     private Message mCurrentMsg; // 当前消息。
+    private static Message mBufMsg;     // 缓存的消息。
+    private static boolean shouldCacheMsg = false;
     private int[] mMsgIds;
 
     public JMessagePlugin() {
         instance = this;
     }
 
-    protected void pluginInitialize() {
+    @Override
+    public void initialize(CordovaInterface cordova, CordovaWebView webView) {
+        super.initialize(cordova, webView);
         mCordovaActivity = cordova.getActivity();
         JMessageClient.init(this.cordova.getActivity().getApplicationContext());
         JMessageClient.registerEventReceiver(this);
@@ -84,7 +90,6 @@ public class JMessagePlugin extends CordovaPlugin {
 
     public void onEvent(MessageEvent event) {
         final Message msg = event.getMessage();
-        mCurrentMsg = msg;
         try {
             String jsonStr = mGson.toJson(msg);
             JSONObject msgJson = new JSONObject(jsonStr);
@@ -97,13 +102,36 @@ public class JMessagePlugin extends CordovaPlugin {
                 avatarPath = avatarFile.getAbsolutePath();
             }
             msgJson.getJSONObject("fromUser").put("avatarPath", avatarPath);
+            String fromName = TextUtils.isEmpty(fromUser.getNickname()) ? fromUser.getUserName()
+                    : fromUser.getNickname();
+            msgJson.put("fromName", fromName);
+            msgJson.put("fromID", fromUser.getUserID());
+
+            UserInfo myInfo = JMessageClient.getMyInfo();
+            String myInfoJson = mGson.toJson(myInfo);
+            JSONObject myInfoJsonObj = new JSONObject(myInfoJson);
 
             File myAvatarFile = JMessageClient.getMyInfo().getAvatarFile();
             String myAvatarPath = "";
             if (myAvatarFile != null) {
                 myAvatarPath = myAvatarFile.getAbsolutePath();
             }
-            msgJson.getJSONObject("targetInfo").put("avatarPath", myAvatarPath);
+            myInfoJsonObj.put("avatarPath", myAvatarPath);
+
+            msgJson.put("targetInfo", myInfoJsonObj);
+
+            String targetName = "";
+            if (msg.getTargetType().equals(ConversationType.single)) {
+                targetName = TextUtils.isEmpty(myInfo.getNickname())
+                        ? myInfo.getUserName() : myInfo.getNickname();
+                msgJson.put("targetID", myInfo.getUserID());
+
+            } else if (msg.getTargetType().equals(ConversationType.group)) {
+                GroupInfo targetInfo = (GroupInfo) msg.getTargetInfo();
+                targetName = TextUtils.isEmpty(targetInfo.getGroupName())
+                        ? targetInfo.getGroupName() : (targetInfo.getGroupID() + "");
+            }
+            msgJson.put("targetName", targetName);
 
             switch (msg.getContentType()) {
                 case text:
@@ -175,6 +203,9 @@ public class JMessagePlugin extends CordovaPlugin {
     // 触发通知栏点击事件。
     public void onEvent(NotificationClickEvent event) {
         Message msg = event.getMessage();
+        if (shouldCacheMsg) {
+            mBufMsg = msg;
+        }
         String json = mGson.toJson(msg);
         fireEvent("onOpenMessage", json);
 
@@ -185,6 +216,12 @@ public class JMessagePlugin extends CordovaPlugin {
         launch.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         cordova.getActivity().getApplicationContext().startActivity(launch);
     }
+
+    private void triggerMessageClickEvent(Message msg) {
+        String json = mGson.toJson(msg);
+        fireEvent("onOpenMessage", json);
+    }
+
 
     private void fireEvent(String eventName, String jsonStr) {
         String format = "window.JMessage." + eventName + "(%s);";
@@ -223,12 +260,18 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     public void onPause(boolean multitasking) {
-        Log.i(TAG, "onPause");
+        shouldCacheMsg = true;
+    }
+
+    @Override
+    public void onResume(boolean multitasking) {
+        super.onResume(multitasking);
+        shouldCacheMsg = false;
     }
 
     public void onDestroy() {
-        Log.i(TAG, " onDestroy");
         JMessageClient.unRegisterEventReceiver(this);
+        mCordovaActivity = null;
     }
 
 
