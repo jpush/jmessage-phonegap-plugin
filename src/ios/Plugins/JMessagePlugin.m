@@ -164,15 +164,23 @@
 
 -(void)onReceiveImageData:(NSNotification*)notification{
     NSLog(@"JMessagePlugin onReceiveImageData");
+    NSDictionary *userInfo = [notification object];
+    NSString *jsonString = [userInfo toJsonString];
+    jsonString = [jsonString stringByReplacingOccurrencesOfString:@"\"{" withString:@"{"];
+    jsonString = [jsonString stringByReplacingOccurrencesOfString:@"}\"" withString:@"}"];
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self commonSendMessage:@"onReceiveImageData" jsonParm:[notification.object toJsonString]];
+        [self commonSendMessage:@"onReceiveImageData" jsonParm:jsonString];
     });
 }
 
 -(void)onReceiveVoiceData:(NSNotification*)notification{
     NSLog(@"JMessagePlugin onReceiveVoiceData");
+    NSDictionary *userInfo = [notification object];
+    NSString *jsonString = [userInfo toJsonString];
+    jsonString = [jsonString stringByReplacingOccurrencesOfString:@"\"{" withString:@"{"];
+    jsonString = [jsonString stringByReplacingOccurrencesOfString:@"}\"" withString:@"}"];
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self commonSendMessage:@"onReceiveVoiceData" jsonParm:[notification.object toJsonString]];
+        [self commonSendMessage:@"onReceiveVoiceData" jsonParm:jsonString];
     });
 }
 
@@ -265,7 +273,7 @@
     NSString *val = [command argumentAtIndex:1];
     WEAK_SELF(weak_self);
     [JMSGUser updateMyInfoWithParameter:val userFieldType:type completionHandler:^(id resultObject, NSError *error) {
-        [weak_self handleResultWithValue:resultObject command:command];
+        [weak_self handleResultWithValue:@"success" command:command error:error];
     }];
 }
 
