@@ -852,8 +852,7 @@ public class JMessagePlugin extends CordovaPlugin {
             Conversation conversation = JMessageClient.getSingleConversation(
                     userName, appKey);
             if (conversation == null) {
-                conversation = Conversation.createSingleConversation(userName,
-                        appKey);
+                conversation = Conversation.createSingleConversation(userName, appKey);
             }
             if (conversation == null) {
                 callback.error("无法创建对话");
@@ -1193,7 +1192,7 @@ public class JMessagePlugin extends CordovaPlugin {
 
             VoiceContent content = new VoiceContent(file, duration);
             if (!TextUtils.isEmpty(json)) {
-               content.setExtras(getExtras(json));
+                content.setExtras(getExtras(json));
             }
 
             final Message msg = JMessageClient.createGroupVoiceMessage(groupId, file, duration);
@@ -1403,13 +1402,27 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     public void getConversationList(JSONArray data, CallbackContext callback) {
-        List<Conversation> conversationList = JMessageClient.getConversationList();
-        if (conversationList != null) {
-            String json = mGson.toJson(conversationList);
-            Log.i(TAG, "Conversation list: " + json);
-            callback.success(json);
-        } else {
-            callback.success("");
+        try {
+            List<Conversation> conversationList = JMessageClient.getConversationList();
+
+            if (conversationList != null) {
+                JSONArray conArr = new JSONArray();
+                JSONObject conJson;
+                for (Conversation con : conversationList) {
+                    conJson = new JSONObject(mGson.toJson(con));
+                    if (conJson.isNull("latestMessage")) {
+                        Message latestMsg = con.getLatestMessage();
+                        JSONObject msgJson = new JSONObject(mGson.toJson(latestMsg));
+                        conJson.put("latestMessage", msgJson);
+                    }
+                    conArr.put(conJson);
+                }
+                callback.success(conArr.toString());
+            } else {
+                callback.success("");
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 
@@ -1509,7 +1522,11 @@ public class JMessagePlugin extends CordovaPlugin {
         try {
             String username = data.getString(0);
             String appKey = data.isNull(1) ? "" : data.getString(1);
-            JMessageClient.deleteSingleConversation(username, appKey);
+            if (TextUtils.isEmpty(appKey)) {
+                JMessageClient.deleteSingleConversation(username);
+            } else {
+                JMessageClient.deleteSingleConversation(username, appKey);
+            }
             callback.success();
         } catch (JSONException e) {
             e.printStackTrace();
@@ -1957,33 +1974,52 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     public void getAllSingleConversation(JSONArray data, CallbackContext callback) {
-        Log.i(TAG, "getAllSingleConversation \n" + data);
+        try {
+            List<Conversation> list = JMessageClient.getConversationList();
 
-        List<Conversation> list = JMessageClient.getConversationList();
-        List<Conversation> singleConversationList = new ArrayList<Conversation>();
-
-        for (int i = 0; i < list.size(); ++i) {
-            Conversation con = list.get(i);
-            if (con.getType() == ConversationType.single) {
-                singleConversationList.add(con);
+            JSONArray jsonArr = new JSONArray();
+            JSONObject jsonObj;
+            for (Conversation con : list) {
+                if (con.getType() == ConversationType.single) {
+                    jsonObj = new JSONObject(mGson.toJson(con));
+                    Message latestMsg = con.getLatestMessage();
+                    if (!jsonObj.has("latestMessage")) {
+                        JSONObject msgJson = new JSONObject(mGson.toJson(latestMsg));
+                        jsonObj.put("latestMessage", msgJson);
+                    }
+                    jsonArr.put(jsonObj);
+                }
             }
+            callback.success(jsonArr.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callback.error(e.getMessage());
         }
-        callback.success(mGson.toJson(singleConversationList));
     }
 
     public void getAllGroupConversation(JSONArray data, CallbackContext callback) {
-        Log.i(TAG, "getAllSingleConversation \n" + data);
-
         List<Conversation> list = JMessageClient.getConversationList();
-        List<Conversation> groupConversationList = new ArrayList<Conversation>();
 
-        for (int i = 0; i < list.size(); ++i) {
-            Conversation con = list.get(i);
-            if (con.getType() == ConversationType.group) {
-                groupConversationList.add(con);
+        JSONArray jsonArr = new JSONArray();
+        JSONObject jsonObj;
+
+        try {
+            for (Conversation con : list) {
+                if (con.getType() == ConversationType.group) {
+                    jsonObj = new JSONObject(mGson.toJson(con));
+                    Message latestMsg = con.getLatestMessage();
+                    if (!jsonObj.has("latestMessage")) {
+                        JSONObject msgJson = new JSONObject(mGson.toJson(latestMsg));
+                        jsonObj.put("latestMessage", msgJson);
+                    }
+                    jsonArr.put(jsonObj);
+                }
             }
+            callback.success(jsonArr.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callback.error(e.getMessage());
         }
-        callback.success(mGson.toJson(groupConversationList));
     }
 
     public void setJMessageReceiveCallbackChannel(JSONArray data, CallbackContext callback) {
