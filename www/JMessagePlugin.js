@@ -142,6 +142,10 @@ JMessagePlugin.prototype.sendGroupVoiceMessageWithExtras = function (groupId, fi
   this.callNative('sendGroupVoiceMessageWithExtras', [groupId, fileUrl, extrasJson], successCallback, errorCallback)
 }
 
+JMessagePlugin.prototype.sendGroupCustomMessage = function (groupId, jsonStr, successCallback, errorCallback) {
+  this.callNative('sendGroupCustomMessage', [groupId, jsonStr], successCallback, errorCallback)
+}
+
 JMessagePlugin.prototype.getLatestMessage = function (conversationType, value, appKey, successCallback, errorCallback) {
   this.callNative('getLatestMessage', [conversationType, value, appKey], successCallback, errorCallback)
 }
