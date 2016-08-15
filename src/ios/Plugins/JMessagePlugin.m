@@ -552,13 +552,9 @@
 -(void)myGroupArray:(CDVInvokedUrlCommand *)command{
     WEAK_SELF(weakSelf);
     [JMSGGroup myGroupArray:^(id resultObject, NSError *error) {
-        NSMutableArray *arr = [NSMutableArray array];
+        NSMutableArray *arr;
         if (error == nil) {
-            NSArray *groupArr = resultObject;
-            for (JMSGGroup *group in groupArr) {
-                NSMutableDictionary *dict = [group groupToDictionary];
-                [arr addObject:dict];
-            }
+            arr = [NSMutableArray arrayWithArray:resultObject];
         }
         [weakSelf handleResultWithValue:arr command:command log:@"my group array"];
     }];
