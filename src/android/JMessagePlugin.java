@@ -1820,11 +1820,16 @@ public class JMessagePlugin extends CordovaPlugin {
         try {
             String username = data.getString(0);
             long msgId = data.getLong(1);
+
             Conversation con = JMessageClient.getSingleConversation(username);
             if (con == null) {
-                callback.error("Conversation isn't exist.");
-                return;
+                con = Conversation.createSingleConversation(username);
+                if (con == null) {
+                    callback.error("Conversation isn't exist.");
+                    return;
+                }
             }
+
             List<Message> messageList = con.getAllMessage();
             for (Message msg : messageList) {
                 if (!msg.getContentType().equals(ContentType.image)) {
@@ -1862,9 +1867,13 @@ public class JMessagePlugin extends CordovaPlugin {
 
             Conversation con = JMessageClient.getGroupConversation(groupId);
             if (con == null) {
-                callback.error("Conversation isn't exist.");
-                return;
+                con = Conversation.createGroupConversation(groupId);
+                if (con == null) {
+                    callback.error("Conversation isn't exist.");
+                    return;
+                }
             }
+
             List<Message> messageList = con.getAllMessage();
             for (Message msg : messageList) {
                 if (!msg.getContentType().equals(ContentType.image)) {
