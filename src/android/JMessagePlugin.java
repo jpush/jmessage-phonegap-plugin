@@ -1061,7 +1061,6 @@ public class JMessagePlugin extends CordovaPlugin {
                 }
             });
             JMessageClient.sendMessage(msg);
-            callback.success(mGson.toJson(msg));
         } catch (JSONException e) {
             e.printStackTrace();
             callback.error("Parameter error.");
@@ -1108,7 +1107,6 @@ public class JMessagePlugin extends CordovaPlugin {
                 }
             });
             JMessageClient.sendMessage(msg);
-            callback.success(mGson.toJson(msg));
         } catch (JSONException e) {
             e.printStackTrace();
             callback.error("Parameter error.");
