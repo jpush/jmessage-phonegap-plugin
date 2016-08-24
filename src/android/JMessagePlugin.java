@@ -1823,11 +1823,8 @@ public class JMessagePlugin extends CordovaPlugin {
 
             Conversation con = JMessageClient.getSingleConversation(username);
             if (con == null) {
-                con = Conversation.createSingleConversation(username);
-                if (con == null) {
-                    callback.error("Conversation isn't exist.");
-                    return;
-                }
+                callback.error("Conversation isn't exist.");
+                return;
             }
 
             List<Message> messageList = con.getAllMessage();
@@ -1867,11 +1864,8 @@ public class JMessagePlugin extends CordovaPlugin {
 
             Conversation con = JMessageClient.getGroupConversation(groupId);
             if (con == null) {
-                con = Conversation.createGroupConversation(groupId);
-                if (con == null) {
-                    callback.error("Conversation isn't exist.");
-                    return;
-                }
+                callback.error("Conversation isn't exist.");
+                return;
             }
 
             List<Message> messageList = con.getAllMessage();
