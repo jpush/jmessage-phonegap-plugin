@@ -1,10 +1,12 @@
 package cn.jmessage.phonegap;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
@@ -298,7 +300,7 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     public void userLogin(JSONArray data, CallbackContext callback) {
-        Log.i(TAG, "  userLogin \n" + data);
+        Log.i(TAG, "userLogin \n" + data);
 
         final CallbackContext cb = callback;
         try {
@@ -700,6 +702,8 @@ public class JMessagePlugin extends CordovaPlugin {
                 return;
             }
 
+            requestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
             URL imgUrl = new URL(imgUrlStr);
             File imgFile = new File(imgUrl.getPath());
             final Message msg = conversation.createSendImageMessage(imgFile);
@@ -743,6 +747,8 @@ public class JMessagePlugin extends CordovaPlugin {
                 callback.error("无法创建对话");
                 return;
             }
+
+            requestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
             URL imgUrl = new URL(imgUrlStr);
             File imgFile = new File(imgUrl.getPath());
@@ -808,6 +814,8 @@ public class JMessagePlugin extends CordovaPlugin {
                 return;
             }
 
+            requestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
             URL url = new URL(voiceUrlStr);
             String voicePath = url.getPath();
             File file = new File(voicePath);
@@ -858,6 +866,8 @@ public class JMessagePlugin extends CordovaPlugin {
                 callback.error("无法创建对话");
                 return;
             }
+
+            requestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
             URL url = new URL(voiceUrlStr);
             String voicePath = url.getPath();
@@ -1047,6 +1057,8 @@ public class JMessagePlugin extends CordovaPlugin {
                 return;
             }
 
+            requestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
             URL imgUrl = new URL(imgUrlStr);
             File imgFile = new File(imgUrl.getPath());
             final Message msg = JMessageClient.createGroupImageMessage(groupId, imgFile);
@@ -1086,6 +1098,8 @@ public class JMessagePlugin extends CordovaPlugin {
                 callback.error("无法创建对话");
                 return;
             }
+
+            requestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
             URL imgUrl = new URL(imgUrlStr);
             File imgFile = new File(imgUrl.getPath());
@@ -1131,6 +1145,8 @@ public class JMessagePlugin extends CordovaPlugin {
                 callback.error("无法创建对话");
                 return;
             }
+
+            requestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
             URL url = new URL(voiceUrlStr);
             String voicePath = url.getPath();
@@ -1179,6 +1195,8 @@ public class JMessagePlugin extends CordovaPlugin {
                 callback.error("无法创建对话");
                 return;
             }
+
+            requestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
             URL url = new URL(voiceUrlStr);
             String voicePath = url.getPath();
@@ -1335,8 +1353,7 @@ public class JMessagePlugin extends CordovaPlugin {
             if (type.equals("single")) {
                 String username = data.getString(1);
                 String appKey = data.isNull(2) ? "" : data.getString(2);
-                conversation = JMessageClient.getSingleConversation(
-                        username, appKey);
+                conversation = JMessageClient.getSingleConversation(username, appKey);
                 if (conversation == null) {
                     callback.error("Conversation is not exist.");
                     return;
@@ -1578,8 +1595,7 @@ public class JMessagePlugin extends CordovaPlugin {
     public void getGroupIDList(JSONArray data, final CallbackContext callback) {
         JMessageClient.getGroupIDList(new GetGroupIDListCallback() {
             @Override
-            public void gotResult(int responseCode, String responseMsg,
-                                  List<Long> list) {
+            public void gotResult(int responseCode, String responseMsg, List<Long> list) {
                 if (responseCode == 0) {
                     callback.success(mGson.toJson(list));
                 } else {
@@ -2033,6 +2049,16 @@ public class JMessagePlugin extends CordovaPlugin {
         callback.sendPluginResult(dataResult);
     }
 
+    public void requestPermission(JSONArray data, CallbackContext callback) {
+        try {
+            String permission = data.getString(0);
+            requestPermission(permission);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callback.error(e.toString());
+        }
+    }
+
     /**
      * @param type   会话类型，'single' or 'group'。
      * @param value  会话的唯一标识，如果类型为 'single' 则为 username；
@@ -2189,4 +2215,9 @@ public class JMessagePlugin extends CordovaPlugin {
         return valuesMap;
     }
 
+    private void requestPermission(String permission) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            cordova.requestPermission(this, 1, permission);
+        }
+    }
 }

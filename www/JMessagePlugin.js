@@ -28,6 +28,11 @@ JMessagePlugin.prototype.callNative = function (name, args, successCallback, err
   }
 }
 
+// 用于 Android 6.0 以上动态申请权限。
+JMessagePlugin.prototype.requestAndroidPermission = function (permission, successCallback, errorCallback) {
+  this.callNative('requestPermission', [permission], successCallback, errorCallback)
+}
+
 // Login and register API.
 
 JMessagePlugin.prototype.register = function (username, password, successCallback, errorCallback) {
