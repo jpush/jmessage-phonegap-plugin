@@ -2216,7 +2216,7 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     private void requestPermission(String permission) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT >= 23) {
             cordova.requestPermission(this, 1, permission);
         }
     }
