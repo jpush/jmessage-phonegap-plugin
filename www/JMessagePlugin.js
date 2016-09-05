@@ -425,6 +425,18 @@ JMessagePlugin.prototype.removeMembers = function (groupId, memberArray, success
   this.callNative('removeMembers', [groupId, memberArray], successCallback, errorCallback)
 }
 
+JMessagePlugin.prototype.sendSingleCustomMessage_ios = function (username, text, extra, successCallback, errorCallback) {
+  this.callNative('sendSingleCustomMessage', [username, text, extra], successCallback, errorCallback)
+}
+
+JMessagePlugin.prototype.sendGroupCustomMessage_ios = function (gid, text, extra, successCallback, errorCallback) {
+  this.callNative('sendGroupCustomMessage', [gid, text, extra], successCallback, errorCallback)
+}
+
+JMessagePlugin.prototype.cross_sendSingleCustomMessage_ios = function (username, appkey, text, extra, successCallback, errorCallback) {
+  this.callNative('cross_sendSingleCustomMessage', [username, appkey, text, extra], successCallback, errorCallback)
+}
+
 // Cross App
 
 JMessagePlugin.prototype.cross_sendSingleTextMessage = function (username, appKey, text, successCallback, errorCallback) {
