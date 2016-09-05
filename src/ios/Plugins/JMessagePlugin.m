@@ -164,15 +164,23 @@
 
 -(void)onReceiveImageData:(NSNotification*)notification{
     NSLog(@"JMessagePlugin onReceiveImageData");
+    NSDictionary *userInfo = [notification object];
+    NSString *jsonString = [userInfo toJsonString];
+    jsonString = [jsonString stringByReplacingOccurrencesOfString:@"\"{" withString:@"{"];
+    jsonString = [jsonString stringByReplacingOccurrencesOfString:@"}\"" withString:@"}"];
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self commonSendMessage:@"onReceiveImageData" jsonParm:[notification.object toJsonString]];
+        [self commonSendMessage:@"onReceiveImageData" jsonParm:jsonString];
     });
 }
 
 -(void)onReceiveVoiceData:(NSNotification*)notification{
     NSLog(@"JMessagePlugin onReceiveVoiceData");
+    NSDictionary *userInfo = [notification object];
+    NSString *jsonString = [userInfo toJsonString];
+    jsonString = [jsonString stringByReplacingOccurrencesOfString:@"\"{" withString:@"{"];
+    jsonString = [jsonString stringByReplacingOccurrencesOfString:@"}\"" withString:@"}"];
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self commonSendMessage:@"onReceiveVoiceData" jsonParm:[notification.object toJsonString]];
+        [self commonSendMessage:@"onReceiveVoiceData" jsonParm:jsonString];
     });
 }
 
@@ -265,7 +273,7 @@
     NSString *val = [command argumentAtIndex:1];
     WEAK_SELF(weak_self);
     [JMSGUser updateMyInfoWithParameter:val userFieldType:type completionHandler:^(id resultObject, NSError *error) {
-        [weak_self handleResultWithValue:resultObject command:command];
+        [weak_self handleResultWithValue:@"success" command:command error:error];
     }];
 }
 
@@ -277,7 +285,7 @@
     NSString *username = [command argumentAtIndex:0];
     NSString *text     = [command argumentAtIndex:1];
     WEAK_SELF(weak_self);
-
+    
     [JMSGConversation createSingleConversationWithUsername:username completionHandler:^(id resultObject, NSError *error) {
         if (error == nil) {
             JMSGConversation *conversation = resultObject;
@@ -316,6 +324,24 @@
             [conversation sendImageMessage:data];
         }
         [weakSelf handleResultWithValue:@"send single image message" command:command error:error log:@"send single image message"];
+    }];
+}
+
+-(void)sendSingleCustomMessage:(CDVInvokedUrlCommand *)command{
+    NSString *username = [command argumentAtIndex:0];
+    NSString *text     = [command argumentAtIndex:1];
+    NSString *extra    = [command argumentAtIndex:2];
+    WEAK_SELF(weakSelf);
+    [JMSGConversation createSingleConversationWithUsername:username completionHandler:^(id resultObject, NSError *error) {
+        if (error == nil) {
+            JMSGConversation *conversation = resultObject;
+            JMSGMessage *message = nil;
+            JMSGTextContent *textContent = [[JMSGTextContent alloc] initWithText:text];
+            [textContent addStringExtra:extra forKey:@"extra"];
+            message = [conversation createMessageWithContent:textContent];//!
+            [conversation sendMessage:message];
+        }
+        [weakSelf handleResultWithValue:@"send single custom message" command:command error:error log:@"send single custom message"];
     }];
 }
 
@@ -363,6 +389,24 @@
             [conversation sendImageMessage:data];
         }
         [weakSelf handleResultWithValue:@"send single image message" command:command error:error log:@"send single image message"];
+    }];
+}
+
+-(void)sendGroupCustomMessage:(CDVInvokedUrlCommand *)command{
+    NSString *gid   = [command argumentAtIndex:0];
+    NSString *text  = [command argumentAtIndex:1];
+    NSString *extra = [command argumentAtIndex:2];
+    WEAK_SELF(weakSelf);
+    [JMSGConversation createGroupConversationWithGroupId:gid completionHandler:^(id resultObject, NSError *error) {
+        if (error == nil) {
+            JMSGConversation *conversation = resultObject;
+            JMSGMessage *message = nil;
+            JMSGTextContent *textContent = [[JMSGTextContent alloc] initWithText:text];
+            [textContent addStringExtra:extra forKey:@"extra"];
+            message = [conversation createMessageWithContent:textContent];//!
+            [conversation sendMessage:message];
+        }
+        [weakSelf handleResultWithValue:@"send group custom message" command:command error:error log:@"send group custom message"];
     }];
 }
 
@@ -544,13 +588,9 @@
 -(void)myGroupArray:(CDVInvokedUrlCommand *)command{
     WEAK_SELF(weakSelf);
     [JMSGGroup myGroupArray:^(id resultObject, NSError *error) {
-        NSMutableArray *arr = [NSMutableArray array];
+        NSMutableArray *arr;
         if (error == nil) {
-            NSArray *groupArr = resultObject;
-            for (JMSGGroup *group in groupArr) {
-                NSMutableDictionary *dict = [group groupToDictionary];
-                [arr addObject:dict];
-            }
+            arr = [NSMutableArray arrayWithArray:resultObject];
         }
         [weakSelf handleResultWithValue:arr command:command log:@"my group array"];
     }];
@@ -677,6 +717,25 @@
             [conversation sendImageMessage:data];
         }
         [weakSelf handleResultWithValue:@"send single image message" command:command error:error log:@"send single image message"];
+    }];
+}
+
+-(void)cross_sendSingleCustomMessage:(CDVInvokedUrlCommand *)command{
+    NSString *username = [command argumentAtIndex:0];
+    NSString *appkey   = [command argumentAtIndex:1];
+    NSString *text     = [command argumentAtIndex:2];
+    NSString *extra    = [command argumentAtIndex:3];
+    WEAK_SELF(weakSelf);
+    [JMSGConversation createSingleConversationWithUsername:username appKey:appkey completionHandler:^(id resultObject, NSError *error) {
+        if (error == nil) {
+            JMSGConversation *conversation = resultObject;
+            JMSGMessage *message = nil;
+            JMSGTextContent *textContent = [[JMSGTextContent alloc] initWithText:text];
+            [textContent addStringExtra:extra forKey:@"extra"];
+            message = [conversation createMessageWithContent:textContent];//!
+            [conversation sendMessage:message];
+        }
+        [weakSelf handleResultWithValue:@"cross send single custom message" command:command error:error log:@"cross send single custom message"];
     }];
 }
 
@@ -1037,4 +1096,7 @@
 }
 
 @end
+
+
+
 

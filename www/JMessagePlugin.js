@@ -28,6 +28,11 @@ JMessagePlugin.prototype.callNative = function (name, args, successCallback, err
   }
 }
 
+// 用于 Android 6.0 以上动态申请权限。
+JMessagePlugin.prototype.requestAndroidPermission = function (permission, successCallback, errorCallback) {
+  this.callNative('requestPermission', [permission], successCallback, errorCallback)
+}
+
 // Login and register API.
 
 JMessagePlugin.prototype.register = function (username, password, successCallback, errorCallback) {
@@ -140,6 +145,10 @@ JMessagePlugin.prototype.sendGroupVoiceMessage = function (username, fileUrl, su
 
 JMessagePlugin.prototype.sendGroupVoiceMessageWithExtras = function (groupId, fileUrl, extrasJson, successCallback, errorCallback) {
   this.callNative('sendGroupVoiceMessageWithExtras', [groupId, fileUrl, extrasJson], successCallback, errorCallback)
+}
+
+JMessagePlugin.prototype.sendGroupCustomMessage = function (groupId, jsonStr, successCallback, errorCallback) {
+  this.callNative('sendGroupCustomMessage', [groupId, jsonStr], successCallback, errorCallback)
 }
 
 JMessagePlugin.prototype.getLatestMessage = function (conversationType, value, appKey, successCallback, errorCallback) {
@@ -414,6 +423,18 @@ JMessagePlugin.prototype.addMembers = function (groupId, memberArray, successCal
 
 JMessagePlugin.prototype.removeMembers = function (groupId, memberArray, successCallback, errorCallback) {
   this.callNative('removeMembers', [groupId, memberArray], successCallback, errorCallback)
+}
+
+JMessagePlugin.prototype.sendSingleCustomMessage_ios = function (username, text, extra, successCallback, errorCallback) {
+  this.callNative('sendSingleCustomMessage', [username, text, extra], successCallback, errorCallback)
+}
+
+JMessagePlugin.prototype.sendGroupCustomMessage_ios = function (gid, text, extra, successCallback, errorCallback) {
+  this.callNative('sendGroupCustomMessage', [gid, text, extra], successCallback, errorCallback)
+}
+
+JMessagePlugin.prototype.cross_sendSingleCustomMessage_ios = function (username, appkey, text, extra, successCallback, errorCallback) {
+  this.callNative('cross_sendSingleCustomMessage', [username, appkey, text, extra], successCallback, errorCallback)
 }
 
 // Cross App

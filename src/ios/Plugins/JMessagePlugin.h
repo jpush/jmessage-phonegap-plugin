@@ -35,10 +35,12 @@
 -(void)sendSingleTextMessage:(CDVInvokedUrlCommand *)command;
 -(void)sendSingleVoiceMessage:(CDVInvokedUrlCommand *)command;//new
 -(void)sendSingleImageMessage:(CDVInvokedUrlCommand *)command;//new
+-(void)sendSingleCustomMessage:(CDVInvokedUrlCommand *)command;//new
 
 -(void)sendGroupTextMessage:(CDVInvokedUrlCommand *)command;//new
 -(void)sendGroupVoiceMessage:(CDVInvokedUrlCommand *)command;//new
 -(void)sendGroupImageMessage:(CDVInvokedUrlCommand *)command;//new
+-(void)sendGroupCustomMessage:(CDVInvokedUrlCommand *)command;//new
 
 //Conversation
 -(void)getSingleConversationHistoryMessage:(CDVInvokedUrlCommand *)command;
@@ -70,6 +72,8 @@
 -(void)cross_sendSingleTextMessage:(CDVInvokedUrlCommand *)command;//new
 -(void)cross_sendSingleVoiceMessage:(CDVInvokedUrlCommand *)command;//new
 -(void)cross_sendSingleImageMessage:(CDVInvokedUrlCommand *)command;//new
+-(void)cross_sendSingleCustomMessage:(CDVInvokedUrlCommand *)command;//new
+
 -(void)cross_getSingleConversationHistoryMessage:(CDVInvokedUrlCommand *)command;//new
 -(void)cross_deleteSingleConversation:(CDVInvokedUrlCommand *)command;//new
 -(void)cross_clearSingleUnreadCount:(CDVInvokedUrlCommand *)command;//new
@@ -132,5 +136,6 @@
  *  jpush.receiveNotification   前台收到推送
  *  jpush.backgoundNotification 后台收到推送
  */
+-(void)handleResultWithValue:(id)value command:(CDVInvokedUrlCommand*)command;
 
 @end

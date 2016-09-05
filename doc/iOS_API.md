@@ -50,7 +50,7 @@ API 目录：
 ### API - getUserInfoArray
 获取用户详情（批量接口）
 #### 接口定义
-	window.JMessage.getUserInfoArray(successCallback, errorCallback);
+	window.JMessage.getUserInfoArray(usernameArray, successCallback, errorCallback);
 	
 ### API - updateMyPassword
 更新密码（当前登录用户）

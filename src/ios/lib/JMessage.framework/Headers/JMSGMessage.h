@@ -281,7 +281,7 @@ JMSG_ASSUME_NONNULL_BEGIN
 
 /*!
  * @abstract 消息发出的时间戳
- * @discussion 这是服务器端下发消息时的真实时间戳
+ * @discussion 这是服务器端下发消息时的真实时间戳，单位为毫秒
  */
 @property(nonatomic, strong, readonly) NSNumber *timestamp;
 
