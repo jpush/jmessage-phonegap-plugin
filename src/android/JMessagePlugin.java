@@ -1537,12 +1537,17 @@ public class JMessagePlugin extends CordovaPlugin {
         try {
             String username = data.getString(0);
             String appKey = data.isNull(1) ? "" : data.getString(1);
+            boolean result;
             if (TextUtils.isEmpty(appKey)) {
-                JMessageClient.deleteSingleConversation(username);
+                result = JMessageClient.deleteSingleConversation(username);
             } else {
-                JMessageClient.deleteSingleConversation(username, appKey);
+                result = JMessageClient.deleteSingleConversation(username, appKey);
             }
-            callback.success();
+            if (result) {
+                callback.success();
+            } else {
+                callback.error("Delete fail.");
+            }
         } catch (JSONException e) {
             e.printStackTrace();
             callback.error("Parameter error.");
@@ -1552,8 +1557,12 @@ public class JMessagePlugin extends CordovaPlugin {
     public void deleteGroupConversation(JSONArray data, CallbackContext callback) {
         try {
             long groupId = data.getLong(0);
-            JMessageClient.deleteGroupConversation(groupId);
-            callback.success();
+            boolean result = JMessageClient.deleteGroupConversation(groupId);
+            if (result) {
+                callback.success();
+            } else {
+                callback.error("Delete fail.");
+            }
         } catch (JSONException e) {
             e.printStackTrace();
             callback.error("Parameter error.");
