@@ -107,7 +107,8 @@ public class JMessagePlugin extends CordovaPlugin {
             String fromName = TextUtils.isEmpty(fromUser.getNickname()) ? fromUser.getUserName()
                     : fromUser.getNickname();
             msgJson.put("fromName", fromName);
-            msgJson.put("fromID", fromUser.getUserName());
+            msgJson.put("fromNickname", fromUser.getNickname());
+            msgJson.put("fromID", fromUser.getUserID());
 
             UserInfo myInfo = JMessageClient.getMyInfo();
             String myInfoJson = mGson.toJson(myInfo);
@@ -122,18 +123,15 @@ public class JMessagePlugin extends CordovaPlugin {
 
             msgJson.put("targetInfo", myInfoJsonObj);
 
-            String targetName = "";
             if (msg.getTargetType().equals(ConversationType.single)) {
-                targetName = TextUtils.isEmpty(myInfo.getNickname())
-                        ? myInfo.getUserName() : myInfo.getNickname();
-                msgJson.put("targetID", myInfo.getUserName());
-
+                msgJson.put("targetName", myInfo.getUserName());
+                msgJson.put("targetNickname", myInfo.getNickname());
+                msgJson.put("targetID", myInfo.getUserID());
             } else if (msg.getTargetType().equals(ConversationType.group)) {
                 GroupInfo targetInfo = (GroupInfo) msg.getTargetInfo();
-                targetName = TextUtils.isEmpty(targetInfo.getGroupName())
-                        ? targetInfo.getGroupName() : (targetInfo.getGroupID() + "");
+                msgJson.put("targetID", targetInfo.getGroupID());
+                msgJson.put("targetName", targetInfo.getGroupName());
             }
-            msgJson.put("targetName", targetName);
 
             switch (msg.getContentType()) {
                 case text:
