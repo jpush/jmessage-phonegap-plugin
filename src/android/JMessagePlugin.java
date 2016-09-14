@@ -104,9 +104,7 @@ public class JMessagePlugin extends CordovaPlugin {
                 avatarPath = avatarFile.getAbsolutePath();
             }
             msgJson.getJSONObject("fromUser").put("avatarPath", avatarPath);
-            String fromName = TextUtils.isEmpty(fromUser.getNickname()) ? fromUser.getUserName()
-                    : fromUser.getNickname();
-            msgJson.put("fromName", fromName);
+            msgJson.put("fromName", fromUser.getUserName);
             msgJson.put("fromNickname", fromUser.getNickname());
             msgJson.put("fromID", fromUser.getUserID());
 
