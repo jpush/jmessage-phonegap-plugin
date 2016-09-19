@@ -106,10 +106,9 @@ public class JMessagePlugin extends CordovaPlugin {
                 avatarPath = avatarFile.getAbsolutePath();
             }
             msgJson.getJSONObject("fromUser").put("avatarPath", avatarPath);
-            String fromName = TextUtils.isEmpty(fromUser.getNickname()) ? fromUser.getUserName()
-                    : fromUser.getNickname();
-            msgJson.put("fromName", fromName);
-            msgJson.put("fromID", fromUser.getUserName());
+            msgJson.put("fromName", fromUser.getUserName);
+            msgJson.put("fromNickname", fromUser.getNickname());
+            msgJson.put("fromID", fromUser.getUserID());
 
             UserInfo myInfo = JMessageClient.getMyInfo();
             String myInfoJson = mGson.toJson(myInfo);
@@ -124,18 +123,15 @@ public class JMessagePlugin extends CordovaPlugin {
 
             msgJson.put("targetInfo", myInfoJsonObj);
 
-            String targetName = "";
             if (msg.getTargetType().equals(ConversationType.single)) {
-                targetName = TextUtils.isEmpty(myInfo.getNickname())
-                        ? myInfo.getUserName() : myInfo.getNickname();
-                msgJson.put("targetID", myInfo.getUserName());
-
+                msgJson.put("targetName", myInfo.getUserName());
+                msgJson.put("targetNickname", myInfo.getNickname());
+                msgJson.put("targetID", myInfo.getUserID());
             } else if (msg.getTargetType().equals(ConversationType.group)) {
                 GroupInfo targetInfo = (GroupInfo) msg.getTargetInfo();
-                targetName = TextUtils.isEmpty(targetInfo.getGroupName())
-                        ? targetInfo.getGroupName() : (targetInfo.getGroupID() + "");
+                msgJson.put("targetID", targetInfo.getGroupID());
+                msgJson.put("targetName", targetInfo.getGroupName());
             }
-            msgJson.put("targetName", targetName);
 
             switch (msg.getContentType()) {
                 case text:
@@ -1539,12 +1535,17 @@ public class JMessagePlugin extends CordovaPlugin {
         try {
             String username = data.getString(0);
             String appKey = data.isNull(1) ? "" : data.getString(1);
+            boolean result;
             if (TextUtils.isEmpty(appKey)) {
-                JMessageClient.deleteSingleConversation(username);
+                result = JMessageClient.deleteSingleConversation(username);
             } else {
-                JMessageClient.deleteSingleConversation(username, appKey);
+                result = JMessageClient.deleteSingleConversation(username, appKey);
             }
-            callback.success();
+            if (result) {
+                callback.success();
+            } else {
+                callback.error("Delete fail.");
+            }
         } catch (JSONException e) {
             e.printStackTrace();
             callback.error("Parameter error.");
@@ -1554,8 +1555,12 @@ public class JMessagePlugin extends CordovaPlugin {
     public void deleteGroupConversation(JSONArray data, CallbackContext callback) {
         try {
             long groupId = data.getLong(0);
-            JMessageClient.deleteGroupConversation(groupId);
-            callback.success();
+            boolean result = JMessageClient.deleteGroupConversation(groupId);
+            if (result) {
+                callback.success();
+            } else {
+                callback.error("Delete fail.");
+            }
         } catch (JSONException e) {
             e.printStackTrace();
             callback.error("Parameter error.");
