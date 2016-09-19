@@ -48,7 +48,9 @@ import cn.jpush.im.android.api.callback.GetBlacklistCallback;
 import cn.jpush.im.android.api.callback.GetGroupIDListCallback;
 import cn.jpush.im.android.api.callback.GetGroupInfoCallback;
 import cn.jpush.im.android.api.callback.GetGroupMembersCallback;
+import cn.jpush.im.android.api.callback.GetNoDisurbListCallback;
 import cn.jpush.im.android.api.callback.GetUserInfoCallback;
+import cn.jpush.im.android.api.callback.IntegerCallback;
 import cn.jpush.im.android.api.content.EventNotificationContent;
 import cn.jpush.im.android.api.content.ImageContent;
 import cn.jpush.im.android.api.content.MessageContent;
@@ -2057,6 +2059,180 @@ public class JMessagePlugin extends CordovaPlugin {
             e.printStackTrace();
             callback.error(e.toString());
         }
+    }
+
+    // 免打扰 API
+
+    /**
+     * 设置是否对目标用户免打扰。
+     *
+     * @param data: data.getString(0): 目标用户的 username。
+     *              data.getInt(1): isNoDisturb, 0 - 解除免打扰，1 - 免打扰。
+     */
+    public void setUserNoDisturb(JSONArray data, final CallbackContext callback) {
+        try {
+            String username = data.getString(0);
+            final int isNoDisturb = data.getInt(1);
+
+            JMessageClient.getUserInfo(username, new GetUserInfoCallback() {
+                @Override
+                public void gotResult(int status, String desc, UserInfo userInfo) {
+                    if (status == 0) {
+                        userInfo.setNoDisturb(isNoDisturb, new BasicCallback() {
+                            @Override
+                            public void gotResult(int status, String desc) {
+                                if (status == 0) {
+                                    callback.success();
+                                } else {
+                                    callback.error(status);
+                                }
+                            }
+                        });
+                    } else {
+                        Log.i(TAG, status + ": " + desc);
+                        callback.error(status); // 返回错误码。
+                    }
+                }
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callback.error(e.toString());
+        }
+    }
+
+    /**
+     * 设置群组免打扰。
+     */
+    public void setGroupNoDisturb(JSONArray data, final CallbackContext callback) {
+        try {
+            long groupId = data.getLong(0);
+            final int isNoDisturb = data.getInt(1);
+
+            JMessageClient.getGroupInfo(groupId, new GetGroupInfoCallback() {
+                @Override
+                public void gotResult(int status, String desc, GroupInfo groupInfo) {
+                    if (status == 0) {
+                        groupInfo.setNoDisturb(isNoDisturb, new BasicCallback() {
+                            @Override
+                            public void gotResult(int status, String desc) {
+                                if (status == 0) {
+                                    callback.success();
+                                } else {
+                                    callback.error(status);
+                                }
+                            }
+                        });
+                    } else {
+                        callback.error(status);
+                    }
+                }
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 获取指定用户的免打扰状态。
+     */
+    public void getUserNoDisturb(JSONArray data, final CallbackContext callback) {
+        try {
+            String username = data.getString(0);
+
+            JMessageClient.getUserInfo(username, new GetUserInfoCallback() {
+                @Override
+                public void gotResult(int status, String desc, UserInfo userInfo) {
+                    if (status == 0) {
+                        callback.success(userInfo.getNoDisturb());
+                    } else {
+                        callback.error(status);
+                    }
+                }
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 获取指定群组的免打扰状态。
+     */
+    public void getGroupNoDisturb(JSONArray data, final CallbackContext callback) {
+        try {
+            long groupId = data.getLong(0);
+
+            JMessageClient.getGroupInfo(groupId, new GetGroupInfoCallback() {
+                @Override
+                public void gotResult(int status, String desc, GroupInfo groupInfo) {
+                    if (status == 0) {
+                        callback.success(groupInfo.getNoDisturb());
+                    } else {
+                        callback.error(status);
+                    }
+                }
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // 获取免打扰列表。
+    public void getNoDisturblist(JSONArray data, final CallbackContext callback) {
+        JMessageClient.getNoDisturblist(new GetNoDisurbListCallback() {
+            @Override
+            public void gotResult(int status, String desc, List<UserInfo> userList,
+                                  List<GroupInfo> groupList) {
+                if (status == 0) {
+                    JSONObject json = new JSONObject();
+                    try {
+                        json.put("userList", mGson.toJson(userList));
+                        json.put("groupList", mGson.toJson(groupList));
+                        callback.success(json);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    callback.error(status);
+                }
+            }
+        });
+    }
+
+    /**
+     * 设置全局免打扰。0：正常状态，1：免打扰状态。
+     */
+    public void setNoDisturbGlobal(JSONArray data, final CallbackContext callback) {
+        try {
+            int isNoDisturbGlobal = data.getInt(0);
+            JMessageClient.setNoDisturbGlobal(isNoDisturbGlobal, new BasicCallback() {
+                @Override
+                public void gotResult(int status, String desc) {
+                    if (status == 0) {
+                        callback.success();
+                    } else {
+                        callback.error(status);
+                    }
+                }
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 获取当前的全局免打扰状态。
+     */
+    public void getNoDisturbGlobal(JSONArray data, final CallbackContext callback) {
+        JMessageClient.getNoDisturbGlobal(new IntegerCallback() {
+            @Override
+            public void gotResult(int status, String desc, Integer integer) {
+                if (status == 0) {
+                    callback.success(integer);
+                } else {
+                    callback.error(status);
+                }
+            }
+        });
     }
 
     /**
