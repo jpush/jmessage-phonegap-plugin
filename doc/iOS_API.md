@@ -18,7 +18,7 @@ API 目录：
 - [会话操作](#conversation)
 - [群组操作](#group)
 - [跨应用接口](#cross-app-method)
- 
+
 
 ## User
 
@@ -31,51 +31,51 @@ API 目录：
 用户登录
 #### 接口定义
 	window.JMessage.login(username, password, successCallback, errorCallback);
-	
+
 ### API - logout
 当前用户退出登录
 #### 接口定义
 	window.JMessage.logout(successCallback, errorCallback);
-	
+
 ### API - getMyInfo
 获取我的信息（当前登录用户）
 #### 接口定义
 	window.JMessage.getMyInfo(successCallback, errorCallback);
-	
+
 ### API - getUserInfo
 获取某用户的信息
 #### 接口定义
 	window.JMessage.getUserInfo(username,successCallback, errorCallback);
-	
+
 ### API - getUserInfoArray
 获取用户详情（批量接口）
 #### 接口定义
 	window.JMessage.getUserInfoArray(usernameArray, successCallback, errorCallback);
-	
+
 ### API - updateMyPassword
 更新密码（当前登录用户）
 #### 接口定义
-	window.JMessage.getMyInfo(oldPwd, newPwd, errorCallback);
-	
+	window.JMessage.updateMyPassword(oldPwd, newPwd, errorCallback);
+
 ### API - updateMyInfo
 获取我的信息（当前登录用户）
 #### 接口定义
-	window.JMessage.getMyInfo(field, value, successCallback, errorCallback);
+	window.JMessage.updateMyInfo(field, value, successCallback, errorCallback);
 #### 参数说明
 - field：数字、或纯数字字符串
 
-		/// 用户信息字段: 用户名
-		kJMSGUserFieldsNickname = 0,
-		/// 用户信息字段: 生日
-		kJMSGUserFieldsBirthday = 1,
-		/// 用户信息字段: 签名
-		kJMSGUserFieldsSignature = 2,
-		/// 用户信息字段: 性别
-		kJMSGUserFieldsGender = 3,
-		/// 用户信息字段: 区域
-		kJMSGUserFieldsRegion = 4,
-		/// 用户信息字段: 头像 (内部定义的 media_id)
-		kJMSGUserFieldsAvatar = 5,
+  	/// 用户信息字段: 用户名
+  	kJMSGUserFieldsNickname = 0,
+  	/// 用户信息字段: 生日
+  	kJMSGUserFieldsBirthday = 1,
+  	/// 用户信息字段: 签名
+  	kJMSGUserFieldsSignature = 2,
+  	/// 用户信息字段: 性别
+  	kJMSGUserFieldsGender = 3,
+  	/// 用户信息字段: 区域
+  	kJMSGUserFieldsRegion = 4,
+  	/// 用户信息字段: 头像 (内部定义的 media_id)
+  	kJMSGUserFieldsAvatar = 5,
 
 
 
@@ -85,27 +85,27 @@ API 目录：
 发送单聊文本消息
 #### 接口定义
 	window.JMessage.sendSingleTextMessage(username, text, appKey, successCallback, errorCallback);
-	
+
 ### API - sendSingleVoiceMessage
 发送单聊语音消息
 #### 接口定义
-	window.JMessage.sendSingleTextMessage(username, text, appKey, successCallback, errorCallback);
-	
+	window.JMessage.sendSingleVoiceMessage(username, text, appKey, successCallback, errorCallback);
+
 ### API - sendSingleImageMessage
 发送单聊图片消息
 #### 接口定义
-	window.JMessage.getMyInfosendSingleImageMessage(username, imageUrl, appKey, successCallback, errorCallback);
+	window.JMessage.sendSingleImageMessage(username, imageUrl, appKey, successCallback, errorCallback);
 
 ### API - sendGroupTextMessage
 发送群聊文本消息
 #### 接口定义
 	window.JMessage.sendGroupTextMessage(groupId, text, successCallback, errorCallback);
-	
+
 ### API - sendGroupVoiceMessage
 发送群聊语音消息
 #### 接口定义
 	window.JMessage.sendGroupVoiceMessage (username, fileUrl, successCallback, errorCallback);
-	
+
 ### API - sendGroupImageMessage
 发送群聊图片消息
 #### 接口定义
@@ -122,15 +122,15 @@ API 目录：
 - offset：开始的位置，null 表示从最初开始
 - limit：获取的数量，null 表示不限
 - 例：
-	- offset = nil, limit = nil，表示获取全部。相当于 allMessages
-	- offset = nil, limit = 100，表示从最新开始取 100 条记录
-	- offset = 100, limit = nil，表示从最新第 100 条开始，获取余下所有记录
-	
+  - offset = nil, limit = nil，表示获取全部。相当于 allMessages
+  - offset = nil, limit = 100，表示从最新开始取 100 条记录
+  - offset = 100, limit = nil，表示从最新第 100 条开始，获取余下所有记录
+
 ### API - getAllSingleConversation
 获取全部单聊会话信息
 #### 接口定义
 	window.JMessage.getAllSingleConversation(successCallback, errorCallback);
-	
+
 ### API - deleteSingleConversation
 删除单聊会话。除了删除会话本身，还会删除该会话下所有的聊天消息。
 #### 接口定义
@@ -140,12 +140,12 @@ API 目录：
 获取多条群聊消息（同步接口）。参数同 [获取多条单聊消息](#api---getsingleconversationhistorymessage)
 #### 接口定义
 	window.JMessage.getGroupConversationHistoryMessage(username, from, limit, successCallback, errorCallback);
-	
+
 ### API - getAllGroupConversation
 获取全部群聊会话信息
 #### 接口定义
 	window.JMessage.getAllGroupConversation(successCallback, errorCallback);
-	
+
 ### API - deleteGroupConversation
 删除群聊会话
 #### 接口定义
@@ -155,12 +155,12 @@ API 目录：
 获取全部单聊、群里会话信息
 #### 接口定义
 	window.JMessage.getAllConversation(successCallback, errorCallback);
-	
+
 ### API - clearSingleUnreadCount
 清除单聊会话未读数
 #### 接口定义
 	window.JMessage.clearSingleUnreadCount(username, successCallback, errorCallback);
-	
+
 ### API - clearGroupUnreadCount
 清除群聊会话未读数
 #### 接口定义
@@ -173,7 +173,7 @@ API 目录：
 创建群组
 #### 接口定义
 	window.JMessage.createGroupIniOS(name, desc, memebersArray, successCallback, errorCallback);
-	
+
 ### API - updateGroupInfo
 修改群组信息
 #### 接口定义
@@ -181,22 +181,22 @@ API 目录：
 #### 参数说明
 - name：新名称
 - desc：新描述
-	
+
 ### API - getGroupInfo
 获取群组详情（不包含群组成员）
 #### 接口定义
 	window.JMessage.getGroupInfo(groupId, successCallback, errorCallback);
-	
+
 ### API - myGroupArray
 获取我的群组列表
 #### 接口定义
 	window.JMessage.myGroupArray(successCallback, errorCallback);
-	
+
 ### API - memberArray
 获取当前群组成员列表
 #### 接口定义
 	window.JMessage.memberArray(groupId, successCallback, errorCallback);
-	
+
 ### API - addMembers
 添加群组成员
 #### 接口定义
@@ -206,7 +206,7 @@ API 目录：
 删除群组成员
 #### 接口定义
 	window.JMessage.removeMembers(groupId, memberArray, successCallback, errorCallback);
-	
+
 ### API - exitGroup
 退出群组（当前用户）
 #### 接口定义
@@ -219,27 +219,27 @@ API 目录：
 发送跨应用单聊文本消息
 #### 接口定义
 	window.JMessage.cross_sendSingleTextMessage = function (username, appKey, text, successCallback, errorCallback);
-	
+
 ### API - cross_sendSingleVoiceMessage
 发送跨应用单聊语音消息
 #### 接口定义
 	window.JMessage.cross_sendSingleVoiceMessage = function (username, appKey, fileUrl, successCallback, errorCallback);
-	
+
 ### API - cross_sendSingleImageMessage
 发送跨应用单聊图片消息
 #### 接口定义
 	window.JMessage.cross_sendSingleImageMessage = function (username, appKey, imageUrl, successCallback, errorCallback);
-	
+
 ### API - cross_getSingleConversationHistoryMessage
 获取跨应用单聊历史消息（多条）。参数同 [获取多条单聊消息](#api---getsingleconversationhistorymessage)
 #### 接口定义
 	window.JMessage.cross_getSingleConversationHistoryMessage = function (username, appKey, from, limit, successCallback, errorCallback);
-	
+
 ### API - cross_deleteSingleConversation
 删除跨应用单聊会话
 #### 接口定义
 	window.JMessage.cross_deleteSingleConversation = function (username, appKey, successCallback, errorCallback);
-	
+
 ### API - cross_clearSingleUnreadCount
 清除跨应用单聊会话未读数
 #### 接口定义
