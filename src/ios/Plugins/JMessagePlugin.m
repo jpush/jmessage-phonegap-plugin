@@ -269,8 +269,13 @@
 }
 
 -(void)updateMyInfo:(CDVInvokedUrlCommand *)command{
-    int type      = [[command argumentAtIndex:0] intValue];
-    NSString *val = [command argumentAtIndex:1];
+    int type = [[command argumentAtIndex:0] intValue];
+    id val;
+    if (type == 5) {
+        val = [NSData dataWithContentsOfFile:[command argumentAtIndex:1]];
+    }else{
+        val = [command argumentAtIndex:1];
+    }
     WEAK_SELF(weak_self);
     [JMSGUser updateMyInfoWithParameter:val userFieldType:type completionHandler:^(id resultObject, NSError *error) {
         [weak_self handleResultWithValue:@"success" command:command error:error];
