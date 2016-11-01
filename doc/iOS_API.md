@@ -104,7 +104,7 @@ API 目录：
 ### API - sendGroupVoiceMessage
 发送群聊语音消息
 #### 接口定义
-	window.JMessage.sendGroupVoiceMessage (username, fileUrl, successCallback, errorCallback);
+	window.JMessage.sendGroupVoiceMessage (groupId, fileUrl, successCallback, errorCallback);
 
 ### API - sendGroupImageMessage
 发送群聊图片消息
@@ -139,7 +139,7 @@ API 目录：
 ### API - getGroupConversationHistoryMessage
 获取多条群聊消息（同步接口）。参数同 [获取多条单聊消息](#api---getsingleconversationhistorymessage)
 #### 接口定义
-	window.JMessage.getGroupConversationHistoryMessage(username, from, limit, successCallback, errorCallback);
+	window.JMessage.getGroupConversationHistoryMessage(groupId, from, limit, successCallback, errorCallback);
 
 ### API - getAllGroupConversation
 获取全部群聊会话信息
