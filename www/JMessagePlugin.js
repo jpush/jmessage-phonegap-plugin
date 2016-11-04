@@ -306,48 +306,48 @@ JMessagePlugin.prototype.getBlacklist = function (successCallback, errorCallback
 
 // 设置对某个用户免打扰。
 // isNoDisturb: 0 - 普通状态，1 - 免打扰状态。
-JMessagePlugin.prototype.setUserNoDisturb(username, isNoDisturb, successCallback, errorCallback) {
+JMessagePlugin.prototype.setUserNoDisturb = function (username, isNoDisturb, successCallback, errorCallback) {
   if (device.platform == 'Android') {
     this.callNative('setUserNoDisturb', [username, isNoDisturb], successCallback, errorCallback)
   }
 }
 
-JMessagePlugin.prototype.setGroupNoDisturb(groupId, isNoDisturb, successCallback, errorCallback) {
+JMessagePlugin.prototype.setGroupNoDisturb = function (groupId, isNoDisturb, successCallback, errorCallback) {
   if (device.platform == 'Android') {
     this.callNative('setGroupNoDisturb', [groupId, isNoDisturb], successCallback, errorCallback)
   }
 }
 
 // 获取对特定用户的免打扰状态。0 - 普通状态，1 - 免打扰状态。
-JMessagePlugin.prototype.getUserNoDisturb(username, successCallback, errorCallback) {
+JMessagePlugin.prototype.getUserNoDisturb = function (username, successCallback, errorCallback) {
   if (device.platform == 'Android') {
     this.callNative('getUserNoDisturb', [username], successCallback, errorCallback)
   }
 }
 
 // 获取对特定群组的免打扰状态。0 - 普通状态，1 - 免打扰状态。
-JMessagePlugin.prototype.getGroupNoDisturb(groupId, successCallback, errorCallback) {
+JMessagePlugin.prototype.getGroupNoDisturb = function (groupId, successCallback, errorCallback) {
   if (device.platform == 'Android') {
     this.callNative('getGroupNoDisturb', [groupId], successCallback, errorCallback)
   }
 }
 
 // 获取免打扰列表，结果包含 "userList": 免打扰用户，"groupList": 免打扰群组。
-JMessagePlugin.prototype.getNoDisturblist(successCallback, errorCallback) {
+JMessagePlugin.prototype.getNoDisturblist = function (successCallback, errorCallback) {
   if (device.platform == 'Android') {
     this.callNative('getNoDisturblist', [], successCallback, errorCallback)
   }
 }
 
 // 设置是否全局免打扰，isNoDisturb: 0 - 普通状态, 1 - 免打扰。
-JMessagePlugin.prototype.setNoDisturbGlobal(isNoDisturb, successCallback, errorCallback) {
+JMessagePlugin.prototype.setNoDisturbGlobal = function (isNoDisturb, successCallback, errorCallback) {
   if (device.platform == 'Android') {
     this.callNative('setNoDisturbGlobal', [isNoDisturb], successCallback, errorCallback)
   }
 }
 
 // 判断当前是否是全局免打扰。
-JMessagePlugin.prototype.getNoDisturbGlobal(successCallback, errorCallback) {
+JMessagePlugin.prototype.getNoDisturbGlobal = function (successCallback, errorCallback) {
   if (device.platform == 'Android') {
     this.callNative('getNoDisturbGlobal', [], successCallback, errorCallback)
   }
