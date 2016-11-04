@@ -2,7 +2,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="jmessage-phonegap-plugin"
-        version="2.1.5">
+        version="2.1.6">
 
     <name>JMessage PhoneGap Plugin</name>
     <description>集成极光 IM 和推送功能</description>
@@ -225,29 +225,30 @@
             <meta-data android:name="JPUSH_CHANNEL" android:value="developer-default"/>
         </config-file>
 
-        <source-file src="src/android/gson-2.3.1.jar" target-dir="libs"/>
-        <source-file src="src/android/jmessage-android-1.4.1.jar" target-dir="libs"/>
+        <source-file src="src/android/libs/gson-2.3.1.jar" target-dir="libs"/>
+        <source-file src="src/android/libs/jmessage-android-1.4.2.jar" target-dir="libs"/>
 
-        <source-file src="src/android/armeabi/libjpush220.so" target-dir="libs/armeabi"/>
-        <source-file src="src/android/armeabi-v7a/libjpush220.so" target-dir="libs/armeabi-v7a"/>
-        <source-file src="src/android/arm64-v8a/libjpush220.so" target-dir="libs/arm64-v8a"/>
-        <source-file src="src/android/x86_64/libjpush220.so" target-dir="libs/x86_64"/>
-        <source-file src="src/android/x86/libjpush220.so" target-dir="libs/x86"/>
+        <source-file src="src/android/libs/armeabi/libjpush220.so" target-dir="libs/armeabi"/>
+        <source-file src="src/android/libs/armeabi-v7a/libjpush220.so" target-dir="libs/armeabi-v7a"/>
+        <source-file src="src/android/libs/arm64-v8a/libjpush220.so" target-dir="libs/arm64-v8a"/>
+        <source-file src="src/android/libs/x86_64/libjpush220.so" target-dir="libs/x86_64"/>
+        <source-file src="src/android/libs/x86/libjpush220.so" target-dir="libs/x86"/>
 
         <source-file src="src/android/JMessagePlugin.java" target-dir="src/cn/jmessage/phonegap"/>
         <source-file src="src/android/JPushPlugin.java" target-dir="src/cn/jmessage/phonegap"/>
         <source-file src="src/android/MyReceiver.java" target-dir="src/cn/jmessage/phonegap"/>
 
-    	<source-file src="src/android/test_notification_layout.xml" target-dir="res/layout"/>
-    	<source-file src="src/android/jpush_notification_icon.png" target-dir="res/drawable"/>
+    	<source-file src="src/android/res/layout/test_notification_layout.xml" target-dir="res/layout"/>
+        <source-file src="src/android/res/layout/jpush_popwin_layout.xml" target-dir="res/layout"/>
+        <source-file src="src/android/res/layout/jpush_webview_layout.xml" target-dir="res/layout"/>
 
-        <!-- Rich Push resources  -->
-        <source-file src="src/android/ic_richpush_actionbar_back.png" target-dir="res/drawable" />
-        <source-file src="src/android/ic_richpush_actionbar_divider.png" target-dir="res/drawable" />
-        <source-file src="src/android/richpush_btn_selector.xml" target-dir="res/drawable" />
-        <source-file src="src/android/jpush_popwin_layout.xml" target-dir="res/layout" />
-        <source-file src="src/android/jpush_webview_layout.xml" target-dir="res/layout" />
-        <source-file src="src/android/jpush_style.xml" target-dir="res/values" />
+    	<source-file src="src/android/res/drawable-hdpi/jpush_ic_richpush_actionbar_back.png" target-dir="res/drawable-hdpi"/>
+        <source-file src="src/android/res/drawable-hdpi/jpush_ic_richpush_actionbar_divider.png" target-dir="res/drawable-hdpi"/>
+
+        <source-file src="src/android/res/drawable-hdpi/jpush_richpush_btn_selector.xml" target-dir="res/drawable"/>
+        <source-file src="src/android/res/drawable-hdpi/jpush_richpush_progressbar.xml" target-dir="res/drawable"/>
+
+        <source-file src="src/android/res/values/jpush_style.xml" target-dir="res/values"/>
     </platform>
 
 </plugin>
