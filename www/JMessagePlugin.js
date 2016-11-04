@@ -139,8 +139,8 @@ JMessagePlugin.prototype.sendGroupImageMessageWithExtras = function (groupId, im
   this.callNative('sendGroupImageMessageWithExtras', [groupId, imageUrl, extrasJson], successCallback, errorCallback)
 }
 
-JMessagePlugin.prototype.sendGroupVoiceMessage = function (username, fileUrl, successCallback, errorCallback) {
-  this.callNative('sendGroupVoiceMessage', [username, fileUrl], successCallback, errorCallback)
+JMessagePlugin.prototype.sendGroupVoiceMessage = function (groupId, fileUrl, successCallback, errorCallback) {
+  this.callNative('sendGroupVoiceMessage', [groupId, fileUrl], successCallback, errorCallback)
 }
 
 JMessagePlugin.prototype.sendGroupVoiceMessageWithExtras = function (groupId, fileUrl, extrasJson, successCallback, errorCallback) {

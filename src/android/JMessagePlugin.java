@@ -72,13 +72,10 @@ public class JMessagePlugin extends CordovaPlugin {
     private static String TAG = "JMessagePlugin";
 
     private static JMessagePlugin instance;
+
     private ExecutorService threadPool = Executors.newFixedThreadPool(1);
     private Gson mGson = new Gson();
     private Activity mCordovaActivity;
-    private Message mCurrentMsg; // 当前消息。
-    private static Message mBufMsg;     // 缓存的消息。
-    private static boolean shouldCacheMsg = false;
-    private int[] mMsgIds;
 
     public JMessagePlugin() {
         instance = this;
@@ -106,7 +103,7 @@ public class JMessagePlugin extends CordovaPlugin {
                 avatarPath = avatarFile.getAbsolutePath();
             }
             msgJson.getJSONObject("fromUser").put("avatarPath", avatarPath);
-            msgJson.put("fromName", fromUser.getUserName);
+            msgJson.put("fromName", fromUser.getUserName());
             msgJson.put("fromNickname", fromUser.getNickname());
             msgJson.put("fromID", fromUser.getUserID());
 
@@ -177,7 +174,6 @@ public class JMessagePlugin extends CordovaPlugin {
                     break;
                 default:
             }
-            Log.i(TAG, "onReceiveMessage: " + msgJson.toString());
             fireEvent("onReceiveMessage", msgJson.toString());
         } catch (JSONException e) {
             e.printStackTrace();
@@ -203,9 +199,7 @@ public class JMessagePlugin extends CordovaPlugin {
     // 触发通知栏点击事件。
     public void onEvent(NotificationClickEvent event) {
         Message msg = event.getMessage();
-        if (shouldCacheMsg) {
-            mBufMsg = msg;
-        }
+
         String json = mGson.toJson(msg);
         fireEvent("onOpenMessage", json);
 
@@ -259,14 +253,9 @@ public class JMessagePlugin extends CordovaPlugin {
         return true;
     }
 
-    public void onPause(boolean multitasking) {
-        shouldCacheMsg = true;
-    }
-
     @Override
     public void onResume(boolean multitasking) {
         super.onResume(multitasking);
-        shouldCacheMsg = false;
     }
 
     public void onDestroy() {
@@ -804,8 +793,7 @@ public class JMessagePlugin extends CordovaPlugin {
             Conversation conversation = JMessageClient.getSingleConversation(
                     userName, appKey);
             if (conversation == null) {
-                conversation = Conversation.createSingleConversation(userName,
-                        appKey);
+                conversation = Conversation.createSingleConversation(userName, appKey);
             }
             if (conversation == null) {
                 callback.error("无法创建对话");
@@ -1423,7 +1411,7 @@ public class JMessagePlugin extends CordovaPlugin {
                 JSONObject conJson;
                 for (Conversation con : conversationList) {
                     conJson = new JSONObject(mGson.toJson(con));
-                    if (conJson.isNull("latestMessage")) {
+                    if (conJson.isNull("latestMessage") && con.getLatestMessage() != null) {
                         Message latestMsg = con.getLatestMessage();
                         JSONObject msgJson = new JSONObject(mGson.toJson(latestMsg));
                         conJson.put("latestMessage", msgJson);
@@ -1945,11 +1933,9 @@ public class JMessagePlugin extends CordovaPlugin {
             jsonItem.put("target_id", targetUser.getUserName());
             jsonItem.put("target_name", targetUser.getNickname());
             jsonItem.put("from_id", fromUser.getUserName());
-            //jsonItem.put("from_name", fromUser.getNickname());
-            jsonItem.put("from_name", msg.getFromName());
+            jsonItem.put("from_name", msg.getFromUser().getUserName());
             jsonItem.put("create_time", msg.getCreateTime());
             jsonItem.put("msg_type", msgType);
-            //jsonItem.put("text", contentText);
 
             JSONObject contentBody = new JSONObject();
             contentBody.put("text", contentText);
@@ -2182,7 +2168,7 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     // 获取免打扰列表。
-    public void getNoDisturblist(JSONArray data, final CallbackContext callback) {
+    public void getNoDisturbList(JSONArray data, final CallbackContext callback) {
         JMessageClient.getNoDisturblist(new GetNoDisurbListCallback() {
             @Override
             public void gotResult(int status, String desc, List<UserInfo> userList,
