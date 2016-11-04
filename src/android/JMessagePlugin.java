@@ -48,7 +48,9 @@ import cn.jpush.im.android.api.callback.GetBlacklistCallback;
 import cn.jpush.im.android.api.callback.GetGroupIDListCallback;
 import cn.jpush.im.android.api.callback.GetGroupInfoCallback;
 import cn.jpush.im.android.api.callback.GetGroupMembersCallback;
+import cn.jpush.im.android.api.callback.GetNoDisurbListCallback;
 import cn.jpush.im.android.api.callback.GetUserInfoCallback;
+import cn.jpush.im.android.api.callback.IntegerCallback;
 import cn.jpush.im.android.api.content.EventNotificationContent;
 import cn.jpush.im.android.api.content.ImageContent;
 import cn.jpush.im.android.api.content.MessageContent;
@@ -70,13 +72,10 @@ public class JMessagePlugin extends CordovaPlugin {
     private static String TAG = "JMessagePlugin";
 
     private static JMessagePlugin instance;
+
     private ExecutorService threadPool = Executors.newFixedThreadPool(1);
     private Gson mGson = new Gson();
     private Activity mCordovaActivity;
-    private Message mCurrentMsg; // 当前消息。
-    private static Message mBufMsg;     // 缓存的消息。
-    private static boolean shouldCacheMsg = false;
-    private int[] mMsgIds;
 
     public JMessagePlugin() {
         instance = this;
@@ -104,10 +103,9 @@ public class JMessagePlugin extends CordovaPlugin {
                 avatarPath = avatarFile.getAbsolutePath();
             }
             msgJson.getJSONObject("fromUser").put("avatarPath", avatarPath);
-            String fromName = TextUtils.isEmpty(fromUser.getNickname()) ? fromUser.getUserName()
-                    : fromUser.getNickname();
-            msgJson.put("fromName", fromName);
-            msgJson.put("fromID", fromUser.getUserName());
+            msgJson.put("fromName", fromUser.getUserName());
+            msgJson.put("fromNickname", fromUser.getNickname());
+            msgJson.put("fromID", fromUser.getUserID());
 
             UserInfo myInfo = JMessageClient.getMyInfo();
             String myInfoJson = mGson.toJson(myInfo);
@@ -122,18 +120,15 @@ public class JMessagePlugin extends CordovaPlugin {
 
             msgJson.put("targetInfo", myInfoJsonObj);
 
-            String targetName = "";
             if (msg.getTargetType().equals(ConversationType.single)) {
-                targetName = TextUtils.isEmpty(myInfo.getNickname())
-                        ? myInfo.getUserName() : myInfo.getNickname();
-                msgJson.put("targetID", myInfo.getUserName());
-
+                msgJson.put("targetName", myInfo.getUserName());
+                msgJson.put("targetNickname", myInfo.getNickname());
+                msgJson.put("targetID", myInfo.getUserID());
             } else if (msg.getTargetType().equals(ConversationType.group)) {
                 GroupInfo targetInfo = (GroupInfo) msg.getTargetInfo();
-                targetName = TextUtils.isEmpty(targetInfo.getGroupName())
-                        ? targetInfo.getGroupName() : (targetInfo.getGroupID() + "");
+                msgJson.put("targetID", targetInfo.getGroupID());
+                msgJson.put("targetName", targetInfo.getGroupName());
             }
-            msgJson.put("targetName", targetName);
 
             switch (msg.getContentType()) {
                 case text:
@@ -179,7 +174,6 @@ public class JMessagePlugin extends CordovaPlugin {
                     break;
                 default:
             }
-            Log.i(TAG, "onReceiveMessage: " + msgJson.toString());
             fireEvent("onReceiveMessage", msgJson.toString());
         } catch (JSONException e) {
             e.printStackTrace();
@@ -205,9 +199,7 @@ public class JMessagePlugin extends CordovaPlugin {
     // 触发通知栏点击事件。
     public void onEvent(NotificationClickEvent event) {
         Message msg = event.getMessage();
-        if (shouldCacheMsg) {
-            mBufMsg = msg;
-        }
+
         String json = mGson.toJson(msg);
         fireEvent("onOpenMessage", json);
 
@@ -261,14 +253,9 @@ public class JMessagePlugin extends CordovaPlugin {
         return true;
     }
 
-    public void onPause(boolean multitasking) {
-        shouldCacheMsg = true;
-    }
-
     @Override
     public void onResume(boolean multitasking) {
         super.onResume(multitasking);
-        shouldCacheMsg = false;
     }
 
     public void onDestroy() {
@@ -806,8 +793,7 @@ public class JMessagePlugin extends CordovaPlugin {
             Conversation conversation = JMessageClient.getSingleConversation(
                     userName, appKey);
             if (conversation == null) {
-                conversation = Conversation.createSingleConversation(userName,
-                        appKey);
+                conversation = Conversation.createSingleConversation(userName, appKey);
             }
             if (conversation == null) {
                 callback.error("无法创建对话");
@@ -1425,7 +1411,7 @@ public class JMessagePlugin extends CordovaPlugin {
                 JSONObject conJson;
                 for (Conversation con : conversationList) {
                     conJson = new JSONObject(mGson.toJson(con));
-                    if (conJson.isNull("latestMessage")) {
+                    if (conJson.isNull("latestMessage") && con.getLatestMessage() != null) {
                         Message latestMsg = con.getLatestMessage();
                         JSONObject msgJson = new JSONObject(mGson.toJson(latestMsg));
                         conJson.put("latestMessage", msgJson);
@@ -1537,12 +1523,17 @@ public class JMessagePlugin extends CordovaPlugin {
         try {
             String username = data.getString(0);
             String appKey = data.isNull(1) ? "" : data.getString(1);
+            boolean result;
             if (TextUtils.isEmpty(appKey)) {
-                JMessageClient.deleteSingleConversation(username);
+                result = JMessageClient.deleteSingleConversation(username);
             } else {
-                JMessageClient.deleteSingleConversation(username, appKey);
+                result = JMessageClient.deleteSingleConversation(username, appKey);
             }
-            callback.success();
+            if (result) {
+                callback.success();
+            } else {
+                callback.error("Delete fail.");
+            }
         } catch (JSONException e) {
             e.printStackTrace();
             callback.error("Parameter error.");
@@ -1552,8 +1543,12 @@ public class JMessagePlugin extends CordovaPlugin {
     public void deleteGroupConversation(JSONArray data, CallbackContext callback) {
         try {
             long groupId = data.getLong(0);
-            JMessageClient.deleteGroupConversation(groupId);
-            callback.success();
+            boolean result = JMessageClient.deleteGroupConversation(groupId);
+            if (result) {
+                callback.success();
+            } else {
+                callback.error("Delete fail.");
+            }
         } catch (JSONException e) {
             e.printStackTrace();
             callback.error("Parameter error.");
@@ -1938,11 +1933,9 @@ public class JMessagePlugin extends CordovaPlugin {
             jsonItem.put("target_id", targetUser.getUserName());
             jsonItem.put("target_name", targetUser.getNickname());
             jsonItem.put("from_id", fromUser.getUserName());
-            //jsonItem.put("from_name", fromUser.getNickname());
-            jsonItem.put("from_name", msg.getFromName());
+            jsonItem.put("from_name", msg.getFromUser().getUserName());
             jsonItem.put("create_time", msg.getCreateTime());
             jsonItem.put("msg_type", msgType);
-            //jsonItem.put("text", contentText);
 
             JSONObject contentBody = new JSONObject();
             contentBody.put("text", contentText);
@@ -2057,6 +2050,180 @@ public class JMessagePlugin extends CordovaPlugin {
             e.printStackTrace();
             callback.error(e.toString());
         }
+    }
+
+    // 免打扰 API
+
+    /**
+     * 设置是否对目标用户免打扰。
+     *
+     * @param data: data.getString(0): 目标用户的 username。
+     *              data.getInt(1): isNoDisturb, 0 - 解除免打扰，1 - 免打扰。
+     */
+    public void setUserNoDisturb(JSONArray data, final CallbackContext callback) {
+        try {
+            String username = data.getString(0);
+            final int isNoDisturb = data.getInt(1);
+
+            JMessageClient.getUserInfo(username, new GetUserInfoCallback() {
+                @Override
+                public void gotResult(int status, String desc, UserInfo userInfo) {
+                    if (status == 0) {
+                        userInfo.setNoDisturb(isNoDisturb, new BasicCallback() {
+                            @Override
+                            public void gotResult(int status, String desc) {
+                                if (status == 0) {
+                                    callback.success();
+                                } else {
+                                    callback.error(status);
+                                }
+                            }
+                        });
+                    } else {
+                        Log.i(TAG, status + ": " + desc);
+                        callback.error(status); // 返回错误码。
+                    }
+                }
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callback.error(e.toString());
+        }
+    }
+
+    /**
+     * 设置群组免打扰。
+     */
+    public void setGroupNoDisturb(JSONArray data, final CallbackContext callback) {
+        try {
+            long groupId = data.getLong(0);
+            final int isNoDisturb = data.getInt(1);
+
+            JMessageClient.getGroupInfo(groupId, new GetGroupInfoCallback() {
+                @Override
+                public void gotResult(int status, String desc, GroupInfo groupInfo) {
+                    if (status == 0) {
+                        groupInfo.setNoDisturb(isNoDisturb, new BasicCallback() {
+                            @Override
+                            public void gotResult(int status, String desc) {
+                                if (status == 0) {
+                                    callback.success();
+                                } else {
+                                    callback.error(status);
+                                }
+                            }
+                        });
+                    } else {
+                        callback.error(status);
+                    }
+                }
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 获取指定用户的免打扰状态。
+     */
+    public void getUserNoDisturb(JSONArray data, final CallbackContext callback) {
+        try {
+            String username = data.getString(0);
+
+            JMessageClient.getUserInfo(username, new GetUserInfoCallback() {
+                @Override
+                public void gotResult(int status, String desc, UserInfo userInfo) {
+                    if (status == 0) {
+                        callback.success(userInfo.getNoDisturb());
+                    } else {
+                        callback.error(status);
+                    }
+                }
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 获取指定群组的免打扰状态。
+     */
+    public void getGroupNoDisturb(JSONArray data, final CallbackContext callback) {
+        try {
+            long groupId = data.getLong(0);
+
+            JMessageClient.getGroupInfo(groupId, new GetGroupInfoCallback() {
+                @Override
+                public void gotResult(int status, String desc, GroupInfo groupInfo) {
+                    if (status == 0) {
+                        callback.success(groupInfo.getNoDisturb());
+                    } else {
+                        callback.error(status);
+                    }
+                }
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // 获取免打扰列表。
+    public void getNoDisturbList(JSONArray data, final CallbackContext callback) {
+        JMessageClient.getNoDisturblist(new GetNoDisurbListCallback() {
+            @Override
+            public void gotResult(int status, String desc, List<UserInfo> userList,
+                                  List<GroupInfo> groupList) {
+                if (status == 0) {
+                    JSONObject json = new JSONObject();
+                    try {
+                        json.put("userList", mGson.toJson(userList));
+                        json.put("groupList", mGson.toJson(groupList));
+                        callback.success(json);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    callback.error(status);
+                }
+            }
+        });
+    }
+
+    /**
+     * 设置全局免打扰。0：正常状态，1：免打扰状态。
+     */
+    public void setNoDisturbGlobal(JSONArray data, final CallbackContext callback) {
+        try {
+            int isNoDisturbGlobal = data.getInt(0);
+            JMessageClient.setNoDisturbGlobal(isNoDisturbGlobal, new BasicCallback() {
+                @Override
+                public void gotResult(int status, String desc) {
+                    if (status == 0) {
+                        callback.success();
+                    } else {
+                        callback.error(status);
+                    }
+                }
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 获取当前的全局免打扰状态。
+     */
+    public void getNoDisturbGlobal(JSONArray data, final CallbackContext callback) {
+        JMessageClient.getNoDisturbGlobal(new IntegerCallback() {
+            @Override
+            public void gotResult(int status, String desc, Integer integer) {
+                if (status == 0) {
+                    callback.success(integer);
+                } else {
+                    callback.error(status);
+                }
+            }
+        });
     }
 
     /**
