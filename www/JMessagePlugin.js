@@ -180,6 +180,14 @@ JMessagePlugin.prototype.getOriginImageInGroupConversation = function(groupId, m
 
 // Conversation API.
 
+JMessagePlugin.prototype.createSingleConversation = function(username, appKey, successCallback, errorCallback) {
+  this.callNative('createSingleConversation', [username, appKey], successCallback, errorCallback)
+}
+
+JMessagePlugin.prototype.createGroupConversation = function(groupId, successCallback, errorCallback) {
+  this.callNative('createGroupConversation', [groupId], successCallback, errorCallback)
+}
+
 // 判断单聊会话是否存在。返回值：0 - 不存在；1 - 存在。
 JMessagePlugin.prototype.isSingleConversationExist = function(username, appKey, successCallback,
     errorCallback) {
