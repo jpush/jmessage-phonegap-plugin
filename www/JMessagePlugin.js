@@ -1,6 +1,12 @@
 var exec = require('cordova/exec')
 
 var JMessagePlugin = function () {
+  const NOTI_MODE_DEFAULT = 0
+  const NOTI_MODE_NO_SOUND = 1
+  const NOTI_MODE_NO_VIBRATE = 2
+  const NOTI_MODE_SILENCE = 3
+  const NOTI_MODE_NO_NOTIFICATION = 4
+
   this.username = ''
   this.nickname = ''
   this.gender = ''
@@ -123,6 +129,16 @@ JMessagePlugin.prototype.sendSingleCustomMessage = function (username, jsonStr, 
   this.callNative('sendSingleCustomMessage', [username, jsonStr, appKey], successCallback, errorCallback)
 }
 
+// scale：地图缩放比例；address：详细地址信息。
+JMessagePlugin.prototype.sendSingleLocationMessage = function (username, appKey, latitude, longitude, scale, address) {
+  this.callNative('sendSingleLocationMessage', [username, appKey, latitude, longitude, scale, address],
+    successCallback, errorCallback)
+}
+
+JMessagePlugin.prototype.sendSingleFileMessage = function (username, appKey, filePath, fileName, successCallback, errorCallback) {
+  this.callNative('sendSingleFileMessage', [username, appKey, filePath, fileName], successCallback, errorCallback)
+}
+
 JMessagePlugin.prototype.sendGroupTextMessage = function (groupId, text, successCallback, errorCallback) {
   this.callNative('sendGroupTextMessage', [groupId, text], successCallback, errorCallback)
 }
@@ -151,6 +167,15 @@ JMessagePlugin.prototype.sendGroupCustomMessage = function (groupId, jsonStr, su
   this.callNative('sendGroupCustomMessage', [groupId, jsonStr], successCallback, errorCallback)
 }
 
+JMessagePlugin.prototype.sendGroupLocationMessage = function (groupId, latitude, longitude, scale, address,
+    successCallback, errorCallback) {
+  this.callNative('sendGroupLocationMessage', [groupId, latitude, longitude, scale, address], successCallback, errorCallback)
+}
+
+JMessagePlugin.prototype.sendGroupFileMessage = function (groupId, filePath, fileName, successCallback, errorCallback) {
+  this.callNative('sendGroupFileMessage', [groupId, filePath, fileName], successCallback, errorCallback)
+}
+
 JMessagePlugin.prototype.getLatestMessage = function (conversationType, value, appKey, successCallback, errorCallback) {
   this.callNative('getLatestMessage', [conversationType, value, appKey], successCallback, errorCallback)
 }
@@ -169,14 +194,55 @@ JMessagePlugin.prototype.getAllMessages = function (conversationType, value, app
 }
 
 // 获取指定单聊会话中指定图片消息的原图。
-JMessagePlugin.prototype.getOriginImageInSingleConversation = function(username, msgServerId, successCallback, errorCallback) {
+JMessagePlugin.prototype.getOriginImageInSingleConversation = function (username, msgServerId, successCallback, errorCallback) {
   this.callNative('getOriginImageInSingleConversation', [username, msgServerId], successCallback, errorCallback)
 }
 
 // 获取指定群聊会话中指定图片消息的原图。
-JMessagePlugin.prototype.getOriginImageInGroupConversation = function(groupId, msgServerId, successCallback, errorCallback) {
+JMessagePlugin.prototype.getOriginImageInGroupConversation = function (groupId, msgServerId, successCallback, errorCallback) {
   this.callNative('getOriginImageInGroupConversation', [groupId, msgServerId], successCallback, errorCallback);
 }
+
+// 好友关系 API
+
+// 发送添加好友请求
+JMessagePlugin.prototype.sendInvitationRequest = function (targetUsername, targetUserAppkey, reason,
+    successCallback, errorCallback) {
+  this.callNative('sendInvitationRequest', [targetUsername, targetUserAppkey, reason],
+    successCallback, errorCallback)
+}
+
+JMessagePlugin.prototype.acceptInvitation = function (targetUsername, targetUserAppkey,
+    successCallback, errorCallback) {
+  this.callNative('acceptInvitation', [targetUsername, targetUserAppkey], successCallback, errorCallback)
+}
+
+JMessagePlugin.prototype.declineInvitation = function (targetUsername, targetUserAppkey, reason,
+    successCallback, errorCallback) {
+  this.callNative('declineInvitation', [targetUsername, targetUserAppkey, reason],
+    successCallback, errorCallback)
+}
+
+JMessagePlugin.prototype.getFriendList = function (successCallback, errorCallback) {
+  this.callNative('getFriendList', [], successCallback, errorCallback)
+}
+
+JMessagePlugin.prototype.removeFromFriendList = function (targetUsername, targetUserAppkey,
+    successCallback, errorCallback) {
+  this.callNative('removeFromFriendList', [targetUsername, targetUserAppkey], successCallback, errorCallback)
+}
+
+// 修改当前用户好友的备注名
+JMessagePlugin.prototype.updateFriendNoteName = function (friendName, friendAppKey, noteName,
+    successCallback, errorCallback) {
+  this.callNative('updateFriendNoteName', [friendName, friendAppKey, noteName], successCallback, errorCallback)
+}
+
+JMessagePlugin.prototype.updateFriendNoteText = function (friendName, friendAppKey, noteText,
+    successCallback, errorCallback) {
+  this.callNative('updateFriendNoteText', [friendName, friendAppKey, noteText], successCallback, errorCallback)
+}
+
 
 // Conversation API.
 
@@ -361,6 +427,12 @@ JMessagePlugin.prototype.getNoDisturbGlobal = function (successCallback, errorCa
   }
 }
 
+// 通知管理
+JMessagePlugin.prototype.setNotificationMode = function (mode, successCallback, errorCallback) {
+  if (device.platform == 'Android') {
+    this.callNative('setNotificationMode', [mode], successCallback, errorCallback)
+  }
+}
 
 // handle event.
 JMessagePlugin.prototype.onOpenMessage = function (data) {
@@ -496,6 +568,8 @@ JMessagePlugin.prototype.sendGroupCustomMessage_ios = function (gid, text, extra
 JMessagePlugin.prototype.cross_sendSingleCustomMessage_ios = function (username, appkey, text, extra, successCallback, errorCallback) {
   this.callNative('cross_sendSingleCustomMessage', [username, appkey, text, extra], successCallback, errorCallback)
 }
+
+JMessagePlugin
 
 // Cross App
 
