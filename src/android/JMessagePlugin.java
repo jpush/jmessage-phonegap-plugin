@@ -218,22 +218,34 @@ public class JMessagePlugin extends CordovaPlugin {
      * 好友相关事件通知
      */
     public void onEvent(ContactNotifyEvent event) {
-        String reason = event.getReason();
+        String reason = event.getReason();  // 事件发生的理由
         String fromUsername = event.getFromUsername();
-        String appKey = event.getfromUserAppKey();
+        String fromAppKey = event.getfromUserAppKey();
+
+        JSONObject json = new JSONObject();
+        try {
+            json.put("reason", reason);
+            json.put("fromUsername", fromUsername);
+            json.put("fromAppKey", fromAppKey);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        String data = json.toString();
 
         switch (event.getType()) {
             case invite_received:   // 收到好友邀请
-                fireEvent("onInviteReceived", null);
+                fireEvent("onInviteReceived", data);
                 break;
             case invite_accepted:   // 对方接受了你的好友邀请
-                fireEvent("onInviteAccepted", null);
+                fireEvent("onInviteAccepted", data);
                 break;
             case invite_declined:   // 对方拒绝了你的好友邀请
-                fireEvent("onInviteDeclined", null);
+                fireEvent("onInviteDeclined", data);
                 break;
             case contact_deleted:   // 对方将你从好友中删除
-                fireEvent("onContactDeleted", null);
+                fireEvent("onContactDeleted", data);
                 break;
             default:
         }
