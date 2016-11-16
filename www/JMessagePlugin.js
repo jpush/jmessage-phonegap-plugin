@@ -130,7 +130,8 @@ JMessagePlugin.prototype.sendSingleCustomMessage = function (username, jsonStr, 
 }
 
 // scale：地图缩放比例；address：详细地址信息。
-JMessagePlugin.prototype.sendSingleLocationMessage = function (username, appKey, latitude, longitude, scale, address) {
+JMessagePlugin.prototype.sendSingleLocationMessage = function (username, appKey, latitude, longitude, scale, address,
+    successCallback, errorCallback) {
   this.callNative('sendSingleLocationMessage', [username, appKey, latitude, longitude, scale, address],
     successCallback, errorCallback)
 }
