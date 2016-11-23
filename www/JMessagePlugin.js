@@ -130,7 +130,8 @@ JMessagePlugin.prototype.sendSingleCustomMessage = function (username, jsonStr, 
 }
 
 // scale：地图缩放比例；address：详细地址信息。
-JMessagePlugin.prototype.sendSingleLocationMessage = function (username, appKey, latitude, longitude, scale, address) {
+JMessagePlugin.prototype.sendSingleLocationMessage = function (username, appKey, latitude, longitude, scale, address,
+    successCallback, errorCallback) {
   this.callNative('sendSingleLocationMessage', [username, appKey, latitude, longitude, scale, address],
     successCallback, errorCallback)
 }
@@ -167,6 +168,7 @@ JMessagePlugin.prototype.sendGroupCustomMessage = function (groupId, jsonStr, su
   this.callNative('sendGroupCustomMessage', [groupId, jsonStr], successCallback, errorCallback)
 }
 
+// scale：地图缩放比例；address：详细地址信息。
 JMessagePlugin.prototype.sendGroupLocationMessage = function (groupId, latitude, longitude, scale, address,
     successCallback, errorCallback) {
   this.callNative('sendGroupLocationMessage', [groupId, latitude, longitude, scale, address], successCallback, errorCallback)
@@ -223,6 +225,7 @@ JMessagePlugin.prototype.declineInvitation = function (targetUsername, targetUse
     successCallback, errorCallback)
 }
 
+// 获取当前登录用户的好友列表
 JMessagePlugin.prototype.getFriendList = function (successCallback, errorCallback) {
   this.callNative('getFriendList', [], successCallback, errorCallback)
 }
@@ -238,6 +241,7 @@ JMessagePlugin.prototype.updateFriendNoteName = function (friendName, friendAppK
   this.callNative('updateFriendNoteName', [friendName, friendAppKey, noteName], successCallback, errorCallback)
 }
 
+// 修改当前用户好友的备注信息
 JMessagePlugin.prototype.updateFriendNoteText = function (friendName, friendAppKey, noteText,
     successCallback, errorCallback) {
   this.callNative('updateFriendNoteText', [friendName, friendAppKey, noteText], successCallback, errorCallback)
@@ -369,7 +373,7 @@ JMessagePlugin.prototype.addUsersToBlacklist = function (usernameStr, successCal
 }
 
 JMessagePlugin.prototype.delUsersFromBlacklist = function (usernameStr, successCallback, errorCallback) {
-  this.callNative('delUsersFromBlacklist ', [usernameStr], successCallback, errorCallback)
+  this.callNative('delUsersFromBlacklist', [usernameStr], successCallback, errorCallback)
 }
 
 JMessagePlugin.prototype.getBlacklist = function (successCallback, errorCallback) {
@@ -493,6 +497,26 @@ JMessagePlugin.prototype.onGroupMemberRemoved = function () {
 
 JMessagePlugin.prototype.onGroupMemberExit = function () {
   cordova.fireDocumentEvent('jmessage.onGroupMemberExit', null)
+}
+
+// 当收到好友邀请
+JMessagePlugin.prototype.onInviteReceived = function (data) {
+  cordova.fireDocumentEvent('jmessage.onInviteReceived', data)
+}
+
+// 当发送的好友请求被接受
+JMessagePlugin.prototype.onInviteAccepted = function (data) {
+  cordova.fireDocumentEvent('jmessage.onInviteAccepted', data)
+}
+
+// 当对方拒绝了你的好友请求
+JMessagePlugin.prototype.onInviteDeclined = function (data) {
+  cordova.fireDocumentEvent('jmessage.onInviteDeclined', data)
+}
+
+// 当对方将你从好友列表中删除
+JMessagePlugin.prototype.onContactDeleted = function (data) {
+  cordova.fireDocumentEvent('jmessage.onContactDeleted', data)
 }
 
 // ---------- iOS only ----------//

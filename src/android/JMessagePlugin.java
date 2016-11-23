@@ -218,22 +218,34 @@ public class JMessagePlugin extends CordovaPlugin {
      * 好友相关事件通知
      */
     public void onEvent(ContactNotifyEvent event) {
-        String reason = event.getReason();
+        String reason = event.getReason();  // 事件发生的理由
         String fromUsername = event.getFromUsername();
-        String appKey = event.getfromUserAppKey();
+        String fromAppKey = event.getfromUserAppKey();
+
+        JSONObject json = new JSONObject();
+        try {
+            json.put("reason", reason);
+            json.put("fromUsername", fromUsername);
+            json.put("fromAppKey", fromAppKey);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        String data = json.toString();
 
         switch (event.getType()) {
             case invite_received:   // 收到好友邀请
-                fireEvent("onInviteReceived", null);
+                fireEvent("onInviteReceived", data);
                 break;
             case invite_accepted:   // 对方接受了你的好友邀请
-                fireEvent("onInviteAccepted", null);
+                fireEvent("onInviteAccepted", data);
                 break;
             case invite_declined:   // 对方拒绝了你的好友邀请
-                fireEvent("onInviteDeclined", null);
+                fireEvent("onInviteDeclined", data);
                 break;
             case contact_deleted:   // 对方将你从好友中删除
-                fireEvent("onContactDeleted", null);
+                fireEvent("onContactDeleted", data);
                 break;
             default:
         }
@@ -1031,7 +1043,7 @@ public class JMessagePlugin extends CordovaPlugin {
             username = data.getString(0);
             appKey = data.getString(1);
             path = data.getString(2);
-            fileName = data.getString(3);
+            fileName = data.isNull(3) ? "" : data.getString(3);
         } catch (JSONException e) {
             e.printStackTrace();
             callback.error("Parameters error.");
@@ -1431,7 +1443,7 @@ public class JMessagePlugin extends CordovaPlugin {
         try {
             groupId = data.getLong(0);
             path = data.getString(1);
-            fileName = data.getString(2);
+            fileName = data.isNull(2) ? "" : data.getString(2);
         } catch (JSONException e) {
             e.printStackTrace();
             callback.error("Parameters error.");
@@ -2019,7 +2031,9 @@ public class JMessagePlugin extends CordovaPlugin {
 
     // 好友关系相关 API
 
-    // 发送添加好友请求。
+    /**
+     * 发送添加好友请求。
+     */
     public void sendInvitationRequest(JSONArray data, final CallbackContext callback) {
         String username;
         String appKey;
@@ -2027,7 +2041,7 @@ public class JMessagePlugin extends CordovaPlugin {
 
         try {
             username = data.getString(0);
-            appKey = data.getString(1);
+            appKey = data.isNull(1) ? "" : data.getString(1);
             reason = data.getString(2);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -2053,7 +2067,7 @@ public class JMessagePlugin extends CordovaPlugin {
 
         try {
             targetUsername = data.getString(0);
-            appKey = data.getString(1);
+            appKey = data.isNull(1) ? "" : data.getString(1);
         } catch (JSONException e) {
             e.printStackTrace();
             callback.error("Parameters error.");
@@ -2079,7 +2093,7 @@ public class JMessagePlugin extends CordovaPlugin {
 
         try {
             targetUsername = data.getString(0);
-            appKey = data.getString(1);
+            appKey = data.isNull(1) ? "" : data.getString(1);
             reason = data.getString(2);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -2099,7 +2113,9 @@ public class JMessagePlugin extends CordovaPlugin {
         });
     }
 
-    // 获取当前登录用户的好友列表
+    /**
+     * 获取当前登录用户的好友列表。
+     */
     public void getFriendList(JSONArray data, final CallbackContext callback) {
         ContactManager.getFriendList(new GetUserInfoListCallback() {
             @Override
@@ -2120,7 +2136,7 @@ public class JMessagePlugin extends CordovaPlugin {
 
         try {
             username = data.getString(0);
-            appKey = data.getString(1);
+            appKey = data.isNull(1) ? "" : data.getString(1);
         } catch (JSONException e) {
             e.printStackTrace();
             callback.error("Parameters error.");
@@ -2155,7 +2171,7 @@ public class JMessagePlugin extends CordovaPlugin {
 
         try {
             friendName = data.getString(0);
-            appKey = data.getString(1);
+            appKey = data.isNull(1) ? "" : data.getString(1);
             noteName = data.getString(2);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -2192,7 +2208,7 @@ public class JMessagePlugin extends CordovaPlugin {
 
         try {
             friendName = data.getString(0);
-            appKey = data.getString(1);
+            appKey = data.isNull(1) ? "" : data.getString(1);
             noteText = data.getString(2);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -2418,8 +2434,7 @@ public class JMessagePlugin extends CordovaPlugin {
             if (limit <= 0 || from < 0) {
                 return;
             }
-            Conversation conversation = JMessageClient.getSingleConversation(
-                    username);
+            Conversation conversation = JMessageClient.getSingleConversation(username);
             if (conversation == null) {
                 conversation = Conversation.createSingleConversation(username);
             }
