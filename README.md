@@ -5,7 +5,7 @@
 [![QQ Group](https://img.shields.io/badge/QQ%20Group-413602425-red.svg)](https://github.com/jpush/jmessage-phonegap-plugin)
 [![weibo](https://img.shields.io/badge/weibo-JPush-blue.svg)](http://weibo.com/jpush?refer_flag=1001030101_&is_all=1)
 
-JMessage PhoneGap / Cordova Plugin 是基于[极光 IM](http://docs.jpush.io/guideline/jmessage_guide/) 的 Cordova 插件，目前支持 iOS 和 Android 平台。
+JMessage PhoneGap / Cordova Plugin 是基于[极光 IM](https://docs.jiguang.cn/jmessage/guideline/jmessage_guide/) 的 Cordova 插件，目前支持 iOS 和 Android 平台。
 
 除了支持 IM 功能外，还集成了 [JPush PhoneGap Plugin](https://github.com/jpush/jpush-phonegap-plugin) 插件的功能，支持进行消息推送。
 
@@ -54,7 +54,7 @@ API 分为 IM（聊天）和 Push（消息推送）两部分。具体可参考�
   解决方案：Eclipse 中右键单击工程名，Build Path -> Config Build Path -> Projects -> 选中工程名称 -> CordovaLib -> 点击 add。
 
 ### iOS
-- 收不到推送：请首先按照正确方式再次配置证书、描述文件，可参考 [iOS 证书设置指南](http://docs.jpush.io/client/ios_tutorials/#ios_1)。
+- 收不到推送：请首先按照正确方式再次配置证书、描述文件，可参考 [iOS 证书设置指南](https://docs.jiguang.cn/jpush/client/iOS/ios_cer_guide/)。
 - 设置 PushConfig.plist:
 	- APP_KEY：应用标识
 	- CHANNEL：渠道标识
