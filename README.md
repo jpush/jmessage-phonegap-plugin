@@ -20,17 +20,15 @@ JMessage PhoneGap / Cordova Plugin 是基于[极光 IM](http://docs.jpush.io/gui
 ## 集成步骤
 - 在线安装
 
-		cordova plugin add jmessage-phonegap-plugin --variable APP_KEY=Your_app_key
+		cordova plugin add jmessage-phonegap-plugin --variable APP_KEY=your_app_key
 
 	或
 
-		cordova plugin add https://github.com/jpush/jmessage-phonegap-plugin.git --variable APP_KEY=Your_app_key
+		cordova plugin add https://github.com/jpush/jmessage-phonegap-plugin.git --variable APP_KEY=your_app_key
 
 - 本地安装
 
-		cordova plugin add <Plugin Path> --variable APP_KEY=Your_app_key
-
-	> [点击这里](http://docs.jpush.io/guideline/statistical_report/)查看如何获取 APP_KEY。
+		cordova plugin add <Plugin Path> --variable APP_KEY=your_app_key
 
 ## API
 API 分为 IM（聊天）和 Push（消息推送）两部分。具体可参考：
@@ -53,16 +51,7 @@ API 分为 IM（聊天）和 Push（消息推送）两部分。具体可参考�
 ### Android
 - Eclipse 中 import PhoneGap 工程之后出现：*Type CallbackContext cannot be resolved to a type*。
 
-解决方案：Eclipse 中右键单击工程名，Build Path -> Config Build Path -> Projects -> 选中工程名称 -> CordovaLib -> 点击 add。
-
-- 若用命令行编译报错 -source 1.6，请修改项目中的 *platforms/android/build.gradle* 文件：
-
-        ...
-        compileOptions {
-          sourceCompatibility JavaVersion.VERSION_1_7   // 1_6 改为 1_7
-          targetCompatibility JavaVersion.VERSION_1_7   // 1_6 改为 1_7
-        }
-        ...
+  解决方案：Eclipse 中右键单击工程名，Build Path -> Config Build Path -> Projects -> 选中工程名称 -> CordovaLib -> 点击 add。
 
 ### iOS
 - 收不到推送：请首先按照正确方式再次配置证书、描述文件，可参考 [iOS 证书设置指南](http://docs.jpush.io/client/ios_tutorials/#ios_1)。
