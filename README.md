@@ -15,7 +15,7 @@ JMessage PhoneGap / Cordova Plugin 是基于[极光 IM](http://docs.jpush.io/gui
 
 > QQ 交流群：413602425
 
-> 有问题建议先到[极光社区](http://community.jpush.cn/)搜索提问。
+> 有问题建议先到[极光社区](https://community.jiguang.cn/)搜索提问。
 
 ## 集成步骤
 - 在线安装
@@ -64,4 +64,4 @@ API 分为 IM（聊天）和 Push（消息推送）两部分。具体可参考�
 ## 更多
 - QQ 群：413602425
 - [极光官网文档](http://docs.jiguang.cn/guideline/jmessage_guide/)
-- 有问题可访问[极光社区](http://community.jpush.cn/)搜索和提问
+- 有问题可访问[极光社区](http://community.jiguang.cn/)搜索和提问
