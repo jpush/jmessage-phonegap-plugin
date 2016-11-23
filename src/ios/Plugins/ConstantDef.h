@@ -35,6 +35,8 @@
 //image voice 消息 回调
 #define kJJMessageReceiveImageData @"kJJMessageReceiveImageData"
 #define kJJMessageReceiveVoiceData @"kJJMessageReceiveVoiceData"
+#define kJJMessageReceiveFileData  @"kJJMessageReceiveFileData"
+#define kJJMessageReceiveLocationData  @"kJJMessageReceiveLocationData"
 
 
 

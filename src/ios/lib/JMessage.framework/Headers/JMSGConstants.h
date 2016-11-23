@@ -123,6 +123,11 @@ typedef NS_ENUM(NSInteger, JMSGContentType) {
   kJMSGContentTypeCustom = 4,
   /// 事件通知消息。服务器端下发的事件通知，本地展示为这个类型的消息展示出来
   kJMSGContentTypeEventNotification = 5,
+  /// 文件消息
+  kJMSGContentTypeFile = 6,
+  /// 地理位置消息
+  kJMSGContentTypeLocation = 7,
+  
 };
 
 
@@ -162,28 +167,65 @@ typedef NS_ENUM(NSInteger, JMSGFileType) {
   kJMSGFileTypeImage,
   /// 语音类型
   kJMSGFileTypeVoice,
+  /// 文件类型
+  kJMSGFileTypeFile,
 };
 
 /*!
  * 通知事件类型
+ *
+ * 本类 JMSGEventNotificationType 是 SDK 下发的通知事件类型,主要分为：消息事件、非消息事件
+ *
+ * #### 消息事件
+ *
+ * 如：群事件，SDK 会作为一个特殊的消息类型下发，上层通过 JMSGMessageDelegate 类接收消息的代理方法接收消息事件.
+ *
+ * #### 非消息事件
+ *
+ * 如：被踢、登录状态异常、加好友等，SDK 会作为通知事件下发,上层通过 JMSGEventDelegate 类的代理方法可监听此类事件.
+ *
  */
 typedef NS_ENUM(NSInteger, JMSGEventNotificationType) {
+  
+  // 用户登录状态变更事件
   /// 事件类型: 登录被踢
   kJMSGEventNotificationLoginKicked = 1,
-  /// 事件类型: 群组被创建
-  kJMSGEventNotificationCreateGroup = 8,
-  /// 事件类型: 退出群组
-  kJMSGEventNotificationExitGroup = 9,
-  /// 事件类型: 添加新成员
-  kJMSGEventNotificationAddGroupMembers = 10,
-  /// 事件类型: 成员被踢出
-  kJMSGEventNotificationRemoveGroupMembers = 11,
-  /// 事件类型: 群信息更新
-  kJMSGEventNotificationUpdateGroupInfo = 12,
+  /// 事件类型: 非客户端修改密码强制登出事件
+  kJMSGEventNotificationServerAlterPassword = 2,
+  /// 事件类型：用户登录状态异常事件（需要重新登录）
+  kJMSGEventNotificationUserLoginStatusUnexpected = 70,
+  
+  // 免打扰事件
   /// 事件类型: 免打扰变更
   kJMSGEventNotificationNoDisturbChange = 37,
   /// 事件类型: 黑名单变更
   kJMSGEventNotificationBlacklistChange = 38,
+  
+  // 好友相关事件
+  /// 事件类型: 好友邀请相关
+  kJMSGEventNotificationFriendInvitation          = 5,
+  /// 事件类型: 收到好友邀请
+  kJMSGEventNotificationReceiveFriendInvitation   = 51,
+  /// 事件类型: 对方接受了你的好友邀请
+  kJMSGEventNotificationAcceptedFriendInvitation  = 52,
+  /// 事件类型: 对方拒绝了你的好友邀请
+  kJMSGEventNotificationDeclinedFriendInvitation  = 53,
+  /// 事件类型: 对方将你从好友中删除
+  kJMSGEventNotificationDeletedFriend             = 6,
+  /// 事件类型：非客户端修改好友关系收到好友更新事件
+  kJMSGEventNotificationReceiveServerFriendUpdate = 7,
+
+  // 消息事件
+  /// 事件类型: 群组被创建
+  kJMSGEventNotificationCreateGroup = 8,
+  /// 事件类型: 退出群组
+  kJMSGEventNotificationExitGroup = 9,
+  /// 事件类型: 群组添加新成员
+  kJMSGEventNotificationAddGroupMembers = 10,
+  /// 事件类型: 群组成员被踢出
+  kJMSGEventNotificationRemoveGroupMembers = 11,
+  /// 事件类型: 群信息更新
+  kJMSGEventNotificationUpdateGroupInfo = 12,
 };
 
 ///----------------------------------------------------
@@ -253,6 +295,10 @@ typedef NS_ENUM(NSInteger, JMSGSDKErrorCode) {
   kJMSGErrorSDKUserInvalidState = 863006,
   // 用户正在退出的过程中
   kJMSGErrorSDKUserLogoutingState = 863007,
+  // 添加好友失败
+  kJMSGErrorSDKUserAddFriendFailState = 863008,
+  // 删除好友失败
+  kJMSGErrorSDKUserDeleteFriendFailState = 863009,
   
   // ------------------------ Media Resource (864xxx)
 
@@ -355,6 +401,8 @@ typedef NS_ENUM(NSUInteger, JMSGTcpErrorCode) {
   kJMSGErrorTcpUserLogoutState = 800012,
   /// 用户在离线状态
   kJMSGErrorTcpUserOfflineState = 800013,
+  /// 发起请求的用户设备不匹配
+  kJMSGErrorTcpUserDeviceNotMatch = 800016,
   /// 用户未注册
   kJMSGErrorTcpUserNotRegistered = 801003,
   /// 用户密码错误
@@ -404,8 +452,8 @@ static NSString *const KEY_UID = @"uid";
 static NSString *const KEY_ADDRESS = @"address";
 static NSString *const KEY_NO_DISTURB = @"no_disturb";
 static NSString *const KEY_BLACKLIST = @"blicklist";
-
-
+static NSString *const KEY_NOTE_NAME = @"memo_name";//note_name
+static NSString *const KEY_NOTE_TEXT = @"memo_others";//note_text
 
 #endif
 

@@ -72,8 +72,14 @@ JMSG_ASSUME_NONNULL_BEGIN
  *
  * @param username 登录用户名. 规则与注册接口相同.
  * @param password 登录密码. 规则与注册接口相同.
- * @param handler 结果回调. 正常返回时 resultOjbect 为 nil.
+ * @param handler 结果回调
+ *
+ * - resultObject 简单封装的user对象
+ * - error 错误信息
+ *
+ * 注意：上层不要直接使用 resultObject 对象做操作, 因为 resultOjbect 只是一个简单封装的user对象.
  */
+
 + (void)loginWithUsername:(NSString *)username
                  password:(NSString *)password
         completionHandler:(JMSGCompletionHandler JMSG_NULLABLE)handler;
@@ -83,8 +89,6 @@ JMSG_ASSUME_NONNULL_BEGIN
  *
  * @param handler 结果回调。正常返回时 resultObject 也是 nil。
  *
- * @discussion 这个接口一般总是返回成功，即使背后与服务器端通讯失败，SDK 也总是会退出登录的。
- * 建议 App 也不必确认 SDK 返回, 就实际退出登录状态.
  */
 + (void)logout:(JMSGCompletionHandler JMSG_NULLABLE)handler;
 
@@ -119,7 +123,7 @@ JMSG_ASSUME_NONNULL_BEGIN
  * @param parameter     新的属性值
  *        Birthday&&Gender 是NSNumber类型, Avatar NSData类型 其他 NSString
  * @param type          更新属性类型
- * @param handler       用户注册回调接口函数
+ * @param handler       更新用户信息回调接口函数
  */
 + (void)updateMyInfoWithParameter:(id)parameter
                     userFieldType:(JMSGUserField)type
@@ -130,7 +134,7 @@ JMSG_ASSUME_NONNULL_BEGIN
  *
  * @param newPassword   用户新的密码
  * @param oldPassword   用户旧的密码
- * @param handler       用户注册回调接口函数
+ * @param handler       更新密码回调接口函数
  */
 + (void)updateMyPasswordWithNewPassword:(NSString *)newPassword
                             oldPassword:(NSString *)oldPassword
@@ -244,6 +248,15 @@ JMSG_ASSUME_NONNULL_BEGIN
 @property(nonatomic, copy, readonly) NSString * JMSG_NULLABLE region;
 
 @property(nonatomic, copy, readonly) NSString * JMSG_NULLABLE signature;
+/*!
+ * @abstract 备注名
+ */
+@property(nonatomic, copy, readonly) NSString * JMSG_NULLABLE noteName;
+
+/*!
+ * @abstract 备注信息
+ */
+@property(nonatomic, copy, readonly) NSString * JMSG_NULLABLE noteText;
 
 /*!
  * @abstract 此用户所在的 appKey
@@ -266,6 +279,13 @@ JMSG_ASSUME_NONNULL_BEGIN
 @property(nonatomic, assign, readonly) BOOL isInBlacklist;
 
 /*!
+ * @abstract 是否是好友关系
+ *
+ * @discussion 如果已经添加了好友，isFriend = YES ，否则为NO;
+ */
+@property(nonatomic, assign, readonly) BOOL isFriend;
+
+/*!
  * @abstract 设置用户免打扰（支持跨应用设置）
  *
  * @param isNoDisturb 是否全局免打扰 YES:是 NO: 否
@@ -281,6 +301,24 @@ JMSG_ASSUME_NONNULL_BEGIN
  * 这个接口支持跨应用设置免打扰
  */
 - (void)setIsNoDisturb:(BOOL)isNoDisturb handler:(JMSGCompletionHandler)handler;
+
+/*!
+ * @abstract 修改好友备注名
+ *
+ * @param noteName 备注名
+ *
+ * @discussion 注意：这是建立在是好友关系的前提下，修改好友的备注名
+ */
+- (void)updateNoteName:(NSString *)noteName completionHandler:(JMSGCompletionHandler)handler;
+
+/*!
+ * @abstract 修改好友备注信息
+ *
+ * @param noteText 备注信息
+ *
+ * @discussion 注意：这是建立在是好友关系的前提下，修改好友的备注信息
+ */
+- (void)updateNoteText:(NSString *)noteText completionHandler:(JMSGCompletionHandler)handler;
 
 /*!
  * @abstract 获取头像缩略图文件数据
@@ -317,7 +355,7 @@ JMSG_ASSUME_NONNULL_BEGIN
 /*!
  * @abstract 用户展示名
  *
- * @discussion 如果 nickname 存在则返回 nickname，否则返回 username
+ * @discussion 展示优先级：备注名(noteName) -> 昵称(nickname) -> 用户名(username)
  */
 - (NSString *)displayName;
 

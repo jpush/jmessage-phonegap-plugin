@@ -162,6 +162,65 @@ JMSG_ASSUME_NONNULL_BEGIN
                         appKey:(NSString *)userAppKey;
 
 /*!
+ * @abstract 发送单聊文件消息
+ *
+ * @param fileData 文件数据数据
+ * @param fileName 文件名
+ * @param username 单聊对象 username
+ *
+ * @discussion 快捷方法，不需要先创建消息而直接发送。
+ */
++ (void)sendSingleFileMessage:(NSData *)fileData
+                     fileName:(NSString *)fileName
+                        toUser:(NSString *)username;
+
+/*!
+ * @abstract 发送跨应用单聊文件消息
+ *
+ * @param fileData 文件数据数据
+ * @param fileName 文件名
+ * @param username 单聊对象 username
+ *
+ * @discussion 快捷方法，不需要先创建消息而直接发送。
+ */
++ (void)sendSingleFileMessage:(NSData *)fileData
+                     fileName:(NSString *)fileName
+                        toUser:(NSString *)username
+                        appKey:(NSString *)userAppKey;
+
+/*!
+ * @abstract 发送单聊地理位置消息
+ * @param latitude 纬度
+ * @param longitude 经度
+ * @param scale 缩放比例
+ * @param address 详细地址
+ * @param username 单聊对象
+ * @discussion 快捷方法，不需要先创建消息而直接发送。
+ */
++ (void)sendSingleLocationMessage:(NSNumber *)latitude
+                  longitude:(NSNumber *)longitude
+                      scale:(NSNumber *)scale
+                    address:(NSString *)address
+                     toUser:(NSString *)username;
+
+/*!
+ * @abstract 发送跨应用单聊地理位置消息
+ * @param latitude 纬度
+ * @param longitude 经度
+ * @param scale 缩放比例
+ * @param address 详细地址
+ * @param username 单聊对象
+ * @param userAppKey 单聊对象的appKey
+ * @discussion 快捷方法，不需要先创建消息而直接发送。
+ */
++ (void)sendSingleLocationMessage:(NSNumber *)latitude
+                        longitude:(NSNumber *)longitude
+                            scale:(NSNumber *)scale
+                          address:(NSString *)address
+                           toUser:(NSString *)username
+                           appKey:(NSString *)userAppKey;
+
+/*!
  * @abstract 发送群聊文本消息
  *
  * @param text 文本内容
@@ -195,6 +254,33 @@ JMSG_ASSUME_NONNULL_BEGIN
 + (void)sendGroupVoiceMessage:(NSData *)voiceData
                 voiceDuration:(NSNumber *)duration
                       toGroup:(NSString *)groupId;
+
+/*!
+ * @abstract 发送群聊文件消息
+ *
+ * @param fileData 文件数据
+ * @param fileName 文件名
+ * @param groupId 群聊目标群组ID
+ *
+ * @discussion 快捷方法，不需要先创建消息而直接发送。
+ */
++ (void)sendGroupFileMessage:(NSData *)fileData
+                fileName:(NSString *)fileName
+                      toGroup:(NSString *)groupId;
+
+/*!
+ * @abstract 发送群聊地理位置消息
+ * @param latitude 纬度
+ * @param longitude 经度
+ * @param scale 缩放比例
+ * @param address 详细地址
+* @param groupId 群聊目标群组ID
+ */
++ (void)sendGroupLocationMessage:(NSNumber *)latitude
+                        longitude:(NSNumber *)longitude
+                            scale:(NSNumber *)scale
+                          address:(NSString *)address
+                           toGroup:(NSString *)groupId;
 
 
 
@@ -285,6 +371,12 @@ JMSG_ASSUME_NONNULL_BEGIN
  */
 @property(nonatomic, strong, readonly) NSNumber *timestamp;
 
+/*!
+ * @abstract 消息中的fromName
+ * @discussion 消息的发送方展示名称
+ */
+@property(nonatomic, strong, readonly) NSString *fromName;
+
 
 ///----------------------------------------------------
 /// @name Message addOn fields 消息附加属性
@@ -352,19 +444,14 @@ JMSG_ASSUME_NONNULL_BEGIN
 - (instancetype)init NS_UNAVAILABLE;
 
 /*!
- * @abstract 设置该消息的 fromName
+ * @abstract 设置消息的 fromName(即:通知栏的展示名称)
  *
- * @param displayName 设置本条消息的发送方展示名称
+ * @param fromName 本条消息在接收方通知栏的展示名称
  *
- * @discussion 该信息填充在发出的消息里. 对方收到 Notification 时的提示的消息发送人, 也用此字段.
+ * @discussion fromName填充在发出的消息体里，对方收到该消息通知时,在通知栏显示的消息发送人名称就是该字段的值.
  *
- * JMessage SDK 内部默认从 [JMSGUser displayName] 去获取到 fromName 信息, 不存在时使用 username.
- * 如果集成此 SDK 没有设置用户信息的 nickname, 则对方收到通知时显示的消息发送人就显示的是 username.
- * 这时可以创建 JMSGMessage 对象后, 调用此方法来设置 fromName.
- *
- * 本设置会覆盖默认的 [JMSGUser displayName] 规则.
  */
-- (void)setFromName:(NSString * JMSG_NULLABLE)displayName;
+- (void)setFromName:(NSString * JMSG_NULLABLE)fromName;
 
 /*!
  * @abstract 更新消息标志

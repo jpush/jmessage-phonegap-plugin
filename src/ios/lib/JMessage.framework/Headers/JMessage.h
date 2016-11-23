@@ -24,6 +24,11 @@
 #import <JMessage/JMSGTextContent.h>
 #import <JMessage/JMSGVoiceContent.h>
 #import <JMessage/JMessageDelegate.h>
+#import <JMessage/JMSGFileContent.h>
+#import <JMessage/JMSGFriendManager.h>
+#import <JMessage/JMSGNotificationEvent.h>
+#import <JMessage/JMSGFriendNotificationEvent.h>
+#import <JMessage/JMSGLocationContent.h>
 #import <JMessage/JMSGConstants.h>
 
 @protocol JMSGMessageDelegate;
@@ -39,10 +44,10 @@
 @interface JMessage : NSObject
 
 /*! JMessage SDK 版本号。用于展示 SDK 的版本信息 */
-#define JMESSAGE_VERSION @"2.1.5"
+#define JMESSAGE_VERSION @"2.2.1"
 
 /*! JMessage SDK 构建ID. 每次构建都会增加 */
-#define JMESSAGE_BUILD 8
+#define JMESSAGE_BUILD 13
 
 /*! API Version - int for program logic. SDK API 有变更时会增加 */
 extern NSInteger const JMESSAGE_API_VERSION;
@@ -175,6 +180,7 @@ extern NSInteger const JMESSAGE_API_VERSION;
  * 如果 error 不为 nil,表示设置失败
  *
  * @discussion 从服务器获取，返回用户的免打扰列表。
+ * 建议开发者在 SDK 完全启动之后，再调用此接口获取数据
  */
 + (void)noDisturbList:(JMSGCompletionHandler)handler;
 
@@ -213,6 +219,7 @@ extern NSInteger const JMESSAGE_API_VERSION;
  * 如果 error 不为 nil,表示设置失败
  *
  * @discussion 从服务器获取，返回用户的黑名单列表。
+ * 建议开发者在 SDK 完全启动之后，再调用此接口获取数据
  */
 + (void)blackList:(JMSGCompletionHandler)handler;
 
