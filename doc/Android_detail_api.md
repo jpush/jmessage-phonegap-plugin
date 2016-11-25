@@ -615,9 +615,9 @@
 	window.JMessage.getAllMessages(conversationType, value, appKey, successCallback, errorCallback)
 
 #### 参数说明
-- conversationType：会话类型。有"single"，"group"两种。
-- value：确定指定会话的参数。当会话类型为 single 时，为 username；会话类型为 group 时，则为 groupId。
-- appKey：当 conversationType 为 single 时，目标会话用户所属应用的 AppKey。如果为空，默认获取本应用下的会话消息。
+- conversationType：String，会话类型。有"single"，"group"两种。
+- value：String，确定指定会话的参数。当会话类型为 single 时，为 username；会话类型为 group 时，则为 groupId。
+- appKey：String，当 conversationType 为 single 时，目标会话用户所属应用的 AppKey。如果为空，默认获取本应用下的会话消息。
 - successCallback：发送成功的回调函数，以参数形式返回消息数组对象的 JSON 字符串。
 - errorCallback：发送失败的回调函数，以参数形式返回错误信息。如果为 null，默认打印失败信息日志。
 
@@ -717,7 +717,7 @@
 #### 参数说明
 - targetUsername：String，目标用户的用户名。
 - targetUserAppkey：String，目标用户的 AppKey，如果为空则默认为本应用下的用户。
-- reason：拒绝理由。
+- reason：String，拒绝理由。
 - successCallback：成功回调。
 - errorCallback：错误回调，以参数形式返回错误信息。
 
