@@ -17,16 +17,21 @@
 	- [sendSingleImageMessage](#sendsingleimagemessage)
 	- [sendSingleVoiceMessage](#sendsinglevoicemessage)
 	- [sendSingleCustomMessage](#sendsinglecustommessage)
+	- [sendSingleLocationMessage](#sendsinglelocationmessage)
+	- [sendSingleFileMessage](#sendsinglefilemessage)
 	- [sendGroupTextMessage](#sendgrouptextmessage)
 	- [sendGroupImageMessage](#sendgroupimagemessage)
 	- [sendGroupVoiceMessage](#sendgroupvoicemessage)
 	- [sendGroupCustomMessage](#sendgroupcustommessage)
+	- [sendGroupLocationMessage](#sendgrouplocationmessage)
+	- [sendGroupFileMessage](#sendgroupfilemessage)
 - [获取历史消息](#获取历史消息)
 	- [getLatestMessage](#getlatestmessage)
 	- [getHistoryMessages](#gethistorymessages)
 	- [getAllMessages](#getallmessages)
 	- [getOriginImageInSingleConversation](#getoriginimageinsingleconversation)
 	- [getOriginImageInGroupConversation](#getoriginimageingroupconversation)
+- [好友关系](#好友关系)
 - [聊天会话](#聊天会话)
 	- [isSingleConversationExist](#isSingleConversationExist)
 	- [isGroupConversationExist](#isGroupConversationExist)
@@ -75,6 +80,7 @@
 		- [jmessage.onGroupMemberAdded](#jmessageongroupmemberadded)
 		- [jmessage.onGroupMemberRemoved](#jmessageongroupmemberremoved)
 		- [jmessage.onGroupMemberExit](#jmessageongroupmemberexit)
+	- [好友事件](#好友事件)
 
 ## 注册与登录
 ### register
@@ -385,6 +391,39 @@
 			console.log(errorMsg);	// 输出错误信息。
 		});
 
+### sendSingleLocationMessage
+发送一条单聊地址消息（可同时用于 iOS）。
+
+#### 接口定义
+
+    window.JMessage.sendSingleLocationMessage(username, appKey, latitude, longtitude, scale, address,
+        successCallback, errorCallback)
+
+#### 参数说明
+- username：String，用户名。
+- appKey：String，目标用户所属应用的 AppKey。如果为空，默认发送给本应用下的用户。
+- latitude：double，纬度信息。
+- longtitude：double，经度信息。
+- scale：int，地图缩放比例。
+- address：String，详细地址。
+- successCallback：发送成功的回调函数，以参数形式返回消息对象的 JSON 字符串。
+- errorCallback：发送失败的回调函数，以参数形式返回错误信息。如果为 null，默认打印失败信息日志。
+
+### sendSingleFileMessage
+发送一条单聊文件消息。
+
+#### 接口定义
+
+    window.JMessage.sendSingleFileMessage(username, appKey, filePath, fileName, successCallback, errorCallback)
+
+#### 参数定义
+- username：String，用户名。
+- appKey：String，目标用户所属应用的 AppKey。如果为空，默认发送给本应用下的用户。
+- filePath：String，文件路径。
+- fileName：String，文件名称，如果为空，则默认使用文件原名称。
+- successCallback：发送成功的回调函数，以参数形式返回消息对象的 JSON 字符串。
+- errorCallback：发送失败的回调函数，以参数形式返回错误信息。如果为 null，默认打印失败信息日志。
+
 ### sendGroupTextMessage
 发送一条群聊文本消息。
 
@@ -459,7 +498,7 @@
 	window.JMessage.sendGroupCustomMessage(groupId, jsonStr, successCallback, errorCallback)
 
 #### 参数说明
-- groupId：群组 ID，数值类型。
+- groupId：long，群组 ID。
 - jsonStr：自定义消息要携带的数据的 JSON 字符串。
 - successCallback：发送成功的回调函数，以参数形式返回消息对象的 JSON 字符串。
 - errorCallback：发送失败的回调函数，以参数形式返回错误信息。如果为 null，默认打印失败信息日志。
@@ -472,6 +511,37 @@
 		}, function(errorMsg) {
 			console.log(errorMsg);	// 输出错误信息。
 		});
+
+### sendGroupLocationMessage
+发送一条群聊地址消息（可同时用于 iOS）。
+
+#### 接口定义
+
+    window.JMessage.sendSingleLocationMessage(groupId, latitude, longtitude, scale, address,
+        successCallback, errorCallback)
+
+#### 参数说明
+- groupId：long，群组 ID。
+- latitude：double，纬度信息。
+- longtitude：double，经度信息。
+- scale：int，地图缩放比例。
+- address：String，详细地址。
+- successCallback：发送成功的回调函数，以参数形式返回消息对象的 JSON 字符串。
+- errorCallback：发送失败的回调函数，以参数形式返回错误信息。如果为 null，默认打印失败信息日志。
+
+### sendGroupFileMessage
+发送一条群聊文件消息。
+
+#### 接口定义
+
+    window.JMessage.sendSingleFileMessage(groupId, filePath, fileName, successCallback, errorCallback)
+
+#### 参数定义
+- groupId：long，群组 ID。
+- filePath：String，文件路径。
+- fileName：String，文件名称，如果为空，则默认使用文件原名称。
+- successCallback：发送成功的回调函数，以参数形式返回消息对象的 JSON 字符串。
+- errorCallback：发送失败的回调函数，以参数形式返回错误信息。如果为 null，默认打印失败信息日志。
 
 ## 获取历史消息
 ### getLatestMessage
@@ -608,6 +678,112 @@
     }, function (errorMsg) {
       // Error callback.
     })
+
+## 好友关系
+### sendInvitationRequest
+发送添加好友请求。
+
+#### 接口定义
+
+    window.JMessage.sendInvitationReques(targetUsername, targetUserAppkey, reason, successCallback, errorCallback)
+
+#### 参数说明
+- targetUsername：String，目标用户的用户名。
+- targetUserAppkey：String，目标用户的 AppKey，如果为空则默认为本应用下的用户。
+- reason：申请理由。
+- successCallback：成功回调。
+- errorCallback：错误回调，以参数形式返回错误信息。
+
+### acceptInvitation
+接受好友请求。
+
+#### 接口定义
+
+    window.JMessage.acceptInvitation(targetUsername, targetUserAppkey, successCallback, errorCallback)
+
+#### 参数说明
+- targetUsername：String，目标用户的用户名。
+- targetUserAppkey：String，目标用户的 AppKey，如果为空则默认为本应用下的用户。
+- successCallback：成功回调。
+- errorCallback：错误回调，以参数形式返回错误信息。
+
+### declineInvitation
+拒绝好友请求。
+
+#### 接口定义
+
+    window.JMessage.declineInvitation(targetUsername, targetUserAppkey, reason, successCallback, errorCallback)
+
+#### 参数说明
+- targetUsername：String，目标用户的用户名。
+- targetUserAppkey：String，目标用户的 AppKey，如果为空则默认为本应用下的用户。
+- reason：拒绝理由。
+- successCallback：成功回调。
+- errorCallback：错误回调，以参数形式返回错误信息。
+
+### getFriendList
+获取当前登录用户的好友列表。
+
+#### 接口定义
+
+    window.JMessage.getFriendList(successCallback, errorCallback)
+
+#### 参数说明
+- successCallback：成功回调，以参数形式返回好友信息数组的 JSON 字符串。
+- errorCallback：错误回调，以参数形式返回错误信息。
+
+### removeFromFriendList
+删除好友，调用后对方会触发 onContactDeleted 事件。
+
+#### 接口定义
+
+    window.JMessage.removeFromFriendList(targetUsername, targetUserAppkey, successCallback, errorCallback)
+
+#### 参数说明
+- targetUsername：String，目标用户的用户名。
+- targetUserAppkey：String，目标用户的 AppKey，如果为空则默认为本应用下的用户。
+- successCallback：成功回调。
+- errorCallback：错误回调，以参数形式返回错误信息。
+
+### updateFriendNoteName
+更新当前登录用户好友的备注名。
+
+#### 接口定义
+
+    window.JMessage.updateFriendNoteName(friendName, friendAppKey, noteName, successCallback, errorCallback)
+
+#### 参数说明
+- friendName：String，好友的用户名。
+- friendAppKey：String，好友的 AppKey，如果为空，则默认为当前应用。
+- noteName：String，要设置的备注名。
+- successCallback：成功回调。
+- errorCallback：错误回调，以参数形式返回错误信息。
+
+### updateFriendNoteText
+更新当前登录用户好友的备注信息。
+
+### 接口定义
+
+    window.JMessage.updateFriendNoteText(friendName, friendAppKey, noteText, successCallback, errorCallback)
+
+#### 参数说明
+- friendName：String，好友的用户名。
+- friendAppKey：String，好友的 AppKey，如果为空，则默认为当前应用。
+- noteName：String，要设置的备注名。
+- successCallback：成功回调。
+- errorCallback：错误回调，以参数形式返回错误信息。
+
+### jmessage.onInviteReceived
+收到好友邀请时触发。
+
+#### 参数说明
+回调函数的参数为一个 JSON 数据字符串。其格式为：
+
+    {
+        reason：'',         // 事件发生的理由，该字段由对方发起请求时所填，对方如果未填则将返回默认字符串
+        fromUsername: '',   // 事件发送者的 username
+        fromAppKey: ''      // 事件发送者的 AppKey
+    }
 
 
 ## 聊天会话
@@ -1154,7 +1330,6 @@
 			console.log(errorMsg);
 		});
 
-
 ## 事件处理
 ### 消息事件
 #### 消息对象的 JSON 数据格式
@@ -1302,7 +1477,6 @@
 
 	document.addEventListener('jmessage.onUserDeleted', yourFunction, false);
 
-
 ### 群组事件
 #### jmessage.onGroupMemberAdded
 群成员加群时触发。
@@ -1324,3 +1498,16 @@
 ##### 代码示例
 
 	document.addEventListener('jmessage.onGroupMemberExit', yourFunction, false);
+
+### 好友事件
+#### jmessage.onInviteReceived
+当收到添加好友申请。
+
+#### jmessage.onInviteAccepted
+当前用户发送的好友请求被接受。
+
+#### jmessage.onInviteDeclined
+当前用户发送的好友请求被拒绝。
+
+#### jmessage.onContactDeleted
+当对方将你从好友列表中删除。

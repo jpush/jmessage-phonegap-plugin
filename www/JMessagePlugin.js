@@ -126,12 +126,19 @@ JMessagePlugin.prototype.sendSingleCustomMessage = function (username, jsonStr, 
 
 // scale：地图缩放比例；address：详细地址信息。
 JMessagePlugin.prototype.sendSingleLocationMessage = function (username, appKey, latitude, longitude, scale, address, successCallback, errorCallback) {
-  this.callNative('sendSingleLocationMessage', [username, appKey, latitude, longitude, scale, address],
-    successCallback, errorCallback)
+    if (device.platform == 'Android') {
+        this.callNative('sendSingleLocationMessage', [username, appKey, latitude, longitude, scale, address],
+            successCallback, errorCallback)
+    } else {
+        this.callNative('sendLocationMessage', [name, appKey, '1', latitude, longitude, scale, address],
+            successCallback, errorCallback)
+    }
 }
 
 JMessagePlugin.prototype.sendSingleFileMessage = function (username, appKey, filePath, fileName, successCallback, errorCallback) {
-  this.callNative('sendSingleFileMessage', [username, appKey, filePath, fileName], successCallback, errorCallback)
+    if (device.platform == 'Android') {
+        this.callNative('sendSingleFileMessage', [username, appKey, filePath, fileName], successCallback, errorCallback)
+    }
 }
 
 JMessagePlugin.prototype.sendGroupTextMessage = function (groupId, text, successCallback, errorCallback) {
@@ -164,7 +171,12 @@ JMessagePlugin.prototype.sendGroupCustomMessage = function (groupId, jsonStr, su
 
 // scale：地图缩放比例；address：详细地址信息。
 JMessagePlugin.prototype.sendGroupLocationMessage = function (groupId, latitude, longitude, scale, address, successCallback, errorCallback) {
-  this.callNative('sendGroupLocationMessage', [groupId, latitude, longitude, scale, address], successCallback, errorCallback)
+    if (device.platform == 'Android') {
+        this.callNative('sendGroupLocationMessage', [groupId, latitude, longitude, scale, address],
+            successCallback, errorCallback)
+    } else {
+        this.callNative('sendLocationMessage', [name, appKey, '0', latitude, longitude, scale, address], successCallback, errorCallback)
+    }
 }
 
 JMessagePlugin.prototype.sendGroupFileMessage = function (groupId, filePath, fileName, successCallback, errorCallback) {
@@ -212,7 +224,7 @@ JMessagePlugin.prototype.acceptInvitation = function (targetUsername, targetUser
 JMessagePlugin.prototype.declineInvitation = function (targetUsername, targetUserAppkey, reason, successCallback, errorCallback) {
   if (device.platform == 'Android') {
     this.callNative('declineInvitation', [targetUsername, targetUserAppkey, reason], successCallback, errorCallback)
-  }else{
+  } else {
     this.callNative('rejectInvitation', [targetUsername, targetUserAppkey, reason], successCallback, errorCallback)
   }
 }
@@ -225,7 +237,7 @@ JMessagePlugin.prototype.getFriendList = function (successCallback, errorCallbac
 JMessagePlugin.prototype.removeFromFriendList = function (targetUsername, targetUserAppkey, successCallback, errorCallback) {
   if (device.platform == 'Android') {
     this.callNative('removeFromFriendList', [targetUsername, targetUserAppkey], successCallback, errorCallback)
-  }else{
+  } else {
     this.callNative('removeFriend', [targetUsername, targetUserAppkey], successCallback, errorCallback)
   }
 }
@@ -234,7 +246,7 @@ JMessagePlugin.prototype.removeFromFriendList = function (targetUsername, target
 JMessagePlugin.prototype.updateFriendNoteName = function (friendName, friendAppKey, noteName, successCallback, errorCallback) {
   if (device.platform == 'Android') {
     this.callNative('updateFriendNoteName', [friendName, friendAppKey, noteName], successCallback, errorCallback)
-  }else{
+  } else {
     this.callNative('updateNoteName', [friendName, friendAppKey, noteName], successCallback, errorCallback)
   }
 }
@@ -243,7 +255,7 @@ JMessagePlugin.prototype.updateFriendNoteName = function (friendName, friendAppK
 JMessagePlugin.prototype.updateFriendNoteText = function (friendName, friendAppKey, noteText, successCallback, errorCallback) {
   if (device.platform == 'Android') {
     this.callNative('updateFriendNoteText', [friendName, friendAppKey, noteText], successCallback, errorCallback)
-  }else{
+  } else { 
     this.callNative('updateNoteText', [friendName, friendAppKey, noteText], successCallback, errorCallback)
   }
 }
@@ -600,8 +612,6 @@ JMessagePlugin.prototype.sendGroupCustomMessage_ios = function (gid, text, extra
 JMessagePlugin.prototype.cross_sendSingleCustomMessage_ios = function (username, appkey, text, extra, successCallback, errorCallback) {
   this.callNative('cross_sendSingleCustomMessage', [username, appkey, text, extra], successCallback, errorCallback)
 }
-
-JMessagePlugin
 
 // Cross App
 
