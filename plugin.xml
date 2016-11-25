@@ -59,6 +59,7 @@
         <framework src="MobileCoreServices.framework" weak="true" />
         <framework src="libz.tbd"/>
         <framework src="libsqlite3.0.tbd"/>
+        <framework src="libresolv.tbd"/>
         <config-file target="*JMessageConfig.plist" parent="APP_KEY">
           <string>$APP_KEY</string>
         </config-file>

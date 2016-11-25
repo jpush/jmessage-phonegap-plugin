@@ -16,7 +16,6 @@
 #import "ConstantDef.h"
 #import <objc/runtime.h>
 
-
 @implementation JMessageHelper
 
 -(void)initJMessage:(NSDictionary*)launchOptions{
@@ -30,10 +29,7 @@
     NSMutableDictionary *plistData = [[NSMutableDictionary alloc] initWithContentsOfFile:plistPath];
     NSString * appkey = [plistData valueForKey:JM_APP_KEY];
     NSString * channel = [plistData valueForKey:JM_APP_CHANNEL];
-    if (!appkey || appkey.length == 0) {
-        NSLog(@"error: app key not found in JMessageConfig.plist ");
-        assert(0);
-    }
+
     // init third-party SDK
     [JMessage addDelegate:self withConversation:nil];
     [JMessage setupJMessage:launchOptions
@@ -45,6 +41,7 @@
                                                       UIUserNotificationTypeAlert)
                                           categories:nil];
     [self registerJPushStatusNotification];
+
 }
 
 - (void)registerJPushStatusNotification{
@@ -74,6 +71,8 @@
     NSMutableDictionary *dict = [NSMutableDictionary new];
     [dict setValue:message.msgId forKey:KEY_MSGID];
     [dict setValue:jsonString forKey:KEY_CONTENT];
+    [dict setValue:[NSString stringWithFormat:@"%ld",(long)message.contentType] forKey:KEY_CONTENTTYPE];
+
     if (message.contentType == kJMSGContentTypeImage) {
         [(JMSGImageContent*)message.content thumbImageData:^(NSData *data, NSString *objectId, NSError *error) {
             if (!error) {
@@ -88,6 +87,7 @@
             }
         }];
     }
+
     if (message.contentType == kJMSGContentTypeVoice) {
         [(JMSGVoiceContent*)message.content voiceData:^(NSData *data, NSString *objectId, NSError *error) {
             if (!error) {
@@ -103,6 +103,31 @@
 
         }];
     }
+
+    if (message.contentType == kJMSGContentTypeFile) {
+        [(JMSGFileContent*)message.content fileData:^(NSData *data, NSString *objectId, NSError *error) {
+            if (!error) {
+                if (data) {
+                    NSString *resourcePath;
+                    Ivar ivar = class_getInstanceVariable([message.content class], "_resourcePath");
+                    resourcePath = object_getIvar(message.content, ivar);
+                    [dict setValue:objectId forKey:@"objectId"];
+                    [dict setValue:resourcePath forKey:@"resourcePath"];
+                    [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageReceiveFileData object:dict];
+                }
+            }
+        }];
+    }
+
+    if (message.contentType == kJMSGContentTypeLocation) {
+        JMSGLocationContent *locContent = (JMSGLocationContent*)message.content;
+        [dict setValue:[NSString stringWithFormat:@"%@",locContent.latitude]  forKey:@"latitude"];
+        [dict setValue:[NSString stringWithFormat:@"%@",locContent.longitude] forKey:@"longitude"];
+        [dict setValue:[NSString stringWithFormat:@"%@",locContent.scale]     forKey:@"scale"];
+        [dict setValue:[NSString stringWithFormat:@"%@",locContent.address]   forKey:@"address"];
+        [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageReceiveLocationData object:dict];
+    }
+
     [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageReceiveMessage object:dict];
 }
 
@@ -204,6 +229,9 @@
     dict[KEY_REGION]      = self.region;
     dict[KEY_SIGNATURE]   = self.signature;
     dict[KEY_APP_KEY]     = self.appKey;
+    dict[KEY_NOTE_NAME]   = self.noteName;
+    dict[KEY_NOTE_TEXT]   = self.noteText;
+    dict[@"isFriend"]   = [NSString stringWithFormat:@"%d",self.isFriend];
     return dict;
 }
 @end

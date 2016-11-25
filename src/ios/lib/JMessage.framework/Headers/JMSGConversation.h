@@ -127,16 +127,24 @@ JMSG_ASSUME_NONNULL_BEGIN
 + (BOOL)deleteGroupConversationWithGroupId:(NSString *)groupId;
 
 /*!
- * @abstract 返回 conversation 列表（异步）
+ * @abstract 返回 conversation 列表（异步,已排序）
  *
  * @param handler 结果回调。正常返回时 resultObject 的类型为 NSArray，数组里成员的类型为 JMSGConversation
  *
- * @discussion 当前是返回所有的 conversation 列表。
+ * @discussion 当前是返回所有的 conversation 列表，默认是已经排序。
  * 我们设计上充分考虑到性能问题，数据库无关联表查询，性能应该不会差。
  * 但考虑到潜在的性能问题可能，此接口还是异步返回
  */
 + (void)allConversations:(JMSGCompletionHandler)handler;
 
+/*!
+ * @abstract 返回 conversation 列表（异步,没有排序）
+ *
+ * @param handler 结果回调。正常返回时 resultObject 的类型为 NSArray，数组里成员的类型为 JMSGConversation
+ *
+ * @discussion 返回所有的 conversation 列表，返回是没有排序的列表。
+ */
++ (void)allConversationsByDefault:(JMSGCompletionHandler)handler;
 
 
 ///----------------------------------------------------------
@@ -330,6 +338,28 @@ JMSG_ASSUME_NONNULL_BEGIN
  */
 - (void)sendVoiceMessage:(NSData *)voiceData
                 duration:(NSNumber *)duration;
+
+/*!
+ * @abstract 发送文件消息
+ * @param voiceData 文件消息数据
+ * @param fileName 文件名
+ * @discussion 快捷发送消息接口。如果发送文件消息不需要附加 extra，则使用此接口更方便。
+ */
+- (void)sendFileMessage:(NSData *)fileData
+               fileName:(NSString *)fileName;
+
+/*!
+ * @abstract 发送地理位置消息
+ * @param latitude 纬度
+ * @param longitude 经度
+ * @param scale 缩放比例
+ * @param address 详细地址
+ * @discussion 快捷发送消息接口。如果发送文件消息不需要附加 extra，则使用此接口更方便。
+ */
+- (void)sendLocationMessage:(NSNumber *)latitude
+                  longitude:(NSNumber *)longitude
+                      scale:(NSNumber *)scale
+                    address:(NSString *)address;
 
 /*!
  * @abstract 异步获取会话头像

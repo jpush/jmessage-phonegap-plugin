@@ -97,30 +97,25 @@ JMessagePlugin.prototype.sendSingleTextMessage = function (username, text, appKe
   this.callNative('sendSingleTextMessage', [username, text, appKey], successCallback, errorCallback)
 }
 
-JMessagePlugin.prototype.sendSingleTextMessageWithExtras = function(username, text, json, appKey,
-    successCallback, errorCallback) {
+JMessagePlugin.prototype.sendSingleTextMessageWithExtras = function(username, text, json, appKey, successCallback, errorCallback) {
   this.callNative('sendSingleTextMessageWithExtras', [username, text, json, appKey], successCallback,
     errorCallback);
 }
 
-JMessagePlugin.prototype.sendSingleImageMessage = function (username, imageUrl, appKey, successCallback,
-    errorCallback) {
+JMessagePlugin.prototype.sendSingleImageMessage = function (username, imageUrl, appKey, successCallback, errorCallback) {
   this.callNative('sendSingleImageMessage', [username, imageUrl, appKey], successCallback, errorCallback)
 }
 
-JMessagePlugin.prototype.sendSingleImageMessageWithExtras = function(username, imageUrl, json, appKey,
-    successCallback, errorCallback) {
+JMessagePlugin.prototype.sendSingleImageMessageWithExtras = function(username, imageUrl, json, appKey, successCallback, errorCallback) {
   this.callNative('sendSingleImageMessageWithExtras', [username, imageUrl, json, appKey],
     successCallback, errorCallback);
 }
 
-JMessagePlugin.prototype.sendSingleVoiceMessage = function (username, fileUrl, appKey, successCallback,
-    errorCallback) {
+JMessagePlugin.prototype.sendSingleVoiceMessage = function (username, fileUrl, appKey, successCallback, errorCallback) {
   this.callNative('sendSingleVoiceMessage', [username, fileUrl, appKey], successCallback, errorCallback)
 }
 
-JMessagePlugin.prototype.sendSingleVoiceMessageWithExtras = function(username, fileUrl, json, appKey,
-    successCallback, errorCallback) {
+JMessagePlugin.prototype.sendSingleVoiceMessageWithExtras = function(username, fileUrl, json, appKey, successCallback, errorCallback) {
   this.callNative('sendSingleVoiceMessageWithExtras', [username, fileUrl, json, appKey],
     successCallback, errorCallback);
 }
@@ -130,8 +125,7 @@ JMessagePlugin.prototype.sendSingleCustomMessage = function (username, jsonStr, 
 }
 
 // scale：地图缩放比例；address：详细地址信息。
-JMessagePlugin.prototype.sendSingleLocationMessage = function (username, appKey, latitude, longitude, scale, address,
-    successCallback, errorCallback) {
+JMessagePlugin.prototype.sendSingleLocationMessage = function (username, appKey, latitude, longitude, scale, address, successCallback, errorCallback) {
   this.callNative('sendSingleLocationMessage', [username, appKey, latitude, longitude, scale, address],
     successCallback, errorCallback)
 }
@@ -169,8 +163,7 @@ JMessagePlugin.prototype.sendGroupCustomMessage = function (groupId, jsonStr, su
 }
 
 // scale：地图缩放比例；address：详细地址信息。
-JMessagePlugin.prototype.sendGroupLocationMessage = function (groupId, latitude, longitude, scale, address,
-    successCallback, errorCallback) {
+JMessagePlugin.prototype.sendGroupLocationMessage = function (groupId, latitude, longitude, scale, address, successCallback, errorCallback) {
   this.callNative('sendGroupLocationMessage', [groupId, latitude, longitude, scale, address], successCallback, errorCallback)
 }
 
@@ -184,8 +177,7 @@ JMessagePlugin.prototype.getLatestMessage = function (conversationType, value, a
 
 // 获取指定 Conversation 的部分历史消息。conversationType: 'single' or 'group'
 // value: username if conversation type is 'single' or groupId if conversation type is 'group'.
-JMessagePlugin.prototype.getHistoryMessages = function (conversationType, value, appKey, from, limit,
-    successCallback, errorCallback) {
+JMessagePlugin.prototype.getHistoryMessages = function (conversationType, value, appKey, from, limit, successCallback, errorCallback) {
   this.callNative('getHistoryMessages', [conversationType, value, appKey, from, limit],
     successCallback, errorCallback)
 }
@@ -208,21 +200,21 @@ JMessagePlugin.prototype.getOriginImageInGroupConversation = function (groupId, 
 // 好友关系 API
 
 // 发送添加好友请求
-JMessagePlugin.prototype.sendInvitationRequest = function (targetUsername, targetUserAppkey, reason,
-    successCallback, errorCallback) {
+JMessagePlugin.prototype.sendInvitationRequest = function (targetUsername, targetUserAppkey, reason, successCallback, errorCallback) {
   this.callNative('sendInvitationRequest', [targetUsername, targetUserAppkey, reason],
     successCallback, errorCallback)
 }
 
-JMessagePlugin.prototype.acceptInvitation = function (targetUsername, targetUserAppkey,
-    successCallback, errorCallback) {
+JMessagePlugin.prototype.acceptInvitation = function (targetUsername, targetUserAppkey, successCallback, errorCallback) {
   this.callNative('acceptInvitation', [targetUsername, targetUserAppkey], successCallback, errorCallback)
 }
 
-JMessagePlugin.prototype.declineInvitation = function (targetUsername, targetUserAppkey, reason,
-    successCallback, errorCallback) {
-  this.callNative('declineInvitation', [targetUsername, targetUserAppkey, reason],
-    successCallback, errorCallback)
+JMessagePlugin.prototype.declineInvitation = function (targetUsername, targetUserAppkey, reason, successCallback, errorCallback) {
+  if (device.platform == 'Android') {
+    this.callNative('declineInvitation', [targetUsername, targetUserAppkey, reason], successCallback, errorCallback)
+  }else{
+    this.callNative('rejectInvitation', [targetUsername, targetUserAppkey, reason], successCallback, errorCallback)
+  }
 }
 
 // 获取当前登录用户的好友列表
@@ -230,21 +222,30 @@ JMessagePlugin.prototype.getFriendList = function (successCallback, errorCallbac
   this.callNative('getFriendList', [], successCallback, errorCallback)
 }
 
-JMessagePlugin.prototype.removeFromFriendList = function (targetUsername, targetUserAppkey,
-    successCallback, errorCallback) {
-  this.callNative('removeFromFriendList', [targetUsername, targetUserAppkey], successCallback, errorCallback)
+JMessagePlugin.prototype.removeFromFriendList = function (targetUsername, targetUserAppkey, successCallback, errorCallback) {
+  if (device.platform == 'Android') {
+    this.callNative('removeFromFriendList', [targetUsername, targetUserAppkey], successCallback, errorCallback)
+  }else{
+    this.callNative('removeFriend', [targetUsername, targetUserAppkey], successCallback, errorCallback)
+  }
 }
 
 // 修改当前用户好友的备注名
-JMessagePlugin.prototype.updateFriendNoteName = function (friendName, friendAppKey, noteName,
-    successCallback, errorCallback) {
-  this.callNative('updateFriendNoteName', [friendName, friendAppKey, noteName], successCallback, errorCallback)
+JMessagePlugin.prototype.updateFriendNoteName = function (friendName, friendAppKey, noteName, successCallback, errorCallback) {
+  if (device.platform == 'Android') {
+    this.callNative('updateFriendNoteName', [friendName, friendAppKey, noteName], successCallback, errorCallback)
+  }else{
+    this.callNative('updateNoteName', [friendName, friendAppKey, noteName], successCallback, errorCallback)
+  }
 }
 
 // 修改当前用户好友的备注信息
-JMessagePlugin.prototype.updateFriendNoteText = function (friendName, friendAppKey, noteText,
-    successCallback, errorCallback) {
-  this.callNative('updateFriendNoteText', [friendName, friendAppKey, noteText], successCallback, errorCallback)
+JMessagePlugin.prototype.updateFriendNoteText = function (friendName, friendAppKey, noteText, successCallback, errorCallback) {
+  if (device.platform == 'Android') {
+    this.callNative('updateFriendNoteText', [friendName, friendAppKey, noteText], successCallback, errorCallback)
+  }else{
+    this.callNative('updateNoteText', [friendName, friendAppKey, noteText], successCallback, errorCallback)
+  }
 }
 
 
@@ -283,8 +284,7 @@ JMessagePlugin.prototype.getAllSingleConversation = function (successCallback, e
   this.callNative('getAllSingleConversation', [], successCallback, errorCallback)
 }
 
-JMessagePlugin.prototype.setSingleConversationUnreadMessageCount = function (username, appKey,
-    unreadMessageCount, successCallback, errorCallback) {
+JMessagePlugin.prototype.setSingleConversationUnreadMessageCount = function (username, appKey, unreadMessageCount, successCallback, errorCallback) {
   this.callNative('setSingleConversationUnreadMessageCount', [username, appKey, unreadMessageCount],
     successCallback, errorCallback)
 }
@@ -556,6 +556,14 @@ JMessagePlugin.prototype.clearGroupUnreadCount = function (groupId, successCallb
   this.callNative('clearGroupUnreadCount', [groupId], successCallback, errorCallback)
 }
 
+JMessagePlugin.prototype.sendFileMessage = function (name, appKey, single, filePath, fileName, successCallback, errorCallback) {
+  this.callNative('sendFileMessage', [name, appKey, single, filePath, fileName], successCallback, errorCallback)
+}
+
+JMessagePlugin.prototype.sendLocationMessage = function (name, appKey, single, latitude, longitude, scale, address, successCallback, errorCallback) {
+  this.callNative('sendLocationMessage', [name, appKey, single, latitude, longitude, scale, address], successCallback, errorCallback)
+}
+
 // Group
 JMessagePlugin.prototype.createGroupIniOS = function (name, desc, memebersArray, successCallback, errorCallback) {
   this.callNative('createGroupIniOS', [name, desc, memebersArray], successCallback, errorCallback)
@@ -605,13 +613,11 @@ JMessagePlugin.prototype.cross_sendSingleImageMessage = function (username, appK
   this.callNative('cross_sendSingleImageMessage', [username, imageUrl, appKey], successCallback, errorCallback)
 }
 
-JMessagePlugin.prototype.cross_sendSingleVoiceMessage = function (username, appKey, fileUrl,
-    successCallback, errorCallback) {
+JMessagePlugin.prototype.cross_sendSingleVoiceMessage = function (username, appKey, fileUrl, successCallback, errorCallback) {
   this.callNative('cross_sendSingleVoiceMessage', [username, fileUrl, appKey], successCallback, errorCallback)
 }
 
-JMessagePlugin.prototype.cross_getSingleConversationHistoryMessage = function (username, appKey,
-    from, limit, successCallback, errorCallback) {
+JMessagePlugin.prototype.cross_getSingleConversationHistoryMessage = function (username, appKey, from, limit, successCallback, errorCallback) {
   this.callNative('cross_getSingleConversationHistoryMessage', [username, appKey, from, limit],
     successCallback, errorCallback)
 }
@@ -703,6 +709,36 @@ JMessagePlugin.prototype.onReceiveVoiceData = function (data) {
     console.log('onReceiveVoiceData ' + exception)
   }
   cordova.fireDocumentEvent('jmessage.onReceiveVoiceData', bToObj)
+}
+
+JMessagePlugin.prototype.onReceiveFileData = function (data) {
+  try {
+    var bToObj = JSON.parse(data)
+    console.log(data)
+  } catch (exception) {
+    console.log('onReceiveFileData ' + exception)
+  }
+  cordova.fireDocumentEvent('jmessage.onReceiveFileData', bToObj)
+}
+
+JMessagePlugin.prototype.onReceiveLocation = function (data) {
+  try {
+    var bToObj = JSON.parse(data)
+    console.log(data)
+  } catch (exception) {
+    console.log('onReceiveLocation ' + exception)
+  }
+  cordova.fireDocumentEvent('jmessage.onReceiveLocation', bToObj)
+}
+
+JMessagePlugin.prototype.onReceiveNotificationEvent = function (data) {
+  try {
+    var bToObj = JSON.parse(data)
+    console.log(data)
+  } catch (exception) {
+    console.log('onReceiveNotificationEvent ' + exception)
+  }
+  cordova.fireDocumentEvent('jmessage.onReceiveNotificationEvent', bToObj)
 }
 
 // ---------- iOS only end ----------//

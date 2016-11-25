@@ -17,9 +17,11 @@
 #import "JMessageHelper.h"
 #import <AVFoundation/AVFoundation.h>
 
-
-
 #pragma mark - Cordova
+
+@interface JMessagePlugin ()<JMSGEventDelegate>
+
+@end
 
 @implementation JMessagePlugin
 
@@ -111,43 +113,36 @@
                       selector:@selector(onReceiveVoiceData:)
                           name:kJJMessageReceiveVoiceData
                         object:nil];
-
+    [defaultCenter addObserver:self
+                      selector:@selector(onReceiveFileData:)
+                          name:kJJMessageReceiveFileData
+                        object:nil];
+    [defaultCenter addObserver:self
+                      selector:@selector(onReceiveLocation:)
+                          name:kJJMessageReceiveLocationData
+                        object:nil];
 }
 
 #pragma mark IM - Notifications
 
 -(void)didSendMessage:(NSNotification *)notification {
-    NSLog(@"JMessagePlugin didReceiveJMessageMessage  %@",[notification.object toJsonString]);
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self commonSendMessage:@"onSendMessage" jsonParm:[notification.object toJsonString]];
-    });
+    [self commonSendMessage:@"onSendMessage" jsonParm:[notification.object toJsonString]];
 }
 
 - (void)conversationChanged:(NSNotification *)notification {
-    NSLog(@"JMessagePlugin conversationChanged  %@",[notification.object toJsonString]);
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self commonSendMessage:@"onConversationChanged" jsonParm:[notification.object toJsonString]];
-    });
+    [self commonSendMessage:@"onConversationChanged" jsonParm:[notification.object toJsonString]];
 }
 
 - (void)unreadChanged:(NSNotification *)notification{
-    NSLog(@"JMessagePlugin unreadChanged  %@",[notification.object toJsonString]);
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self commonSendMessage:@"onUnreadChanged" jsonParm:[notification.object toJsonString]];
-    });
+    [self commonSendMessage:@"onUnreadChanged" jsonParm:[notification.object toJsonString]];
 }
 
 - (void)groupInfoChanged:(NSNotification *)notification{
-    NSLog(@"JMessagePlugin groupInfoChanged  %@",[notification.object toJsonString]);
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self commonSendMessage:@"onGroupInfoChanged" jsonParm:[notification.object toJsonString]];
-    });
+    [self commonSendMessage:@"onGroupInfoChanged" jsonParm:[notification.object toJsonString]];
 }
 
 - (void)loginUserKicked:(NSNotification *)notification{
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self commonSendMessage:@"onLoginUserKicked" jsonParm:@"login user kicked"];
-    });
+    [self commonSendMessage:@"onLoginUserKicked" jsonParm:@"login user kicked"];
 }
 
 //didReceiveJMessageMessage change name
@@ -156,10 +151,7 @@
     NSString *jsonString = [userInfo toJsonString];
     jsonString = [jsonString stringByReplacingOccurrencesOfString:@"\"{" withString:@"{"];
     jsonString = [jsonString stringByReplacingOccurrencesOfString:@"}\"" withString:@"}"];
-    NSLog(@"JMessagePlugin Plugin didReceiveJMessageMessage  %@",jsonString);
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self commonSendMessage:@"onReceiveConversationMessage" jsonParm:jsonString];
-    });
+    [self commonSendMessage:@"onReceiveConversationMessage" jsonParm:jsonString];
 }
 
 -(void)onReceiveImageData:(NSNotification*)notification{
@@ -168,9 +160,7 @@
     NSString *jsonString = [userInfo toJsonString];
     jsonString = [jsonString stringByReplacingOccurrencesOfString:@"\"{" withString:@"{"];
     jsonString = [jsonString stringByReplacingOccurrencesOfString:@"}\"" withString:@"}"];
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self commonSendMessage:@"onReceiveImageData" jsonParm:jsonString];
-    });
+    [self commonSendMessage:@"onReceiveImageData" jsonParm:jsonString];
 }
 
 -(void)onReceiveVoiceData:(NSNotification*)notification{
@@ -179,13 +169,32 @@
     NSString *jsonString = [userInfo toJsonString];
     jsonString = [jsonString stringByReplacingOccurrencesOfString:@"\"{" withString:@"{"];
     jsonString = [jsonString stringByReplacingOccurrencesOfString:@"}\"" withString:@"}"];
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self commonSendMessage:@"onReceiveVoiceData" jsonParm:jsonString];
-    });
+    [self commonSendMessage:@"onReceiveVoiceData" jsonParm:jsonString];
+}
+
+-(void)onReceiveFileData:(NSNotification*)notification{
+    NSLog(@"JMessagePlugin onReceiveFileData");
+    NSDictionary *userInfo = [notification object];
+    NSString *jsonString = [userInfo toJsonString];
+    jsonString = [jsonString stringByReplacingOccurrencesOfString:@"\"{" withString:@"{"];
+    jsonString = [jsonString stringByReplacingOccurrencesOfString:@"}\"" withString:@"}"];
+    [self commonSendMessage:@"onReceiveFileData" jsonParm:jsonString];
+}
+
+-(void)onReceiveLocation:(NSNotification*)notification{
+    NSLog(@"JMessagePlugin onReceiveLocation");
+    NSDictionary *userInfo = [notification object];
+    NSString *jsonString = [userInfo toJsonString];
+    jsonString = [jsonString stringByReplacingOccurrencesOfString:@"\"{" withString:@"{"];
+    jsonString = [jsonString stringByReplacingOccurrencesOfString:@"}\"" withString:@"}"];
+    [self commonSendMessage:@"onReceiveLocation" jsonParm:jsonString];
 }
 
 -(void)commonSendMessage:(NSString *)functionName jsonParm:(NSString*)jsonString{
-    [self.commandDelegate evalJs:[NSString stringWithFormat:@"%@.%@('%@')",Plugin_Name,functionName,jsonString]];
+    WEAK_SELF(weakSelf);
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [weakSelf.commandDelegate evalJs:[NSString stringWithFormat:@"%@.%@('%@')",Plugin_Name,functionName,jsonString]];
+    });
 }
 
 #pragma mark IM - User
@@ -523,6 +532,7 @@
                     JMSGGroup *group = conversation.target;
                     dict = [group groupToDictionary];
                 }
+                dict[@"timestamp"]    = conversation.latestMessage.timestamp;
                 dict[KEY_LASTMESSAGE] = conversation.latestMessageContentText;
                 dict[KEY_UNREADCOUNT] = conversation.unreadCount;
                 [resultArr addObject:dict];
@@ -832,9 +842,7 @@
                            @"tags"      :tags  == nil ? [NSNull null] : [tags allObjects],
                            @"alias"     :alias == nil ? [NSNull null] : alias
                            };
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.commandDelegate evalJs:[NSString stringWithFormat:@"cordova.fireDocumentEvent('jpush.setTagsWithAlias',%@)",[dict toJsonString]]];
-    });
+    [self.commandDelegate evalJs:[NSString stringWithFormat:@"cordova.fireDocumentEvent('jpush.setTagsWithAlias',%@)",[dict toJsonString]]];
 }
 
 #pragma mark 获取 RegistrationID
@@ -997,34 +1005,23 @@
 }
 
 - (void)networkDidReceiveMessage:(NSNotification *)notification {
-    NSLog(@"networkDidReceiveMessage %@",notification.userInfo);
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self commonPushRespone:@"onReceiveMessageIniOS" jsonParm:[notification.object toJsonString]];
-    });
+    [self commonPushRespone:@"onReceiveMessageIniOS" jsonParm:[notification.object toJsonString]];
 }
 
 -(void)networkDidReceiveNotification:(NSNotification *)notification{
     switch ([UIApplication sharedApplication].applicationState) {
         case UIApplicationStateActive:{
             //前台收到
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self commonPushRespone:@"onReceiveNofiticationIniOS" jsonParm:[notification.object toJsonString]];
-            });
+            [self commonPushRespone:@"onReceiveNofiticationIniOS" jsonParm:[notification.object toJsonString]];
         }
             break;
         case UIApplicationStateInactive:{
             //后台点击
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self commonPushRespone:@"onOpenNofiticationIniOS" jsonParm:[notification.object toJsonString]];
-
-            });
+            [self commonPushRespone:@"onOpenNofiticationIniOS" jsonParm:[notification.object toJsonString]];
         }
         case UIApplicationStateBackground:{
             //后台收到
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self commonPushRespone:@"onBackgoundNotificationIniOS" jsonParm:[notification.object toJsonString]];
-
-            });
+            [self commonPushRespone:@"onBackgoundNotificationIniOS" jsonParm:[notification.object toJsonString]];
         }
             break;
         default:
@@ -1096,9 +1093,213 @@
     [weakSelf.commandDelegate sendPluginResult:result callbackId:command.callbackId];
 }
 
--(void)nativeLog:(CDVInvokedUrlCommand*)command{
-    NSLog(@"%@",command.arguments[0]);
+#pragma mark - JMessage SDK v2.2.0~v2.2.1 新增
+
+-(void)onReceiveNotificationEvent:(JMSGNotificationEvent *)event{
+    NSString *eventType = [NSString stringWithFormat:@"%ld",(long)event.eventType];
+
+    NSString *reason;
+    NSString *username;
+    NSDictionary *userDict;
+
+    switch (event.eventType) {
+        case kJMSGEventNotificationReceiveFriendInvitation:
+        case kJMSGEventNotificationAcceptedFriendInvitation:
+        case kJMSGEventNotificationDeclinedFriendInvitation:
+        case kJMSGEventNotificationDeletedFriend:{
+            JMSGFriendNotificationEvent *friendEvent = (JMSGFriendNotificationEvent *)event;
+            reason   = [friendEvent getReason];
+            username = [friendEvent getFromUsername];
+            JMSGUser *user = [friendEvent getFromUser];
+            userDict = [user userToDictionary];
+        }
+            break;
+        default:
+            break;
+    }
+
+    NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+    [dict setValuesForKeysWithDictionary:@{@"eventType":eventType,@"eveventDescriptionentD":event.eventDescription}];
+    if (reason) {
+        [dict setValue:reason forKey:@"reason"];
+    }
+    if (username) {
+        [dict setValue:username forKey:@"username"];
+    }
+    if (userDict) {
+        [dict setValue:[dict toJsonString] forKey:@"user"];
+    }
+    [self commonSendMessage:@"onReceiveNotificationEvent" jsonParm:[dict toJsonString]];
+
 }
+
+#pragma mark JMSGFriendManager
+
+-(void)getFriendList:(CDVInvokedUrlCommand *)command{
+    WEAK_SELF(weakSelf);
+    [JMSGFriendManager getFriendList:^(id resultObject, NSError *error) {
+        NSMutableArray *arr = [NSMutableArray array];
+        if (error == nil) {
+            NSArray *users = resultObject;
+            for (JMSGUser *user in users) {
+                [arr addObject:[user userToDictionary]];
+            }
+        }
+        [weakSelf handleResultWithValue:arr command:command error:error];
+    }];
+}
+
+-(void)sendInvitationRequest:(CDVInvokedUrlCommand *)command{
+    NSString *username = [command argumentAtIndex:0];
+    NSString *appKey   = [command argumentAtIndex:1];
+    NSString *reason   = [command argumentAtIndex:2];
+    WEAK_SELF(weakSelf);
+    [JMSGFriendManager sendInvitationRequestWithUsername:username appKey:appKey reason:reason completionHandler:^(id resultObject, NSError *error) {
+        [weakSelf handleResultWithValue:@"send invitation request succeed" command:command error:error];
+    }];
+}
+
+-(void)acceptInvitation:(CDVInvokedUrlCommand *)command{
+    NSString *username = [command argumentAtIndex:0];
+    NSString *appKey   = [command argumentAtIndex:1];
+    WEAK_SELF(weakSelf);
+    [JMSGFriendManager acceptInvitationWithUsername:username appKey:appKey completionHandler:^(id resultObject, NSError *error) {
+        [weakSelf handleResultWithValue:@"accept invitation succeed" command:command error:error];
+    }];
+}
+
+-(void)rejectInvitation:(CDVInvokedUrlCommand *)command{
+    NSString *username = [command argumentAtIndex:0];
+    NSString *appKey   = [command argumentAtIndex:1];
+    NSString *reason   = [command argumentAtIndex:2];
+    WEAK_SELF(weakSelf);
+    [JMSGFriendManager rejectInvitationWithUsername:username appKey:appKey reason:reason completionHandler:^(id resultObject, NSError *error) {
+        [weakSelf handleResultWithValue:@"reject invitation succeed" command:command error:error];
+    }];
+}
+
+-(void)removeFriend:(CDVInvokedUrlCommand *)command{
+    NSString *username = [command argumentAtIndex:0];
+    NSString *appKey   = [command argumentAtIndex:1];
+    WEAK_SELF(weakSelf);
+    [JMSGFriendManager removeFriendWithUsername:username appKey:appKey completionHandler:^(id resultObject, NSError *error) {
+        [weakSelf handleResultWithValue:@"remove friend succeed" command:command error:error];
+    }];
+}
+
+#pragma mark JMSGUser
+
+-(void)updateNoteName:(CDVInvokedUrlCommand *)command{
+    NSString *username = [command argumentAtIndex:0];
+    NSString *appKey   = [command argumentAtIndex:1];
+    NSString *noteName = [command argumentAtIndex:2];
+    WEAK_SELF(weakSelf);
+    [JMSGFriendManager getFriendList:^(id resultObject, NSError *aError) {
+        if (aError == nil) {
+            NSArray *users = resultObject;
+            for (JMSGUser *user in users) {
+                if ([user.username isEqualToString:username] && [user.appKey isEqualToString:appKey]) {
+                    [user updateNoteName:noteName completionHandler:^(id resultObject, NSError *bError) {
+                        [weakSelf handleResultWithValue:@"update note name succeed" command:command error:bError];
+                    }];
+                }
+            }
+        }
+    }];
+}
+
+-(void)updateNoteText:(CDVInvokedUrlCommand *)command{
+    NSString *username = [command argumentAtIndex:0];
+    NSString *appKey   = [command argumentAtIndex:1];
+    NSString *noteText = [command argumentAtIndex:2];
+    WEAK_SELF(weakSelf);
+    [JMSGFriendManager getFriendList:^(id resultObject, NSError *aError) {
+        if (aError == nil) {
+            NSArray *users = resultObject;
+            for (JMSGUser *user in users) {
+                if ([user.username isEqualToString:username] && [user.appKey isEqualToString:appKey]) {
+                    [user updateNoteText:noteText completionHandler:^(id resultObject, NSError *bError) {
+                        [weakSelf handleResultWithValue:@"update note text succeed" command:command error:bError];
+                    }];
+                }
+            }
+        }
+    }];
+}
+
+#pragma mark JMSGConversation
+
+-(void)sendFileMessage:(CDVInvokedUrlCommand *)command{
+    NSString *name     = [command argumentAtIndex:0];
+    NSString *appkey   = [command argumentAtIndex:1];
+    NSString *single   = [command argumentAtIndex:2];
+    NSString *filePath = [command argumentAtIndex:3];
+    NSString *fileName = [command argumentAtIndex:4];
+
+    if (single.boolValue) {
+        if (appkey) {
+            [JMSGConversation createSingleConversationWithUsername:name appKey:appkey completionHandler:^(id resultObject, NSError *error) {
+                if (error == nil) {
+                    JMSGConversation *conversation = resultObject;
+                    NSData *data = [NSData dataWithContentsOfFile:filePath];
+                    [conversation sendFileMessage:data fileName:fileName];
+                }
+            }];
+        } else {
+            [JMSGConversation createSingleConversationWithUsername:name completionHandler:^(id resultObject, NSError *error) {
+                if (error == nil) {
+                    JMSGConversation *conversation = resultObject;
+                    NSData *data = [NSData dataWithContentsOfFile:filePath];
+                    [conversation sendFileMessage:data fileName:fileName];
+                }
+            }];
+        }
+    } else {
+        [JMSGConversation createGroupConversationWithGroupId:name completionHandler:^(id resultObject, NSError *error) {
+            if (error == nil) {
+                JMSGConversation *conversation = resultObject;
+                NSData *data = [NSData dataWithContentsOfFile:filePath];
+                [conversation sendFileMessage:data fileName:fileName];
+            }
+        }];
+    }
+}
+
+-(void)sendLocationMessage:(CDVInvokedUrlCommand *)command{
+    NSString *name      = [command argumentAtIndex:0];
+    NSString *appkey    = [command argumentAtIndex:1];
+    NSString *single    = [command argumentAtIndex:2];
+    NSString *latitude  = [command argumentAtIndex:3];
+    NSString *longitude = [command argumentAtIndex:4];
+    NSString *scale     = [command argumentAtIndex:5];
+    NSString *address   = [command argumentAtIndex:6];
+
+    if (single.boolValue) {
+        if (appkey) {
+            [JMSGConversation createSingleConversationWithUsername:name appKey:appkey completionHandler:^(id resultObject, NSError *error) {
+                if (error == nil) {
+                    JMSGConversation *conversation = resultObject;
+                    [conversation sendLocationMessage:[NSNumber numberWithFloat:[latitude floatValue]] longitude:[NSNumber numberWithFloat:[longitude floatValue]] scale:[NSNumber numberWithFloat:[scale floatValue]] address:address];
+                }
+            }];
+        } else {
+            [JMSGConversation createSingleConversationWithUsername:name completionHandler:^(id resultObject, NSError *error) {
+                if (error == nil) {
+                    JMSGConversation *conversation = resultObject;
+                    [conversation sendLocationMessage:[NSNumber numberWithFloat:[latitude floatValue]] longitude:[NSNumber numberWithFloat:[longitude floatValue]] scale:[NSNumber numberWithFloat:[scale floatValue]] address:address];
+                }
+            }];
+        }
+    } else {
+        [JMSGConversation createGroupConversationWithGroupId:name completionHandler:^(id resultObject, NSError *error) {
+            if (error == nil) {
+                JMSGConversation *conversation = resultObject;
+                [conversation sendLocationMessage:[NSNumber numberWithFloat:[latitude floatValue]] longitude:[NSNumber numberWithFloat:[longitude floatValue]] scale:[NSNumber numberWithFloat:[scale floatValue]] address:address];
+            }
+        }];
+    }
+}
+
 
 @end
 
