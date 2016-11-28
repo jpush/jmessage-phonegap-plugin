@@ -1,6 +1,6 @@
 # JMessage PhoneGap / Cordova Plugin
 
-[![release](https://img.shields.io/badge/release-2.1.6-blue.svg)](https://github.com/jpush/jmessage-phonegap-plugin/releases)
+[![release](https://img.shields.io/badge/release-2.2.0-blue.svg)](https://github.com/jpush/jmessage-phonegap-plugin/releases)
 [![platforms](https://img.shields.io/badge/platforms-iOS%7CAndroid-lightgrey.svg)](https://github.com/jpush/jmessage-phonegap-plugin)
 [![QQ Group](https://img.shields.io/badge/QQ%20Group-413602425-red.svg)](https://github.com/jpush/jmessage-phonegap-plugin)
 [![weibo](https://img.shields.io/badge/weibo-JPush-blue.svg)](http://weibo.com/jpush?refer_flag=1001030101_&is_all=1)
@@ -17,7 +17,7 @@ JMessage PhoneGap / Cordova Plugin 是基于[极光 IM](https://docs.jiguang.cn/
 
 > QQ 交流群：413602425
 
-> 有问题建议先到[极光社区](https://community.jiguang.cn/)搜索提问。
+> 有问题建议先到[极光社区](https://community.jiguang.cn/)和 [Issues](https://github.com/jpush/jmessage-phonegap-plugin/issues) 搜索提问。
 
 ## 集成步骤
 - 在线安装
