@@ -552,7 +552,6 @@ public class JMessagePlugin extends CordovaPlugin {
                 fileName = "avatar_" + myInfo.getUserID();
                 File avatarFile = new File(avatarPath + fileName + ".png");
                 if (avatarFile.exists()) {
-                    Log.i(TAG, "isExists");
                     callback.success(avatarFile.getAbsolutePath());
                     return;
                 }
@@ -1506,11 +1505,16 @@ public class JMessagePlugin extends CordovaPlugin {
         }
 
         Message msg = conversation.getLatestMessage();
-        String json = "";
         if (msg != null) {
-            json = mGson.toJson(msg);
+            try {
+                JSONObject msgJson = getMessageJSONObject(msg);
+                callback.success(msgJson.toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } else {
+            callback.success("");
         }
-        callback.success(json);
     }
 
     public void getHistoryMessages(JSONArray data, CallbackContext callback) {
@@ -1520,8 +1524,7 @@ public class JMessagePlugin extends CordovaPlugin {
             if (conversationType.equals("single")) {
                 String username = data.getString(1);
                 String appKey = data.isNull(2) ? "" : data.getString(2);
-                conversation = JMessageClient.getSingleConversation(
-                        username, appKey);
+                conversation = JMessageClient.getSingleConversation(username, appKey);
                 if (conversation == null) {
                     callback.error("Conversation is not exist.");
                     return;
@@ -1542,7 +1545,11 @@ public class JMessagePlugin extends CordovaPlugin {
 
             List<Message> messages = conversation.getMessagesFromNewest(from, limit);
             if (!messages.isEmpty()) {
-                callback.success(mGson.toJson(messages));
+                JSONArray msgJsonArr = new JSONArray();
+                for (Message msg : messages) {
+                    msgJsonArr.put(getMessageJSONObject(msg));
+                }
+                callback.success(msgJsonArr.toString());
             } else {
                 callback.success("");
             }
@@ -1577,9 +1584,12 @@ public class JMessagePlugin extends CordovaPlugin {
 
             List<Message> messages = conversation.getAllMessage();
             if (messages != null && !messages.isEmpty()) {
-                String json = mGson.toJson(messages);
-                callback.success(json);
-            } else {
+                JSONArray msgJsonArr = new JSONArray();
+                for (Message msg : messages) {
+                    msgJsonArr.put(getMessageJSONObject(msg));
+                }
+                callback.success(msgJsonArr.toString());
+;            } else {
                 callback.success("");
             }
         } catch (JSONException e) {
@@ -2802,13 +2812,21 @@ public class JMessagePlugin extends CordovaPlugin {
             avatarPath = avatarFile.getAbsolutePath();
         }
         msgJson.getJSONObject("fromUser").put("avatarPath", avatarPath);
+        msgJson.put("fromName", fromUser.getUserName());
+        msgJson.put("fromNickname", fromUser.getNickname());
+        msgJson.put("fromID", fromUser.getUserID());
+
+        UserInfo myInfo = JMessageClient.getMyInfo();
+        String myInfoJson = mGson.toJson(myInfo);
+        JSONObject myInfoJsonObj = new JSONObject(myInfoJson);
 
         File myAvatarFile = JMessageClient.getMyInfo().getAvatarFile();
         String myAvatarPath = "";
         if (myAvatarFile != null) {
             myAvatarPath = myAvatarFile.getAbsolutePath();
         }
-        msgJson.getJSONObject("targetInfo").put("avatarPath", myAvatarPath);
+        myInfoJsonObj.put("avatarPath", myAvatarPath);
+        msgJson.put("targetInfo", myInfoJsonObj);
 
         switch (msg.getContentType()) {
             case image:
