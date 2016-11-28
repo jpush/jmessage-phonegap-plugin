@@ -57,6 +57,7 @@
         <framework src="Security.framework" weak="true" />
         <framework src="AudioToolbox.framework" weak="true" />
         <framework src="MobileCoreServices.framework" weak="true" />
+        <framework src="UserNotifications.framework" weak="true" />
         <framework src="libz.tbd"/>
         <framework src="libsqlite3.0.tbd"/>
         <framework src="libresolv.tbd"/>

@@ -15,6 +15,11 @@
 #import "JMessageHelper.h"
 #import "ConstantDef.h"
 #import <objc/runtime.h>
+#import <UserNotifications/UserNotifications.h>
+
+@interface JMessageHelper ()<JPUSHRegisterDelegate>
+
+@end
 
 @implementation JMessageHelper
 
@@ -36,13 +41,36 @@
                      appKey:appkey
                     channel:channel apsForProduction:NO
                    category:nil];
-    [JPUSHService registerForRemoteNotificationTypes:(UIUserNotificationTypeBadge |
-                                                      UIUserNotificationTypeSound |
-                                                      UIUserNotificationTypeAlert)
-                                          categories:nil];
-    [self registerJPushStatusNotification];
 
+    JPUSHRegisterEntity * entity = [[JPUSHRegisterEntity alloc] init];
+    entity.types = UNAuthorizationOptionAlert | UNAuthorizationOptionBadge | UNAuthorizationOptionSound;
+    [JPUSHService registerForRemoteNotificationConfig:entity delegate:self];
+
+    [self registerJPushStatusNotification];
 }
+
+-(void)jpushNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(NSInteger))completionHandler{
+
+    NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithDictionary:notification.request.content.userInfo];
+
+    [userInfo setValue:kJPushPluginiOS10ForegroundReceiveNotification forKey:@"JPushNotificationType"];
+
+    [[NSNotificationCenter defaultCenter] postNotificationName:kJPushPluginiOS10ForegroundReceiveNotification object:userInfo];
+
+    completionHandler(UNNotificationPresentationOptionBadge|UNNotificationPresentationOptionSound|UNNotificationPresentationOptionAlert);
+}
+
+-(void)jpushNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)())completionHandler{
+    NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithDictionary:response.notification.request.content.userInfo];
+    @try {
+        [userInfo setValue:[response valueForKey:@"userText"] forKey:@"userText"];
+    } @catch (NSException *exception) { }
+    [userInfo setValue:response.actionIdentifier forKey:@"actionIdentifier"];
+    [userInfo setValue:kJPushPluginiOS10ClickNotification forKey:@"JPushNotificationType"];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kJPushPluginiOS10ClickNotification object:userInfo];
+    completionHandler();
+}
+
 
 - (void)registerJPushStatusNotification{
     NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];

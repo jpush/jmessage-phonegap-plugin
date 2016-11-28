@@ -15,6 +15,10 @@
 #define Plugin_Push_Name @"window.plugins.jPushPlugin"
 
 
+#define kJPushPluginReceiveNotification @"JPushPluginReceiveNofication"
+#define kJPushPluginiOS10ForegroundReceiveNotification @"kJPushPluginiOS10ForegroundReceiveNotification"
+#define kJPushPluginiOS10ClickNotification @"kJPushPluginiOS10ClickNotification"
+
 
 #define kJJMessageReceiveMessage @"kJJMessageReceiveMessage"
 #define kJJMessageSendMessageRespone @"kJJMessageSendMessageRespone"
