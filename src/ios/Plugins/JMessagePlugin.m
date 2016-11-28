@@ -91,8 +91,21 @@
 
     [defaultCenter addObserver:self
                       selector:@selector(networkDidReceiveNotification:)
-                          name:kJJPushReceiveNotification
+                          name:kJPushPluginReceiveNotification
                         object:nil];
+
+    [defaultCenter addObserver:self
+                      selector:@selector(networkDidReceiveNotification:)
+                          name:kJPushPluginiOS10ForegroundReceiveNotification
+                        object:nil];
+
+    [defaultCenter addObserver:self
+                      selector:@selector(networkDidReceiveNotification:)
+                          name:kJPushPluginiOS10ClickNotification
+                        object:nil];
+
+    
+    
     [defaultCenter addObserver:self
                       selector:@selector(unreadChanged:)
                           name:kJJMessageUnreadChanged
