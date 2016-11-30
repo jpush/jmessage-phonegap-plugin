@@ -53,7 +53,6 @@ JMessagePlugin.prototype.logout = function (successCallback, errorCallback) {
   this.callNative('userLogout', [], successCallback, errorCallback)
 }
 
-
 // User info API.
 // 如果 appKey 为空，获取当前 AppKey 下的用户信息。
 JMessagePlugin.prototype.getUserInfo = function (username, appKey, successCallback, errorCallback) {
