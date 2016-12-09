@@ -1,7 +1,11 @@
 package cn.jmessage.phonegap;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AppOpsManager;
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -13,6 +17,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -31,33 +37,35 @@ import cn.jpush.android.api.TagAliasCallback;
 import cn.jpush.android.data.JPushLocalNotification;
 
 public class JPushPlugin extends CordovaPlugin {
-    private final static List<String> methodList = Arrays.asList(
-            "addLocalNotification",
-            "clearAllNotification",
-            "clearLocalNotifications",
-            "clearNotificationById",
-            "getNotification",
-            "getRegistrationID",
-            "init",
-            "isPushStopped",
-            "onPause",
-            "onResume",
-            "requestPermission",
-            "removeLocalNotification",
-            "reportNotificationOpened",
-            "resumePush",
-            "setAlias",
-            "setBasicPushNotificationBuilder",
-            "setCustomPushNotificationBuilder",
-            "setDebugMode",
-            "setLatestNotificationNum",
-            "setPushTime",
-            "setTags",
-            "setTagsWithAlias",
-            "setSilenceTime",
-            "setStatisticsOpen",
-            "stopPush"
-    );
+    private final static List<String> methodList =
+            Arrays.asList(
+                    "addLocalNotification",
+                    "areNotificationEnabled",
+                    "clearAllNotification",
+                    "clearLocalNotifications",
+                    "clearNotificationById",
+                    "getNotification",
+                    "getRegistrationID",
+                    "init",
+                    "isPushStopped",
+                    "onPause",
+                    "onResume",
+                    "requestPermission",
+                    "removeLocalNotification",
+                    "reportNotificationOpened",
+                    "resumePush",
+                    "setAlias",
+                    "setBasicPushNotificationBuilder",
+                    "setCustomPushNotificationBuilder",
+                    "setDebugMode",
+                    "setLatestNotificationNum",
+                    "setPushTime",
+                    "setTags",
+                    "setTagsWithAlias",
+                    "setSilenceTime",
+                    "setStatisticsOpen",
+                    "stopPush"
+            );
 
     private ExecutorService threadPool = Executors.newFixedThreadPool(1);
     private static JPushPlugin instance;
@@ -81,7 +89,11 @@ public class JPushPlugin extends CordovaPlugin {
 
     @Override
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
+        Log.i(TAG, "JPush initialize.");
+
         super.initialize(cordova, webView);
+        JPushInterface.init(cordova.getActivity().getApplicationContext());
+
         cordovaActivity = cordova.getActivity();
 
         //如果同时缓存了打开事件 openNotificationAlert 和 消息事件 notificationAlert，只向 UI 发打开事件。
@@ -131,14 +143,14 @@ public class JPushPlugin extends CordovaPlugin {
     }
 
     private static JSONObject getMessageObject(String message,
-            Map<String, Object> extras) {
+                                               Map<String, Object> extras) {
         JSONObject data = new JSONObject();
         try {
             data.put("message", message);
             JSONObject jExtras = new JSONObject();
             for (Entry<String, Object> entry : extras.entrySet()) {
                 if (entry.getKey().equals("cn.jpush.android.EXTRA")) {
-                    JSONObject jo;
+                    JSONObject jo = null;
                     if (TextUtils.isEmpty((String) entry.getValue())) {
                         jo = new JSONObject();
                     } else {
@@ -165,7 +177,7 @@ public class JPushPlugin extends CordovaPlugin {
     }
 
     private static JSONObject getNotificationObject(String title,
-            String alert, Map<String, Object> extras) {
+                                                    String alert, Map<String, Object> extras) {
         JSONObject data = new JSONObject();
         try {
             data.put("title", title);
@@ -204,7 +216,7 @@ public class JPushPlugin extends CordovaPlugin {
             return;
         }
         JSONObject data = getMessageObject(message, extras);
-        String format = "window.JPush.receiveMessageInAndroidCallback(%s);";
+        String format = "window.plugins.jPushPlugin.receiveMessageInAndroidCallback(%s);";
         final String js = String.format(format, data.toString());
         cordovaActivity.runOnUiThread(new Runnable() {
             @Override
@@ -215,12 +227,12 @@ public class JPushPlugin extends CordovaPlugin {
     }
 
     static void transmitNotificationOpen(String title, String alert,
-            Map<String, Object> extras) {
+                                         Map<String, Object> extras) {
         if (instance == null) {
             return;
         }
         JSONObject data = getNotificationObject(title, alert, extras);
-        String format = "window.JPush.openNotificationInAndroidCallback(%s);";
+        String format = "window.plugins.jPushPlugin.openNotificationInAndroidCallback(%s);";
         final String js = String.format(format, data.toString());
         cordovaActivity.runOnUiThread(new Runnable() {
             @Override
@@ -233,12 +245,12 @@ public class JPushPlugin extends CordovaPlugin {
     }
 
     static void transmitNotificationReceive(String title, String alert,
-            Map<String, Object> extras) {
+                                            Map<String, Object> extras) {
         if (instance == null) {
             return;
         }
         JSONObject data = getNotificationObject(title, alert, extras);
-        String format = "window.JPush.receiveNotificationInAndroidCallback(%s);";
+        String format = "window.plugins.jPushPlugin.receiveNotificationInAndroidCallback(%s);";
         final String js = String.format(format, data.toString());
         cordovaActivity.runOnUiThread(new Runnable() {
             @Override
@@ -252,7 +264,7 @@ public class JPushPlugin extends CordovaPlugin {
 
     @Override
     public boolean execute(final String action, final JSONArray data,
-            final CallbackContext callbackContext) throws JSONException {
+                           final CallbackContext callbackContext) throws JSONException {
         if (!methodList.contains(action)) {
             return false;
         }
@@ -304,6 +316,16 @@ public class JPushPlugin extends CordovaPlugin {
         } else {
             callbackContext.success(0);
         }
+    }
+
+    void areNotificationEnabled(JSONArray data, final CallbackContext callback) {
+        int isEnabled;
+        if (hasPermission("OP_POST_NOTIFICATION")) {
+            isEnabled = 1;
+        } else {
+            isEnabled = 0;
+        }
+        callback.success(isEnabled);
     }
 
     void setLatestNotificationNum(JSONArray data, CallbackContext callbackContext) {
@@ -416,8 +438,11 @@ public class JPushPlugin extends CordovaPlugin {
         }
     }
 
+    /**
+     *   自定义通知行为，声音、震动、呼吸灯等。
+     */
     void setBasicPushNotificationBuilder(JSONArray data,
-            CallbackContext callbackContext) {
+                                         CallbackContext callbackContext) {
         BasicPushNotificationBuilder builder = new BasicPushNotificationBuilder(
                 this.cordova.getActivity());
         builder.developerArg0 = "Basic builder 1";
@@ -430,19 +455,17 @@ public class JPushPlugin extends CordovaPlugin {
         }
     }
 
+    /**
+     * 自定义推送通知栏样式，需要自己实现具体代码。
+     * http://docs.jiguang.cn/client/android_tutorials/#_11
+     */
     void setCustomPushNotificationBuilder(JSONArray data,
-            CallbackContext callbackContext) {
-//        CustomPushNotificationBuilder builder = new CustomPushNotificationBuilder(
-//                this.cordova.getActivity(), R.layout.test_notification_layout,
-//                R.id.icon, R.id.title, R.id.text);
-//        builder.developerArg0 = "Custom Builder 1";
-//        JPushInterface.setPushNotificationBuilder(2, builder);
-//        JSONObject obj = new JSONObject();
-//        try {
-//            obj.put("id", 2);
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
+                                          CallbackContext callbackContext) {
+        // CustomPushNotificationBuilder builder = new CustomPushNotificationBuilder(
+        //         this.cordova.getActivity(), R.layout.test_notification_layout,
+        //         R.id.icon, R.id.title, R.id.text);
+        // JPushInterface.setPushNotificationBuilder(2, builder);
+        // JPushInterface.setDefaultPushNotificationBuilder(builder);
     }
 
     void clearAllNotification(JSONArray data, CallbackContext callbackContext) {
@@ -543,6 +566,14 @@ public class JPushPlugin extends CordovaPlugin {
         return !(minute < 0 || minute > 59);
     }
 
+    /**
+     * 用于 Android 6.0 以上系统申请权限，具体可参考：
+     * http://docs.Push.io/client/android_api/#android-60
+     */
+    void requestPermission(JSONArray data, CallbackContext callbackContext) {
+        JPushInterface.requestPermission(this.cordova.getActivity());
+    }
+
     private final TagAliasCallback mTagWithAliasCallback = new TagAliasCallback() {
         @Override
         public void gotResult(int code, String alias, Set<String> tags) {
@@ -569,4 +600,36 @@ public class JPushPlugin extends CordovaPlugin {
         }
     };
 
+    @TargetApi(Build.VERSION_CODES.KITKAT)
+    private boolean hasPermission(String appOpsServiceId) {
+        Context context = cordova.getActivity().getApplicationContext();
+        AppOpsManager mAppOps = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
+        ApplicationInfo appInfo = context.getApplicationInfo();
+
+        String pkg = context.getPackageName();
+        int uid = appInfo.uid;
+        Class appOpsClazz = null;
+
+        try {
+            appOpsClazz = Class.forName(AppOpsManager.class.getName());
+            Method checkOpNoThrowMethod = appOpsClazz.getMethod("checkOpNoThrow",
+                    Integer.TYPE, Integer.TYPE, String.class);
+            Field opValue = appOpsClazz.getDeclaredField(appOpsServiceId);
+            int value = opValue.getInt(Integer.class);
+            Object result = checkOpNoThrowMethod.invoke(mAppOps, value, uid, pkg);
+
+            return Integer.parseInt(result.toString()) == AppOpsManager.MODE_ALLOWED;
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
 }

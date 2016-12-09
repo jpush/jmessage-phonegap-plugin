@@ -21,7 +21,7 @@ JPushPlugin.prototype.error_callback = function (msg) {
 JPushPlugin.prototype.call_native = function (name, args, callback) {
   if (this.isPlatformIOS()) {
     ret = cordova.exec(callback, this.error_callback, 'JMessagePlugin', name, args)
-  }else {
+  } else {
     ret = cordova.exec(callback, this.error_callback, 'JPushPlugin', name, args)
   }
   return ret
@@ -30,167 +30,105 @@ JPushPlugin.prototype.call_native = function (name, args, callback) {
 // public methods
 JPushPlugin.prototype.init = function () {
   if (this.isPlatformIOS()) {
-    var data = []
-    this.call_native('initial', data, null)
+    this.call_native('initial', [], null)
   } else {
-    data = []
-    this.call_native('init', data, null)
+    this.call_native('init', [], null)
   }
 }
 
 JPushPlugin.prototype.getRegistrationID = function (callback) {
-  try {
-    var data = []
-    this.call_native('getRegistrationID', [data], callback)
-  } catch(exception) {
-    console.log(exception)
-  }
+  this.call_native('getRegistrationID', [], callback)
 }
 
 JPushPlugin.prototype.stopPush = function () {
-  data = []
-  this.call_native('stopPush', data, null)
+  this.call_native('stopPush', [], null)
 }
 
 JPushPlugin.prototype.resumePush = function () {
-  data = []
-  this.call_native('resumePush', data, null)
+  this.call_native('resumePush', [], null)
 }
 
 JPushPlugin.prototype.isPushStopped = function (callback) {
-  data = []
-  this.call_native('isPushStopped', data, callback)
+  this.call_native('isPushStopped', [], callback)
 }
 
 // iOS methods
-
-// iOS - tag & alias
-
 JPushPlugin.prototype.setTagsWithAlias = function (tags, alias) {
-  try {
-    if (tags == null) {
-      this.setAlias(alias)
-      return
-    }
-    if (alias == null) {
-      this.setTags(tags)
-      return
-    }
-    var arrayTagWithAlias = [tags]
-    arrayTagWithAlias.unshift(alias)
-    this.call_native('setTagsWithAlias', arrayTagWithAlias, null)
-  } catch(exception) {
-    console.log(exception)
+  if (tags == null) {
+    this.setAlias(alias)
+    return
   }
+  if (alias == null) {
+    this.setTags(tags)
+    return
+  }
+  var arrayTagWithAlias = [tags]
+  arrayTagWithAlias.unshift(alias)
+  this.call_native('setTagsWithAlias', arrayTagWithAlias, null)
 }
 
 JPushPlugin.prototype.setTags = function (tags) {
-  try {
-    this.call_native('setTags', tags, null)
-  } catch(exception) {
-    console.log(exception)
-  }
+  this.call_native('setTags', tags, null)
 }
 
 JPushPlugin.prototype.setAlias = function (alias) {
-  try {
-    this.call_native('setAlias', [alias], null)
-  } catch(exception) {
-    console.log(exception)
-  }
+  this.call_native('setAlias', [alias], null)
 }
-
-// iOS - badge
 
 JPushPlugin.prototype.setBadge = function (value) {
   if (this.isPlatformIOS()) {
-    try {
-      this.call_native('setBadge', [value], null)
-    } catch(exception) {
-      console.log(exception)
-    }
+    this.call_native('setBadge', [value], null)
   }
 }
 
 JPushPlugin.prototype.resetBadge = function () {
   if (this.isPlatformIOS()) {
-    try {
-      var data = []
-      this.call_native('resetBadge', [data], null)
-    } catch(exception) {
-      console.log(exception)
-    }
+    this.call_native('resetBadge', [], null)
   }
 }
-
-JPushPlugin.prototype.setApplicationIconBadgeNumber = function (badge) {
-  if (this.isPlatformIOS()) {
-    this.call_native('setApplicationIconBadgeNumber', [badge], null)
-  }
-}
-
-JPushPlugin.prototype.getApplicationIconBadgeNumber = function (callback) {
-  if (this.isPlatformIOS()) {
-    this.call_native('getApplicationIconBadgeNumber', [], callback)
-  }
-}
-
-// iOS - log
 
 JPushPlugin.prototype.setDebugModeFromIos = function () {
   if (this.isPlatformIOS()) {
-    var data = []
-    this.call_native('setDebugModeFromIos', [data], null)
+    this.call_native('setDebugModeFromIos', [], null)
   }
 }
 
 JPushPlugin.prototype.setLogOFF = function () {
   if (this.isPlatformIOS()) {
-    var data = []
-    this.call_native('setLogOFF', [data], null)
+    this.call_native('setLogOFF', [], null)
   }
 }
 
 JPushPlugin.prototype.setCrashLogON = function () {
   if (this.isPlatformIOS()) {
-    var data = []
-    this.call_native('crashLogON', [data], null)
+    this.call_native('crashLogON', [], null)
   }
 }
-
-// iOS - local notification
 
 JPushPlugin.prototype.addLocalNotificationForIOS = function (delayTime, content,
-  badge, notificationID, extras) {
+    badge, notificationID, extras) {
   if (this.isPlatformIOS()) {
-    var data = [delayTime, content, badge, notificationID, extras]
-    this.call_native('setLocalNotification', data, null)
+    this.call_native('setLocalNotification', [delayTime, content, badge, notificationID, extras], null)
   }
 }
 
-JPushPlugin.prototype.deleteLocalNotificationWithIdentifierKeyInIOS = function (
-  identifierKey) {
+JPushPlugin.prototype.deleteLocalNotificationWithIdentifierKeyInIOS = function (identifierKey) {
   if (this.isPlatformIOS()) {
-    var data = [identifierKey]
-    this.call_native('deleteLocalNotificationWithIdentifierKey', data, null)
+    this.call_native('deleteLocalNotificationWithIdentifierKey', [identifierKey], null)
   }
 }
 
 JPushPlugin.prototype.clearAllLocalNotifications = function () {
   if (this.isPlatformIOS()) {
-    var data = []
-    this.call_native('clearAllLocalNotifications', data, null)
+    this.call_native('clearAllLocalNotifications', [], null)
   }
 }
 
 JPushPlugin.prototype.setLocation = function (latitude, longitude) {
   if (this.isPlatformIOS()) {
-    var data = [latitude, longitude]
-    this.call_native('setLocation', data, null)
+    this.call_native('setLocation', [latitude, longitude], null)
   }
 }
-
-// iOS - page count
 
 JPushPlugin.prototype.startLogPageView = function (pageName) {
   if (this.isPlatformIOS()) {
@@ -210,37 +148,40 @@ JPushPlugin.prototype.beginLogPageView = function (pageName, duration) {
   }
 }
 
-// iOS - callback
-
-JPushPlugin.prototype.receiveMessageIniOSCallback = function (data) {
-  try {
-    console.log('JPushPlugin:receiveMessageIniOSCallback--data:' + data)
-    var bToObj = JSON.parse(data)
-    var content = bToObj.content
-    console.log(content)
-  } catch(exception) {
-    console.log('JPushPlugin:receiveMessageIniOSCallback' + exception)
+JPushPlugin.prototype.setApplicationIconBadgeNumber = function (badge) {
+  if (this.isPlatformIOS()) {
+    this.call_native('setApplicationIconBadgeNumber', [badge], null)
   }
 }
 
-JPushPlugin.prototype.onReceiveMessageIniOS = function (data) {
-  var bToObj = JSON.parse(data)
-  cordova.fireDocumentEvent('jpush.receiveMessage', bToObj)
+JPushPlugin.prototype.getApplicationIconBadgeNumber = function (callback) {
+  if (this.isPlatformIOS()) {
+    this.call_native('getApplicationIconBadgeNumber', [], callback)
+  }
 }
 
-JPushPlugin.prototype.onOpenNofiticationIniOS = function (data) {
-  var bToObj = JSON.parse(data)
-  cordova.fireDocumentEvent('jpush.openNotification', bToObj)
+// 判断系统设置中是否对本应用启用通知。
+// iOS: 返回值如果大于 0，代表通知开启；0: 通知关闭。
+//		UIRemoteNotificationTypeNone    = 0,
+//    	UIRemoteNotificationTypeBadge   = 1 << 0,
+//    	UIRemoteNotificationTypeSound   = 1 << 1,
+//    	UIRemoteNotificationTypeAlert   = 1 << 2,
+//    	UIRemoteNotificationTypeNewsstandContentAvailability = 1 << 3,
+// Android: 返回值 1 代表通知启用、0: 通知关闭。
+JPushPlugin.prototype.getUserNotificationSettings = function (callback) {
+  if (this.isPlatformIOS()) {
+    this.call_native('getUserNotificationSettings', [], callback)
+  } else if (device.platform == 'Android') {
+    this.call_native('areNotificationEnabled', [], callback)
+  }
 }
 
-JPushPlugin.prototype.onReceiveNofiticationIniOS = function (data) {
-  var bToObj = JSON.parse(data)
-  cordova.fireDocumentEvent('jpush.receiveNotification', bToObj)
+JPushPlugin.prototype.addDismissActions = function (actions, categoryId) {
+  this.call_native('addDismissActions', [actions, categoryId])
 }
 
-JPushPlugin.prototype.onBackgoundNotificationIniOS = function (data) {
-  var bToObj = JSON.parse(data)
-  cordova.fireDocumentEvent('jpush.backgroundNotification', bToObj)
+JPushPlugin.prototype.addNotificationActions = function (actions, categoryId) {
+  this.call_native('addNotificationActions', [actions, categoryId])
 }
 
 // Android methods
@@ -252,61 +193,45 @@ JPushPlugin.prototype.setDebugMode = function (mode) {
 
 JPushPlugin.prototype.setBasicPushNotificationBuilder = function () {
   if (device.platform == 'Android') {
-    data = []
-    this.call_native('setBasicPushNotificationBuilder', data, null)
+    this.call_native('setBasicPushNotificationBuilder', [], null)
   }
 }
 
 JPushPlugin.prototype.setCustomPushNotificationBuilder = function () {
   if (device.platform == 'Android') {
-    data = []
-    this.call_native('setCustomPushNotificationBuilder', data, null)
+    this.call_native('setCustomPushNotificationBuilder', [], null)
   }
 }
 
 JPushPlugin.prototype.receiveMessageInAndroidCallback = function (data) {
-  try {
-    data = JSON.stringify(data)
-    console.log('JPushPlugin:receiveMessageInAndroidCallback: ' + data)
-    this.receiveMessage = JSON.parse(data)
-    cordova.fireDocumentEvent('jpush.receiveMessage', this.receiveMessage)
-  } catch(exception) {
-    console.log('JPushPlugin:pushCallback ' + exception)
-  }
+  data = JSON.stringify(data)
+  console.log('JPushPlugin:receiveMessageInAndroidCallback: ' + data)
+  this.receiveMessage = JSON.parse(data)
+  cordova.fireDocumentEvent('jpush.receiveMessage', this.receiveMessage)
 }
 
 JPushPlugin.prototype.openNotificationInAndroidCallback = function (data) {
-  try {
-    data = JSON.stringify(data)
-    console.log('JPushPlugin:openNotificationInAndroidCallback: ' + data)
-    this.openNotification = JSON.parse(data)
-    cordova.fireDocumentEvent('jpush.openNotification', this.openNotification)
-  } catch(exception) {
-    console.log(exception)
-  }
+  data = JSON.stringify(data)
+  console.log('JPushPlugin:openNotificationInAndroidCallback: ' + data)
+  this.openNotification = JSON.parse(data)
+  cordova.fireDocumentEvent('jpush.openNotification', this.openNotification)
 }
 
 JPushPlugin.prototype.receiveNotificationInAndroidCallback = function (data) {
-  try {
-    data = JSON.stringify(data)
-    console.log('JPushPlugin:receiveNotificationInAndroidCallback: ' + data)
-    this.receiveNotification = JSON.parse(data)
-    cordova.fireDocumentEvent('jpush.receiveNotification', this.receiveNotification)
-  } catch(exception) {
-    console.log(exception)
-  }
+  data = JSON.stringify(data)
+  console.log('JPushPlugin:receiveNotificationInAndroidCallback: ' + data)
+  this.receiveNotification = JSON.parse(data)
+  cordova.fireDocumentEvent('jpush.receiveNotification', this.receiveNotification)
 }
 
 JPushPlugin.prototype.clearAllNotification = function () {
   if (device.platform == 'Android') {
-    data = []
-    this.call_native('clearAllNotification', data, null)
+    this.call_native('clearAllNotification', [], null)
   }
 }
 
 JPushPlugin.prototype.clearNotificationById = function (notificationId) {
   if (device.platform == 'Android') {
-    data = []
     this.call_native('clearNotificationById', [notificationId], null)
   }
 }
@@ -324,10 +249,9 @@ JPushPlugin.prototype.setDebugMode = function (mode) {
 }
 
 JPushPlugin.prototype.addLocalNotification = function (builderId, content, title,
-  notificationID, broadcastTime, extras) {
+    notificationID, broadcastTime, extras) {
   if (device.platform == 'Android') {
-    data = [builderId, content, title, notificationID, broadcastTime, extras]
-    this.call_native('addLocalNotification', data, null)
+    this.call_native('addLocalNotification', [builderId, content, title, notificationID, broadcastTime, extras], null)
   }
 }
 
@@ -339,8 +263,7 @@ JPushPlugin.prototype.removeLocalNotification = function (notificationID) {
 
 JPushPlugin.prototype.clearLocalNotifications = function () {
   if (device.platform == 'Android') {
-    data = []
-    this.call_native('clearLocalNotifications', data, null)
+    this.call_native('clearLocalNotifications', [], null)
   }
 }
 
@@ -351,8 +274,8 @@ JPushPlugin.prototype.reportNotificationOpened = function (msgID) {
 }
 
 /**
- *是否开启统计分析功能，用于“用户使用时长”，“活跃用户”，“用户打开次数”的统计，并上报到服务器上，
- *在 Portal 上展示给开发者。
+ * 是否开启统计分析功能，用于“用户使用时长”，“活跃用户”，“用户打开次数”的统计，并上报到服务器上，
+ * 在 Portal 上展示给开发者。
  */
 JPushPlugin.prototype.setStatisticsOpen = function (mode) {
   if (device.platform == 'Android') {
@@ -361,9 +284,9 @@ JPushPlugin.prototype.setStatisticsOpen = function (mode) {
 }
 
 /**
-* 用于在 Android 6.0 及以上系统，申请一些权限。
-* 具体可看：http://docs.jpush.io/client/android_api/#android-60
-*/
+ * 用于在 Android 6.0 及以上系统，申请一些权限
+ * 具体可看：http://docs.jpush.io/client/android_api/#android-60
+ */
 JPushPlugin.prototype.requestPermission = function () {
   if (device.platform == 'Android') {
     this.call_native('requestPermission', [], null)
