@@ -195,6 +195,9 @@ typedef NS_ENUM(NSInteger, JMSGEventNotificationType) {
   /// 事件类型：用户登录状态异常事件（需要重新登录）
   kJMSGEventNotificationUserLoginStatusUnexpected = 70,
   
+  /// 事件类型：当前登录用户信息变更通知事件(非客户端修改)
+  kJMSGEventNotificationCurrentUserInfoChange = 40,
+  
   // 免打扰事件
   /// 事件类型: 免打扰变更
   kJMSGEventNotificationNoDisturbChange = 37,
@@ -454,6 +457,9 @@ static NSString *const KEY_NO_DISTURB = @"no_disturb";
 static NSString *const KEY_BLACKLIST = @"blicklist";
 static NSString *const KEY_NOTE_NAME = @"memo_name";//note_name
 static NSString *const KEY_NOTE_TEXT = @"memo_others";//note_text
+static NSString *const KEY_SHIELD_GROUP = @"shield_group";
+
+
 
 #endif
 

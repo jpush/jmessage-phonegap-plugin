@@ -283,8 +283,6 @@ JMSG_ASSUME_NONNULL_BEGIN
                            toGroup:(NSString *)groupId;
 
 
-
-
 ///----------------------------------------------------
 /// @name Message basic fields 消息基本属性
 ///----------------------------------------------------
@@ -452,6 +450,15 @@ JMSG_ASSUME_NONNULL_BEGIN
  *
  */
 - (void)setFromName:(NSString * JMSG_NULLABLE)fromName;
+
+/*!
+ * @abstract 更新 message 中的extra
+ *
+ * @param value   待更新的value,不能为null,类型只能为 NSNumber 和 NSString
+ * @param key     待更新value对应的key,不能为null
+ *
+ */
+- (BOOL)updateMessageExtraValue:(id)value forKey:(NSString *)key;
 
 /*!
  * @abstract 更新消息标志

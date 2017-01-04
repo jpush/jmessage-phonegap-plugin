@@ -17,6 +17,7 @@ API 统一说明：
 - [群组操作](#group)
 - [跨应用接口](#cross-app-method)
 - [好友管理](#friendmanager)
+- [免打扰](#disturb)
 - [监听事件](#documentevent)
 
 
@@ -78,7 +79,7 @@ API 统一说明：
 #### 参数说明
 - field：数字、或纯数字字符串
 
-		/// 用户信息字段: 用户名
+  	/// 用户信息字段: 用户名
   		kJMSGUserFieldsNickname = 0,
   		/// 用户信息字段: 生日
   		kJMSGUserFieldsBirthday = 1,
@@ -189,8 +190,18 @@ window.JMessage.updateFriendNoteText(username, appKey, noteText, successCallback
 获取全部单聊、群里会话信息
 #### 接口定义
 	window.JMessage.getAllConversation(successCallback, errorCallback);
+###  API - getAllUnreadCount
+
+获取当前所有会话的未读消息的总数
+
+#### 接口定义
+
+```
+window.JMessage.getAllUnreadCount(successCallback, errorCallback);
+```
 
 ### API - clearSingleUnreadCount
+
 清除单聊会话未读数
 #### 接口定义
 	window.JMessage.clearSingleUnreadCount(username, successCallback, errorCallback);
@@ -346,6 +357,8 @@ window.JMessage.sendLocationMessage(name, appKey, single, latitude, longitude, s
 
 
 
+
+
 ### API - sendInvitationRequest
 
 发送添加好友请求
@@ -391,6 +404,150 @@ window.JMessage.declineInvitation(username, appkey, reason, successCallback, err
 ```
 window.JMessage.removeFromFriendList(username, appkey, successCallback, errorCallback);
 ```
+
+
+
+## Disturb
+
+注：用户&群组的免打扰状态、群主 appkey、群最大成员数量在 API - getUserInfo/getGroupInfo 获取。
+
+
+
+### API - noDisturbList 
+
+用户免打扰列表 设置全局免打扰标识
+
+#### 接口定义
+
+```
+window.JMessage.getNoDisturblist(successCallback, errorCallback);
+```
+
+
+
+### API - isSetGlobalNoDisturb 
+
+获取全局免打扰状态
+
+#### 接口定义
+
+```
+window.JMessage.getNoDisturbGlobal(successCallback, errorCallback);
+```
+
+
+
+### API - setIsGlobalNoDisturb 
+
+设置是否全局免打扰
+
+#### 接口定义
+
+```
+window.JMessage.setNoDisturbGlobal(isGlobalNoDisturb, successCallback, errorCallback);
+```
+
+#### 参数说明
+
+isGlobalNoDisturb：1 是/0 否
+
+
+
+### API - blackList 
+
+获取黑名单列表
+
+#### 接口定义
+
+```
+window.JMessage.getBlacklist(successCallback, errorCallback);
+```
+
+
+
+### API - userSetIsNoDisturb 
+
+设置用户免打扰（支持跨应用设置）
+
+#### 接口定义
+
+```
+window.JMessage.setUserNoDisturb(username, appkey, isNoDisturb, successCallback, errorCallback);
+```
+
+
+
+### API - isInBlacklist 
+
+获取黑名单状态
+
+#### 接口定义
+
+```
+window.JMessage.isInBlacklist(username, appkey, successCallback, errorCallback);
+```
+
+
+
+### API - addUsersToBlacklist 
+
+添加黑名单
+
+#### 接口定义
+
+```
+window.JMessage.addUsersToBlacklist_ios(usernamesArray, successCallback, errorCallback);
+```
+
+
+
+### API - delUsersFromBlacklist 
+
+删除黑名单
+
+#### 接口定义
+
+```
+window.JMessage.delUsersFromBlacklist_ios(usernamesArray, successCallback, errorCallback);
+```
+
+
+
+### API - cross_addUsersToBlacklist 
+
+跨应用添加黑名单
+
+#### 接口定义
+
+```
+window.JMessage.cross_addUsersToBlacklist(usernamesArray, appkey, successCallback, errorCallback);
+```
+
+
+
+### API - cross_delUsersFromBlacklist 
+
+跨应用删除黑名单
+
+#### 接口定义
+
+```
+window.JMessage.cross_delUsersFromBlacklist(usernamesArray, appkey, successCallback, errorCallback);
+```
+
+
+
+### API - groupSetIsNoDisturb 
+
+设置群组消息免打扰
+
+#### 接口定义
+
+```
+window.JMessage.groupSetIsNoDisturb(groupId, isNoDisturb, successCallback, errorCallback);
+```
+
+
 
 ## DocumentEvent
 
@@ -463,7 +620,15 @@ kJMSGEventNotificationServerAlterPassword = 2,
 
 kJMSGEventNotificationUserLoginStatusUnexpected = 70,
 
-  
+
+
+/// 事件类型：当前登录用户信息变更通知事件(非客户端修改)
+
+kJMSGEventNotificationCurrentUserInfoChange = 40,
+
+
+
+
 // 免打扰事件
 
 /// 事件类型: 免打扰变更
@@ -473,6 +638,8 @@ kJMSGEventNotificationNoDisturbChange = 37,
 /// 事件类型: 黑名单变更
 
 kJMSGEventNotificationBlacklistChange = 38,
+
+
 
 
 // 好友相关事件

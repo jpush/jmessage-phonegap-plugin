@@ -387,8 +387,33 @@ JMessagePlugin.prototype.delUsersFromBlacklist = function (usernameStr, successC
   this.callNative('delUsersFromBlacklist', [usernameStr], successCallback, errorCallback)
 }
 
+//usernamesArray 数组
+JMessagePlugin.prototype.addUsersToBlacklist_ios = function (usernamesArray, successCallback, errorCallback) {
+  this.callNative('addUsersToBlacklist', [usernamesArray], successCallback, errorCallback)
+}
+
+JMessagePlugin.prototype.delUsersFromBlacklist_ios = function (usernamesArray, successCallback, errorCallback) {
+  this.callNative('delUsersFromBlacklist', [usernamesArray], successCallback, errorCallback)
+}
+
+JMessagePlugin.prototype.addUsersToBlacklist = function (usernamesArray, appkey, successCallback, errorCallback) {
+  this.callNative('cross_addUsersToBlacklist', [usernamesArray, appkey], successCallback, errorCallback)
+}
+
+JMessagePlugin.prototype.delUsersFromBlacklist = function (usernamesArray, appkey, successCallback, errorCallback) {
+  this.callNative('cross_delUsersFromBlacklist', [usernamesArray, appkey], successCallback, errorCallback)
+}
+
 JMessagePlugin.prototype.getBlacklist = function (successCallback, errorCallback) {
-  this.callNative('getBlacklist', [], successCallback, errorCallback)
+  if (device.platform == 'Android') {
+    this.callNative('getBlacklist', [], successCallback, errorCallback)
+  }else{
+    this.callNative('blackList', [], successCallback, errorCallback)
+  }
+}
+
+JMessagePlugin.prototype.isInBlacklist = function (username, appkey, successCallback, errorCallback) {
+    this.callNative('isInBlacklist', [username, appkey], successCallback, errorCallback)
 }
 
 // 免打扰相关 API。
@@ -398,6 +423,8 @@ JMessagePlugin.prototype.getBlacklist = function (successCallback, errorCallback
 JMessagePlugin.prototype.setUserNoDisturb = function (username, isNoDisturb, successCallback, errorCallback) {
   if (device.platform == 'Android') {
     this.callNative('setUserNoDisturb', [username, isNoDisturb], successCallback, errorCallback)
+  }else{
+    this.callNative('userSetIsNoDisturb', [username, isNoDisturb], successCallback, errorCallback)
   }
 }
 
@@ -425,6 +452,8 @@ JMessagePlugin.prototype.getGroupNoDisturb = function (groupId, successCallback,
 JMessagePlugin.prototype.getNoDisturblist = function (successCallback, errorCallback) {
   if (device.platform == 'Android') {
     this.callNative('getNoDisturblist', [], successCallback, errorCallback)
+  }else{
+    this.callNative('noDisturblist', [], successCallback, errorCallback)
   }
 }
 
@@ -432,6 +461,8 @@ JMessagePlugin.prototype.getNoDisturblist = function (successCallback, errorCall
 JMessagePlugin.prototype.setNoDisturbGlobal = function (isNoDisturb, successCallback, errorCallback) {
   if (device.platform == 'Android') {
     this.callNative('setNoDisturbGlobal', [isNoDisturb], successCallback, errorCallback)
+  }else{
+    this.callNative('setIsGlobalNoDisturb', [isNoDisturb], successCallback, errorCallback)
   }
 }
 
@@ -439,6 +470,8 @@ JMessagePlugin.prototype.setNoDisturbGlobal = function (isNoDisturb, successCall
 JMessagePlugin.prototype.getNoDisturbGlobal = function (successCallback, errorCallback) {
   if (device.platform == 'Android') {
     this.callNative('getNoDisturbGlobal', [], successCallback, errorCallback)
+  }else{
+    this.callNative('isSetGlobalNoDisturb', [], successCallback, errorCallback)
   }
 }
 
@@ -557,6 +590,10 @@ JMessagePlugin.prototype.getGroupConversationHistoryMessage = function (groupId,
 
 JMessagePlugin.prototype.getAllConversation = function (successCallback, errorCallback) {
   this.callNative('getAllConversation', [], successCallback, errorCallback)
+}
+
+JMessagePlugin.prototype.getAllUnreadCount = function (successCallback, errorCallback) {
+  this.callNative('getAllUnreadCount', [], successCallback, errorCallback)
 }
 
 JMessagePlugin.prototype.clearSingleUnreadCount = function (username, successCallback, errorCallback) {

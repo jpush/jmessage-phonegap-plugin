@@ -147,13 +147,13 @@ JMSG_ASSUME_NONNULL_BEGIN
 + (void)allConversationsByDefault:(JMSGCompletionHandler)handler;
 
 
+
 ///----------------------------------------------------------
 /// @name Conversation Basic Properties 会话基本属性：用于会话列表
 ///----------------------------------------------------------
 
 /*!
  * @abstract 会话标题
- * @discussion 会话头像没有属性字段, 应通过 avatarData: 方法异步去获取。
  */
 @property(nonatomic, strong, readonly) NSString * JMSG_NULLABLE title;
 
@@ -392,6 +392,13 @@ JMSG_ASSUME_NONNULL_BEGIN
 - (void)clearUnreadCount;
 
 /*!
+ * @abstract 获取当前所有会话的未读消息的总数
+ *
+ * @discussion 获取所有会话未读消息总数
+ */
++ (NSNumber *)getAllUnreadCount;
+
+/*!
  * @abstract 获取最后一条消息的内容文本
  *
  * @discussion 通常用来展示在会话列表的第 2 行. 如果是图片消息,通常是文本 [图片] 之类. CustomContent 可以定制这个文本.
@@ -421,7 +428,6 @@ JMSG_ASSUME_NONNULL_BEGIN
  * 此接口供暂时使用。JMessage 整体的 Sync 机制生效后，将不需要客户端主动去刷新信息。
  */
 - (void)refreshTargetInfoFromServer:(JMSGCompletionHandler)handler;
-
 
 ///----------------------------------------------------
 /// @name Class Normal 类基本方法

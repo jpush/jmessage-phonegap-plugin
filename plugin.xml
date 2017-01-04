@@ -34,14 +34,16 @@
             </feature>
         </config-file>
 
-        <hook type="after_plugin_install" src="script/ios-install.js" />
-        <hook type="before_plugin_uninstall" src="script/ios-uninstall.js" />
+<!--        <hook type="after_plugin_install" src="script/ios-install.js" />-->
+<!--        <hook type="before_plugin_uninstall" src="script/ios-uninstall.js" />-->
 
+        <header-file src="src/ios/Plugins/JPushDefine.h"/>
+        <header-file src="src/ios/Plugins/JMessageDefine.h"/>
         <header-file src="src/ios/Plugins/JMessagePlugin.h"/>
         <source-file src="src/ios/Plugins/JMessagePlugin.m"/>
         <header-file src="src/ios/Plugins/JMessageHelper.h"/>
-        <header-file src="src/ios/Plugins/ConstantDef.h"/>
         <source-file src="src/ios/Plugins/JMessageHelper.m"/>
+
 
         <resource-file src="src/ios/JMessageConfig.plist" />
 
@@ -61,7 +63,7 @@
         <framework src="libz.tbd"/>
         <framework src="libsqlite3.0.tbd"/>
         <framework src="libresolv.tbd"/>
-        <config-file target="*JMessageConfig.plist" parent="APP_KEY">
+        <config-file target="*JMessageConfig.plist" parent="Appkey">
           <string>$APP_KEY</string>
         </config-file>
     </platform>
