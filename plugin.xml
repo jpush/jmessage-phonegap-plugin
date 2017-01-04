@@ -38,12 +38,16 @@
 <!--        <hook type="before_plugin_uninstall" src="script/ios-uninstall.js" />-->
 
         <header-file src="src/ios/Plugins/JPushDefine.h"/>
+        <header-file src="src/ios/Plugins/JPushPlugin.h"/>
+        <source-file src="src/ios/Plugins/JPushPlugin.m"/>
+
         <header-file src="src/ios/Plugins/JMessageDefine.h"/>
         <header-file src="src/ios/Plugins/JMessagePlugin.h"/>
         <source-file src="src/ios/Plugins/JMessagePlugin.m"/>
         <header-file src="src/ios/Plugins/JMessageHelper.h"/>
         <source-file src="src/ios/Plugins/JMessageHelper.m"/>
-
+        <header-file src="src/ios/Plugins/AppDelegate+JMessage.h"/>
+        <source-file src="src/ios/Plugins/AppDelegate+JMessage.m"/>
 
         <resource-file src="src/ios/JMessageConfig.plist" />
 
