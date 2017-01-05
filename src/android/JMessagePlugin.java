@@ -392,10 +392,15 @@ public class JMessagePlugin extends CordovaPlugin {
             try {
                 String json = mGson.toJson(myInfo);
                 JSONObject jsonObject = new JSONObject(json);
-                String avatarPath = "";
-                if (myInfo.getAvatarFile() != null) {
-                    avatarPath = myInfo.getAvatarFile().getAbsolutePath();
-                }
+                String avatarPath = myInfo.getAvatarFile().getAbsolutePath();
+                myInfo.getAvatarBitmap(new GetAvatarBitmapCallback() {
+                    @Override
+                    public void gotResult(int status, String desc, Bitmap bitmap) {
+                        if (status != 0) {
+                            callback.error(status + ": " + desc);
+                        }
+                    }
+                });
                 jsonObject.put("avatarPath", avatarPath);
                 callback.success(jsonObject.toString());
             } catch (JSONException e) {
