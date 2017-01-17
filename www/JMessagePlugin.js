@@ -600,6 +600,10 @@ JMessagePlugin.prototype.clearSingleUnreadCount = function (username, successCal
   this.callNative('clearSingleUnreadCount', [username], successCallback, errorCallback)
 }
 
+JMessagePlugin.prototype.cross_clearSingleUnreadCount = function (username, appkey, successCallback, errorCallback) {
+  this.callNative('cross_clearSingleUnreadCount', [username, appkey], successCallback, errorCallback)
+}
+
 JMessagePlugin.prototype.clearGroupUnreadCount = function (groupId, successCallback, errorCallback) {
   this.callNative('clearGroupUnreadCount', [groupId], successCallback, errorCallback)
 }
