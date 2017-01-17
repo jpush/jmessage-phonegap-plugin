@@ -189,8 +189,20 @@ JMessagePlugin.prototype.getLatestMessage = function (conversationType, value, a
 // 获取指定 Conversation 的部分历史消息。conversationType: 'single' or 'group'
 // value: username if conversation type is 'single' or groupId if conversation type is 'group'.
 JMessagePlugin.prototype.getHistoryMessages = function (conversationType, value, appKey, from, limit, successCallback, errorCallback) {
-  this.callNative('getHistoryMessages', [conversationType, value, appKey, from, limit],
-    successCallback, errorCallback)
+  if (device.platform == 'Android') {
+    this.callNative('getHistoryMessages', [conversationType, value, appKey, from, limit],
+      successCallback, errorCallback)
+  } else {  // 是 iOS 系统
+    if (conversationType === 'single') {
+      if (appKey == null || appKey == '') {
+
+      } else {
+
+      }
+    } else if (conversationType === 'group') {
+
+    }
+  }
 }
 
 // 获取指定 Conversation 的全部历史消息。
@@ -361,9 +373,27 @@ JMessagePlugin.prototype.addGroupMembers = function (groupId, userNameListStr, s
   this.callNative('addGroupMembers', [groupId, userNameListStr], successCallback, errorCallback)
 }
 
+// 跨应用添加群成员
+JMessagePlugin.prototype.addGroupMembersCrossApp = function (groupId, appKey, usernameList, successCallback, errorCallback) {
+  if (device.platform == 'Android') {
+    this.callNative('addGroupMembersCrossApp', [groupId, appKey, usernameList], successCallback, errorCallback)
+  } else {
+
+  }
+}
+
 // userNameList 格式为 "userName1,userName2" 字符串。
 JMessagePlugin.prototype.removeGroupMembers = function (groupId, userNameListStr, successCallback, errorCallback) {
   this.callNative('removeGroupMembers', [groupId, userNameListStr], successCallback, errorCallback)
+}
+
+// 跨应用踢出群成员
+JMessagePlugin.prototype.removeGroupMembersCrossApp = function (groupId, appKey, usernameList, successCallback, errorCallback) {
+  if (device.platform == 'Android') {
+    this.callNative('removeGroupMembersCrossApp', [groupId, appKey, usernameList], successCallback, errorCallback)
+  } else {
+
+  }
 }
 
 JMessagePlugin.prototype.exitGroup = function (groupId, successCallback, errorCallback) {
@@ -372,6 +402,12 @@ JMessagePlugin.prototype.exitGroup = function (groupId, successCallback, errorCa
 
 JMessagePlugin.prototype.getGroupMembers = function (groupId, successCallback, errorCallback) {
   this.callNative('getGroupMembers', [groupId], successCallback, errorCallback)
+}
+
+JMessagePlugin.prototype.getGroupMemberInfo = function (groupId, appKey, username, successCallback, errorCallback) {
+  if (device.platform == 'Android') {
+    this.callNative('getGroupMemberInfo', [groupId, appKey, username], successCallback, errorCallback)
+  }
 }
 
 // Blacklist API.
@@ -387,7 +423,7 @@ JMessagePlugin.prototype.delUsersFromBlacklist = function (usernameStr, successC
   this.callNative('delUsersFromBlacklist', [usernameStr], successCallback, errorCallback)
 }
 
-//usernamesArray 数组
+// usernamesArray 数组
 JMessagePlugin.prototype.addUsersToBlacklist_ios = function (usernamesArray, successCallback, errorCallback) {
   this.callNative('addUsersToBlacklist', [usernamesArray], successCallback, errorCallback)
 }
