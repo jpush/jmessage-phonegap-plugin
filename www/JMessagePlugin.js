@@ -195,12 +195,12 @@ JMessagePlugin.prototype.getHistoryMessages = function (conversationType, value,
   } else {  // 是 iOS 系统
     if (conversationType === 'single') {
       if (appKey == null || appKey == '') {
-
+        JMessagePlugin.getSingleConversationHistoryMessage(value, from, limit)
       } else {
-
+        JMessagePlugin.cross_getSingleConversationHistoryMessage(value, from, limit)
       }
     } else if (conversationType === 'group') {
-
+      JMessagePlugin.getGroupConversationHistoryMessage(value, from, limit)
     }
   }
 }
@@ -217,7 +217,7 @@ JMessagePlugin.prototype.getOriginImageInSingleConversation = function (username
 
 // 获取指定群聊会话中指定图片消息的原图。
 JMessagePlugin.prototype.getOriginImageInGroupConversation = function (groupId, msgServerId, successCallback, errorCallback) {
-  this.callNative('getOriginImageInGroupConversation', [groupId, msgServerId], successCallback, errorCallback);
+  this.callNative('getOriginImageInGroupConversation', [groupId, msgServerId], successCallback, errorCallback)
 }
 
 // 好友关系 API
@@ -294,8 +294,13 @@ JMessagePlugin.prototype.isGroupConversationExist = function(groupId, successCal
   this.callNative('isGroupConversationExist', [groupId], successCallback, errorCallback)
 }
 
+// 获取会话列表
 JMessagePlugin.prototype.getConversationList = function (successCallback, errorCallback) {
-  this.callNative('getConversationList', [], successCallback, errorCallback)
+  if (device.platform == 'Android') {
+    this.callNative('getConversationList', [], successCallback, errorCallback)
+  } else {
+    JMessagePlugin.getAllConversation(successCallback, errorCallback)
+  }
 }
 
 // username: 目标用户的用户名。
