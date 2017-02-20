@@ -100,5 +100,4 @@ public class MyReceiver extends BroadcastReceiver {
         }
         return extrasMap;
     }
-
 }
