@@ -157,18 +157,19 @@ public class JMessagePlugin extends CordovaPlugin {
                     fireEvent("onReceiveCustomMessage", msgJson.toString());
                     break;
                 case eventNotification:
-                    EventNotificationContent content = (EventNotificationContent)
-                            msg.getContent();
+                    EventNotificationContent content = (EventNotificationContent) msg.getContent();
+                    List<String> usernameList = ((EventNotificationContent) msg.getContent()).getUserNames();
+                    msgJson.put("username", mGson.toJson(usernameList));
                     switch (content.getEventNotificationType()) {
                         case group_member_added:    // 群成员加群事件。
-                            fireEvent("onGroupMemberAdded", null);
+                            fireEvent("onGroupMemberAdded", msgJson.toString());
                             break;
                         case group_member_removed:
                             // 群成员被踢事件（只有被踢的用户能收到此事件）。
-                            fireEvent("onGroupMemberRemoved", null);
+                            fireEvent("onGroupMemberRemoved", msgJson.toString());
                             break;
                         case group_member_exit:
-                            fireEvent("onGroupMemberExit", null);
+                            fireEvent("onGroupMemberExit", msgJson.toString());
                             break;
                         default:
                     }
@@ -1594,7 +1595,6 @@ public class JMessagePlugin extends CordovaPlugin {
                     msgJsonArr.put(getMessageJSONObject(msg));
                 }
                 callback.success(msgJsonArr.toString());
-                ;
             } else {
                 callback.success("");
             }
@@ -1604,9 +1604,7 @@ public class JMessagePlugin extends CordovaPlugin {
         }
     }
 
-
     // Conversation API.
-
     public void createSingleConversation(JSONArray data, CallbackContext callback) {
         String username;
         String appKey;
@@ -1697,6 +1695,12 @@ public class JMessagePlugin extends CordovaPlugin {
                     if (conJson.isNull("latestMessage") && con.getLatestMessage() != null) {
                         Message latestMsg = con.getLatestMessage();
                         JSONObject msgJson = new JSONObject(mGson.toJson(latestMsg));
+                        // 如果消息类型为事件
+                        if (latestMsg.getContentType() == ContentType.eventNotification) {
+                            EventNotificationContent content=((EventNotificationContent) latestMsg.getContent());
+                            List<String> usernameList = content.getUserNames();
+                            msgJson.put("username", mGson.toJson(usernameList));
+                        }
                         conJson.put("latestMessage", msgJson);
                     }
                     conArr.put(conJson);
@@ -1861,12 +1865,33 @@ public class JMessagePlugin extends CordovaPlugin {
         try {
             String groupName = data.getString(0);
             String groupDesc = data.getString(1);
+            String usernameStr = data.isNull(2) ? "" : data.getString(2);
+
+            final List<String> usernameList = new ArrayList<String>();
+            if (!TextUtils.isEmpty(usernameStr)) {
+                String[] usernameArr = usernameStr.split(",");
+                Collections.addAll(usernameList, usernameArr);
+            }
+
             JMessageClient.createGroup(groupName, groupDesc,
                     new CreateGroupCallback() {
                         @Override
-                        public void gotResult(int responseCode, String responseMsg, long groupId) {
+                        public void gotResult(int responseCode, String responseMsg, final long groupId) {
                             if (responseCode == 0) {
-                                callback.success(String.valueOf(groupId));
+                                if (!usernameList.isEmpty()) {
+                                    JMessageClient.addGroupMembers(groupId, usernameList, new BasicCallback() {
+                                        @Override
+                                        public void gotResult(int status, String desc) {
+                                            if (status == 0) {
+                                                callback.success(String.valueOf(groupId));
+                                            } else {
+                                                callback.error(status);
+                                            }
+                                        }
+                                    });
+                                } else {
+                                    callback.success(String.valueOf(groupId));
+                                }
                             } else {
                                 callback.error(responseCode);
                             }
@@ -1959,9 +1984,9 @@ public class JMessagePlugin extends CordovaPlugin {
     public void addGroupMembers(JSONArray data, final CallbackContext callback) {
         try {
             long groupId = data.getLong(0);
-            String membersStr = data.getString(1);
+            String[] members = (String[]) data.get(1);
 
-            String[] members = membersStr.split(",");
+//            String[] members = membersStr.split(",");
             List<String> memberList = new ArrayList<String>();
             Collections.addAll(memberList, members);
             JMessageClient.addGroupMembers(groupId, memberList,
@@ -2954,6 +2979,14 @@ public class JMessagePlugin extends CordovaPlugin {
                 break;
             case custom:
                 break;
+            case eventNotification:
+                EventNotificationContent content = (EventNotificationContent) msg.getContent();
+                List<String> usernameList = content.getUserNames();
+                if (usernameList != null) {
+                    msgJson.put("username", mGson.toJson(usernameList));
+                }
+                break;
+            default:
         }
         return msgJson;
     }
