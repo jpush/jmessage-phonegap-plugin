@@ -20,11 +20,11 @@ var JMessagePlugin = function () {
   this.customMessage = {}
 }
 
-function isAndroid() {
+function isAndroid () {
   if (device.platform == 'Android') {
-    return true;
+    return true
   }
-  return false;
+  return false
 }
 
 JMessagePlugin.prototype.init = function () {}
@@ -98,7 +98,7 @@ JMessagePlugin.prototype.updateMyInfo = function (field, value, sCallback, eCall
         iosField = 5
         break
       default:
-        throw new Error("Error field.")
+        throw new Error('Error field.')
     }
     this.callNative('updateMyInfo', [iosField, value], sCallback, eCallback)
   }
@@ -143,11 +143,11 @@ JMessagePlugin.prototype.sendSingleCustomMessage = function (username, jsonStr, 
 JMessagePlugin.prototype.sendSingleLocationMessage = function (username, appKey, latitude, longitude, scale, address,
     sCallback, eCallback) {
   if (isAndroid()) {
-      this.callNative('sendSingleLocationMessage', [username, appKey, latitude, longitude, scale, address],
-        sCallback, eCallback)
+    this.callNative('sendSingleLocationMessage', [username, appKey, latitude, longitude, scale, address],
+            sCallback, eCallback)
   } else {
-      this.callNative('sendLocationMessage', [name, appKey, '1', latitude, longitude, scale, address],
-        sCallback, eCallback)
+    this.callNative('sendLocationMessage', [name, appKey, '1', latitude, longitude, scale, address],
+            sCallback, eCallback)
   }
 }
 
@@ -155,7 +155,7 @@ JMessagePlugin.prototype.sendSingleFileMessage = function (username, appKey, fil
   if (isAndroid()) {
     this.callNative('sendSingleFileMessage', [username, appKey, filePath, fileName], sCallback, eCallback)
   } else {
-    sendFileMessage(username, appKey, "1", filePath, fileName, sCallback, eCallback)
+    sendFileMessage(username, appKey, '1', filePath, fileName, sCallback, eCallback)
   }
 }
 
@@ -183,7 +183,7 @@ JMessagePlugin.prototype.sendGroupLocationMessage = function (groupId, latitude,
     sCallback, eCallback) {
   if (isAndroid()) {
     this.callNative('sendGroupLocationMessage', [groupId, latitude, longitude, scale, address],
-      sCallback, eCallback)
+            sCallback, eCallback)
   } else {
     sendLocationMessage(groupId, '', '0', latitude, longitude, scale, address, sCallback, eCallback)
   }
@@ -197,9 +197,9 @@ JMessagePlugin.prototype.sendGroupFileMessage = function (groupId, filePath, fil
   sendFileMessage(groupId, '', '0', filePath, fileName, sCallback, eCallback)
 }
 
-JMessagePlugin.prototype.sendSingleTextMessageWithExtras = function(username, text, json, appKey, sCallback, eCallback) {
+JMessagePlugin.prototype.sendSingleTextMessageWithExtras = function (username, text, json, appKey, sCallback, eCallback) {
   if (isAndroid()) {
-    this.callNative('sendSingleTextMessageWithExtras', [username, text, json, appKey], sCallback, eCallback);
+    this.callNative('sendSingleTextMessageWithExtras', [username, text, json, appKey], sCallback, eCallback)
   } else {
     if (appKey) {
       cross_sendSingleCustomMessage_ios(username, appKey, text, json, sCallback, eCallback)
@@ -220,9 +220,9 @@ JMessagePlugin.prototype.sendGroupTextMessageWithExtras = function (groupId, tex
 // 获取指定 Conversation 的部分历史消息。conversationType: 'single' or 'group'
 // value: username if conversation type is 'single' or groupId if conversation type is 'group'.
 JMessagePlugin.prototype.getHistoryMessages = function (conversationType, value, appKey, from, limit, sCallback, eCallback) {
-  if (device.platform == 'Android') {
+  if (device.platform === 'Android') {
     this.callNative('getHistoryMessages', [conversationType, value, appKey, from, limit], sCallback, eCallback)
-  } else {  
+  } else {
     if (conversationType === 'single') {
       if (appKey) {
         cross_getSingleConversationHistoryMessage(value, appKey, from, limit, sCallback, eCallback)
@@ -241,12 +241,12 @@ JMessagePlugin.prototype.getAllMessages = function (conversationType, value, app
   } else {
     if (conversationType === 'single') {
       if (appKey) {
-        cross_getSingleConversationHistoryMessage(value, appKey, null, null, sCallback, eCallback)
+        this.cross_getSingleConversationHistoryMessage(value, appKey, null, null, sCallback, eCallback)
       } else {
-        getSingleConversationHistoryMessage(value, null, null, sCallback, eCallback)
+        this.getSingleConversationHistoryMessage(value, null, null, sCallback, eCallback)
       }
     } else if (conversationType === 'group') {
-      getGroupConversationHistoryMessage(value, null, null, sCallback, eCallback)
+      this.getGroupConversationHistoryMessage(value, null, null, sCallback, eCallback)
     }
   }
 }
@@ -303,7 +303,7 @@ JMessagePlugin.prototype.getConversationList = function (sCallback, eCallback) {
   if (isAndroid()) {
     this.callNative('getConversationList', [], sCallback, eCallback)
   } else {
-    JMessagePlugin.getAllConversation(sCallback, eCallback)
+    getAllConversation(sCallback, eCallback)
   }
 }
 
@@ -321,6 +321,52 @@ JMessagePlugin.prototype.deleteSingleConversation = function (username, appKey, 
 
 JMessagePlugin.prototype.deleteGroupConversation = function (groupId, sCallback, eCallback) {
   this.callNative('deleteGroupConversation', [groupId], sCallback, eCallback)
+}
+
+// sCallback：以参数形式返回 Group ID，创建成功后，创建者默认会包含在群成员中。
+JMessagePlugin.prototype.createGroup = function (name, desc, usernameArr, sCallback, eCallback) {
+  if (isAndroid()) {
+    this.callNative('createGroup', [name, desc, usernameArr.toString()], sCallback, eCallback)
+  } else {
+    createGroupIniOS(name, desc, usernameArr, sCallback, eCallback)
+  }
+}
+
+JMessagePlugin.prototype.getGroupIds = function (sCallback, eCallback) {
+  if (isAndroid()) {
+    this.callNative('getGroupIDList', [], sCallback, eCallback)
+  } else {
+    myGroupArray(sCallback, eCallback)
+  }
+}
+
+JMessagePlugin.prototype.getGroupInfo = function (groupId, sCallback, eCallback) {
+  this.callNative('getGroupInfo', [groupId], sCallback, eCallback)
+}
+
+JMessagePlugin.prototype.updateGroupName = function (groupId, newName, sCallback, eCallback) {
+  if (isAndroid()) {
+    this.callNative('updateGroupName', [groupId, newName], sCallback, eCallback)
+  } else {
+    updateGroupInfo(groupId, newName, sCallback, eCallback)
+  }
+}
+
+JMessagePlugin.prototype.updateGroupDescription = function (groupId, newDesc, sCallback, eCallback) {
+  if (isAndroid()) {
+    this.callNative('updateGroupDescription', [groupId, newDesc], sCallback, eCallback)
+  } else {
+    updateGroupInfo(groupId, null, newDesc, sCallback, eCallback)
+  }
+}
+
+// usernameArr: 用户名数组。
+JMessagePlugin.prototype.addGroupMembers = function (groupId, usernameArr, sCallback, eCallback) {
+  if (isAndroid()) {
+    this.callNative('addGroupMembers', [groupId, usernameArr.toString()], sCallback, eCallback)
+  } else {
+    addMembers(groupId, usernameArr, sCallback, eCallback)
+  }
 }
 // Common API end
 
@@ -352,23 +398,23 @@ JMessagePlugin.prototype.getUserAvatar = function (username, sCallback, eCallbac
 }
 
 // 下载用户头像大图，如果 username 为空，默认为当前用户。
-JMessagePlugin.prototype.getOriginalUserAvatar = function(username, sCallback, eCallback) {
+JMessagePlugin.prototype.getOriginalUserAvatar = function (username, sCallback, eCallback) {
   if (isAndroid()) {
     this.callNative('getOriginalUserAvatar', [username], sCallback, eCallback)
   }
 }
 
-JMessagePlugin.prototype.sendSingleImageMessageWithExtras = function(username, imageUrl, json, appKey, sCallback, eCallback) {
+JMessagePlugin.prototype.sendSingleImageMessageWithExtras = function (username, imageUrl, json, appKey, sCallback, eCallback) {
   if (isAndroid()) {
     this.callNative('sendSingleImageMessageWithExtras', [username, imageUrl, json, appKey],
-      sCallback, eCallback);
+            sCallback, eCallback)
   }
 }
 
-JMessagePlugin.prototype.sendSingleVoiceMessageWithExtras = function(username, fileUrl, json, appKey, sCallback, eCallback) {
+JMessagePlugin.prototype.sendSingleVoiceMessageWithExtras = function (username, fileUrl, json, appKey, sCallback, eCallback) {
   if (isAndroid()) {
     this.callNative('sendSingleVoiceMessageWithExtras', [username, fileUrl, json, appKey],
-      sCallback, eCallback);
+            sCallback, eCallback)
   }
 }
 
@@ -404,27 +450,27 @@ JMessagePlugin.prototype.getOriginImageInGroupConversation = function (groupId, 
   }
 }
 
-JMessagePlugin.prototype.createSingleConversation = function(username, appKey, sCallback, eCallback) {
+JMessagePlugin.prototype.createSingleConversation = function (username, appKey, sCallback, eCallback) {
   if (isAndroid()) {
     this.callNative('createSingleConversation', [username, appKey], sCallback, eCallback)
   }
 }
 
-JMessagePlugin.prototype.createGroupConversation = function(groupId, sCallback, eCallback) {
+JMessagePlugin.prototype.createGroupConversation = function (groupId, sCallback, eCallback) {
   if (isAndroid()) {
     this.callNative('createGroupConversation', [groupId], sCallback, eCallback)
   }
 }
 
 // 判断单聊会话是否存在。返回值：0 - 不存在；1 - 存在。
-JMessagePlugin.prototype.isSingleConversationExist = function(username, appKey, sCallback, eCallback) {
+JMessagePlugin.prototype.isSingleConversationExist = function (username, appKey, sCallback, eCallback) {
   if (isAndroid()) {
     this.callNative('isSingleConversationExist', [username, appKey], sCallback, eCallback)
   }
 }
 
 // 判断群聊会话是否存在。返回值：0 - 不存在；1 - 存在。
-JMessagePlugin.prototype.isGroupConversationExist = function(groupId, sCallback, eCallback) {
+JMessagePlugin.prototype.isGroupConversationExist = function (groupId, sCallback, eCallback) {
   if (isAndroid()) {
     this.callNative('isGroupConversationExist', [groupId], sCallback, eCallback)
   }
@@ -473,46 +519,6 @@ JMessagePlugin.prototype.exitConversation = function (sCallback, eCallback) {
     this.callNative('exitConversation', [], sCallback, eCallback)
   }
 }
-// Android only end.
-
-
-// sCallback：以参数形式返回 Group ID，创建成功后，创建者默认会包含在群成员中。
-JMessagePlugin.prototype.createGroup = function (name, desc, usernameArr, sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('createGroup', [name, desc, usernameArr.toString()], sCallback, eCallback)
-  } else {
-    createGroupIniOS(name, desc, usernameArr, sCallback, eCallback)
-  }
-}
-
-JMessagePlugin.prototype.getGroupIds = function (sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('getGroupIDList', [], sCallback, eCallback)
-  } else {
-
-  }
-}
-
-JMessagePlugin.prototype.getGroupInfo = function (groupId, sCallback, eCallback) {
-  this.callNative('getGroupInfo', [groupId], sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.updateGroupName = function (groupId, groupNewName, sCallback, eCallback) {
-  this.callNative('updateGroupName', [groupId, groupNewName], sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.updateGroupDescription = function (groupId, groupNewDesc, sCallback, eCallback) {
-  this.callNative('updateGroupDescription', [groupId, groupNewDesc], sCallback, eCallback)
-}
-
-// usernameArr: 用户名数组。
-JMessagePlugin.prototype.addGroupMembers = function (groupId, usernameArr, sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('addGroupMembers', [groupId, usernameArr.toString()], sCallback, eCallback)
-  } else {
-    addMembers(groupId, usernameArr, sCallback, eCallback)
-  }
-}
 
 // 向群组中添加成员, 通过指定 AppKey 可以实现跨应用添加其他 AppKey 下用户进群组。
 JMessagePlugin.prototype.addGroupMembersCrossApp = function (groupId, appKey, usernameList, sCallback, eCallback) {
@@ -520,6 +526,7 @@ JMessagePlugin.prototype.addGroupMembersCrossApp = function (groupId, appKey, us
     this.callNative('addGroupMembersCrossApp', [groupId, appKey, usernameList], sCallback, eCallback)
   }
 }
+// Android only end.
 
 // userNameList 格式为 "userName1,userName2" 字符串。
 JMessagePlugin.prototype.removeGroupMembers = function (groupId, userNameListStr, sCallback, eCallback) {
@@ -542,15 +549,15 @@ JMessagePlugin.prototype.getGroupMembers = function (groupId, sCallback, eCallba
 }
 
 JMessagePlugin.prototype.getGroupMemberInfo = function (groupId, appKey, username, sCallback, eCallback) {
-  if (device.platform == 'Android') {
+  if (isAndroid()) {
     this.callNative('getGroupMemberInfo', [groupId, appKey, username], sCallback, eCallback)
   }
 }
 
 // Blacklist API.
 /**
-* usernameStr: 被 "," 分隔的用户名字符串，如 "username1,username2"
-*/
+ * usernameStr: 被 "," 分隔的用户名字符串，如 "username1,username2"
+ */
 JMessagePlugin.prototype.addUsersToBlacklist = function (usernameStr, sCallback, eCallback) {
   this.callNative('addUsersToBlacklist', [usernameStr], sCallback, eCallback)
 }
@@ -579,13 +586,13 @@ JMessagePlugin.prototype.delUsersFromBlacklist = function (usernamesArray, appke
 JMessagePlugin.prototype.getBlacklist = function (sCallback, eCallback) {
   if (device.platform == 'Android') {
     this.callNative('getBlacklist', [], sCallback, eCallback)
-  }else{
+  } else {
     this.callNative('blackList', [], sCallback, eCallback)
   }
 }
 
 JMessagePlugin.prototype.isInBlacklist = function (username, appkey, sCallback, eCallback) {
-    this.callNative('isInBlacklist', [username, appkey], sCallback, eCallback)
+  this.callNative('isInBlacklist', [username, appkey], sCallback, eCallback)
 }
 
 // 免打扰相关 API。
@@ -595,7 +602,7 @@ JMessagePlugin.prototype.isInBlacklist = function (username, appkey, sCallback, 
 JMessagePlugin.prototype.setUserNoDisturb = function (username, isNoDisturb, sCallback, eCallback) {
   if (device.platform == 'Android') {
     this.callNative('setUserNoDisturb', [username, isNoDisturb], sCallback, eCallback)
-  }else{
+  } else {
     this.callNative('userSetIsNoDisturb', [username, isNoDisturb], sCallback, eCallback)
   }
 }
@@ -624,7 +631,7 @@ JMessagePlugin.prototype.getGroupNoDisturb = function (groupId, sCallback, eCall
 JMessagePlugin.prototype.getNoDisturblist = function (sCallback, eCallback) {
   if (device.platform == 'Android') {
     this.callNative('getNoDisturblist', [], sCallback, eCallback)
-  }else{
+  } else {
     this.callNative('noDisturblist', [], sCallback, eCallback)
   }
 }
@@ -633,7 +640,7 @@ JMessagePlugin.prototype.getNoDisturblist = function (sCallback, eCallback) {
 JMessagePlugin.prototype.setNoDisturbGlobal = function (isNoDisturb, sCallback, eCallback) {
   if (device.platform == 'Android') {
     this.callNative('setNoDisturbGlobal', [isNoDisturb], sCallback, eCallback)
-  }else{
+  } else {
     this.callNative('setIsGlobalNoDisturb', [isNoDisturb], sCallback, eCallback)
   }
 }
@@ -642,7 +649,7 @@ JMessagePlugin.prototype.setNoDisturbGlobal = function (isNoDisturb, sCallback, 
 JMessagePlugin.prototype.getNoDisturbGlobal = function (sCallback, eCallback) {
   if (device.platform == 'Android') {
     this.callNative('getNoDisturbGlobal', [], sCallback, eCallback)
-  }else{
+  } else {
     this.callNative('isSetGlobalNoDisturb', [], sCallback, eCallback)
   }
 }
@@ -841,7 +848,7 @@ JMessagePlugin.prototype.cross_sendSingleVoiceMessage = function (username, appK
 
 JMessagePlugin.prototype.cross_getSingleConversationHistoryMessage = function (username, appKey, from, limit, sCallback, eCallback) {
   this.callNative('cross_getSingleConversationHistoryMessage', [username, appKey, from, limit],
-    sCallback, eCallback)
+        sCallback, eCallback)
 }
 
 JMessagePlugin.prototype.cross_deleteSingleConversation = function (username, appKey, sCallback, eCallback) {
