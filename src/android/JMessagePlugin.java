@@ -72,7 +72,7 @@ import cn.jpush.im.api.BasicCallback;
 
 
 public class JMessagePlugin extends CordovaPlugin {
-    private static String TAG = "JMessagePlugin";
+    private static String TAG = JMessagePlugin.class.getSimpleName();
 
     private static JMessagePlugin instance;
 
@@ -99,16 +99,18 @@ public class JMessagePlugin extends CordovaPlugin {
             JSONObject msgJson = new JSONObject(jsonStr);
 
             // Add user avatar path.
-            UserInfo fromUser = msg.getFromUser();
-            String avatarPath = "";
-            File avatarFile = fromUser.getAvatarFile(); // 获取用户头像缩略图文件
-            if (avatarFile != null) {
-                avatarPath = avatarFile.getAbsolutePath();
+            if (ContentType.eventNotification != msg.getContentType()) {
+                UserInfo fromUser = msg.getFromUser();
+                String avatarPath = "";
+                File avatarFile = fromUser.getAvatarFile(); // 获取用户头像缩略图文件
+                if (avatarFile != null) {
+                    avatarPath = avatarFile.getAbsolutePath();
+                }
+                msgJson.getJSONObject("fromUser").put("avatarPath", avatarPath);
+                msgJson.put("fromName", fromUser.getUserName());
+                msgJson.put("fromNickname", fromUser.getNickname());
+                msgJson.put("fromID", fromUser.getUserID());
             }
-            msgJson.getJSONObject("fromUser").put("avatarPath", avatarPath);
-            msgJson.put("fromName", fromUser.getUserName());
-            msgJson.put("fromNickname", fromUser.getNickname());
-            msgJson.put("fromID", fromUser.getUserID());
 
             UserInfo myInfo = JMessageClient.getMyInfo();
             String myInfoJson = mGson.toJson(myInfo);
@@ -158,7 +160,7 @@ public class JMessagePlugin extends CordovaPlugin {
                     break;
                 case eventNotification:
                     EventNotificationContent content = (EventNotificationContent) msg.getContent();
-                    List<String> usernameList = ((EventNotificationContent) msg.getContent()).getUserNames();
+                    List<String> usernameList = content.getUserNames();
                     msgJson.put("username", mGson.toJson(usernameList));
                     switch (content.getEventNotificationType()) {
                         case group_member_added:    // 群成员加群事件。
@@ -234,7 +236,6 @@ public class JMessagePlugin extends CordovaPlugin {
         }
 
         String data = json.toString();
-
         switch (event.getType()) {
             case invite_received:   // 收到好友邀请
                 fireEvent("onInviteReceived", data);
@@ -354,7 +355,6 @@ public class JMessagePlugin extends CordovaPlugin {
 
 
     // User info API.
-
     public void getUserInfo(JSONArray data, final CallbackContext callback) {
         try {
             String username = data.getString(0);
@@ -1697,7 +1697,7 @@ public class JMessagePlugin extends CordovaPlugin {
                         JSONObject msgJson = new JSONObject(mGson.toJson(latestMsg));
                         // 如果消息类型为事件
                         if (latestMsg.getContentType() == ContentType.eventNotification) {
-                            EventNotificationContent content=((EventNotificationContent) latestMsg.getContent());
+                            EventNotificationContent content = ((EventNotificationContent) latestMsg.getContent());
                             List<String> usernameList = content.getUserNames();
                             msgJson.put("username", mGson.toJson(usernameList));
                         }
@@ -2938,17 +2938,19 @@ public class JMessagePlugin extends CordovaPlugin {
         String jsonStr = mGson.toJson(msg);
         JSONObject msgJson = new JSONObject(jsonStr);
 
-        // Add user avatar path.
-        UserInfo fromUser = msg.getFromUser();
-        String avatarPath = "";
-        File avatarFile = fromUser.getAvatarFile(); // 获取用户头像缩略图文件
-        if (avatarFile != null) {
-            avatarPath = avatarFile.getAbsolutePath();
+        if (ContentType.eventNotification != msg.getContentType()) {
+            // Add user avatar path.
+            UserInfo fromUser = msg.getFromUser();
+            String avatarPath = "";
+            File avatarFile = fromUser.getAvatarFile(); // 获取用户头像缩略图文件
+            if (avatarFile != null) {
+                avatarPath = avatarFile.getAbsolutePath();
+            }
+            msgJson.getJSONObject("fromUser").put("avatarPath", avatarPath);
+            msgJson.put("fromName", fromUser.getUserName());
+            msgJson.put("fromNickname", fromUser.getNickname());
+            msgJson.put("fromID", fromUser.getUserID());
         }
-        msgJson.getJSONObject("fromUser").put("avatarPath", avatarPath);
-        msgJson.put("fromName", fromUser.getUserName());
-        msgJson.put("fromNickname", fromUser.getNickname());
-        msgJson.put("fromID", fromUser.getUserID());
 
         UserInfo myInfo = JMessageClient.getMyInfo();
         String myInfoJson = mGson.toJson(myInfo);
