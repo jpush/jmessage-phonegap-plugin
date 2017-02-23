@@ -72,6 +72,7 @@ import cn.jpush.im.api.BasicCallback;
 
 
 public class JMessagePlugin extends CordovaPlugin {
+
     private static String TAG = JMessagePlugin.class.getSimpleName();
 
     private static JMessagePlugin instance;
@@ -187,16 +188,17 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     public void onEvent(LoginStateChangeEvent event) {
-        LoginStateChangeEvent.Reason reason = event.getReason();    // 获取变更的原因。
+        String jsonStr = mGson.toJson(event);
+        LoginStateChangeEvent.Reason reason = event.getReason();    // 获取当前用户登录状态变更的原因。
         switch (reason) {
             case user_password_change:
-                fireEvent("onUserPasswordChanged", null);
+                fireEvent("onUserPasswordChanged", jsonStr);
                 break;
             case user_logout:
-                fireEvent("onUserLogout", null);
+                fireEvent("onUserLogout", jsonStr);
                 break;
             case user_deleted:
-                fireEvent("onUserDeleted", null);
+                fireEvent("onUserDeleted", jsonStr);
                 break;
             default:
         }
@@ -235,19 +237,19 @@ public class JMessagePlugin extends CordovaPlugin {
             return;
         }
 
-        String data = json.toString();
+        String jsonStr = json.toString();
         switch (event.getType()) {
             case invite_received:   // 收到好友邀请
-                fireEvent("onInviteReceived", data);
+                fireEvent("onInviteReceived", jsonStr);
                 break;
             case invite_accepted:   // 对方接受了你的好友邀请
-                fireEvent("onInviteAccepted", data);
+                fireEvent("onInviteAccepted", jsonStr);
                 break;
             case invite_declined:   // 对方拒绝了你的好友邀请
-                fireEvent("onInviteDeclined", data);
+                fireEvent("onInviteDeclined", jsonStr);
                 break;
             case contact_deleted:   // 对方将你从好友中删除
-                fireEvent("onContactDeleted", data);
+                fireEvent("onContactDeleted", jsonStr);
                 break;
             default:
         }
@@ -352,7 +354,6 @@ public class JMessagePlugin extends CordovaPlugin {
             callback.error(exception.toString());
         }
     }
-
 
     // User info API.
     public void getUserInfo(JSONArray data, final CallbackContext callback) {
@@ -2382,13 +2383,18 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     // Black list API.
-
     public void addUsersToBlacklist(JSONArray data, final CallbackContext callback) {
         try {
             String usernameStr = data.getString(0);
+            if (TextUtils.isEmpty(usernameStr)) {
+                callback.error("Username is empty.");
+                return;
+            }
             String[] usernameArr = usernameStr.split(",");
             List<String> usernameList = Arrays.asList(usernameArr);
-            JMessageClient.addUsersToBlacklist(usernameList, new BasicCallback() {
+            String appKey = data.isNull(1) ? "" : data.getString(1);
+
+            JMessageClient.addUsersToBlacklist(usernameList, appKey, new BasicCallback() {
                 @Override
                 public void gotResult(int responseCode, String responseDesc) {
                     if (responseCode == 0) {
@@ -2407,9 +2413,15 @@ public class JMessagePlugin extends CordovaPlugin {
     public void delUsersFromBlacklist(JSONArray data, final CallbackContext callback) {
         try {
             String usernameStr = data.getString(0);
+            if (TextUtils.isEmpty(usernameStr)) {
+                callback.error("Username is empty.");
+                return;
+            }
             String[] usernameArr = usernameStr.split(",");
             List<String> usernameList = Arrays.asList(usernameArr);
-            JMessageClient.delUsersFromBlacklist(usernameList, new BasicCallback() {
+            String appKey = data.isNull(1) ? "" : data.getString(1);
+
+            JMessageClient.delUsersFromBlacklist(usernameList, appKey, new BasicCallback() {
                 @Override
                 public void gotResult(int responseCode, String responseDesc) {
                     if (responseCode == 0) {
@@ -2428,8 +2440,7 @@ public class JMessagePlugin extends CordovaPlugin {
     public void getBlacklist(JSONArray data, final CallbackContext callback) {
         JMessageClient.getBlacklist(new GetBlacklistCallback() {
             @Override
-            public void gotResult(int responseCode, String responseDesc,
-                                  List<UserInfo> list) {
+            public void gotResult(int responseCode, String responseDesc, List<UserInfo> list) {
                 if (responseCode == 0) {
                     callback.success(mGson.toJson(list));
                 } else {

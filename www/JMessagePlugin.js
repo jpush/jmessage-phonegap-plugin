@@ -71,8 +71,8 @@ JMessagePlugin.prototype.updateMyPassword = function (oldPwd, newPwd, sCallback,
 // 注意在更新用户头像时，Android 与 iOS 的文件路径不同，需要分别调用该方法。
 JMessagePlugin.prototype.updateMyInfo = function (field, value, sCallback, eCallback) {
   if (isAndroid()) {
-    if (field == 'avatar') {
-      updateMyAvatar(value, sCallback, eCallback)
+    if (field === 'avatar') {
+      JMessagePlugin.updateMyAvatar(value, sCallback, eCallback)
     } else {
       this.callNative('updateMyInfo', [field, value], sCallback, eCallback)
     }
@@ -106,7 +106,7 @@ JMessagePlugin.prototype.updateMyInfo = function (field, value, sCallback, eCall
 
 JMessagePlugin.prototype.sendSingleTextMessage = function (username, text, appKey, sCallback, eCallback) {
   if (appKey && !isAndroid()) {
-    cross_sendSingleTextMessage(username, appKey, text, sCallback, eCallback)
+    JMessagePlugin.cross_sendSingleTextMessage(username, appKey, text, sCallback, eCallback)
     return
   }
   this.callNative('sendSingleTextMessage', [username, text, appKey], sCallback, eCallback)
@@ -114,7 +114,7 @@ JMessagePlugin.prototype.sendSingleTextMessage = function (username, text, appKe
 
 JMessagePlugin.prototype.sendSingleImageMessage = function (username, imageUrl, appKey, sCallback, eCallback) {
   if (appKey && !isAndroid()) {
-    cross_sendSingleImageMessage(username, appKey, imageUrl, sCallback, eCallback)
+    JMessagePlugin.cross_sendSingleImageMessage(username, appKey, imageUrl, sCallback, eCallback)
     return
   }
   this.callNative('sendSingleImageMessage', [username, imageUrl, appKey], sCallback, eCallback)
@@ -122,7 +122,7 @@ JMessagePlugin.prototype.sendSingleImageMessage = function (username, imageUrl, 
 
 JMessagePlugin.prototype.sendSingleVoiceMessage = function (username, fileUrl, appKey, sCallback, eCallback) {
   if (appKey && !isAndroid()) {
-    cross_sendSingleVoiceMessage(username, appKey, fileUrl, sCallback, eCallback)
+    JMessagePlugin.cross_sendSingleVoiceMessage(username, appKey, fileUrl, sCallback, eCallback)
     return
   }
   this.callNative('sendSingleVoiceMessage', [username, fileUrl, appKey], sCallback, eCallback)
@@ -133,9 +133,9 @@ JMessagePlugin.prototype.sendSingleCustomMessage = function (username, jsonStr, 
     this.callNative('sendSingleCustomMessage', [username, jsonStr, appKey], sCallback, eCallback)
   } else {
     if (appKey) {
-      cross_sendSingleCustomMessage_ios(username, appKey, '', jsonStr, sCallback, eCallback)
+      JMessagePlugin.cross_sendSingleCustomMessage_ios(username, appKey, '', jsonStr, sCallback, eCallback)
     } else {
-      sendSingleCustomMessage_ios(username, '', jsonStr, sCallback, eCallback)
+      JMessagePlugin.sendSingleCustomMessage_ios(username, '', jsonStr, sCallback, eCallback)
     }
   }
 }
@@ -155,7 +155,7 @@ JMessagePlugin.prototype.sendSingleFileMessage = function (username, appKey, fil
   if (isAndroid()) {
     this.callNative('sendSingleFileMessage', [username, appKey, filePath, fileName], sCallback, eCallback)
   } else {
-    sendFileMessage(username, appKey, '1', filePath, fileName, sCallback, eCallback)
+    JMessagePlugin.sendFileMessage(username, appKey, '1', filePath, fileName, sCallback, eCallback)
   }
 }
 
@@ -175,7 +175,7 @@ JMessagePlugin.prototype.sendGroupCustomMessage = function (groupId, jsonStr, sC
   if (isAndroid()) {
     this.callNative('sendGroupCustomMessage', [groupId, jsonStr], sCallback, eCallback)
   } else {
-    sendGroupCustomMessage_ios(groupId, '', jsonStr, sCallback, eCallback)
+    JMessagePlugin.sendGroupCustomMessage_ios(groupId, '', jsonStr, sCallback, eCallback)
   }
 }
 
@@ -185,7 +185,7 @@ JMessagePlugin.prototype.sendGroupLocationMessage = function (groupId, latitude,
     this.callNative('sendGroupLocationMessage', [groupId, latitude, longitude, scale, address],
             sCallback, eCallback)
   } else {
-    sendLocationMessage(groupId, '', '0', latitude, longitude, scale, address, sCallback, eCallback)
+    JMessagePlugin.sendLocationMessage(groupId, '', '0', latitude, longitude, scale, address, sCallback, eCallback)
   }
 }
 
@@ -194,7 +194,7 @@ JMessagePlugin.prototype.sendGroupFileMessage = function (groupId, filePath, fil
     this.callNative('sendGroupFileMessage', [groupId, filePath, fileName], sCallback, eCallback)
     return
   }
-  sendFileMessage(groupId, '', '0', filePath, fileName, sCallback, eCallback)
+  JMessagePlugin.sendFileMessage(groupId, '', '0', filePath, fileName, sCallback, eCallback)
 }
 
 JMessagePlugin.prototype.sendSingleTextMessageWithExtras = function (username, text, json, appKey, sCallback, eCallback) {
@@ -202,9 +202,9 @@ JMessagePlugin.prototype.sendSingleTextMessageWithExtras = function (username, t
     this.callNative('sendSingleTextMessageWithExtras', [username, text, json, appKey], sCallback, eCallback)
   } else {
     if (appKey) {
-      cross_sendSingleCustomMessage_ios(username, appKey, text, json, sCallback, eCallback)
+      JMessagePlugin.cross_sendSingleCustomMessage_ios(username, appKey, text, json, sCallback, eCallback)
     } else {
-      sendSingleCustomMessage_ios(username, text, json, sCallback, eCallback)
+      JMessagePlugin.sendSingleCustomMessage_ios(username, text, json, sCallback, eCallback)
     }
   }
 }
@@ -214,7 +214,7 @@ JMessagePlugin.prototype.sendGroupTextMessageWithExtras = function (groupId, tex
     this.callNative('sendGroupTextMessageWithExtras', [groupId, text, extrasJson], sCallback, eCallback)
     return
   }
-  sendGroupCustomMessage_ios(groupId, text, jsonStr, sCallback, eCallback)
+  JMessagePlugin.sendGroupCustomMessage_ios(groupId, text, jsonStr, sCallback, eCallback)
 }
 
 // 获取指定 Conversation 的部分历史消息。conversationType: 'single' or 'group'
@@ -225,12 +225,12 @@ JMessagePlugin.prototype.getHistoryMessages = function (conversationType, value,
   } else {
     if (conversationType === 'single') {
       if (appKey) {
-        cross_getSingleConversationHistoryMessage(value, appKey, from, limit, sCallback, eCallback)
+        JMessagePlugin.cross_getSingleConversationHistoryMessage(value, appKey, from, limit, sCallback, eCallback)
       } else {
-        getSingleConversationHistoryMessage(value, from, limit, sCallback, eCallback)
+        JMessagePlugin.getSingleConversationHistoryMessage(value, from, limit, sCallback, eCallback)
       }
     } else if (conversationType === 'group') {
-      getGroupConversationHistoryMessage(value, from, limit, sCallback, eCallback)
+      JMessagePlugin.getGroupConversationHistoryMessage(value, from, limit, sCallback, eCallback)
     }
   }
 }
@@ -241,12 +241,12 @@ JMessagePlugin.prototype.getAllMessages = function (conversationType, value, app
   } else {
     if (conversationType === 'single') {
       if (appKey) {
-        this.cross_getSingleConversationHistoryMessage(value, appKey, null, null, sCallback, eCallback)
+        JMessagePlugin.cross_getSingleConversationHistoryMessage(value, appKey, null, null, sCallback, eCallback)
       } else {
-        this.getSingleConversationHistoryMessage(value, null, null, sCallback, eCallback)
+        JMessagePlugin.getSingleConversationHistoryMessage(value, null, null, sCallback, eCallback)
       }
     } else if (conversationType === 'group') {
-      this.getGroupConversationHistoryMessage(value, null, null, sCallback, eCallback)
+      JMessagePlugin.getGroupConversationHistoryMessage(value, null, null, sCallback, eCallback)
     }
   }
 }
@@ -303,7 +303,7 @@ JMessagePlugin.prototype.getConversationList = function (sCallback, eCallback) {
   if (isAndroid()) {
     this.callNative('getConversationList', [], sCallback, eCallback)
   } else {
-    getAllConversation(sCallback, eCallback)
+    JMessagePlugin.getAllConversation(sCallback, eCallback)
   }
 }
 
@@ -328,7 +328,7 @@ JMessagePlugin.prototype.createGroup = function (name, desc, usernameArr, sCallb
   if (isAndroid()) {
     this.callNative('createGroup', [name, desc, usernameArr.toString()], sCallback, eCallback)
   } else {
-    createGroupIniOS(name, desc, usernameArr, sCallback, eCallback)
+    JMessagePlugin.createGroupIniOS(name, desc, usernameArr, sCallback, eCallback)
   }
 }
 
@@ -336,7 +336,7 @@ JMessagePlugin.prototype.getGroupIds = function (sCallback, eCallback) {
   if (isAndroid()) {
     this.callNative('getGroupIDList', [], sCallback, eCallback)
   } else {
-    myGroupArray(sCallback, eCallback)
+    JMessagePlugin.myGroupArray(sCallback, eCallback)
   }
 }
 
@@ -348,7 +348,7 @@ JMessagePlugin.prototype.updateGroupName = function (groupId, newName, sCallback
   if (isAndroid()) {
     this.callNative('updateGroupName', [groupId, newName], sCallback, eCallback)
   } else {
-    updateGroupInfo(groupId, newName, sCallback, eCallback)
+    JMessagePlugin.updateGroupInfo(groupId, newName, sCallback, eCallback)
   }
 }
 
@@ -356,7 +356,7 @@ JMessagePlugin.prototype.updateGroupDescription = function (groupId, newDesc, sC
   if (isAndroid()) {
     this.callNative('updateGroupDescription', [groupId, newDesc], sCallback, eCallback)
   } else {
-    updateGroupInfo(groupId, null, newDesc, sCallback, eCallback)
+    JMessagePlugin.updateGroupInfo(groupId, null, newDesc, sCallback, eCallback)
   }
 }
 
@@ -365,7 +365,107 @@ JMessagePlugin.prototype.addGroupMembers = function (groupId, usernameArr, sCall
   if (isAndroid()) {
     this.callNative('addGroupMembers', [groupId, usernameArr.toString()], sCallback, eCallback)
   } else {
-    addMembers(groupId, usernameArr, sCallback, eCallback)
+    JMessagePlugin.addMembers(groupId, usernameArr, sCallback, eCallback)
+  }
+}
+
+JMessagePlugin.prototype.removeGroupMembers = function (groupId, usernameArr, sCallback, eCallback) {
+  if (isAndroid()) {
+    this.callNative('removeGroupMembers', [groupId, usernameArr.toString()], sCallback, eCallback)
+  } else {
+    JMessagePlugin.removeMembers(groupId, usernameArr, sCallback, eCallback)
+  }
+}
+
+JMessagePlugin.prototype.exitGroup = function (groupId, sCallback, eCallback) {
+  this.callNative('exitGroup', [groupId], sCallback, eCallback)
+}
+
+JMessagePlugin.prototype.getGroupMembers = function (groupId, sCallback, eCallback) {
+  if (isAndroid()) {
+    this.callNative('getGroupMembers', [groupId], sCallback, eCallback)
+  } else {
+    JMessagePlugin.memberArray(groupId, sCallback, eCallback)
+  }
+}
+
+JMessagePlugin.prototype.addUsersToBlacklist = function (usernameArr, appKey, sCallback, eCallback) {
+  if (isAndroid()) {
+    this.callNative('addUsersToBlacklist', [usernameArr.toString(), appKey], sCallback, eCallback)
+  } else {
+    if (appKey) {
+      this.callNative('cross_addUsersToBlacklist', [usernameArr, appKey], sCallback, eCallback)
+    } else {
+      this.callNative('addUsersToBlacklist', [usernameArr], sCallback, eCallback)
+    }
+  }
+}
+
+JMessagePlugin.prototype.delUsersFromBlacklist = function (usernameArr, appKey, sCallback, eCallback) {
+  if (isAndroid()) {
+    this.callNative('delUsersFromBlacklist', [usernameArr.toString(), appKey], sCallback, eCallback)
+  } else {
+    if (appKey) {
+      this.callNative('cross_delUsersFromBlacklist', [usernameArr, appKey], sCallback, eCallback)
+    } else {
+      this.callNative('delUsersFromBlacklist', [usernameArr], sCallback, eCallback)
+    }
+  }
+}
+
+JMessagePlugin.prototype.getBlacklist = function (sCallback, eCallback) {
+  if (isAndroid()) {
+    this.callNative('getBlacklist', [], sCallback, eCallback)
+  } else {
+    this.callNative('blackList', [], sCallback, eCallback)
+  }
+}
+
+JMessagePlugin.prototype.isInBlacklist = function (username, appkey, sCallback, eCallback) {
+  this.callNative('isInBlacklist', [username, appkey], sCallback, eCallback)
+}
+
+// 设置对某个用户免打扰。isNoDisturb: 0 - 普通状态，1 - 免打扰状态。
+JMessagePlugin.prototype.setUserNoDisturb = function (username, isNoDisturb, sCallback, eCallback) {
+  if (isAndroid()) {
+    this.callNative('setUserNoDisturb', [username, isNoDisturb], sCallback, eCallback)
+  } else {
+    this.callNative('userSetIsNoDisturb', [username, isNoDisturb], sCallback, eCallback)
+  }
+}
+
+// 获取免打扰列表，结果包含 "userList": 免打扰用户，"groupList": 免打扰群组。
+JMessagePlugin.prototype.getNoDisturblist = function (sCallback, eCallback) {
+  if (isAndroid()) {
+    this.callNative('getNoDisturblist', [], sCallback, eCallback)
+  } else {
+    this.callNative('noDisturblist', [], sCallback, eCallback)
+  }
+}
+
+// 设置是否全局免打扰，isNoDisturb: 0 - 普通状态, 1 - 免打扰。
+JMessagePlugin.prototype.setNoDisturbGlobal = function (isNoDisturb, sCallback, eCallback) {
+  if (isAndroid()) {
+    this.callNative('setNoDisturbGlobal', [isNoDisturb], sCallback, eCallback)
+  } else {
+    this.callNative('setIsGlobalNoDisturb', [isNoDisturb], sCallback, eCallback)
+  }
+}
+
+// 判断当前是否是全局免打扰。
+JMessagePlugin.prototype.getNoDisturbGlobal = function (sCallback, eCallback) {
+  if (isAndroid()) {
+    this.callNative('getNoDisturbGlobal', [], sCallback, eCallback)
+  } else {
+    this.callNative('isSetGlobalNoDisturb', [], sCallback, eCallback)
+  }
+}
+
+JMessagePlugin.prototype.setGroupNoDisturb = function (groupId, isNoDisturb, sCallback, eCallback) {
+  if (isAndroid()) {
+    this.callNative('setGroupNoDisturb', [groupId, isNoDisturb], sCallback, eCallback)
+  } else {
+    this.callNative('groupSetIsNoDisturb', [groupId, isNoDisturb], sCallback, eCallback)
   }
 }
 // Common API end
@@ -526,12 +626,6 @@ JMessagePlugin.prototype.addGroupMembersCrossApp = function (groupId, appKey, us
     this.callNative('addGroupMembersCrossApp', [groupId, appKey, usernameList], sCallback, eCallback)
   }
 }
-// Android only end.
-
-// userNameList 格式为 "userName1,userName2" 字符串。
-JMessagePlugin.prototype.removeGroupMembers = function (groupId, userNameListStr, sCallback, eCallback) {
-  this.callNative('removeGroupMembers', [groupId, userNameListStr], sCallback, eCallback)
-}
 
 // 跨应用踢出群成员
 JMessagePlugin.prototype.removeGroupMembersCrossApp = function (groupId, appKey, usernameList, sCallback, eCallback) {
@@ -540,206 +634,133 @@ JMessagePlugin.prototype.removeGroupMembersCrossApp = function (groupId, appKey,
   }
 }
 
-JMessagePlugin.prototype.exitGroup = function (groupId, sCallback, eCallback) {
-  this.callNative('exitGroup', [groupId], sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.getGroupMembers = function (groupId, sCallback, eCallback) {
-  this.callNative('getGroupMembers', [groupId], sCallback, eCallback)
-}
-
 JMessagePlugin.prototype.getGroupMemberInfo = function (groupId, appKey, username, sCallback, eCallback) {
   if (isAndroid()) {
     this.callNative('getGroupMemberInfo', [groupId, appKey, username], sCallback, eCallback)
   }
 }
 
-// Blacklist API.
-/**
- * usernameStr: 被 "," 分隔的用户名字符串，如 "username1,username2"
- */
-JMessagePlugin.prototype.addUsersToBlacklist = function (usernameStr, sCallback, eCallback) {
-  this.callNative('addUsersToBlacklist', [usernameStr], sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.delUsersFromBlacklist = function (usernameStr, sCallback, eCallback) {
-  this.callNative('delUsersFromBlacklist', [usernameStr], sCallback, eCallback)
-}
-
-// usernamesArray 数组
-JMessagePlugin.prototype.addUsersToBlacklist_ios = function (usernamesArray, sCallback, eCallback) {
-  this.callNative('addUsersToBlacklist', [usernamesArray], sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.delUsersFromBlacklist_ios = function (usernamesArray, sCallback, eCallback) {
-  this.callNative('delUsersFromBlacklist', [usernamesArray], sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.addUsersToBlacklist = function (usernamesArray, appkey, sCallback, eCallback) {
-  this.callNative('cross_addUsersToBlacklist', [usernamesArray, appkey], sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.delUsersFromBlacklist = function (usernamesArray, appkey, sCallback, eCallback) {
-  this.callNative('cross_delUsersFromBlacklist', [usernamesArray, appkey], sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.getBlacklist = function (sCallback, eCallback) {
-  if (device.platform == 'Android') {
-    this.callNative('getBlacklist', [], sCallback, eCallback)
-  } else {
-    this.callNative('blackList', [], sCallback, eCallback)
-  }
-}
-
-JMessagePlugin.prototype.isInBlacklist = function (username, appkey, sCallback, eCallback) {
-  this.callNative('isInBlacklist', [username, appkey], sCallback, eCallback)
-}
-
-// 免打扰相关 API。
-
-// 设置对某个用户免打扰。
-// isNoDisturb: 0 - 普通状态，1 - 免打扰状态。
-JMessagePlugin.prototype.setUserNoDisturb = function (username, isNoDisturb, sCallback, eCallback) {
-  if (device.platform == 'Android') {
-    this.callNative('setUserNoDisturb', [username, isNoDisturb], sCallback, eCallback)
-  } else {
-    this.callNative('userSetIsNoDisturb', [username, isNoDisturb], sCallback, eCallback)
-  }
-}
-
-JMessagePlugin.prototype.setGroupNoDisturb = function (groupId, isNoDisturb, sCallback, eCallback) {
-  if (device.platform == 'Android') {
-    this.callNative('setGroupNoDisturb', [groupId, isNoDisturb], sCallback, eCallback)
-  }
-}
 
 // 获取对特定用户的免打扰状态。0 - 普通状态，1 - 免打扰状态。
 JMessagePlugin.prototype.getUserNoDisturb = function (username, sCallback, eCallback) {
-  if (device.platform == 'Android') {
+  if (isAndroid()) {
     this.callNative('getUserNoDisturb', [username], sCallback, eCallback)
   }
 }
 
 // 获取对特定群组的免打扰状态。0 - 普通状态，1 - 免打扰状态。
 JMessagePlugin.prototype.getGroupNoDisturb = function (groupId, sCallback, eCallback) {
-  if (device.platform == 'Android') {
+  if (isAndroid()) {
     this.callNative('getGroupNoDisturb', [groupId], sCallback, eCallback)
   }
 }
 
-// 获取免打扰列表，结果包含 "userList": 免打扰用户，"groupList": 免打扰群组。
-JMessagePlugin.prototype.getNoDisturblist = function (sCallback, eCallback) {
-  if (device.platform == 'Android') {
-    this.callNative('getNoDisturblist', [], sCallback, eCallback)
-  } else {
-    this.callNative('noDisturblist', [], sCallback, eCallback)
-  }
-}
-
-// 设置是否全局免打扰，isNoDisturb: 0 - 普通状态, 1 - 免打扰。
-JMessagePlugin.prototype.setNoDisturbGlobal = function (isNoDisturb, sCallback, eCallback) {
-  if (device.platform == 'Android') {
-    this.callNative('setNoDisturbGlobal', [isNoDisturb], sCallback, eCallback)
-  } else {
-    this.callNative('setIsGlobalNoDisturb', [isNoDisturb], sCallback, eCallback)
-  }
-}
-
-// 判断当前是否是全局免打扰。
-JMessagePlugin.prototype.getNoDisturbGlobal = function (sCallback, eCallback) {
-  if (device.platform == 'Android') {
-    this.callNative('getNoDisturbGlobal', [], sCallback, eCallback)
-  } else {
-    this.callNative('isSetGlobalNoDisturb', [], sCallback, eCallback)
-  }
-}
-
-// 通知管理
 JMessagePlugin.prototype.setNotificationMode = function (mode, sCallback, eCallback) {
-  if (device.platform == 'Android') {
+  if (isAndroid()) {
     this.callNative('setNotificationMode', [mode], sCallback, eCallback)
   }
 }
+// Android only end.
 
-// handle event.
-JMessagePlugin.prototype.onOpenMessage = function (data) {
-  data = JSON.stringify(data)
-  this.openedMessage = JSON.parse(data)
+// Event.
+JMessagePlugin.prototype.onOpenMessage = function (jsonStr) {
+  jsonStr = JSON.stringify(jsonStr)
+  this.openedMessage = JSON.parse(jsonStr)
   cordova.fireDocumentEvent('jmessage.onOpenMessage', this.openedMessage)
 }
 
-JMessagePlugin.prototype.onReceiveMessage = function (data) {
-  data = JSON.stringify(data)
-  this.message = JSON.parse(data)
+JMessagePlugin.prototype.onReceiveMessage = function (jsonStr) {
+  jsonStr = JSON.stringify(jsonStr)
+  this.message = JSON.parse(jsonStr)
   cordova.fireDocumentEvent('jmessage.onReceiveMessage', this.message)
 }
 
-JMessagePlugin.prototype.onReceiveTextMessage = function (data) {
-  data = JSON.stringify(data)
-  this.textMessage = JSON.parse(data)
+JMessagePlugin.prototype.onReceiveTextMessage = function (jsonStr) {
+  jsonStr = JSON.stringify(jsonStr)
+  this.textMessage = JSON.parse(jsonStr)
   cordova.fireDocumentEvent('jmessage.onReceiveTextMessage', this.textMessage)
 }
 
-JMessagePlugin.prototype.onReceiveImageMessage = function (data) {
-  data = JSON.stringify(data)
-  this.imageMessage = JSON.parse(data)
+JMessagePlugin.prototype.onReceiveImageMessage = function (jsonStr) {
+  jsonStr = JSON.stringify(jsonStr)
+  this.imageMessage = JSON.parse(jsonStr)
   cordova.fireDocumentEvent('jmessage.onReceiveImageMessage', this.imageMessage)
 }
 
-JMessagePlugin.prototype.onReceiveVoiceMessage = function (data) {
-  data = JSON.stringify(data)
-  this.voiceMessage = JSON.parse(data)
+JMessagePlugin.prototype.onReceiveVoiceMessage = function (jsonStr) {
+  jsonStr = JSON.stringify(jsonStr)
+  this.voiceMessage = JSON.parse(jsonStr)
   cordova.fireDocumentEvent('jmessage.onReceiveVoiceMessage', this.voiceMessage)
 }
 
-JMessagePlugin.prototype.onReceiveCustomMessage = function (data) {
-  data = JSON.stringify(data)
-  this.customMessage = JSON.parse(data)
+JMessagePlugin.prototype.onReceiveCustomMessage = function (jsonStr) {
+  jsonStr = JSON.stringify(jsonStr)
+  this.customMessage = JSON.parse(jsonStr)
   cordova.fireDocumentEvent('jmessage.onReceiveCustomMessage', this.customMessage)
 }
 
-JMessagePlugin.prototype.onUserPasswordChanged = function () {
-  cordova.fireDocumentEvent('jmessage.onUserPasswordChanged', null)
+JMessagePlugin.prototype.onUserPasswordChanged = function (jsonStr) {
+  jsonStr = JSON.stringify(jsonStr)
+  var obj = JSON.parse(jsonStr)
+  cordova.fireDocumentEvent('jmessage.onUserPasswordChanged', obj)
 }
 
-JMessagePlugin.prototype.onUserLogout = function () {
-  cordova.fireDocumentEvent('jmessage.onUserLogout', null)
+JMessagePlugin.prototype.onUserLogout = function (jsonStr) {
+  jsonStr = JSON.stringify(jsonStr)
+  var obj = JSON.parse(jsonStr)
+  cordova.fireDocumentEvent('jmessage.onUserLogout', obj)
 }
 
-JMessagePlugin.prototype.onUserDeleted = function () {
-  cordova.fireDocumentEvent('jmessage.onUserDeleted', null)
+JMessagePlugin.prototype.onUserDeleted = function (jsonStr) {
+  jsonStr = JSON.stringify(jsonStr)
+  var obj = JSON.parse(jsonStr)
+  cordova.fireDocumentEvent('jmessage.onUserDeleted', obj)
 }
 
-JMessagePlugin.prototype.onGroupMemberAdded = function () {
-  cordova.fireDocumentEvent('jmessage.onGroupMemberAdded', null)
+JMessagePlugin.prototype.onGroupMemberAdded = function (jsonStr) {
+  jsonStr = JSON.stringify(jsonStr)
+  var obj = JSON.parse(jsonStr)
+  cordova.fireDocumentEvent('jmessage.onGroupMemberAdded', obj)
 }
 
-JMessagePlugin.prototype.onGroupMemberRemoved = function () {
-  cordova.fireDocumentEvent('jmessage.onGroupMemberRemoved', null)
+JMessagePlugin.prototype.onGroupMemberRemoved = function (jsonStr) {
+  jsonStr = JSON.stringify(jsonStr)
+  var obj = JSON.parse(jsonStr)
+  cordova.fireDocumentEvent('jmessage.onGroupMemberRemoved', obj)
 }
 
-JMessagePlugin.prototype.onGroupMemberExit = function () {
-  cordova.fireDocumentEvent('jmessage.onGroupMemberExit', null)
+JMessagePlugin.prototype.onGroupMemberExit = function (jsonStr) {
+  jsonStr = JSON.stringify(jsonStr)
+  var obj = JSON.parse(jsonStr)
+  cordova.fireDocumentEvent('jmessage.onGroupMemberExit', obj)
 }
 
 // 当收到好友邀请
-JMessagePlugin.prototype.onInviteReceived = function (data) {
-  cordova.fireDocumentEvent('jmessage.onInviteReceived', data)
+JMessagePlugin.prototype.onInviteReceived = function (jsonStr) {
+  jsonStr = JSON.stringify(jsonStr)
+  var obj = JSON.parse(jsonStr)
+  cordova.fireDocumentEvent('jmessage.onInviteReceived', obj)
 }
 
 // 当发送的好友请求被接受
-JMessagePlugin.prototype.onInviteAccepted = function (data) {
-  cordova.fireDocumentEvent('jmessage.onInviteAccepted', data)
+JMessagePlugin.prototype.onInviteAccepted = function (jsonStr) {
+  jsonStr = JSON.stringify(jsonStr)
+  var obj = JSON.parse(jsonStr)
+  cordova.fireDocumentEvent('jmessage.onInviteAccepted', obj)
 }
 
 // 当对方拒绝了你的好友请求
-JMessagePlugin.prototype.onInviteDeclined = function (data) {
-  cordova.fireDocumentEvent('jmessage.onInviteDeclined', data)
+JMessagePlugin.prototype.onInviteDeclined = function (jsonStr) {
+  jsonStr = JSON.stringify(jsonStr)
+  var obj = JSON.parse(jsonStr)
+  cordova.fireDocumentEvent('jmessage.onInviteDeclined', obj)
 }
 
 // 当对方将你从好友列表中删除
-JMessagePlugin.prototype.onContactDeleted = function (data) {
-  cordova.fireDocumentEvent('jmessage.onContactDeleted', data)
+JMessagePlugin.prototype.onContactDeleted = function (jsonStr) {
+  jsonStr = JSON.stringify(jsonStr)
+  var obj = JSON.parse(jsonStr)
+  cordova.fireDocumentEvent('jmessage.onContactDeleted', obj)
 }
 
 // ---------- iOS only ----------//
@@ -969,7 +990,6 @@ JMessagePlugin.prototype.onReceiveNotificationEvent = function (data) {
   }
   cordova.fireDocumentEvent('jmessage.onReceiveNotificationEvent', bToObj)
 }
-
 // ---------- iOS only end ----------//
 
 if (!window.plugins) {
