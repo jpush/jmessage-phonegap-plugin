@@ -123,7 +123,6 @@ public class JMessagePlugin extends CordovaPlugin {
                 myAvatarPath = myAvatarFile.getAbsolutePath();
             }
             myInfoJsonObj.put("avatarPath", myAvatarPath);
-
             msgJson.put("targetInfo", myInfoJsonObj);
 
             if (msg.getTargetType().equals(ConversationType.single)) {
