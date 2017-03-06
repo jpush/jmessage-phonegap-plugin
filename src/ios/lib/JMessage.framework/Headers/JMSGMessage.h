@@ -416,7 +416,6 @@ JMSG_ASSUME_NONNULL_BEGIN
 @property(nonatomic, strong, readonly) NSNumber *flag;
 
 
-
 ///----------------------------------------------------
 /// @name Instance APIs 实例方法
 ///----------------------------------------------------
@@ -482,6 +481,7 @@ JMSG_ASSUME_NONNULL_BEGIN
  * @param message 待比较的消息对象
  */
 - (BOOL)isEqualToMessage:(JMSGMessage * JMSG_NULLABLE)message;
+
 
 JMSG_ASSUME_NONNULL_END
 

@@ -44,7 +44,7 @@
  * @discussion 应检查 error 是否为空来判断有没有出错. 如果未出错, 则成功.
  * 留意的是, 这里的 error 不包含媒体消息下载文件错误. 这类错误有单独的回调 onReceiveMessageDownloadFailed:
  *
- * 收到的消息里, 也包含服务器端下发的各类事件, 比如有人被加入了群聊. 这类事件处理为特殊的 JMSGMessage 类型.
+ * 收到的消息里, 也包含服务器端下发的各类消息事件, 比如有人被加入了群聊. 这类消息事件处理为特殊的 JMSGMessage 类型.
  *
  * 事件类的消息, 基于 JMSGMessage 类里的 contentType 属性来做判断,
  * contentType = kJMSGContentTypeEventNotification.

@@ -148,7 +148,6 @@ JMSG_ASSUME_NONNULL_BEGIN
  */
 @property(nonatomic, assign, readonly) BOOL isNoDisturb;
 
-
 /*!
  * @abstract 设置群组消息免打扰（支持跨应用设置）
  *
@@ -165,7 +164,6 @@ JMSG_ASSUME_NONNULL_BEGIN
  * 这个接口支持跨应用设置免打扰
  */
 - (void)setIsNoDisturb:(BOOL)isNoDisturb handler:(JMSGCompletionHandler)handler;
-
 
 
 ///----------------------------------------------------

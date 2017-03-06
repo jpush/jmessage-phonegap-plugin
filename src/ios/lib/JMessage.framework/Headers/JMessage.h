@@ -11,7 +11,6 @@
 
 #import <Foundation/Foundation.h>
 #import <JMessage/JMSGConstants.h>
-#import <JMessage/JPUSHService.h>
 #import <JMessage/JMSGUser.h>
 #import <JMessage/JMSGGroup.h>
 #import <JMessage/JMSGMessage.h>
@@ -35,6 +34,14 @@
 @protocol JMessageDelegate;
 @class JMSGConversation;
 
+extern NSString *const kJMSGNetworkIsConnectingNotification;          // 正在连接中
+extern NSString *const kJMSGNetworkDidSetupNotification;              // 建立连接
+extern NSString *const kJMSGNetworkDidCloseNotification;              // 关闭连接
+extern NSString *const kJMSGNetworkDidRegisterNotification;           // 注册成功
+extern NSString *const kJMSGNetworkFailedRegisterNotification;        // 注册失败
+extern NSString *const kJMSGNetworkDidLoginNotification;              // 连接成功
+extern NSString *const kJMSGNetworkDidReceiveMessageNotification;     // 收到消息
+extern NSString *const kJMSGServiceErrorNotification;                 // 错误提示
 
 /*!
  * JMessage核心头文件
@@ -44,10 +51,10 @@
 @interface JMessage : NSObject
 
 /*! JMessage SDK 版本号。用于展示 SDK 的版本信息 */
-#define JMESSAGE_VERSION @"2.2.4"
+#define JMESSAGE_VERSION @"3.0.1"
 
 /*! JMessage SDK 构建ID. 每次构建都会增加 */
-#define JMESSAGE_BUILD 29
+#define JMESSAGE_BUILD 139
 
 /*! API Version - int for program logic. SDK API 有变更时会增加 */
 extern NSInteger const JMESSAGE_API_VERSION;
@@ -62,9 +69,7 @@ extern NSInteger const JMESSAGE_API_VERSION;
  * @param isProduction     是否为生产模式
  * @param category         iOS8新增通知快捷按钮参数
  *
- * @discussion 此方法必须被调用, 以初始化 JMessage SDK
- *
- * 如果未调用此方法, 本 SDK 的所有功能将不可用.
+ * @discussion 此方法被[setupJMessage:appKey:channel:apsForProduction:category:messageRoaming:]方法取代
  */
 + (void)setupJMessage:(NSDictionary *)launchOptions
                appKey:(NSString *)appKey
@@ -222,6 +227,50 @@ extern NSInteger const JMESSAGE_API_VERSION;
  * 建议开发者在 SDK 完全启动之后，再调用此接口获取数据
  */
 + (void)blackList:(JMSGCompletionHandler)handler;
+
+/*!
+ * @abstract 注册远程推送
+ * @param types 通知类型
+ * @param categories 类别组
+ * @discussion 此方法必须被调用，如果有集成JPush或其他远程推送注册方法，请不要再调用此方法
+ *
+ */
++ (void)registerForRemoteNotificationTypes:(NSUInteger)types
+                                categories:(NSSet *)categories;
+
+/*!
+ * @abstract 注册DeviceToken
+ * @param deviceToken 从注册推送回调中拿到的DeviceToken
+ * @discussion 此方法必须被调用
+ *
+ */
++ (void)registerDeviceToken:(NSData *)deviceToken;
+
+/*!
+ * @abstract 设置角标(到服务器)
+ *
+ * @param value 新的值. 会覆盖服务器上保存的值(这个用户)
+ *
+ * @discussion 本接口不会改变应用本地的角标值.
+ * 本地仍须调用 UIApplication:setApplicationIconBadgeNumber 函数来设置脚标.
+ *
+ * 该功能解决的问题是, 服务器端推送 APNs 时, 并不知道客户端原来已经存在的角标是多少, 指定一个固定的数字不太合理.
+ *
+ * APNS 服务器端脚标功能提供:
+ *
+ * - 通过本 API 把当前客户端(当前这个用户的) 的实际 badge 设置到服务器端保存起来;
+ * - 调用服务器端 API 发 APNs 时(通常这个调用是批量针对大量用户),
+ *   使用 "+1" 的语义, 来表达需要基于目标用户实际的 badge 值(保存的) +1 来下发通知时带上新的 badge 值;
+ */
++ (BOOL)setBadge:(NSInteger)value;
+
+/*!
+ * @abstract 重置角标(为0)
+ *
+ * @discussion 相当于 [setBadge:0] 的效果.
+ * 参考 [JMessage setBadge:] 说明来理解其作用.
+ */
++ (void)resetBadge;
 
 @end
 

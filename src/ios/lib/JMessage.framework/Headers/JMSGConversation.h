@@ -11,6 +11,7 @@
 
 #import <Foundation/Foundation.h>
 #import <JMessage/JMSGConstants.h>
+#import <JMessage/JMSGUser.h>
 
 @class JMSGMessage;
 @class JMSGAbstractContent;
@@ -234,8 +235,7 @@ JMSG_ASSUME_NONNULL_BEGIN
  * - offset = nil, limit = 100，表示从最新开始取 100 条记录。
  * - offset = 100, limit = nil，表示从最新第 100 条开始，获取余下所有记录。
  */
-- (NSArray JMSG_GENERIC(__kindof JMSGMessage *) *)messageArrayFromNewestWithOffset:(NSNumber *JMSG_NULLABLE)offset
-                                                                             limit:(NSNumber *JMSG_NULLABLE)limit;
+- (NSArray JMSG_GENERIC(__kindof JMSGMessage *) *)messageArrayFromNewestWithOffset:(NSNumber *JMSG_NULLABLE)offset limit:(NSNumber *JMSG_NULLABLE)limit;
 
 /*!
  * @abstract 异步获取所有消息记录
@@ -312,7 +312,7 @@ JMSG_ASSUME_NONNULL_BEGIN
  *
  * @param message 通过消息创建类接口，创建好的消息对象
  *
- * @discussion 发送消息的多个接口，都未在方法上直接提供回调。你应通过 xxx 方法来注册消息发送结果。
+ * @discussion 发送消息的多个接口，都未在方法上直接提供回调。你应通过 JMSGMessageDelegate中的onReceiveMessage: error:方法来注册消息发送结果
  */
 - (void)sendMessage:(JMSGMessage *)message;
 
@@ -428,6 +428,7 @@ JMSG_ASSUME_NONNULL_BEGIN
  * 此接口供暂时使用。JMessage 整体的 Sync 机制生效后，将不需要客户端主动去刷新信息。
  */
 - (void)refreshTargetInfoFromServer:(JMSGCompletionHandler)handler;
+
 
 ///----------------------------------------------------
 /// @name Class Normal 类基本方法

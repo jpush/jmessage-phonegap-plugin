@@ -315,7 +315,11 @@ typedef NS_ENUM(NSInteger, JMSGSDKErrorCode) {
   kJMSGErrorSDKMediaCrcVerifyFailed = 864004,
   /// 上传媒体文件时, 发现文件不存在
   kJMSGErrorSDKMediaUploadEmptyFile = 864005,
-
+  /// 媒体HASH码无效
+  kJMSGErrorSDKMediaHashCodeIllegal = 864006,
+  /// 媒体HASH校验失败
+  kJMSGErrorSDKMediaHashVerifyFailed = 864007,
+  
   // ------------------------ Message (865xxx)
 
   /// 无效的消息内容

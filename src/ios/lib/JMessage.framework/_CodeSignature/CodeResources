@@ -10,15 +10,15 @@
 		</data>
 		<key>Headers/JMSGConstants.h</key>
 		<data>
-		o9Te/iVcTgMY5N99Jx6qFtFh6Gs=
+		6n8ZyUGosRJB+WKEUwpdLq4j5Zg=
 		</data>
 		<key>Headers/JMSGConversation.h</key>
 		<data>
-		JBTf3qD2K8my4TgqFBAwrIZlX1I=
+		AoazKbwf3I96iFxiuBy44Wr9rNs=
 		</data>
 		<key>Headers/JMSGConversationDelegate.h</key>
 		<data>
-		KqwN2wKUio0yUh+dLNmwJg/R+d8=
+		OSDhFmhl2Jwd36zDknHFOrb/4io=
 		</data>
 		<key>Headers/JMSGCustomContent.h</key>
 		<data>
@@ -34,7 +34,7 @@
 		</data>
 		<key>Headers/JMSGEventDelegate.h</key>
 		<data>
-		nFU/3NEmmNXyC4KDyLQnZjIUUVY=
+		DHBH/TNcbVTTIwDfmKozE+JwvHg=
 		</data>
 		<key>Headers/JMSGFileContent.h</key>
 		<data>
@@ -50,7 +50,7 @@
 		</data>
 		<key>Headers/JMSGGroup.h</key>
 		<data>
-		a3t7rRyK8MrWzp9745LHVKX3lbY=
+		h024jEII8jzayEzjxFV8BSc3a3s=
 		</data>
 		<key>Headers/JMSGGroupDelegate.h</key>
 		<data>
@@ -70,11 +70,11 @@
 		</data>
 		<key>Headers/JMSGMessage.h</key>
 		<data>
-		lpobo4PUC86nWUbsauHcM5/4jzA=
+		y1KZRVIg1/rZDU7SnhaFbG315ko=
 		</data>
 		<key>Headers/JMSGMessageDelegate.h</key>
 		<data>
-		T5hntRd9Nghuv5P6CrF3JXH7dn8=
+		PJuBw2RAg8z4FLA7elcfUf1cINk=
 		</data>
 		<key>Headers/JMSGNotificationEvent.h</key>
 		<data>
@@ -98,15 +98,11 @@
 		</data>
 		<key>Headers/JMessage.h</key>
 		<data>
-		Vsg1P8kb4V29yISgk/+opyMzOPI=
+		CWyc1yoV+N9ZG4kSmWvcr/HSdT8=
 		</data>
 		<key>Headers/JMessageDelegate.h</key>
 		<data>
 		O4JLOTTOx8MfnMJx4mmRnke9guo=
-		</data>
-		<key>Headers/JPUSHService.h</key>
-		<data>
-		2NFfPEKJlulOiP3h6h0VKm5s370=
 		</data>
 		<key>Info.plist</key>
 		<data>
@@ -115,6 +111,10 @@
 		<key>Modules/module.modulemap</key>
 		<data>
 		VdDmHaJA7z/cFNzEzlnTDsZT5PU=
+		</data>
+		<key>jcore-ios-1.1.1.a</key>
+		<data>
+		BY5qMHgWKV7ELnQGRE2+H60hiu4=
 		</data>
 	</dict>
 	<key>files2</key>
@@ -134,33 +134,33 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			o9Te/iVcTgMY5N99Jx6qFtFh6Gs=
+			6n8ZyUGosRJB+WKEUwpdLq4j5Zg=
 			</data>
 			<key>hash2</key>
 			<data>
-			EmcHv3Ju0EGV3zJkFiZ34MRMewCRG1XI1fw7A99EtHM=
+			XKPHthubudOaget7Psj2mHQlq2MU2BX9DnC71TROQoM=
 			</data>
 		</dict>
 		<key>Headers/JMSGConversation.h</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			JBTf3qD2K8my4TgqFBAwrIZlX1I=
+			AoazKbwf3I96iFxiuBy44Wr9rNs=
 			</data>
 			<key>hash2</key>
 			<data>
-			5GDN1RkNIKwbDh0xlwgUC1JS5Yq+QX+5EXBUJjRday4=
+			i9cDogr4TrTZBd6Zrat68Fnk/yLy3DCvejUZuujzClU=
 			</data>
 		</dict>
 		<key>Headers/JMSGConversationDelegate.h</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			KqwN2wKUio0yUh+dLNmwJg/R+d8=
+			OSDhFmhl2Jwd36zDknHFOrb/4io=
 			</data>
 			<key>hash2</key>
 			<data>
-			secUaDalQZ9AvQ7t3Jqd0wEWVm9/Hq5jmqZmzXFpXZs=
+			iF3d+C2P9Xc+nbLJiIG3kgYAG9qqeLMfbeoLuFZNLuY=
 			</data>
 		</dict>
 		<key>Headers/JMSGCustomContent.h</key>
@@ -200,11 +200,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			nFU/3NEmmNXyC4KDyLQnZjIUUVY=
+			DHBH/TNcbVTTIwDfmKozE+JwvHg=
 			</data>
 			<key>hash2</key>
 			<data>
-			qvk58iFFAXSWpDGHmP5ref1mFM4wGFCm+KBgLQ2dQJs=
+			yTWZap7pFPvs4Qf+IwX9ZgnfI4ZDmUYLd3s47fHQr6Q=
 			</data>
 		</dict>
 		<key>Headers/JMSGFileContent.h</key>
@@ -244,11 +244,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			a3t7rRyK8MrWzp9745LHVKX3lbY=
+			h024jEII8jzayEzjxFV8BSc3a3s=
 			</data>
 			<key>hash2</key>
 			<data>
-			hZVdTEjsAS3L8XMwlcGXjSdOQHvWU4Bu4BlwbFRq7HQ=
+			sUzjhQiZNDixyuqZ/1/ltVEF4xt5sC/8IZ+96U7GGEU=
 			</data>
 		</dict>
 		<key>Headers/JMSGGroupDelegate.h</key>
@@ -299,22 +299,22 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			lpobo4PUC86nWUbsauHcM5/4jzA=
+			y1KZRVIg1/rZDU7SnhaFbG315ko=
 			</data>
 			<key>hash2</key>
 			<data>
-			WVxObS0OJC3TQWvU5DIGHTS9I6/y0CA6o6xXDQ9Un20=
+			XbdPHaR37exwYTFFXwbDn6pJRQBxgQNQyXlBdP3qTLQ=
 			</data>
 		</dict>
 		<key>Headers/JMSGMessageDelegate.h</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			T5hntRd9Nghuv5P6CrF3JXH7dn8=
+			PJuBw2RAg8z4FLA7elcfUf1cINk=
 			</data>
 			<key>hash2</key>
 			<data>
-			JQK1qCIdv6zFyAnnilfGew0jJoLi9Um1vOVvFUCtNCY=
+			zlkOuKlHyC9/LtizdU2X3V5XV9/+HylgEY0O17Bc3TQ=
 			</data>
 		</dict>
 		<key>Headers/JMSGNotificationEvent.h</key>
@@ -376,11 +376,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			Vsg1P8kb4V29yISgk/+opyMzOPI=
+			CWyc1yoV+N9ZG4kSmWvcr/HSdT8=
 			</data>
 			<key>hash2</key>
 			<data>
-			vdkzwhEMi8r0W1SvAPu3d5p/inCZQ1LjAVfzA7Y4NSU=
+			Mp7X40R6ikbgChpVhjcM/C1xyTTQPFcMKqspMhN8A5E=
 			</data>
 		</dict>
 		<key>Headers/JMessageDelegate.h</key>
@@ -394,17 +394,6 @@
 			Ot7wgwrVbsNEIkuUgVZmGZ/Rj+F0cfIb/s2tI2QEWD0=
 			</data>
 		</dict>
-		<key>Headers/JPUSHService.h</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			2NFfPEKJlulOiP3h6h0VKm5s370=
-			</data>
-			<key>hash2</key>
-			<data>
-			Gz/yHs/V+2WDqy4nH6NJ+bfFRq0USpeL3BYQGAe3Aqo=
-			</data>
-		</dict>
 		<key>Modules/module.modulemap</key>
 		<dict>
 			<key>hash</key>
@@ -414,6 +403,17 @@
 			<key>hash2</key>
 			<data>
 			txVmylDD8AOoci/OwdavnVtrOQI4yoYJeCiHJEAFjCQ=
+			</data>
+		</dict>
+		<key>jcore-ios-1.1.1.a</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			BY5qMHgWKV7ELnQGRE2+H60hiu4=
+			</data>
+			<key>hash2</key>
+			<data>
+			jXG8AbEICMQMsbzSKsn/lHH/l6rZLqh3O2UinB0YmJA=
 			</data>
 		</dict>
 	</dict>
