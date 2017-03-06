@@ -10,8 +10,8 @@
 #import <UserNotifications/UserNotifications.h>
 #import <JMessage/JMessage.h>
 
-@interface AppDelegate (JMessage) <JPUSHRegisterDelegate>
--(void)registerForRemoteNotification;
--(void)startJPushSDK;
+@interface AppDelegate (JMessage)
+
 -(void)startJMessageSDK;
+
 @end

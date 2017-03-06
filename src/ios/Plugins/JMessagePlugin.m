@@ -503,7 +503,12 @@ JMessagePlugin *SharedJMessagePlugin;
             NSArray * messageList =  [conversation messageArrayFromNewestWithOffset:from limit:limit];
             for (JMSGMessage * msg in messageList) {
                 NSString * jsonString  = [msg toJsonString];
-                [resultArr addObject:[jsonString toDictionary]];
+                JMSGGroup *group = msg.target;
+                NSDictionary *groupDict = [group groupToDictionary];
+                NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[jsonString toDictionary]];
+                [dict addEntriesFromDictionary:@{@"groupDict":groupDict}];
+                dict[KEY_LASTMESSAGE] = conversation.latestMessageContentText;
+                [resultArr addObject:dict];
             }
         }
         [weakSelf handleResultWithValue:resultArr command:command error:error log:@"JMessagePlugin Get Group History Message"];
