@@ -2,7 +2,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="jmessage-phonegap-plugin"
-        version="2.2.0">
+        version="2.3.0">
 
     <name>JMessage PhoneGap Plugin</name>
     <description>集成极光 IM 和推送功能</description>
@@ -20,13 +20,8 @@
     <dependency id="cordova-plugin-device" />
     <dependency id="cordova-plugin-jcore"/>
 
-
     <js-module src="www/JMessagePlugin.js" name="JMessagePlugin">
         <clobbers target="JMessage"/>
-    </js-module>
-
-    <js-module src="www/JPushPlugin.js" name="JPushPlugin">
-        <clobbers target="JPush"/>
     </js-module>
 
     <platform name="ios">
@@ -38,8 +33,6 @@
 
 <!--        <hook type="after_plugin_install" src="script/ios-install.js" />-->
 <!--        <hook type="before_plugin_uninstall" src="script/ios-uninstall.js" />-->
-
-
 
         <header-file src="src/ios/Plugins/JMessageDefine.h"/>
         <header-file src="src/ios/Plugins/JMessagePlugin.h"/>
@@ -73,9 +66,6 @@
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="JMessagePlugin">
                 <param name="android-package" value="cn.jmessage.phonegap.JMessagePlugin"/>
-            </feature>
-            <feature name="JPushPlugin">
-                <param name="android-package" value="cn.jmessage.phonegap.JPushPlugin" />
             </feature>
         </config-file>
 
@@ -123,6 +113,7 @@
                     <action android:name="cn.jpush.android.intent.PUSH_TIME" />
                 </intent-filter>
             </service>
+
             <!-- Required Push SDK核心功能-->
             <receiver
                 android:name="cn.jpush.android.service.PushReceiver"
@@ -145,61 +136,10 @@
                 </intent-filter>
             </receiver>
 
-            <!-- User defined. For test only 用户自定义的广播接收器。 -->
-            <receiver
-              android:name="cn.jmessage.phonegap.MyReceiver"
-              android:enabled="true">
-              <intent-filter android:priority="1000">
-                <action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED_PROXY"/>
-                <!-- Required 显示通知栏 -->
-                <category android:name="$PACKAGE_NAME"/>
-              </intent-filter>
-              <intent-filter>
-                <action android:name="cn.jpush.android.intent.REGISTRATION"/>
-                <!-- Required 用户注册SDK的 intent -->
-                <action android:name="cn.jpush.android.intent.UNREGISTRATION"/>
-                <action android:name="cn.jpush.android.intent.MESSAGE_RECEIVED"/>
-                <!-- Required 用户接收SDK消息的 intent -->
-                <action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED"/>
-                <!-- Required 用户接收SDK通知栏信息的 intent -->
-                <action android:name="cn.jpush.android.intent.NOTIFICATION_OPENED"/>
-                <!-- Required 用户打开自定义通知栏的 intent -->
-                <action android:name="cn.jpush.android.intent.ACTION_RICHPUSH_CALLBACK"/>
-                <!-- Optional 用户接受 Rich Push Javascript 回调函数的 intent -->
-                <category android:name="$PACKAGE_NAME"/>
-              </intent-filter>
-            </receiver>
-
-            <!-- Required Push SDK核心功能 -->
-            <activity
-                android:name="cn.jpush.android.ui.PushActivity"
-                android:configChanges="orientation|keyboardHidden"
-                android:theme="@android:style/Theme.NoTitleBar"
-                android:exported="false">
-                <intent-filter>
-                    <action android:name="cn.jpush.android.ui.PushActivity" />
-                    <category android:name="android.intent.category.DEFAULT" />
-                    <category android:name="$PACKAGE_NAME" />
-                </intent-filter>
-            </activity>
-
-            <!-- Required Push SDK核心功能 -->
-            <service
-                android:name="cn.jpush.android.service.DownloadService"
-                android:enabled="true"
-                android:exported="false" />
-
             <!-- Required Push SDK核心功能 -->
             <receiver
                 android:name="cn.jpush.android.service.AlarmReceiver"
                 android:exported="false" />
-
-            <!-- Rich Push 核心功能 since 2.0.6 -->
-            <activity
-                android:name="cn.jpush.android.ui.PopWinActivity"
-                android:theme="@style/MyDialogStyle"
-                android:exported="false">
-            </activity>
 
             <!-- IM Required IM SDK核心功能-->
             <receiver
@@ -214,45 +154,12 @@
                 </intent-filter>
             </receiver>
 
-            <!-- option 可选项。用于同一设备中不同应用的 JPush 服务相互拉起的功能。 -->
-            <!-- 若不启用该功能可删除该组件，将不拉起其他应用也不能被其他应用拉起 -->
-            <service
-                android:name="cn.jpush.android.service.DaemonService"
-                android:enabled="true"
-                android:exported="true">
-                <intent-filter>
-                    <action android:name="cn.jpush.android.intent.DaemonService" />
-                    <category android:name="$PACKAGE_NAME" />
-                </intent-filter>
-            </service>
-
             <meta-data android:name="JPUSH_APPKEY" android:value="$APP_KEY"/>
             <meta-data android:name="JPUSH_CHANNEL" android:value="developer-default"/>
         </config-file>
 
         <source-file src="src/android/libs/gson-2.3.1.jar" target-dir="libs"/>
-        <source-file src="src/android/libs/jmessage-android-1.4.2.jar" target-dir="libs"/>
-
-        <source-file src="src/android/libs/armeabi/libjpush220.so" target-dir="libs/armeabi"/>
-        <source-file src="src/android/libs/armeabi-v7a/libjpush220.so" target-dir="libs/armeabi-v7a"/>
-        <source-file src="src/android/libs/arm64-v8a/libjpush220.so" target-dir="libs/arm64-v8a"/>
-        <source-file src="src/android/libs/x86_64/libjpush220.so" target-dir="libs/x86_64"/>
-        <source-file src="src/android/libs/x86/libjpush220.so" target-dir="libs/x86"/>
-
+        <source-file src="src/android/libs/jmessage-android-2.0.0.jar" target-dir="libs"/>
         <source-file src="src/android/JMessagePlugin.java" target-dir="src/cn/jmessage/phonegap"/>
-        <source-file src="src/android/JPushPlugin.java" target-dir="src/cn/jmessage/phonegap"/>
-        <source-file src="src/android/MyReceiver.java" target-dir="src/cn/jmessage/phonegap"/>
-
-    	  <source-file src="src/android/res/layout/test_notification_layout.xml" target-dir="res/layout"/>
-        <source-file src="src/android/res/layout/jpush_popwin_layout.xml" target-dir="res/layout"/>
-        <source-file src="src/android/res/layout/jpush_webview_layout.xml" target-dir="res/layout"/>
-
-    	  <source-file src="src/android/res/drawable-hdpi/jpush_ic_richpush_actionbar_back.png" target-dir="res/drawable-hdpi"/>
-        <source-file src="src/android/res/drawable-hdpi/jpush_ic_richpush_actionbar_divider.png" target-dir="res/drawable-hdpi"/>
-
-        <source-file src="src/android/res/drawable-hdpi/jpush_richpush_btn_selector.xml" target-dir="res/drawable"/>
-        <source-file src="src/android/res/drawable-hdpi/jpush_richpush_progressbar.xml" target-dir="res/drawable"/>
-
-        <source-file src="src/android/res/values/jpush_style.xml" target-dir="res/values"/>
     </platform>
 </plugin>
