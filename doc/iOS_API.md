@@ -1,6 +1,5 @@
 ## iOS API 说明
-JPush 推送功能相关 API 说明可参照 [JPush Phonegap Plugin iOS API doc](https:## github.com/jpush/jpush-phonegap-plugin/blob/master/doc/iOS_API.md)
-
+JPush 推送功能相关 API 说明可参照 [JPush Phonegap Plugin iOS API doc](https://github.com/jpush/jpush-phonegap-plugin/blob/master/doc/iOS_API.md)。
 
 API 统一说明：
 
@@ -10,8 +9,7 @@ API 统一说明：
 - 调用示例：`window.JMessage.funcName(args, successCallback, errorCallback);`
 
 
-
-API 目录：
+目录：
 
 - [用户操作](#user)
 - [发送消息](#message)
@@ -19,6 +17,7 @@ API 目录：
 - [群组操作](#group)
 - [跨应用接口](#cross-app-method)
 - [好友管理](#friendmanager)
+- [免打扰](#disturb)
 - [监听事件](#documentevent)
 
 
@@ -81,19 +80,17 @@ API 目录：
 - field：数字、或纯数字字符串
 
   	/// 用户信息字段: 用户名
-  	kJMSGUserFieldsNickname = 0,
-  	/// 用户信息字段: 生日
-  	kJMSGUserFieldsBirthday = 1,
-  	/// 用户信息字段: 签名
-  	kJMSGUserFieldsSignature = 2,
-  	/// 用户信息字段: 性别
-  	kJMSGUserFieldsGender = 3,
-  	/// 用户信息字段: 区域
-  	kJMSGUserFieldsRegion = 4,
-  	/// 用户信息字段: 头像 (内部定义的 media_id)
-  	kJMSGUserFieldsAvatar = 5,
-
-
+  		kJMSGUserFieldsNickname = 0,
+  		/// 用户信息字段: 生日
+  		kJMSGUserFieldsBirthday = 1,
+  		/// 用户信息字段: 签名
+  		kJMSGUserFieldsSignature = 2,
+  		/// 用户信息字段: 性别
+  		kJMSGUserFieldsGender = 3,
+  		/// 用户信息字段: 区域
+  		kJMSGUserFieldsRegion = 4,
+  		/// 用户信息字段: 头像 (内部定义的 media_id)
+  		kJMSGUserFieldsAvatar = 5,
 
 
 ### API - updateNoteName
@@ -115,11 +112,6 @@ window.JMessage.updateFriendNoteName(username, appKey, noteName, successCallback
 ```
 window.JMessage.updateFriendNoteText(username, appKey, noteText, successCallback, errorCallback);
 ```
-
-
-
-
-
 
 
 ## Message
@@ -198,8 +190,18 @@ window.JMessage.updateFriendNoteText(username, appKey, noteText, successCallback
 获取全部单聊、群里会话信息
 #### 接口定义
 	window.JMessage.getAllConversation(successCallback, errorCallback);
+###  API - getAllUnreadCount
+
+获取当前所有会话的未读消息的总数
+
+#### 接口定义
+
+```
+window.JMessage.getAllUnreadCount(successCallback, errorCallback);
+```
 
 ### API - clearSingleUnreadCount
+
 清除单聊会话未读数
 #### 接口定义
 	window.JMessage.clearSingleUnreadCount(username, successCallback, errorCallback);
@@ -316,7 +318,7 @@ window.JMessage.sendLocationMessage(name, appKey, single, latitude, longitude, s
 	window.JMessage.cross_sendSingleImageMessage = function (username, appKey, imageUrl, successCallback, errorCallback);
 
 ### API - cross_getSingleConversationHistoryMessage
-获取跨应用单聊历史消息（多条）。参数同 [获取多条单聊消息](#api---getsingleconversationhistorymessage)
+获取跨应用单聊历史消息（多条），参数同 [获取多条单聊消息](#api---getsingleconversationhistorymessage)。
 #### 接口定义
 	window.JMessage.cross_getSingleConversationHistoryMessage = function (username, appKey, from, limit, successCallback, errorCallback);
 
@@ -338,23 +340,22 @@ window.JMessage.sendLocationMessage(name, appKey, single, latitude, longitude, s
 
 ## FriendManager
 
-
-
 ### API - getFriendList
 
 获取好友列表
 
 #### 接口定义
 
-```参数说明  - username：对方用户名 - appkey：对方所在应用appkey，不传则默认是本应用 - reason：添加好友时的备注，可不填
-window.JMessage.getFriendList(successCallback, errorCallback);
-```
+	window.JMessage.getFriendList(successCallback, errorCallback);
+
 
 #### 参数说明
 
 - username：对方用户名
 - appkey：对方所在应用appkey，不传则默认是本应用
 - reason：添加好友时的备注，可不填
+
+
 
 
 
@@ -406,7 +407,145 @@ window.JMessage.removeFromFriendList(username, appkey, successCallback, errorCal
 
 
 
+## Disturb
 
+注：用户&群组的免打扰状态、群主 appkey、群最大成员数量在 API - getUserInfo/getGroupInfo 获取。
+
+
+
+### API - noDisturbList 
+
+用户免打扰列表 设置全局免打扰标识
+
+#### 接口定义
+
+```
+window.JMessage.getNoDisturblist(successCallback, errorCallback);
+```
+
+
+
+### API - isSetGlobalNoDisturb 
+
+获取全局免打扰状态
+
+#### 接口定义
+
+```
+window.JMessage.getNoDisturbGlobal(successCallback, errorCallback);
+```
+
+
+
+### API - setIsGlobalNoDisturb 
+
+设置是否全局免打扰
+
+#### 接口定义
+
+```
+window.JMessage.setNoDisturbGlobal(isGlobalNoDisturb, successCallback, errorCallback);
+```
+
+#### 参数说明
+
+isGlobalNoDisturb：1 是/0 否
+
+
+
+### API - blackList 
+
+获取黑名单列表
+
+#### 接口定义
+
+```
+window.JMessage.getBlacklist(successCallback, errorCallback);
+```
+
+
+
+### API - userSetIsNoDisturb 
+
+设置用户免打扰（支持跨应用设置）
+
+#### 接口定义
+
+```
+window.JMessage.setUserNoDisturb(username, appkey, isNoDisturb, successCallback, errorCallback);
+```
+
+
+
+### API - isInBlacklist 
+
+获取黑名单状态
+
+#### 接口定义
+
+```
+window.JMessage.isInBlacklist(username, appkey, successCallback, errorCallback);
+```
+
+
+
+### API - addUsersToBlacklist 
+
+添加黑名单
+
+#### 接口定义
+
+```
+window.JMessage.addUsersToBlacklist_ios(usernamesArray, successCallback, errorCallback);
+```
+
+
+
+### API - delUsersFromBlacklist 
+
+删除黑名单
+
+#### 接口定义
+
+```
+window.JMessage.delUsersFromBlacklist_ios(usernamesArray, successCallback, errorCallback);
+```
+
+
+
+### API - cross_addUsersToBlacklist 
+
+跨应用添加黑名单
+
+#### 接口定义
+
+```
+window.JMessage.cross_addUsersToBlacklist(usernamesArray, appkey, successCallback, errorCallback);
+```
+
+
+
+### API - cross_delUsersFromBlacklist 
+
+跨应用删除黑名单
+
+#### 接口定义
+
+```
+window.JMessage.cross_delUsersFromBlacklist(usernamesArray, appkey, successCallback, errorCallback);
+```
+
+
+
+### API - groupSetIsNoDisturb 
+
+设置群组消息免打扰
+
+#### 接口定义
+
+```
+window.JMessage.groupSetIsNoDisturb(groupId, isNoDisturb, successCallback, errorCallback);
+```
 
 
 
@@ -443,36 +582,25 @@ window.JMessage.removeFromFriendList(username, appkey, successCallback, errorCal
 收到消息
 
 
-
 ##### jmessage.onSendMessage
 
 发送消息
-
-
 
 ##### jmessage.onReceiveImageData
 
 收到图片消息
 
-
-
 ##### jmessage.onReceiveVoiceData
 
 收到声音消息
-
-
 
 ##### jmessage.onReceiveFileData
 
 收到文件消息
 
-
-
 ##### jmessage.onReceiveLocation
 
 收到地理信息消息
-
-
 
 ##### jmessage.onReceiveNotificationEvent
 
@@ -480,78 +608,84 @@ window.JMessage.removeFromFriendList(username, appkey, successCallback, errorCal
 
 // 用户登录状态变更事件
 
-  /// 事件类型: 登录被踢
+/// 事件类型: 登录被踢
 
-  kJMSGEventNotificationLoginKicked = 1,
+kJMSGEventNotificationLoginKicked = 1,
 
-  /// 事件类型: 非客户端修改密码强制登出事件
+/// 事件类型: 非客户端修改密码强制登出事件
 
-  kJMSGEventNotificationServerAlterPassword = 2,
+kJMSGEventNotificationServerAlterPassword = 2,
 
-  /// 事件类型：用户登录状态异常事件（需要重新登录）
+/// 事件类型：用户登录状态异常事件（需要重新登录）
 
-  kJMSGEventNotificationUserLoginStatusUnexpected = 70,
-
-  
-
-  // 免打扰事件
-
-  /// 事件类型: 免打扰变更
-
-  kJMSGEventNotificationNoDisturbChange = 37,
-
-  /// 事件类型: 黑名单变更
-
-  kJMSGEventNotificationBlacklistChange = 38,
-
-  
-
-  // 好友相关事件
-
-  /// 事件类型: 好友邀请相关
-
-  kJMSGEventNotificationFriendInvitation          = 5,
-
-  /// 事件类型: 收到好友邀请
-
-  kJMSGEventNotificationReceiveFriendInvitation   = 51,
-
-  /// 事件类型: 对方接受了你的好友邀请
-
-  kJMSGEventNotificationAcceptedFriendInvitation  = 52,
-
-  /// 事件类型: 对方拒绝了你的好友邀请
-
-  kJMSGEventNotificationDeclinedFriendInvitation  = 53,
-
-  /// 事件类型: 对方将你从好友中删除
-
-  kJMSGEventNotificationDeletedFriend             = 6,
-
-  /// 事件类型：非客户端修改好友关系收到好友更新事件
-
-  kJMSGEventNotificationReceiveServerFriendUpdate = 7,
-
-  // 消息事件
-
-  /// 事件类型: 群组被创建
-
-  kJMSGEventNotificationCreateGroup = 8,
-
-  /// 事件类型: 退出群组
-
-  kJMSGEventNotificationExitGroup = 9,
-
-  /// 事件类型: 群组添加新成员
-
-  kJMSGEventNotificationAddGroupMembers = 10,
-
-  /// 事件类型: 群组成员被踢出
-
-  kJMSGEventNotificationRemoveGroupMembers = 11,
-
-  /// 事件类型: 群信息更新
-
-  kJMSGEventNotificationUpdateGroupInfo = 12,
+kJMSGEventNotificationUserLoginStatusUnexpected = 70,
 
 
+
+/// 事件类型：当前登录用户信息变更通知事件(非客户端修改)
+
+kJMSGEventNotificationCurrentUserInfoChange = 40,
+
+
+
+
+// 免打扰事件
+
+/// 事件类型: 免打扰变更
+
+kJMSGEventNotificationNoDisturbChange = 37,
+
+/// 事件类型: 黑名单变更
+
+kJMSGEventNotificationBlacklistChange = 38,
+
+
+
+
+// 好友相关事件
+
+/// 事件类型: 好友邀请相关
+
+kJMSGEventNotificationFriendInvitation = 5,
+
+/// 事件类型: 收到好友邀请
+
+kJMSGEventNotificationReceiveFriendInvitation = 51,
+
+/// 事件类型: 对方接受了你的好友邀请
+
+kJMSGEventNotificationAcceptedFriendInvitation = 52,
+
+/// 事件类型: 对方拒绝了你的好友邀请
+
+kJMSGEventNotificationDeclinedFriendInvitation = 53,
+
+/// 事件类型: 对方将你从好友中删除
+
+kJMSGEventNotificationDeletedFriend = 6,
+
+/// 事件类型：非客户端修改好友关系收到好友更新事件
+
+kJMSGEventNotificationReceiveServerFriendUpdate = 7,
+
+// 消息事件
+
+/// 事件类型: 群组被创建
+
+kJMSGEventNotificationCreateGroup = 8,
+
+/// 事件类型: 退出群组
+
+kJMSGEventNotificationExitGroup = 9,
+
+/// 事件类型: 群组添加新成员
+
+kJMSGEventNotificationAddGroupMembers = 10,
+
+/// 事件类型: 群组成员被踢出
+
+kJMSGEventNotificationRemoveGroupMembers = 11,
+
+/// 事件类型: 群信息更新
+
+kJMSGEventNotificationUpdateGroupInfo = 12

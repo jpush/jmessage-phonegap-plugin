@@ -18,6 +18,9 @@
 
 @interface JMessagePlugin : CDVPlugin
 
+-(void)startJMessageSDK:(CDVInvokedUrlCommand *)command;
+
+-(void)init:(CDVInvokedUrlCommand *)command;
 
 //--------------- JMessage Interface ---------------//
 
@@ -116,64 +119,43 @@
 // onLoginUserKicked;// 改用 onReceiveNotificationEvent 方法统一监听被踢、用户信息过期、好友等通知事件
 
 
+#pragma mark - JMessage SDK v2.2.4 新增 API
 
+#pragma mark JMSGConversation
 
+-(void)getAllUnreadCount:(CDVInvokedUrlCommand *)command;//获取当前所有会话的未读消息的总数
 
-
-//--------------- JPush Interface ---------------//
-
--(void)initPush:(CDVInvokedUrlCommand *)command;
-
-//设置标签、别名
--(void)setTagsWithAlias:(CDVInvokedUrlCommand *)command;
--(void)setTags:(CDVInvokedUrlCommand *)command;
--(void)setAlias:(CDVInvokedUrlCommand *)command;
-
-//获取 RegistrationID
--(void)getRegistrationID:(CDVInvokedUrlCommand *)command;
-
-//页面统计
--(void)startLogPageView:(CDVInvokedUrlCommand *)command;
--(void)stopLogPageView:(CDVInvokedUrlCommand *)command;
--(void)beginLogPageView:(CDVInvokedUrlCommand *)command;
-
-//设置角标到服务器,服务器下一次发消息时,会设置成这个值
-//本接口不会改变应用本地的角标值.
--(void)setBadge:(CDVInvokedUrlCommand *)command;
-//相当于 [setBadge:0]
--(void)resetBadge:(CDVInvokedUrlCommand *)command;
-
-//应用本地的角标值设置/获取
--(void)setApplicationIconBadgeNumber:(CDVInvokedUrlCommand *)command;
--(void)getApplicationIconBadgeNumber:(CDVInvokedUrlCommand *)command;
-
-//停止与恢复推送
--(void)stopPush:(CDVInvokedUrlCommand *)command;
--(void)resumePush:(CDVInvokedUrlCommand *)command;
--(void)isPushStopped:(CDVInvokedUrlCommand *)command;
-
-//开关日志
--(void)setDebugModeFromIos:(CDVInvokedUrlCommand *)command;
--(void)setLogOFF:(CDVInvokedUrlCommand *)command;
--(void)crashLogON:(CDVInvokedUrlCommand *)command;
-
-//本地推送
--(void)setLocalNotification:(CDVInvokedUrlCommand *)command;
--(void)deleteLocalNotificationWithIdentifierKey:(CDVInvokedUrlCommand *)command;
--(void)clearAllLocalNotifications:(CDVInvokedUrlCommand *)command;
-
-//地理位置上报 [latitude,longitude]
--(void)setLocation:(CDVInvokedUrlCommand *)command;
+#pragma mark - JMessage SDK v2.1.3 新增 API
 
 /*
- *  以下为js中可监听到的事件
- *  jpush.openNotification      点击推送消息启动或唤醒app
- *  jpush.setTagsWithAlias      设置标签、别名完成
- *  jpush.receiveMessage        收到自定义消息
- *  jpush.receiveNotification   前台收到推送
- *  jpush.backgoundNotification 后台收到推送
- */
+ 新增：本应用和跨应用的免打扰功能；
+ 新增：跨应用群聊功能；
+ 新增：本应用和跨应用的黑名单功能；
+ 新增：暴露event msg作用对象的username(s),用户开发者定制event msg；
+ 新增：JMGGroup 增加一个属性 max_member_count，表示当前群成员最大人数；
+ 新增：JMGGroup 增加一个属性 ownerAppKey，表示当前群群主的appKey。
+*/
 
--(void)handleResultWithValue:(id)value command:(CDVInvokedUrlCommand*)command;
+#pragma mark JMessage
+
+-(void)noDisturbList:(CDVInvokedUrlCommand *)command;//用户免打扰列表 设置全局免打扰标识。
+-(void)isSetGlobalNoDisturb:(CDVInvokedUrlCommand *)command;//获取全局免打扰状态
+-(void)setIsGlobalNoDisturb:(CDVInvokedUrlCommand *)command;//设置是否全局免打扰
+-(void)blackList:(CDVInvokedUrlCommand *)command;//获取黑名单列表
+
+#pragma mark JMSGUser
+
+-(void)userSetIsNoDisturb:(CDVInvokedUrlCommand *)command;//设置用户免打扰（支持跨应用设置）
+-(void)isInBlacklist:(CDVInvokedUrlCommand *)command;//获取黑名单状态
+-(void)addUsersToBlacklist:(CDVInvokedUrlCommand *)command;//添加黑名单
+-(void)delUsersFromBlacklist:(CDVInvokedUrlCommand *)command;//删除黑名单
+
+-(void)cross_addUsersToBlacklist:(CDVInvokedUrlCommand *)command;//跨应用添加黑名单
+-(void)cross_delUsersFromBlacklist:(CDVInvokedUrlCommand *)command;//跨应用删除黑名单
+
+#pragma mark JMSGGroup
+
+
+-(void)groupSetIsNoDisturb:(CDVInvokedUrlCommand *)command;//设置群组消息免打扰（支持跨应用设置）
 
 @end

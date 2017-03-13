@@ -17,31 +17,28 @@
 
 @interface JMessageHelper : NSObject<JMessageDelegate>
 
-- (void)initJMessage:(NSDictionary*)launchOptions;
-- (void)didReceiveRemoteNotification:(NSDictionary *)userInfo;
+-(void)initJMessage:(NSDictionary*)launchOptions;
 
 @end
 
 
-#pragma mark - Category
 
-@interface NSDictionary (JPush)
+@interface NSDictionary (JMessage)
 -(NSString*)toJsonString;
 @end
 
-@interface NSString (JPush)
+@interface NSString (JMessage)
 -(NSDictionary*)toDictionary;
 @end
 
-@interface JMSGConversation (JPush)
+@interface JMSGConversation (JMessage)
 -(NSMutableDictionary*)conversationToDictionary;
 @end
 
-@interface JMSGUser (JPush)
+@interface JMSGUser (JMessage)
 -(NSMutableDictionary*)userToDictionary;
 @end
 
-@interface JMSGGroup (JPush)
+@interface JMSGGroup (JMessage)
 -(NSMutableDictionary*)groupToDictionary;
 @end
-

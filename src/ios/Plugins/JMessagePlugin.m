@@ -12,24 +12,33 @@
 //
 
 #import "JMessagePlugin.h"
-#import "ConstantDef.h"
 #import <JMessage/JMessage.h>
-#import "JMessageHelper.h"
 #import <AVFoundation/AVFoundation.h>
+
+#import "JMessageHelper.h"
+#import "JMessageDefine.h"
+#import "AppDelegate+JMessage.h"
 
 #pragma mark - Cordova
 
-@interface JMessagePlugin ()<JMSGEventDelegate>
+#define ResultSuccess(method) [NSString stringWithFormat:@"success - %@",method]
+#define ResultFailed(method)  [NSString stringWithFormat:@"failed  - %@",method]
+
+@interface JMessagePlugin ()<JMSGEventDelegate,UIApplicationDelegate>
 
 @end
 
+JMessagePlugin *SharedJMessagePlugin;
+
 @implementation JMessagePlugin
+
 
 #ifdef __CORDOVA_4_0_0
 
 - (void)pluginInitialize {
     NSLog(@"### pluginInitialize ");
     [self initNotifications];
+    [self initPlugin];
 }
 
 #else
@@ -39,10 +48,17 @@
     if (self=[super initWithWebView:theWebView]) {
         [self initNotifications];
     }
+    [self initPlugin];
     return self;
 }
 
 #endif
+
+-(void)initPlugin{
+    if (!SharedJMessagePlugin) {
+        SharedJMessagePlugin = self;
+    }
+}
 
 - (void)onAppTerminate {
     NSLog(@"### onAppTerminate ");
@@ -59,10 +75,15 @@
 
 #pragma mark - JMessagePlugin
 
+-(void)startJMessageSDK:(CDVInvokedUrlCommand *)command{
+    [(AppDelegate*)[UIApplication sharedApplication].delegate startJMessageSDK];
+}
+
+
 #pragma mark IM - Private
 
 //因为cordova 有lazy 特性，所以在不使用其他函数的情况下。这个函数作用在于激活插件
-- (void)initPush:(CDVInvokedUrlCommand *)command {
+- (void)init:(CDVInvokedUrlCommand *)command {
 
 }
 
@@ -83,28 +104,6 @@
                       selector:@selector(didSendMessage:)
                           name:kJJMessageSendMessageRespone
                         object:nil];
-
-    [defaultCenter addObserver:self
-                      selector:@selector(networkDidReceiveMessage:)
-                          name:kJJPushReceiveMessage
-                        object:nil];
-
-    [defaultCenter addObserver:self
-                      selector:@selector(networkDidReceiveNotification:)
-                          name:kJPushPluginReceiveNotification
-                        object:nil];
-
-    [defaultCenter addObserver:self
-                      selector:@selector(networkDidReceiveNotification:)
-                          name:kJPushPluginiOS10ForegroundReceiveNotification
-                        object:nil];
-
-    [defaultCenter addObserver:self
-                      selector:@selector(networkDidReceiveNotification:)
-                          name:kJPushPluginiOS10ClickNotification
-                        object:nil];
-
-    
     
     [defaultCenter addObserver:self
                       selector:@selector(unreadChanged:)
@@ -139,23 +138,23 @@
 #pragma mark IM - Notifications
 
 -(void)didSendMessage:(NSNotification *)notification {
-    [self commonSendMessage:@"onSendMessage" jsonParm:[notification.object toJsonString]];
+    [JMessagePlugin evalFuntionName:@"onSendMessage" jsonParm:[notification.object toJsonString]];
 }
 
 - (void)conversationChanged:(NSNotification *)notification {
-    [self commonSendMessage:@"onConversationChanged" jsonParm:[notification.object toJsonString]];
+    [JMessagePlugin evalFuntionName:@"onConversationChanged" jsonParm:[notification.object toJsonString]];
 }
 
 - (void)unreadChanged:(NSNotification *)notification{
-    [self commonSendMessage:@"onUnreadChanged" jsonParm:[notification.object toJsonString]];
+    [JMessagePlugin evalFuntionName:@"onUnreadChanged" jsonParm:[notification.object toJsonString]];
 }
 
 - (void)groupInfoChanged:(NSNotification *)notification{
-    [self commonSendMessage:@"onGroupInfoChanged" jsonParm:[notification.object toJsonString]];
+    [JMessagePlugin evalFuntionName:@"onGroupInfoChanged" jsonParm:[notification.object toJsonString]];
 }
 
 - (void)loginUserKicked:(NSNotification *)notification{
-    [self commonSendMessage:@"onLoginUserKicked" jsonParm:@"login user kicked"];
+    [JMessagePlugin evalFuntionName:@"onLoginUserKicked" jsonParm:@"login user kicked"];
 }
 
 //didReceiveJMessageMessage change name
@@ -164,7 +163,7 @@
     NSString *jsonString = [userInfo toJsonString];
     jsonString = [jsonString stringByReplacingOccurrencesOfString:@"\"{" withString:@"{"];
     jsonString = [jsonString stringByReplacingOccurrencesOfString:@"}\"" withString:@"}"];
-    [self commonSendMessage:@"onReceiveConversationMessage" jsonParm:jsonString];
+    [JMessagePlugin evalFuntionName:@"onReceiveConversationMessage" jsonParm:jsonString];
 }
 
 -(void)onReceiveImageData:(NSNotification*)notification{
@@ -173,7 +172,7 @@
     NSString *jsonString = [userInfo toJsonString];
     jsonString = [jsonString stringByReplacingOccurrencesOfString:@"\"{" withString:@"{"];
     jsonString = [jsonString stringByReplacingOccurrencesOfString:@"}\"" withString:@"}"];
-    [self commonSendMessage:@"onReceiveImageData" jsonParm:jsonString];
+    [JMessagePlugin evalFuntionName:@"onReceiveImageData" jsonParm:jsonString];
 }
 
 -(void)onReceiveVoiceData:(NSNotification*)notification{
@@ -182,7 +181,7 @@
     NSString *jsonString = [userInfo toJsonString];
     jsonString = [jsonString stringByReplacingOccurrencesOfString:@"\"{" withString:@"{"];
     jsonString = [jsonString stringByReplacingOccurrencesOfString:@"}\"" withString:@"}"];
-    [self commonSendMessage:@"onReceiveVoiceData" jsonParm:jsonString];
+    [JMessagePlugin evalFuntionName:@"onReceiveVoiceData" jsonParm:jsonString];
 }
 
 -(void)onReceiveFileData:(NSNotification*)notification{
@@ -191,7 +190,7 @@
     NSString *jsonString = [userInfo toJsonString];
     jsonString = [jsonString stringByReplacingOccurrencesOfString:@"\"{" withString:@"{"];
     jsonString = [jsonString stringByReplacingOccurrencesOfString:@"}\"" withString:@"}"];
-    [self commonSendMessage:@"onReceiveFileData" jsonParm:jsonString];
+    [JMessagePlugin evalFuntionName:@"onReceiveFileData" jsonParm:jsonString];
 }
 
 -(void)onReceiveLocation:(NSNotification*)notification{
@@ -200,13 +199,18 @@
     NSString *jsonString = [userInfo toJsonString];
     jsonString = [jsonString stringByReplacingOccurrencesOfString:@"\"{" withString:@"{"];
     jsonString = [jsonString stringByReplacingOccurrencesOfString:@"}\"" withString:@"}"];
-    [self commonSendMessage:@"onReceiveLocation" jsonParm:jsonString];
+    [JMessagePlugin evalFuntionName:@"onReceiveLocation" jsonParm:jsonString];
 }
 
--(void)commonSendMessage:(NSString *)functionName jsonParm:(NSString*)jsonString{
-    WEAK_SELF(weakSelf);
++(void)evalFuntionName:(NSString*)functionName jsonParm:(NSString*)jsonString{
     dispatch_async(dispatch_get_main_queue(), ^{
-        [weakSelf.commandDelegate evalJs:[NSString stringWithFormat:@"%@.%@('%@')",Plugin_Name,functionName,jsonString]];
+        [SharedJMessagePlugin.commandDelegate evalJs:[NSString stringWithFormat:@"%@.%@('%@')",JMessagePluginName,functionName,jsonString]];
+    });
+}
+
++(void)fireDocumentEvent:(NSString*)eventName jsString:(NSString*)jsString{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [SharedJMessagePlugin.commandDelegate evalJs:[NSString stringWithFormat:@"cordova.fireDocumentEvent('jmessage.%@',%@)", eventName, jsString]];
     });
 }
 
@@ -218,6 +222,9 @@
     WEAK_SELF(weakSelf);
     [JMSGUser registerWithUsername:username password:password completionHandler:^(id resultObject, NSError *error) {
         [weakSelf handleResultWithValue:@"user register succeeded" command:command error:error log:@"user register"];
+        if (!error) {
+            //注册成功
+        }
     }];
 }
 
@@ -248,9 +255,8 @@
         dict = [user userToDictionary];
     }
     else{
-        error = [NSError errorWithDomain:@"JMessagePlugin error" code:errorNoFound userInfo:@{@"description":errorNoFoundString}];
+        error = [NSError errorWithDomain:@"JMessagePlugin error" code:kJMSGErrorSDKUserNotLogin userInfo:@{@"description":@"未登录"}];
     }
-
     [self handleResultWithValue:dict command:command error:error];
 }
 
@@ -300,7 +306,7 @@
     }
     WEAK_SELF(weak_self);
     [JMSGUser updateMyInfoWithParameter:val userFieldType:type completionHandler:^(id resultObject, NSError *error) {
-        [weak_self handleResultWithValue:@"success" command:command error:error];
+        [weak_self handleResultWithValue:ResultSuccess(@"updateMyInfo") command:command error:error];
     }];
 }
 
@@ -497,7 +503,12 @@
             NSArray * messageList =  [conversation messageArrayFromNewestWithOffset:from limit:limit];
             for (JMSGMessage * msg in messageList) {
                 NSString * jsonString  = [msg toJsonString];
-                [resultArr addObject:[jsonString toDictionary]];
+                JMSGGroup *group = msg.target;
+                NSDictionary *groupDict = [group groupToDictionary];
+                NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[jsonString toDictionary]];
+                [dict addEntriesFromDictionary:@{@"groupDict":groupDict}];
+                dict[KEY_LASTMESSAGE] = conversation.latestMessageContentText;
+                [resultArr addObject:dict];
             }
         }
         [weakSelf handleResultWithValue:resultArr command:command error:error log:@"JMessagePlugin Get Group History Message"];
@@ -819,293 +830,6 @@
     }];
 }
 
-#pragma mark - JPush
-
-#pragma mark 设置标签、别名、回调
-
-- (void)setTagsWithAlias:(CDVInvokedUrlCommand *)command {
-    NSArray *arguments = command.arguments;
-    if (!arguments||[arguments count]<2) {
-        return ;
-    }
-    NSString *alias     = arguments[0];
-    NSArray  *arrayTags = arguments[1];
-    NSSet    *set       = [NSSet setWithArray:arrayTags];
-    [JPUSHService setTags:set
-                    alias:alias
-         callbackSelector:@selector(tagsWithAliasCallback:tags:alias:)
-                   object:self];
-}
-
-- (void)setTags:(CDVInvokedUrlCommand *)command {
-    NSArray *tags = command.arguments;
-    [JPUSHService setTags:[NSSet setWithArray:tags]
-         callbackSelector:@selector(tagsWithAliasCallback:tags:alias:)
-                   object:self];
-}
-
-- (void)setAlias:(CDVInvokedUrlCommand *)command {
-    [JPUSHService setAlias:command.arguments[0]
-          callbackSelector:@selector(tagsWithAliasCallback:tags:alias:)
-                    object:self];
-}
-
--(void)tagsWithAliasCallback:(int)resultCode tags:(NSSet *)tags alias:(NSString *)alias{
-    NSDictionary *dict = @{@"resultCode":[NSNumber numberWithInt:resultCode],
-                           @"tags"      :tags  == nil ? [NSNull null] : [tags allObjects],
-                           @"alias"     :alias == nil ? [NSNull null] : alias
-                           };
-    [self.commandDelegate evalJs:[NSString stringWithFormat:@"cordova.fireDocumentEvent('jpush.setTagsWithAlias',%@)",[dict toJsonString]]];
-}
-
-#pragma mark 获取 RegistrationID
-
--(void)getRegistrationID:(CDVInvokedUrlCommand*)command{
-    NSString* registrationID = [JPUSHService registrationID];
-    NSLog(@"### getRegistrationID %@",registrationID);
-    [self handleResultWithValue:registrationID command:command];
-}
-
-#pragma mark 页面统计
-
-- (void)startLogPageView:(CDVInvokedUrlCommand *)command {
-    NSArray *arguments = command.arguments;
-    if (!arguments || [arguments count] < 1) {
-        NSLog(@"startLogPageView argument  error");
-        return ;
-    }
-    NSString * pageName = arguments[0];
-    if (pageName) {
-        [JPUSHService startLogPageView:pageName];
-    }
-}
-
-- (void)stopLogPageView:(CDVInvokedUrlCommand *)command {
-    NSArray *arguments = command.arguments;
-    if (!arguments || [arguments count] < 1) {
-        NSLog(@"stopLogPageView argument  error");
-        return ;
-    }
-    NSString * pageName = arguments[0];
-    if (pageName) {
-        [JPUSHService stopLogPageView:pageName];
-    }
-}
-
--(void)beginLogPageView:(CDVInvokedUrlCommand*)command{
-    NSArray *arguments = command.arguments;
-    if (!arguments || [arguments count] < 2) {
-        NSLog(@"beginLogPageView argument  error");
-        return ;
-    }
-    NSString * pageName = arguments[0];
-    int duration = [arguments[0] intValue];
-    if (pageName) {
-        [JPUSHService beginLogPageView:pageName duration:duration];
-    }
-}
-
-#pragma mark badge
-
--(void)setBadge:(CDVInvokedUrlCommand *)command{
-    NSArray *argument = command.arguments;
-    if ([argument count] < 1) {
-        NSLog(@"setBadge argument error!");
-        return;
-    }
-    NSNumber *badge = argument[0];
-    [JPUSHService setBadge:[badge intValue]];
-}
-
--(void)resetBadge:(CDVInvokedUrlCommand *)command{
-    [JPUSHService resetBadge];
-}
-
--(void)setApplicationIconBadgeNumber:(CDVInvokedUrlCommand *)command{
-    NSArray *argument = command.arguments;
-    if ([argument count] < 1) {
-        NSLog(@"setBadge argument error!");
-        return;
-    }
-    NSNumber *badge = [argument objectAtIndex:0];
-    [UIApplication sharedApplication].applicationIconBadgeNumber = [badge intValue];
-}
-
--(void)getApplicationIconBadgeNumber:(CDVInvokedUrlCommand *)command {
-    NSInteger num    = [UIApplication sharedApplication].applicationIconBadgeNumber;
-    NSNumber *number = [NSNumber numberWithInteger:num];
-    [self handleResultWithValue:number command:command];
-}
-
-#pragma mark 停止与恢复推送
-
--(void)stopPush:(CDVInvokedUrlCommand*)command{
-    [[UIApplication sharedApplication] unregisterForRemoteNotifications];
-}
-
--(void)resumePush:(CDVInvokedUrlCommand*)command{
-    if ([[UIDevice currentDevice].systemVersion floatValue] >= 8.0) {
-        //可以添加自定义categories
-        [JPUSHService registerForRemoteNotificationTypes:(UIUserNotificationTypeBadge |
-                                                          UIUserNotificationTypeSound |
-                                                          UIUserNotificationTypeAlert)
-                                              categories:nil];
-    } else {
-        //categories 必须为nil
-        [JPUSHService registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge |
-                                                          UIRemoteNotificationTypeSound |
-                                                          UIRemoteNotificationTypeAlert)
-                                              categories:nil];
-    }
-
-}
-
--(void)isPushStopped:(CDVInvokedUrlCommand*)command{
-    NSNumber *result;
-    if ([[UIApplication sharedApplication] isRegisteredForRemoteNotifications]) {
-        result = @(0);
-    }else{
-        result = @(1);
-    }
-    [self handleResultWithValue:result command:command];
-}
-
-#pragma mark 开关日志
-
--(void)setDebugModeFromIos:(CDVInvokedUrlCommand*)command{
-    [JPUSHService setDebugMode];
-}
-
--(void)setLogOFF:(CDVInvokedUrlCommand*)command{
-    [JPUSHService setLogOFF];
-}
-
--(void)crashLogON:(CDVInvokedUrlCommand*)command{
-    [JPUSHService crashLogON];
-}
-
-#pragma mark 本地推送
-
--(void)setLocalNotification:(CDVInvokedUrlCommand*)command{
-    NSArray      *arguments = command.arguments;
-    NSDate       *date      = arguments[0] == [NSNull null] ? nil : [NSDate dateWithTimeIntervalSinceNow:[((NSString*)arguments[0]) intValue]];
-    NSString     *alertBody = arguments[1] == [NSNull null] ? nil : (NSString*)arguments[1];
-    int           badge     = arguments[2] == [NSNull null] ? 0   : [(NSString*)arguments[2] intValue];
-    NSString     *idKey     = arguments[3] == [NSNull null] ? nil : (NSString*)arguments[3];
-    NSDictionary *dict      = arguments[4] == [NSNull null] ? nil : (NSDictionary*)arguments[4];
-    [JPUSHService setLocalNotification:date alertBody:alertBody badge:badge alertAction:nil identifierKey:idKey userInfo:dict soundName:nil];
-}
-
--(void)deleteLocalNotificationWithIdentifierKey:(CDVInvokedUrlCommand*)command{
-    [JPUSHService deleteLocalNotificationWithIdentifierKey:(NSString*)command.arguments[0]];
-}
-
--(void)clearAllLocalNotifications:(CDVInvokedUrlCommand*)command{
-    [JPUSHService clearAllLocalNotifications];
-}
-
-#pragma mark 地理位置上报
-
--(void)setLocation:(CDVInvokedUrlCommand*)command{
-    [JPUSHService setLatitude:[((NSString*)command.arguments[0]) doubleValue] longitude:[((NSString*)command.arguments[1]) doubleValue]];
-}
-
-#pragma mark - JPush Private
-
--(void)commonPushRespone:(NSString *)functionName
-                jsonParm:(NSString *)jsonString{
-    [self.commandDelegate evalJs:[NSString stringWithFormat:@"%@.%@('%@')",Plugin_Push_Name,functionName,jsonString]];
-}
-
-- (void)networkDidReceiveMessage:(NSNotification *)notification {
-    [self commonPushRespone:@"onReceiveMessageIniOS" jsonParm:[notification.object toJsonString]];
-}
-
--(void)networkDidReceiveNotification:(NSNotification *)notification{
-    switch ([UIApplication sharedApplication].applicationState) {
-        case UIApplicationStateActive:{
-            //前台收到
-            [self commonPushRespone:@"onReceiveNofiticationIniOS" jsonParm:[notification.object toJsonString]];
-        }
-            break;
-        case UIApplicationStateInactive:{
-            //后台点击
-            [self commonPushRespone:@"onOpenNofiticationIniOS" jsonParm:[notification.object toJsonString]];
-        }
-        case UIApplicationStateBackground:{
-            //后台收到
-            [self commonPushRespone:@"onBackgoundNotificationIniOS" jsonParm:[notification.object toJsonString]];
-        }
-            break;
-        default:
-            //do nothing
-            break;
-    }
-}
-
-#pragma mark - IM & JPush private
-
-#pragma mark handleResult 将参数返回给js
-
--(void)handleResultWithValue:(id)value command:(CDVInvokedUrlCommand*)command{
-    [self handleResultWithValue:value command:command error:nil log:nil];
-}
-
--(void)handleResultWithValue:(id)value command:(CDVInvokedUrlCommand*)command log:(NSString*)log{
-    [self handleResultWithValue:value command:command error:nil log:log];
-}
-
--(void)handleResultWithValue:(id)value command:(CDVInvokedUrlCommand*)command error:(NSError*)error{
-    [self handleResultWithValue:value command:command error:error log:nil];
-}
-
--(void)handleResultWithValue:(id)value command:(CDVInvokedUrlCommand*)command error:(NSError*)error log:(NSString*)log{
-
-    CDVPluginResult *result = nil;
-
-    if (error == nil) {
-        CDVCommandStatus status = CDVCommandStatus_OK;
-
-        if ([value isKindOfClass:[NSString class]]) {
-            value = [value stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-        } else if ([value isKindOfClass:[NSNull class]]) {
-            value = nil;
-        }
-
-        if ([value isKindOfClass:[NSObject class]]) {
-            result = [CDVPluginResult resultWithStatus:status messageAsString:value];//NSObject 类型都可以
-        } else {
-            NSLog(@"JMessagePlugin Log: Cordova callback block returned unrecognized type: %@", NSStringFromClass([value class]));
-            result = nil;
-        }
-
-        if (result != nil) {
-            if (log) {
-                NSLog(@"JMessagePlugin Log: %@ succeeded",log);
-            }
-        }else{
-            if (log) {
-                NSLog(@"JMessagePlugin Log: %@ failed",log);
-            }
-            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
-        }
-
-
-    }else{
-        if (log) {
-            NSLog(@"JMessagePlugin Log: %@ failed",log);
-        }
-        NSMutableDictionary * dict = [NSMutableDictionary new];
-        [dict setValue:[NSNumber numberWithLong:error.code] forKey:KEY_ERRORCODE];
-        [dict setValue:error.debugDescription forKey:KEY_ERRORDESCRIP];
-        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:dict];
-    }
-
-
-    WEAK_SELF(weakSelf);
-    [weakSelf.commandDelegate sendPluginResult:result callbackId:command.callbackId];
-}
-
 #pragma mark - JMessage SDK v2.2.0~v2.2.1 新增
 
 -(void)onReceiveNotificationEvent:(JMSGNotificationEvent *)event{
@@ -1142,7 +866,7 @@
     if (userDict) {
         [dict setValue:[dict toJsonString] forKey:@"user"];
     }
-    [self commonSendMessage:@"onReceiveNotificationEvent" jsonParm:[dict toJsonString]];
+    [JMessagePlugin evalFuntionName:@"onReceiveNotificationEvent" jsonParm:[dict toJsonString]];
 
 }
 
@@ -1313,6 +1037,258 @@
     }
 }
 
+
+#pragma mark - JMessage SDK v2.2.4 新增 API
+
+-(void)getAllUnreadCount:(CDVInvokedUrlCommand *)command{
+    NSNumber *number = [JMSGConversation getAllUnreadCount];
+    [self handleResultWithValue:number command:command];
+}
+
+#pragma mark - JMessage SDK v2.1.3 新增 API
+
+#pragma mark JMessage
+
+-(void)noDisturbList:(CDVInvokedUrlCommand *)command{
+    WEAK_SELF(weakSelf);
+    [JMessage noDisturbList:^(id resultObject, NSError *error) {
+        NSArray *array = resultObject;
+        NSMutableArray *resultArr = [NSMutableArray array];
+        if (array.count > 0) {
+            if ([array[0] isKindOfClass:[JMSGUser class]]) {
+                for (JMSGUser *user in array) {
+                    [resultArr addObject:[user userToDictionary]];
+                }
+            }else{
+                for (JMSGGroup *group in array) {
+                    [resultArr addObject:[group groupToDictionary]];
+                }
+            }
+        }
+        [weakSelf handleResultWithValue:resultArr command:command error:error];
+    }];
+}
+
+-(void)isSetGlobalNoDisturb:(CDVInvokedUrlCommand *)command{
+    NSNumber *number = [NSNumber numberWithBool:[JMessage isSetGlobalNoDisturb]];
+    [self handleResultWithValue:number command:command];
+}
+
+-(void)setIsGlobalNoDisturb:(CDVInvokedUrlCommand *)command{
+    NSNumber *number = [command argumentAtIndex:0];
+    WEAK_SELF(weakSelf);
+    [JMessage setIsGlobalNoDisturb:[number boolValue] handler:^(id resultObject, NSError *error) {
+        [weakSelf handleResultWithValue:@"setIsGlobalNoDisturb" command:command error:error];
+    }];
+}
+
+-(void)blackList:(CDVInvokedUrlCommand *)command{
+    WEAK_SELF(weakSelf);
+    [JMessage blackList:^(id resultObject, NSError *error) {
+        NSArray *array = resultObject;
+        NSMutableArray *resultArr = [NSMutableArray array];
+        if (array.count > 0) {
+            for (JMSGUser *user in array) {
+                [resultArr addObject:[user userToDictionary]];
+            }
+        }
+        [weakSelf handleResultWithValue:resultArr command:command error:error];
+    }];
+}
+
+#pragma mark JMSGUser
+
+-(void)userIsNoDisturb:(CDVInvokedUrlCommand *)command{
+    NSString *username = [command argumentAtIndex:0];
+    NSString *appkey   = [command argumentAtIndex:1];
+    WEAK_SELF(weakSelf);
+    if (appkey == nil) {
+        [JMSGConversation createSingleConversationWithUsername:username completionHandler:^(id resultObject, NSError *error) {
+            NSNumber *number;
+            if (error == nil) {
+                JMSGUser *user = ((JMSGConversation*)resultObject).target;
+                number = [NSNumber numberWithBool:user.isNoDisturb];
+            }
+            [weakSelf handleResultWithValue:number command:command error:error];
+        }];
+    }else{
+        [JMSGConversation createSingleConversationWithUsername:username appKey:appkey completionHandler:^(id resultObject, NSError *error) {
+            NSNumber *number;
+            if (error == nil) {
+                JMSGUser *user = ((JMSGConversation*)resultObject).target;
+                number = [NSNumber numberWithBool:user.isNoDisturb];
+            }
+            [weakSelf handleResultWithValue:number command:command error:error];
+        }];
+    }
+}
+
+-(void)userSetIsNoDisturb:(CDVInvokedUrlCommand *)command{
+    NSString *username = [command argumentAtIndex:0];
+    NSString *appkey   = [command argumentAtIndex:1];
+    NSNumber *isNoDisturb = [command argumentAtIndex:2];
+    WEAK_SELF(weakSelf);
+    if (appkey == nil) {
+        [JMSGConversation createSingleConversationWithUsername:username completionHandler:^(id resultObject, NSError *error) {
+            if (error == nil) {
+                JMSGUser *user = ((JMSGConversation*)resultObject).target;
+                [user setIsNoDisturb:isNoDisturb.boolValue handler:^(id resultObject, NSError *error) {
+                    [weakSelf handleResultWithValue:ResultSuccess(@"setIsNoDisturb") command:command error:error];
+                }];
+            }else{
+                [weakSelf handleResultWithValue:ResultFailed(@"setIsNoDisturb") command:command error:error];
+            }
+        }];
+    }else{
+        [JMSGConversation createSingleConversationWithUsername:username appKey:appkey completionHandler:^(id resultObject, NSError *error) {
+            if (error == nil) {
+                JMSGUser *user = ((JMSGConversation*)resultObject).target;
+                [user setIsNoDisturb:isNoDisturb.boolValue handler:^(id resultObject, NSError *error) {
+                    [weakSelf handleResultWithValue:ResultSuccess(@"setIsNoDisturb") command:command error:error];
+                }];
+            }else{
+                [weakSelf handleResultWithValue:ResultFailed(@"setIsNoDisturb") command:command error:error];
+            }
+        }];
+    }
+}
+
+-(void)isInBlacklist:(CDVInvokedUrlCommand *)command{
+    NSString *username = [command argumentAtIndex:0];
+    NSString *appkey   = [command argumentAtIndex:1];
+    __block NSNumber *number;
+    WEAK_SELF(weakSelf);
+    if (appkey == nil) {
+        [JMSGConversation createSingleConversationWithUsername:username completionHandler:^(id resultObject, NSError *error) {
+            if (error == nil) {
+                JMSGUser *user = ((JMSGConversation*)resultObject).target;
+                number = [NSNumber numberWithBool:[user isInBlacklist]];
+            }
+            [weakSelf handleResultWithValue:number command:command error:error];
+        }];
+    }else{
+        [JMSGConversation createSingleConversationWithUsername:username appKey:appkey completionHandler:^(id resultObject, NSError *error) {
+            if (error == nil) {
+                JMSGUser *user = ((JMSGConversation*)resultObject).target;
+                number = [NSNumber numberWithBool:[user isInBlacklist]];
+            }
+            [weakSelf handleResultWithValue:number command:command error:error];
+        }];
+    }
+}
+
+-(void)addUsersToBlacklist:(CDVInvokedUrlCommand *)command{
+    NSArray *usernames = [command argumentAtIndex:0];
+    WEAK_SELF(weakSelf);
+    [JMSGUser addUsersToBlacklist:usernames completionHandler:^(id resultObject, NSError *error) {
+        [weakSelf handleResultWithValue:ResultSuccess(@"addUsersToBlacklist") command:command error:error];
+    }];
+}
+
+-(void)delUsersFromBlacklist:(CDVInvokedUrlCommand *)command{
+    NSArray *usernames = [command argumentAtIndex:0];
+    WEAK_SELF(weakSelf);
+    [JMSGUser delUsersFromBlacklist:usernames completionHandler:^(id resultObject, NSError *error) {
+        [weakSelf handleResultWithValue:ResultSuccess(@"delUsersFromBlacklist") command:command error:error];
+    }];
+}
+
+-(void)cross_addUsersToBlacklist:(CDVInvokedUrlCommand *)command{
+    NSArray *usernames = [command argumentAtIndex:0];
+    NSString *appkey   = [command argumentAtIndex:1];
+    WEAK_SELF(weakSelf);
+    [JMSGUser addUsersToBlacklist:usernames appKey:appkey completionHandler:^(id resultObject, NSError *error) {
+        [weakSelf handleResultWithValue:ResultSuccess(@"cross_addUsersToBlacklist") command:command error:error];
+    }];
+}
+
+-(void)cross_delUsersFromBlacklist:(CDVInvokedUrlCommand *)command{
+    NSArray *usernames = [command argumentAtIndex:0];
+    NSString *appkey   = [command argumentAtIndex:1];
+    WEAK_SELF(weakSelf);
+    [JMSGUser delUsersFromBlacklist:usernames appKey:appkey completionHandler:^(id resultObject, NSError *error) {
+        [weakSelf handleResultWithValue:ResultSuccess(@"cross_delUsersFromBlacklist") command:command error:error];
+    }];
+}
+
+#pragma mark JMSGGroup
+
+-(void)groupSetIsNoDisturb:(CDVInvokedUrlCommand *)command{
+    NSString *gid = [command argumentAtIndex:0];
+    NSNumber *number = [command argumentAtIndex:1];
+    WEAK_SELF(weakSelf);
+    [JMSGConversation createGroupConversationWithGroupId:gid completionHandler:^(id resultObject, NSError *error) {
+        if (error == nil) {
+            JMSGGroup *group = resultObject;
+            [group setIsNoDisturb:number.boolValue handler:^(id resultObject, NSError *error) {
+                [weakSelf handleResultWithValue:ResultSuccess(@"groupSetIsNoDisturb") command:command error:error];
+            }];
+        }else{
+            [weakSelf handleResultWithValue:ResultFailed(@"groupSetIsNoDisturb") command:command error:error];
+        }
+    }];
+}
+
+
+#pragma mark - handle
+
+-(void)handleResultWithValue:(id)value command:(CDVInvokedUrlCommand*)command{
+    [self handleResultWithValue:value command:command error:nil log:nil];
+}
+
+-(void)handleResultWithValue:(id)value command:(CDVInvokedUrlCommand*)command log:(NSString*)log{
+    [self handleResultWithValue:value command:command error:nil log:log];
+}
+
+-(void)handleResultWithValue:(id)value command:(CDVInvokedUrlCommand*)command error:(NSError*)error{
+    [self handleResultWithValue:value command:command error:error log:nil];
+}
+
+-(void)handleResultWithValue:(id)value command:(CDVInvokedUrlCommand*)command error:(NSError*)error log:(NSString*)log{
+
+    CDVPluginResult *result = nil;
+
+    if (error == nil) {
+        CDVCommandStatus status = CDVCommandStatus_OK;
+
+        if ([value isKindOfClass:[NSString class]]) {
+            value = [value stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        } else if ([value isKindOfClass:[NSNull class]]) {
+            value = nil;
+        }
+
+        if ([value isKindOfClass:[NSObject class]]) {
+            result = [CDVPluginResult resultWithStatus:status messageAsString:value];//NSObject 类型都可以
+        } else {
+            NSLog(@"JMessagePlugin Log: Cordova callback block returned unrecognized type: %@", NSStringFromClass([value class]));
+            result = nil;
+        }
+
+        if (result != nil) {
+            if (log) {
+                NSLog(@"JMessagePlugin Log: %@ succeeded",log);
+            }
+        }else{
+            if (log) {
+                NSLog(@"JMessagePlugin Log: %@ failed",log);
+            }
+            result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
+        }
+
+
+    }else{
+        if (log) {
+            NSLog(@"JMessagePlugin Log: %@ failed",log);
+        }
+        NSMutableDictionary * dict = [NSMutableDictionary new];
+        [dict setValue:[NSNumber numberWithLong:error.code] forKey:KEY_ERRORCODE];
+        [dict setValue:error.debugDescription forKey:KEY_ERRORDESCRIP];
+        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:dict];
+    }
+
+    WEAK_SELF(weakSelf);
+    [weakSelf.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+}
 
 @end
 

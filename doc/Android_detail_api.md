@@ -638,7 +638,7 @@
 		})
 
 ### getOriginImageInSingleConversation
-获取指定单聊会话中的指定图片消息原图。
+获取指定单聊会话中的指定图片消息原图，第一次调用时会从网络下载原图到本地。
 
 #### 接口定义
 
@@ -659,7 +659,7 @@
     })
 
 ### getOriginImageInGroupConversation
-获取指定群聊会话中的指定图片消息原图。
+获取指定群聊会话中的指定图片消息原图，第一次调用时会从网络下载原图到本地。
 
 #### 接口定义
 
@@ -1433,7 +1433,7 @@
 
 ##### 代码示例
 
-	document.addEventListener('jmessage.onReceiveImagetMessage', function(msg) {
+	document.addEventListener('jmessage.onReceiveImageMessage', function(msg) {
 
 	}, false);
 
@@ -1451,7 +1451,7 @@
 
 ##### 代码示例
 
-	document.addEventListener('jmessage.onReceiveCustomtMessage', function(msg) {
+	document.addEventListener('jmessage.onReceiveCustomMessage', function(msg) {
 
 	}, false);
 

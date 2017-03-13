@@ -15,7 +15,7 @@
 #import <JMessage/JMSGGroupDelegate.h>
 #import <JMessage/JMSGUserDelegate.h>
 #import <JMessage/JMSGDBMigrateDelegate.h>
-#import "JMSGEventDelegate.h"
+#import <JMessage/JMSGEventDelegate.h>
 
 /*!
  * 全局代理协议

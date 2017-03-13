@@ -13,85 +13,38 @@
 
 
 #import "JMessageHelper.h"
-#import "ConstantDef.h"
+#import "JMessageDefine.h"
 #import <objc/runtime.h>
 #import <UserNotifications/UserNotifications.h>
 
-@interface JMessageHelper ()<JPUSHRegisterDelegate>
+
+@interface JMessageHelper ()
 
 @end
 
 @implementation JMessageHelper
 
 -(void)initJMessage:(NSDictionary*)launchOptions{
-    //read appkey and channel from JMessageConfig.plist
-    NSString *plistPath = [[NSBundle mainBundle] pathForResource:JMessageConfigFileName ofType:@"plist"];
+
+    NSString *plistPath = [[NSBundle mainBundle] pathForResource:JMessageConfig_FileName ofType:@"plist"];
     if (plistPath == nil) {
         NSLog(@"error: JMessageConfig.plist ");
         assert(0);
     }
 
     NSMutableDictionary *plistData = [[NSMutableDictionary alloc] initWithContentsOfFile:plistPath];
-    NSString * appkey = [plistData valueForKey:JM_APP_KEY];
-    NSString * channel = [plistData valueForKey:JM_APP_CHANNEL];
+    NSString *appkey       = [plistData valueForKey:JMessageConfig_Appkey];
+    NSString *channel      = [plistData valueForKey:JMessageConfig_Channel];
+    NSNumber *isProduction = [plistData valueForKey:JMessageConfig_IsProduction];
 
     // init third-party SDK
     [JMessage addDelegate:self withConversation:nil];
     [JMessage setupJMessage:launchOptions
                      appKey:appkey
-                    channel:channel apsForProduction:NO
+                    channel:channel
+           apsForProduction:[isProduction boolValue]
                    category:nil];
 
-    JPUSHRegisterEntity * entity = [[JPUSHRegisterEntity alloc] init];
-    entity.types = UNAuthorizationOptionAlert | UNAuthorizationOptionBadge | UNAuthorizationOptionSound;
-    [JPUSHService registerForRemoteNotificationConfig:entity delegate:self];
-
-    [self registerJPushStatusNotification];
-}
-
--(void)jpushNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(NSInteger))completionHandler{
-
-    NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithDictionary:notification.request.content.userInfo];
-
-    [userInfo setValue:kJPushPluginiOS10ForegroundReceiveNotification forKey:@"JPushNotificationType"];
-
-    [[NSNotificationCenter defaultCenter] postNotificationName:kJPushPluginiOS10ForegroundReceiveNotification object:userInfo];
-
-    completionHandler(UNNotificationPresentationOptionBadge|UNNotificationPresentationOptionSound|UNNotificationPresentationOptionAlert);
-}
-
--(void)jpushNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)())completionHandler{
-    NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithDictionary:response.notification.request.content.userInfo];
-    @try {
-        [userInfo setValue:[response valueForKey:@"userText"] forKey:@"userText"];
-    } @catch (NSException *exception) { }
-    [userInfo setValue:response.actionIdentifier forKey:@"actionIdentifier"];
-    [userInfo setValue:kJPushPluginiOS10ClickNotification forKey:@"JPushNotificationType"];
-    [[NSNotificationCenter defaultCenter] postNotificationName:kJPushPluginiOS10ClickNotification object:userInfo];
-    completionHandler();
-}
-
-
-- (void)registerJPushStatusNotification{
-    NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
-
-    [defaultCenter addObserver:self
-                      selector:@selector(receivePushMessage:)
-                          name:kJPFNetworkDidReceiveMessageNotification
-                        object:nil];
-}
-
-// notification from JPush
-- (void)receivePushMessage:(NSNotification *)notification {
-    NSLog(@"Event - receivePushMessage");
-
-    NSDictionary *info = notification.userInfo;
-    if (info) {
-        NSLog(@"The message - %@", info);
-    } else {
-        NSLog(@"Unexpected - no user info in jpush mesasge");
-    }
-    [[NSNotificationCenter defaultCenter] postNotificationName:kJJPushReceiveMessage object:info];
 }
 
 - (void)onReceiveMessage:(JMSGMessage *)message error:(NSError *)error{
@@ -108,7 +61,7 @@
                     NSString *resourcePath;
                     Ivar ivar = class_getInstanceVariable([message.content class], "_resourcePath");
                     resourcePath = object_getIvar(message.content, ivar);
-                    [dict setValue:objectId forKey:@"objectId"];
+                    [dict setValue:objectId     forKey:@"objectId"];
                     [dict setValue:resourcePath forKey:@"resourcePath"];
                     [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageReceiveImageData object:dict];
                 }
@@ -123,7 +76,7 @@
                     NSString *resourcePath;
                     Ivar ivar = class_getInstanceVariable([message.content class], "_resourcePath");
                     resourcePath = object_getIvar(message.content, ivar);
-                    [dict setValue:objectId forKey:@"objectId"];
+                    [dict setValue:objectId     forKey:@"objectId"];
                     [dict setValue:resourcePath forKey:@"resourcePath"];
                     [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageReceiveVoiceData object:dict];
                 }
@@ -139,7 +92,7 @@
                     NSString *resourcePath;
                     Ivar ivar = class_getInstanceVariable([message.content class], "_resourcePath");
                     resourcePath = object_getIvar(message.content, ivar);
-                    [dict setValue:objectId forKey:@"objectId"];
+                    [dict setValue:objectId     forKey:@"objectId"];
                     [dict setValue:resourcePath forKey:@"resourcePath"];
                     [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageReceiveFileData object:dict];
                 }
@@ -177,11 +130,6 @@
     NSLog(@"onReceiveMessageDownloadFailed");
 }
 
-- (void)didReceiveRemoteNotification:(NSDictionary *)userInfo{
-    [JPUSHService handleRemoteNotification:userInfo];
-    [[NSNotificationCenter defaultCenter] postNotificationName:kJJPushReceiveNotification object:userInfo];
-}
-
 #pragma mark - Conversation 回调
 
 - (void)onConversationChanged:(JMSGConversation *)conversation{
@@ -209,8 +157,7 @@
 @end
 
 
-
-#pragma mark - Category
+#pragma mark - category
 
 @implementation NSDictionary (JPush)
 -(NSString*)toJsonString{
@@ -259,6 +206,7 @@
     dict[KEY_APP_KEY]     = self.appKey;
     dict[KEY_NOTE_NAME]   = self.noteName;
     dict[KEY_NOTE_TEXT]   = self.noteText;
+    dict[KEY_NO_DISTURB]  = [NSNumber numberWithBool:self.isNoDisturb];
     dict[@"isFriend"]   = [NSString stringWithFormat:@"%d",self.isFriend];
     return dict;
 }
@@ -273,7 +221,14 @@
     dict[KEY_GROUP_LEVEL] = self.level;
     dict[KEY_GROUP_GLAG]  = self.flag;
     dict[KEY_GROUP_OWNER] = self.owner;
+    dict[KEY_GROUP_OWNERAPPKEY] = self.ownerAppKey;
+    dict[KEY_GROUP_MAXMEMBERCOUNT] = self.maxMemberCount;
+    dict[KEY_GROUP_ISNODISTURB] = [NSNumber numberWithBool:self.isNoDisturb];
     return dict;
 }
 @end
+
+
+
+
 

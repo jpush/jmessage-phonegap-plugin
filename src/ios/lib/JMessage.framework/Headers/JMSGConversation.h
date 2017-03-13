@@ -11,6 +11,7 @@
 
 #import <Foundation/Foundation.h>
 #import <JMessage/JMSGConstants.h>
+#import <JMessage/JMSGUser.h>
 
 @class JMSGMessage;
 @class JMSGAbstractContent;
@@ -147,13 +148,13 @@ JMSG_ASSUME_NONNULL_BEGIN
 + (void)allConversationsByDefault:(JMSGCompletionHandler)handler;
 
 
+
 ///----------------------------------------------------------
 /// @name Conversation Basic Properties 会话基本属性：用于会话列表
 ///----------------------------------------------------------
 
 /*!
  * @abstract 会话标题
- * @discussion 会话头像没有属性字段, 应通过 avatarData: 方法异步去获取。
  */
 @property(nonatomic, strong, readonly) NSString * JMSG_NULLABLE title;
 
@@ -234,8 +235,7 @@ JMSG_ASSUME_NONNULL_BEGIN
  * - offset = nil, limit = 100，表示从最新开始取 100 条记录。
  * - offset = 100, limit = nil，表示从最新第 100 条开始，获取余下所有记录。
  */
-- (NSArray JMSG_GENERIC(__kindof JMSGMessage *) *)messageArrayFromNewestWithOffset:(NSNumber *JMSG_NULLABLE)offset
-                                                                             limit:(NSNumber *JMSG_NULLABLE)limit;
+- (NSArray JMSG_GENERIC(__kindof JMSGMessage *) *)messageArrayFromNewestWithOffset:(NSNumber *JMSG_NULLABLE)offset limit:(NSNumber *JMSG_NULLABLE)limit;
 
 /*!
  * @abstract 异步获取所有消息记录
@@ -312,7 +312,7 @@ JMSG_ASSUME_NONNULL_BEGIN
  *
  * @param message 通过消息创建类接口，创建好的消息对象
  *
- * @discussion 发送消息的多个接口，都未在方法上直接提供回调。你应通过 xxx 方法来注册消息发送结果。
+ * @discussion 发送消息的多个接口，都未在方法上直接提供回调。你应通过 JMSGMessageDelegate中的onReceiveMessage: error:方法来注册消息发送结果
  */
 - (void)sendMessage:(JMSGMessage *)message;
 
@@ -390,6 +390,13 @@ JMSG_ASSUME_NONNULL_BEGIN
  * @discussion 把未读数设置为 0
  */
 - (void)clearUnreadCount;
+
+/*!
+ * @abstract 获取当前所有会话的未读消息的总数
+ *
+ * @discussion 获取所有会话未读消息总数
+ */
++ (NSNumber *)getAllUnreadCount;
 
 /*!
  * @abstract 获取最后一条消息的内容文本
