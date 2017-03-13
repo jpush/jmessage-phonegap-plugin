@@ -19,18 +19,18 @@
     Method origin1;
     Method swizzle1;
     origin1  = class_getInstanceMethod([self class],@selector(init));
-    swizzle1 = class_getInstanceMethod([self class], @selector(init_plus));
+    swizzle1 = class_getInstanceMethod([self class], @selector(init_plus1));
     method_exchangeImplementations(origin1, swizzle1);
 }
 
--(instancetype)init_plus{
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidLaunch:) name:UIApplicationDidFinishLaunchingNotification object:nil];
-    return [self init_plus];
+-(instancetype)init_plus1{
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidLaunch1:) name:UIApplicationDidFinishLaunchingNotification object:nil];
+    return [self init_plus1];
 }
 
 NSDictionary *_launchOptions;
 
--(void)applicationDidLaunch:(NSNotification *)notification{
+-(void)applicationDidLaunch1:(NSNotification *)notification{
     [self startJMessageSDK];
 }
 
@@ -38,6 +38,5 @@ NSDictionary *_launchOptions;
     JMessageHelper *helper = [JMessageHelper new];
     [helper initJMessage:_launchOptions];
 }
-
 
 @end
