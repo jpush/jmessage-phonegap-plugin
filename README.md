@@ -1,6 +1,6 @@
 # JMessage PhoneGap / Cordova Plugin
 
-[![release](https://img.shields.io/badge/release-2.2.0-blue.svg)](https://github.com/jpush/jmessage-phonegap-plugin/releases)
+[![release](https://img.shields.io/badge/release-2.3.0-blue.svg)](https://github.com/jpush/jmessage-phonegap-plugin/releases)
 [![platforms](https://img.shields.io/badge/platforms-iOS%7CAndroid-lightgrey.svg)](https://github.com/jpush/jmessage-phonegap-plugin)
 [![QQ Group](https://img.shields.io/badge/QQ%20Group-413602425-red.svg)](https://github.com/jpush/jmessage-phonegap-plugin)
 [![weibo](https://img.shields.io/badge/weibo-JPush-blue.svg)](http://weibo.com/jpush?refer_flag=1001030101_&is_all=1)
@@ -22,15 +22,15 @@ JMessage PhoneGap / Cordova Plugin 是基于[极光 IM](https://docs.jiguang.cn/
 ## 集成步骤
 - 在线安装
 
-		cordova plugin add jmessage-phonegap-plugin --variable APP_KEY=your_app_key
+   cordova plugin add jmessage-phonegap-plugin --variable APP_KEY=your_app_key
 
-	或
+   或
 
-		cordova plugin add https://github.com/jpush/jmessage-phonegap-plugin.git --variable APP_KEY=your_app_key
+   	cordova plugin add https://github.com/jpush/jmessage-phonegap-plugin.git --variable APP_KEY=your_app_key
 
 - 本地安装
 
-		cordova plugin add <Plugin Path> --variable APP_KEY=your_app_key
+   cordova plugin add <Plugin Path> --variable APP_KEY=your_app_key
 
 ## API
 API 分为 IM（聊天）和 Push（消息推送）两部分。具体可参考：
@@ -58,10 +58,10 @@ API 分为 IM（聊天）和 Push（消息推送）两部分。具体可参考�
 ### iOS
 - 收不到推送：请首先按照正确方式再次配置证书、描述文件，可参考 [iOS 证书设置指南](https://docs.jiguang.cn/jpush/client/iOS/ios_cer_guide/)。
 - 设置 PushConfig.plist:
-	- APP_KEY：应用标识
-	- CHANNEL：渠道标识
-	- IsProduction：是否为生产环境
-	- IsIDFA：是否使用 IDFA 启动 SDK
+ - APP_KEY：应用标识
+ - CHANNEL：渠道标识
+ - IsProduction：是否为生产环境
+ - IsIDFA：是否使用 IDFA 启动 SDK
 
 ## 更多
 - QQ 群：413602425
