@@ -24,7 +24,7 @@
 #define ResultSuccess(method) [NSString stringWithFormat:@"success - %@",method]
 #define ResultFailed(method)  [NSString stringWithFormat:@"failed  - %@",method]
 
-@interface JMessagePlugin ()<JMSGEventDelegate,UIApplicationDelegate>
+@interface JMessagePlugin ()<JMessageDelegate, JMSGEventDelegate, UIApplicationDelegate>
 
 @end
 
@@ -57,6 +57,7 @@ JMessagePlugin *SharedJMessagePlugin;
 -(void)initPlugin{
     if (!SharedJMessagePlugin) {
         SharedJMessagePlugin = self;
+        [JMessage addDelegate:self withConversation:nil];
     }
 }
 
