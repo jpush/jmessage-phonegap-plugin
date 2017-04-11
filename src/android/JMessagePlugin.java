@@ -97,62 +97,16 @@ public class JMessagePlugin extends CordovaPlugin {
         final Message msg = event.getMessage();
         try {
             String jsonStr = mGson.toJson(msg);
-            JSONObject msgJson = new JSONObject(jsonStr);
-
-            // Add user avatar path.
-            if (ContentType.eventNotification != msg.getContentType()) {
-                UserInfo fromUser = msg.getFromUser();
-                String avatarPath = "";
-                File avatarFile = fromUser.getAvatarFile(); // 获取用户头像缩略图文件
-                if (avatarFile != null) {
-                    avatarPath = avatarFile.getAbsolutePath();
-                }
-                msgJson.getJSONObject("fromUser").put("avatarPath", avatarPath);
-                msgJson.put("fromName", fromUser.getUserName());
-                msgJson.put("fromNickname", fromUser.getNickname());
-                msgJson.put("fromID", fromUser.getUserID());
-            }
-
-            UserInfo myInfo = JMessageClient.getMyInfo();
-            String myInfoJson = mGson.toJson(myInfo);
-            JSONObject myInfoJsonObj = new JSONObject(myInfoJson);
-
-            File myAvatarFile = JMessageClient.getMyInfo().getAvatarFile();
-            String myAvatarPath = "";
-            if (myAvatarFile != null) {
-                myAvatarPath = myAvatarFile.getAbsolutePath();
-            }
-            myInfoJsonObj.put("avatarPath", myAvatarPath);
-            msgJson.put("targetInfo", myInfoJsonObj);
-
-            if (msg.getTargetType().equals(ConversationType.single)) {
-                msgJson.put("targetName", myInfo.getUserName());
-                msgJson.put("targetNickname", myInfo.getNickname());
-                msgJson.put("targetID", myInfo.getUserID());
-            } else if (msg.getTargetType().equals(ConversationType.group)) {
-                GroupInfo targetInfo = (GroupInfo) msg.getTargetInfo();
-                msgJson.put("targetID", targetInfo.getGroupID());
-                msgJson.put("targetName", targetInfo.getGroupName());
-            }
+            JSONObject msgJson = getMessageJSONObject(msg);
 
             switch (msg.getContentType()) {
                 case text:
                     fireEvent("onReceiveTextMessage", jsonStr);
                     break;
                 case image:
-                    ImageContent imageContent = (ImageContent) msg.getContent();
-                    String imgPath = imageContent.getLocalPath();
-                    String imgLink = imageContent.getImg_link();
-                    msgJson.getJSONObject("content").put("imagePath", imgPath);
-                    msgJson.getJSONObject("content").put("imageLink", imgLink);
                     fireEvent("onReceiveImageMessage", msgJson.toString());
                     break;
                 case voice:
-                    VoiceContent voiceContent = (VoiceContent) msg.getContent();
-                    String voicePath = voiceContent.getLocalPath();
-                    int duration = voiceContent.getDuration();
-                    msgJson.getJSONObject("content").put("voicePath", voicePath);
-                    msgJson.getJSONObject("content").put("duration", duration);
                     fireEvent("onReceiveVoiceMessage", msgJson.toString());
                     break;
                 case custom:
@@ -160,8 +114,6 @@ public class JMessagePlugin extends CordovaPlugin {
                     break;
                 case eventNotification:
                     EventNotificationContent content = (EventNotificationContent) msg.getContent();
-                    List<String> usernameList = content.getUserNames();
-                    msgJson.put("username", mGson.toJson(usernameList));
                     switch (content.getEventNotificationType()) {
                         case group_member_added:    // 群成员加群事件。
                             fireEvent("onGroupMemberAdded", msgJson.toString());
@@ -1524,9 +1476,11 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     public void getHistoryMessages(JSONArray data, CallbackContext callback) {
+        int from = 0, limit = 0;
+        Conversation conversation = null;
+
         try {
             String conversationType = data.getString(0);
-            Conversation conversation;
             if (conversationType.equals("single")) {
                 String username = data.getString(1);
                 String appKey = data.isNull(2) ? "" : data.getString(2);
@@ -1546,22 +1500,32 @@ public class JMessagePlugin extends CordovaPlugin {
                 return;
             }
 
-            int from = data.getInt(3);
-            int limit = data.getInt(4);
-
-            List<Message> messages = conversation.getMessagesFromNewest(from, limit);
-            if (!messages.isEmpty()) {
-                JSONArray msgJsonArr = new JSONArray();
-                for (Message msg : messages) {
-                    msgJsonArr.put(getMessageJSONObject(msg));
-                }
-                callback.success(msgJsonArr.toString());
-            } else {
-                callback.success("");
-            }
+            from = data.getInt(3);
+            limit = data.getInt(4);
         } catch (JSONException e) {
             e.printStackTrace();
             callback.error("Parameter error.");
+        }
+
+        if (conversation == null) {
+            callback.error("Can't get the conversation, please check your parameters.");
+            return;
+        }
+
+        List<Message> messages = conversation.getMessagesFromNewest(from, limit);
+        if (!messages.isEmpty()) {
+            JSONArray msgJsonArr = new JSONArray();
+            try {
+                for (Message msg : messages) {
+                    msgJsonArr.put(getMessageJSONObject(msg));
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+                callback.error(e.getMessage());
+            }
+            callback.success(msgJsonArr.toString());
+        } else {
+            callback.success("");
         }
     }
 
@@ -2952,9 +2916,13 @@ public class JMessagePlugin extends CordovaPlugin {
             // Add user avatar path.
             UserInfo fromUser = msg.getFromUser();
             String avatarPath = "";
-            File avatarFile = fromUser.getAvatarFile(); // 获取用户头像缩略图文件
+            File avatarFile = fromUser.getAvatarFile();
             if (avatarFile != null) {
                 avatarPath = avatarFile.getAbsolutePath();
+            }
+
+            if (msgJson.isNull("fromUser")) {
+                msgJson.put("fromUser", new JSONObject(mGson.toJson(fromUser)));
             }
             msgJson.getJSONObject("fromUser").put("avatarPath", avatarPath);
             msgJson.put("fromName", fromUser.getUserName());
