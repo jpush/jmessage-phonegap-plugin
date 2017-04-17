@@ -927,8 +927,7 @@ public class JMessagePlugin extends CordovaPlugin {
                 value = values.getString(key);
                 valuesMap.put(key, value);
             }
-            final Message msg = JMessageClient.createSingleCustomMessage(userName,
-                    valuesMap);
+            final Message msg = JMessageClient.createSingleCustomMessage(userName, appKey, valuesMap);
             msg.setOnSendCompleteCallback(new BasicCallback() {
                 @Override
                 public void gotResult(int status, String desc) {
