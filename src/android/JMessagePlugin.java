@@ -503,8 +503,11 @@ public class JMessagePlugin extends CordovaPlugin {
     public void getOriginalUserAvatar(JSONArray data, final CallbackContext callback) {
         try {
             final String username = data.isNull(0) ? "" : data.getString(0);
+            String appKey = data.isNull(1) ? "" : data.getString(1);
+
             final String fileName;
             final String avatarPath = getAvatarPath();
+
             if (TextUtils.isEmpty(username)) {
                 final UserInfo myInfo = JMessageClient.getMyInfo();
                 fileName = "avatar_" + myInfo.getUserID();
@@ -529,7 +532,7 @@ public class JMessagePlugin extends CordovaPlugin {
                     }
                 });
             } else {
-                JMessageClient.getUserInfo(username, new GetUserInfoCallback() {
+                JMessageClient.getUserInfo(username, appKey, new GetUserInfoCallback() {
                     @Override
                     public void gotResult(int status, String desc, final UserInfo userInfo) {
                         if (status == 0) {
@@ -2430,8 +2433,9 @@ public class JMessagePlugin extends CordovaPlugin {
         try {
             String username = data.getString(0);
             long msgId = data.getLong(1);
+            String appKey = data.isNull(2) ? "" : data.getString(2);
 
-            Conversation con = JMessageClient.getSingleConversation(username);
+            Conversation con = JMessageClient.getSingleConversation(username, appKey);
             if (con == null) {
                 callback.error("Conversation isn't exist.");
                 return;
