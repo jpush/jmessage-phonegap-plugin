@@ -497,8 +497,8 @@ JMessagePlugin.prototype.getUserAvatar = function (username, sCallback, eCallbac
   }
 }
 
-// 下载用户头像大图，如果 username 为空，默认为当前用户。
-JMessagePlugin.prototype.getOriginalUserAvatar = function (username, sCallback, eCallback) {
+// 下载用户头像大图，如果 username 为空，默认为当前用户；appKey 为空，默认为当前应用。
+JMessagePlugin.prototype.getOriginalUserAvatar = function (username, appKey, sCallback, eCallback) {
   if (isAndroid()) {
     this.callNative('getOriginalUserAvatar', [username], sCallback, eCallback)
   }
@@ -537,9 +537,10 @@ JMessagePlugin.prototype.getLatestMessage = function (conversationType, value, a
 }
 
 // 获取指定单聊会话中指定图片消息的原图。
-JMessagePlugin.prototype.getOriginImageInSingleConversation = function (username, msgServerId, sCallback, eCallback) {
+JMessagePlugin.prototype.getOriginImageInSingleConversation = function (username, msgServerId, appKey,
+    sCallback, eCallback) {
   if (isAndroid()) {
-    this.callNative('getOriginImageInSingleConversation', [username, msgServerId], sCallback, eCallback)
+    this.callNative('getOriginImageInSingleConversation', [username, msgServerId, appKey], sCallback, eCallback)
   }
 }
 
@@ -780,8 +781,9 @@ JMessagePlugin.prototype.getUserInfoArray = function (usernameArray, sCallback, 
 }
 
 // Conversation
-JMessagePlugin.prototype.getSingleConversationHistoryMessage = function (username, from, limit, sCallback, eCallback) {
-  this.callNative('getSingleConversationHistoryMessage', [username, from, limit], sCallback, eCallback)
+JMessagePlugin.prototype.getSingleConversationHistoryMessage = function (username, from, limit,
+    sCallback, eCallback) {
+  this.callNative('getSingleConversationHistoryMessage', [username, from, limity], sCallback, eCallback)
 }
 
 JMessagePlugin.prototype.getGroupConversationHistoryMessage = function (groupId, from, limit, sCallback, eCallback) {
