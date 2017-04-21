@@ -14,12 +14,15 @@
     <script src="js/jquery.js"></script>
     <script src="js/jquery.mobile-1.3.2.min.js"></script>
     <script type="text/javascript" src="cordova.js"></script>
+    <script charset="utf-8" src="cordova.js"></script>
     <script type="text/javascript">
         var usernameForConversation;
 
         function onDeviceReady() {
-            window.JPush.init();
+            // window.JPush.init();
+            console.log("on device ready");
             checkIsLogin();
+
             getPushRegistrationID();
         }
 
@@ -43,13 +46,18 @@
             console.log("checkIsLogin...");
             window.JMessage.getMyInfo(function (response) {
                 console.log("user is login" + response);
+                var myInfo;
+                if (device.platform == "Android") {
+                    myInfo = JSON.parse(response);
+            
+                } else {
+                    myInfo = response
+                }
+                    window.JMessage.username = myInfo.userName;
+                    window.JMessage.nickname = myInfo.nickname;
+                    window.JMessage.gender = myInfo.mGender;
+                    usernameForConversation = myInfo.userName;
 
-                var myInfo = JSON.parse(response);
-                window.JMessage.username = myInfo.userName;
-                window.JMessage.nickname = myInfo.nickname;
-                window.JMessage.gender = myInfo.mGender;
-
-                usernameForConversation = myInfo.userName;
                 gotoConversation();
             }, function (response) {
                 console.log("User is not login.");
@@ -62,9 +70,14 @@
         function updateUserInfo() {
             window.JMessage.getMyInfo(
                 function (response) {
-                    var myInfo = JSON.parse(response);
+                    var myInfo;
+                    if (device.platform == "Android") {
+                        myInfo = JSON.parse(response);
+                    } else {
+                        myInfo = response
+                    }
+                    
                     console.log("user is login" + response);
-
                     window.JMessage.username = myInfo.userName;
                     window.JMessage.nickname = myInfo.nickname;
                     window.JMessage.gender = myInfo.mGender;
@@ -86,7 +99,7 @@
         function login() {
             var username = $("#loginUsername").val();
             var password = $("#loginPassword").val();
-
+            console.log("tap to login");
             window.JMessage.login(username, password,
                 function (response) {
                     window.JMessage.username = username;
@@ -115,13 +128,19 @@
         function updateConversationList() {
             $('#conversationList').empty().listview('refresh');
             console.log("updateConversationList");
-
             window.JMessage.getConversationList(
                 function (response) {
-                    var conversations = JSON.parse(response);
-                    for(var i = 0; i < conversations.length; i++) {
-                        insertConversation(conversations[i]);
+                    if (device.platform == "Android") {
+                        var conversations = JSON.parse(response);
+                        for(var i = 0; i < conversations.length; i++) {
+                            insertConversation(conversations[i]);
+                        }                
+                    } else {
+                        for(var i = 0; i < response.length; i++) {
+                            insertConversation(response[i]);
+                        }
                     }
+
                 }, function (response) {
                     alert("Get conversation list failed.");
                     console.log(response);
@@ -149,7 +168,6 @@
         }
 
         function gotoConversation() {
-            console.log("gotoConversation");
             $.mobile.navigate("#conversationListPage", {transition: "slide"});
         }
 
@@ -168,7 +186,7 @@
         // 在收到消息后将消息对象加入到消息数组的开头。
         function onReceiveMessage(message) {
             console.log("onReceiveSingleMessage");
-
+            alert("onReceiveSingleMessage")
             if (device.platform == "Android") {
                 message = window.JMessage.message;
                 console.log(JSON.stringify(message));
@@ -183,8 +201,14 @@
             window.JMessage.getHistoryMessages("single", username,
                 '', 0, 50, function (response) {
                     console.log("getMessageHistory ok: " + response);
-                    messageArray = JSON.parse(response);
-                    refreshConversation();
+                    if (device.platform == "Android") {
+                        messageArray = JSON.parse(response);
+                        refreshConversation();
+                    } else {
+                        messageArray = response;
+                        refreshConversation();
+                    }
+
                 }, function (response) {
                     alert("getMessageHistory failed");
                     console.log("getMessageHistory fail" + response);
@@ -197,9 +221,15 @@
             window.JMessage.sendSingleTextMessage(
                 usernameForConversation, messageContentString, null,
                 function (response) {
-                    var msg = JSON.parse(response);
-                    messageArray.unshift(msg);
-                    refreshConversation();
+                    if (device.platform != "Android") {
+                        var msg = JSON.parse(response);
+                        messageArray.unshift(msg);
+                        refreshConversation();                    
+                    } else {
+                        var msg = response;
+                        messageArray.unshift(msg);
+                        refreshConversation();                        
+                    }
                 }, function (response) {
                     console.log("send message fail" + response);
                     alert("send message fail" + response);
@@ -237,7 +267,8 @@
         function addConversation() {
             var username = $("#addConversationText").val();
             usernameForConversation = username;
-            $.mobile.navigate("#conversationPage", {transition: "slide"});
+            alert(usernameForConversation)
+            $.mobile.navigate("#conversationPage", {transition: "pop"});
         }
 
 
@@ -298,7 +329,7 @@
                 }
                 $("#notificationResult").html(alertContent);
             } catch (exception) {
-                console.log(exception)
+                console.log(exception);
             }
         }
 
