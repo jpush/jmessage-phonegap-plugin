@@ -254,15 +254,9 @@
             window.JMessage.sendSingleTextMessage(
                 usernameForConversation, messageContentString, null,
                 function (response) {
-                    if (device.platform != "Android") {
-                        var msg = JSON.parse(response);
-                        messageArray.unshift(msg);
-                        refreshConversation();                    
-                    } else {
-                        var msg = response;
-                        messageArray.unshift(msg);
-                        refreshConversation();                        
-                    }
+                    var msg = JSON.parse(response);
+                    messageArray.unshift(msg);
+                    refreshConversation();                    
                 }, function (response) {
                     console.log("send message fail" + response);
                     alert("send message fail" + response);
@@ -361,7 +355,7 @@
 
         function refreshConversation() {
             $('#messageList').empty().listview('refresh');
-            for (var o in messageArray) {
+            for (var i = 0; i < messageArray.length; i++) {
                 insertMessage(messageArray[o]);
             }
         }
