@@ -155,7 +155,7 @@ JMessagePlugin *SharedJMessagePlugin;
 }
 
 - (void)loginUserKicked:(NSNotification *)notification{
-    [JMessagePlugin evalFuntionName:@"onLoginUserKicked" jsonParm:@"login user kicked"];
+    [JMessagePlugin evalFuntionName:@"loginUserKicked" jsonParm:@"{\"error\":\"login user kicked\"}"];
 }
 
 //didReceiveJMessageMessage change name

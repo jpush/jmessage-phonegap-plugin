@@ -225,9 +225,9 @@ JMessagePlugin.prototype.getHistoryMessages = function (conversationType, value,
   } else {
     if (conversationType === 'single') {
       if (appKey) {
-        JMessagePlugin.cross_getSingleConversationHistoryMessage(value, appKey, from, limit, sCallback, eCallback)
+        JMessagePlugin.prototype.cross_getSingleConversationHistoryMessage(value, appKey, from, limit, sCallback, eCallback)
       } else {
-        JMessagePlugin.getSingleConversationHistoryMessage(value, from, limit, sCallback, eCallback)
+        JMessagePlugin.prototype.getSingleConversationHistoryMessage(value, from, limit, sCallback, eCallback)
       }
     } else if (conversationType === 'group') {
       JMessagePlugin.getGroupConversationHistoryMessage(value, from, limit, sCallback, eCallback)
@@ -889,6 +889,7 @@ JMessagePlugin.prototype.cross_getUserInfoArray = function (nameArray, appKey, s
 JMessagePlugin.prototype.onConversationChanged = function (data) {
   try {
     var bToObj = JSON.parse(data)
+    
     cordova.fireDocumentEvent('jmessage.onConversationChanged', bToObj)
   } catch (exception) {
     console.log('onConversationChanged ' + exception)
@@ -916,7 +917,11 @@ JMessagePlugin.prototype.onGroupInfoChanged = function (data) {
 JMessagePlugin.prototype.loginUserKicked = function (data) {
   try {
     var bToObj = JSON.parse(data)
-    cordova.fireDocumentEvent('jmessage.loginUserKicked', bToObj)
+    if (isAndroid()) {
+      cordova.fireDocumentEvent('jmessage.loginUserKicked', bToObj)
+    } else {
+      cordova.fireDocumentEvent('jmessage.onLoginUserKicked', bToObj)
+    }
   } catch (exception) {
     console.log('loginUserKicked ' + exception)
   }
@@ -934,7 +939,6 @@ JMessagePlugin.prototype.onReceiveConversationMessage = function (data) {
 JMessagePlugin.prototype.onSendMessage = function (data) {
   try {
     var bToObj = JSON.parse(data)
-    console.log(data)
   } catch (exception) {
     console.log('onSendMessage ' + exception)
   }
@@ -944,7 +948,6 @@ JMessagePlugin.prototype.onSendMessage = function (data) {
 JMessagePlugin.prototype.onReceiveImageData = function (data) {
   try {
     var bToObj = JSON.parse(data)
-    console.log(data)
   } catch (exception) {
     console.log('onReceiveImageData ' + exception)
   }
@@ -954,7 +957,6 @@ JMessagePlugin.prototype.onReceiveImageData = function (data) {
 JMessagePlugin.prototype.onReceiveVoiceData = function (data) {
   try {
     var bToObj = JSON.parse(data)
-    console.log(data)
   } catch (exception) {
     console.log('onReceiveVoiceData ' + exception)
   }
@@ -964,7 +966,6 @@ JMessagePlugin.prototype.onReceiveVoiceData = function (data) {
 JMessagePlugin.prototype.onReceiveFileData = function (data) {
   try {
     var bToObj = JSON.parse(data)
-    console.log(data)
   } catch (exception) {
     console.log('onReceiveFileData ' + exception)
   }
@@ -973,8 +974,7 @@ JMessagePlugin.prototype.onReceiveFileData = function (data) {
 
 JMessagePlugin.prototype.onReceiveLocation = function (data) {
   try {
-    var bToObj = JSON.parse(data)
-    console.log(data)
+    var bToObj = JSON.parse(data);
   } catch (exception) {
     console.log('onReceiveLocation ' + exception)
   }
@@ -984,7 +984,6 @@ JMessagePlugin.prototype.onReceiveLocation = function (data) {
 JMessagePlugin.prototype.onReceiveNotificationEvent = function (data) {
   try {
     var bToObj = JSON.parse(data)
-    console.log(data)
   } catch (exception) {
     console.log('onReceiveNotificationEvent ' + exception)
   }

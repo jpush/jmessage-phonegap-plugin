@@ -35,8 +35,7 @@ NSDictionary *_launchOptions;
 }
 
 -(void)startJMessageSDK{
-    JMessageHelper *helper = [JMessageHelper new];
-    [helper initJMessage:_launchOptions];
+    [[JMessageHelper shareInstance] initJMessage:_launchOptions];
 }
 
 @end

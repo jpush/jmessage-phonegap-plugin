@@ -24,6 +24,16 @@
 
 @implementation JMessageHelper
 
++ (id)shareInstance {
+  static JMessageHelper *instance = nil;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    instance = [[JMessageHelper alloc] init];
+  });
+  return instance;
+}
+
+
 -(void)initJMessage:(NSDictionary*)launchOptions{
 
     NSString *plistPath = [[NSBundle mainBundle] pathForResource:JMessageConfig_FileName ofType:@"plist"];
@@ -112,7 +122,7 @@
     [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageReceiveMessage object:dict];
 }
 
-- (void)onSendMessageResponse:(JMSGMessage *)message error:(NSError *)error{
+- (void)onSendMessageResponse:(JMSGMessage *)message error:(NSError *)error {
     NSMutableDictionary * dict = [NSMutableDictionary new];
     [dict setValue:message.msgId forKey:KEY_MSGID];
 
