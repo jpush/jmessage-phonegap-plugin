@@ -254,7 +254,14 @@
             window.JMessage.sendSingleTextMessage(
                 usernameForConversation, messageContentString, null,
                 function (response) {
-                    var msg = JSON.parse(response);
+                    var msg;
+                    if (device.platform == "Android") {
+                        msg = JSON.parse(response);
+                    } else {
+                        responseobj = response[0];
+                        msg = JSON.parse(responseobj)
+                    }
+
                     messageArray.unshift(msg);
                     refreshConversation();                    
                 }, function (response) {
@@ -290,7 +297,6 @@
                 }
                 $('#messageList').append(insertString).listview('refresh');
             } else {
-
                 if (message.msg_type == "voice") {
                     lastMessage = "[语音消息]" + message.msg_body.media_id;
                 }
@@ -356,7 +362,7 @@
         function refreshConversation() {
             $('#messageList').empty().listview('refresh');
             for (var i = 0; i < messageArray.length; i++) {
-                insertMessage(messageArray[o]);
+                insertMessage(messageArray[i]);
             }
         }
 
