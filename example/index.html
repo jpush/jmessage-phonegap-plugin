@@ -14,12 +14,15 @@
     <script src="js/jquery.js"></script>
     <script src="js/jquery.mobile-1.3.2.min.js"></script>
     <script type="text/javascript" src="cordova.js"></script>
+    <script charset="utf-8" src="cordova.js"></script>
     <script type="text/javascript">
         var usernameForConversation;
 
         function onDeviceReady() {
-            window.JPush.init();
+            // window.JPush.init();
+            console.log("on device ready");
             checkIsLogin();
+
             getPushRegistrationID();
         }
 
@@ -43,13 +46,18 @@
             console.log("checkIsLogin...");
             window.JMessage.getMyInfo(function (response) {
                 console.log("user is login" + response);
+                var myInfo;
+                if (device.platform == "Android") {
+                    myInfo = JSON.parse(response);
+            
+                } else {
+                    myInfo = response
+                }
+                    window.JMessage.username = myInfo.userName;
+                    window.JMessage.nickname = myInfo.nickname;
+                    window.JMessage.gender = myInfo.mGender;
+                    usernameForConversation = myInfo.userName;
 
-                var myInfo = JSON.parse(response);
-                window.JMessage.username = myInfo.userName;
-                window.JMessage.nickname = myInfo.nickname;
-                window.JMessage.gender = myInfo.mGender;
-
-                usernameForConversation = myInfo.userName;
                 gotoConversation();
             }, function (response) {
                 console.log("User is not login.");
@@ -62,9 +70,14 @@
         function updateUserInfo() {
             window.JMessage.getMyInfo(
                 function (response) {
-                    var myInfo = JSON.parse(response);
+                    var myInfo;
+                    if (device.platform == "Android") {
+                        myInfo = JSON.parse(response);
+                    } else {
+                        myInfo = response
+                    }
+                    
                     console.log("user is login" + response);
-
                     window.JMessage.username = myInfo.userName;
                     window.JMessage.nickname = myInfo.nickname;
                     window.JMessage.gender = myInfo.mGender;
@@ -86,7 +99,7 @@
         function login() {
             var username = $("#loginUsername").val();
             var password = $("#loginPassword").val();
-
+            console.log("tap to login");
             window.JMessage.login(username, password,
                 function (response) {
                     window.JMessage.username = username;
@@ -115,26 +128,64 @@
         function updateConversationList() {
             $('#conversationList').empty().listview('refresh');
             console.log("updateConversationList");
-
             window.JMessage.getConversationList(
                 function (response) {
-                    var conversations = JSON.parse(response);
-                    for(var i = 0; i < conversations.length; i++) {
-                        insertConversation(conversations[i]);
+                    if (device.platform == "Android") {
+                        var conversations = JSON.parse(response);
+                        for(var i = 0; i < conversations.length; i++) {
+                            insertConversation(conversations[i]);
+                        }                
+                    } else {
+                        for(var i = 0; i < response.length; i++) {
+                            insertConversation(response[i]);
+                        }
                     }
+
                 }, function (response) {
                     alert("Get conversation list failed.");
                     console.log(response);
                 });
         }
 
+        // function insertConversation(con) {
+        //     var title = con.title;
+        //     var targetId = con.targetId;
+        //     var lastMessage = con.latestText;
+        //     var insertString = "<li><a onclick=\"onClickConversationRow('"
+        //         + targetId + "')\">" + targetId + ":" + lastMessage + '</a></li>';
+        //     $('#conversationList').append(insertString).listview('refresh');
+        // }
+
         function insertConversation(con) {
-            var title = con.title;
-            var targetId = con.targetId;
-            var lastMessage = con.latestText;
-            var insertString = "<li><a onclick=\"onClickConversationRow('"
-                + targetId + "')\">" + targetId + ":" + lastMessage + '</a></li>';
-            $('#conversationList').append(insertString).listview('refresh');
+            if (device.platform == "Android") {
+                var title = con.title;
+                var targetId = con.targetId;
+                var lastMessage = con.latestText;
+                var insertString = "<li><a onclick=\"onClickConversationRow('"
+                    + targetId + "')\">" + targetId + ":" + lastMessage + '</a></li>';
+                $('#conversationList').append(insertString).listview('refresh');
+            } else {
+                var conversationName;
+                var targetName;
+                console.log("insertConversation 666");
+                if (con.username != undefined) {
+                    conversationName = con.username;
+                    targetName = con.username;
+                } else {
+                    conversationName = con.owner;
+                    targetName = con.owner;
+                }
+
+                var lastMessage = con.lastMessage;
+                console.log(conversationName);
+                console.log(targetName);
+                console.log(lastMessage);
+
+                var insertString = "<li><a onclick=\"onClickConversationRow('"
+                    + targetName + "')\">" + conversationName + ":" + lastMessage + '</a></li>';
+                $('#conversationList').append(insertString).listview('refresh');
+            }
+
         }
 
         function onClickConversationRow(username) {
@@ -149,7 +200,6 @@
         }
 
         function gotoConversation() {
-            console.log("gotoConversation");
             $.mobile.navigate("#conversationListPage", {transition: "slide"});
         }
 
@@ -168,11 +218,12 @@
         // 在收到消息后将消息对象加入到消息数组的开头。
         function onReceiveMessage(message) {
             console.log("onReceiveSingleMessage");
-
+            alert("onReceiveSingleMessage")
             if (device.platform == "Android") {
                 message = window.JMessage.message;
                 console.log(JSON.stringify(message));
             }
+            console.log("onreceivemessage ");
             messageArray.unshift(message);
             refreshConversation();
         }
@@ -183,8 +234,14 @@
             window.JMessage.getHistoryMessages("single", username,
                 '', 0, 50, function (response) {
                     console.log("getMessageHistory ok: " + response);
-                    messageArray = JSON.parse(response);
-                    refreshConversation();
+                    if (device.platform == "Android") {
+                        messageArray = JSON.parse(response);
+                        refreshConversation();
+                    } else {
+                        messageArray = response;
+                        refreshConversation();
+                    }
+
                 }, function (response) {
                     alert("getMessageHistory failed");
                     console.log("getMessageHistory fail" + response);
@@ -197,9 +254,16 @@
             window.JMessage.sendSingleTextMessage(
                 usernameForConversation, messageContentString, null,
                 function (response) {
-                    var msg = JSON.parse(response);
+                    var msg;
+                    if (device.platform == "Android") {
+                        msg = JSON.parse(response);
+                    } else {
+                        responseobj = response[0];
+                        msg = JSON.parse(responseobj)
+                    }
+
                     messageArray.unshift(msg);
-                    refreshConversation();
+                    refreshConversation();                    
                 }, function (response) {
                     console.log("send message fail" + response);
                     alert("send message fail" + response);
@@ -207,37 +271,106 @@
         }
 
         function insertMessage(message) {
-            if (message.content.contentType == "text") {
-                var lastMessage = message.content.text;
-            }
-            var fromName = message.fromName;
-            var createTime = message.createTimeInMillis;
-            var createTimeStr = new Date(createTime).toLocaleString();
+            console.log(message);
 
-            if(message.from_id == window.JMessage.username) {
-                var insertString = '<li style="text-align:right"><span style="font-size:12px">'
+            var fromName;
+            var createTime;
+            var createTimeStr;
+            var lastMessage;
+            var insertString;
+            if (device.platform == "Android") {
+                if (message.content.contentType == "text") {
+                    lastMessage = message.content.text;
+                }
+                fromName = message.fromName;
+                createTime = message.createTimeInMillis;
+                createTimeStr = new Date(createTime).toLocaleString();
+                if(message.from_id == window.JMessage.username) {
+                    insertString = '<li style="text-align:right"><span style="font-size:12px">'
                     + createTimeStr
                     + "</span><br>"
                     + fromName + ":" + lastMessage + '</li>';
-            } else {
-                insertString = '<li style="text-align:left" style="font-size:12px">'
+                } else {
+                    insertString = '<li style="text-align:left" style="font-size:12px">'
                     + createTimeStr + "</span><br>" + fromName + ":"
                     + lastMessage + '</li>';
+                }
+                $('#messageList').append(insertString).listview('refresh');
+            } else {
+                if (message.msg_type == "voice") {
+                    lastMessage = "[语音消息]" + message.msg_body.media_id;
+                }
+
+                if (message.msg_type == "image") {
+                    lastMessage = "[图片消息]" + message.msg_body.media_id;
+                }
+
+                if (message.from_name == undefined) {
+
+                    var message = message.content;
+                    if (message.msg_type == "text") {
+                        lastMessage = message.msg_body.text;
+                    }
+                    fromName = message.from_name;
+                    createTimeStr = message.create_time;
+                    if(message.from_id == window.JMessage.username) {
+                        insertString = '<li style="text-align:right"><span style="font-size:12px">'
+                        + createTimeStr
+                        + "</span><br>"
+                        + fromName + ":" + lastMessage + '</li>';
+                    } else {
+                        insertString = '<li style="text-align:left" style="font-size:12px">'
+                        + createTimeStr + "</span><br>" + fromName + ":"
+                        + lastMessage + '</li>';
+                    }                    
+                } else {
+
+                    if (message.msg_type == "text") {
+                        lastMessage = message.msg_body.text;
+                    }
+                    fromName = message.from_name;
+                    createTimeStr = message.create_time;
+                    console.log(window.JMessage.username);
+                    if(message.from_id == window.JMessage.username) {
+                        insertString = '<li style="text-align:right"><span style="font-size:12px">'
+                        + createTimeStr
+                        + "</span><br>"
+                        + fromName + ":" + lastMessage + '</li>';
+                    } else {
+                        insertString = '<li style="text-align:left" style="font-size:12px">'
+                        + createTimeStr + "</span><br>" + fromName + ":"
+                        + lastMessage + '</li>';
+                    }
+                }
+                $('#messageList').append(insertString).listview('refresh');
             }
-            $('#messageList').append(insertString).listview('refresh');
+
+
+            // if(message.from_id == window.JMessage.username) {
+            //     var insertString = '<li style="text-align:right"><span style="font-size:12px">'
+            //         + createTimeStr
+            //         + "</span><br>"
+            //         + fromName + ":" + lastMessage + '</li>';
+            // } else {
+            //     insertString = '<li style="text-align:left" style="font-size:12px">'
+            //         + createTimeStr + "</span><br>" + fromName + ":"
+            //         + lastMessage + '</li>';
+            // }
+            // $('#messageList').append(insertString).listview('refresh');
         }
 
         function refreshConversation() {
             $('#messageList').empty().listview('refresh');
-            for (var o in messageArray) {
-                insertMessage(messageArray[o]);
+            for (var i = 0; i < messageArray.length; i++) {
+                insertMessage(messageArray[i]);
             }
         }
 
         function addConversation() {
             var username = $("#addConversationText").val();
             usernameForConversation = username;
-            $.mobile.navigate("#conversationPage", {transition: "slide"});
+            alert(usernameForConversation)
+            $.mobile.navigate("#conversationPage", {transition: "pop"});
         }
 
 
@@ -298,7 +431,7 @@
                 }
                 $("#notificationResult").html(alertContent);
             } catch (exception) {
-                console.log(exception)
+                console.log(exception);
             }
         }
 

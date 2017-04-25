@@ -16,6 +16,7 @@
 #import <JMessage/JMessage.h>
 
 @interface JMessageHelper : NSObject<JMessageDelegate>
++ (id)shareInstance;
 
 -(void)initJMessage:(NSDictionary*)launchOptions;
 

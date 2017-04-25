@@ -155,7 +155,7 @@ JMessagePlugin *SharedJMessagePlugin;
 }
 
 - (void)loginUserKicked:(NSNotification *)notification{
-    [JMessagePlugin evalFuntionName:@"onLoginUserKicked" jsonParm:@"login user kicked"];
+    [JMessagePlugin evalFuntionName:@"loginUserKicked" jsonParm:@"{\"error\":\"login user kicked\"}"];
 }
 
 //didReceiveJMessageMessage change name
@@ -323,9 +323,15 @@ JMessagePlugin *SharedJMessagePlugin;
     [JMSGConversation createSingleConversationWithUsername:username completionHandler:^(id resultObject, NSError *error) {
         if (error == nil) {
             JMSGConversation *conversation = resultObject;
-            [conversation sendTextMessage:text];
+          
+          JMSGTextContent *textContent = [[JMSGTextContent alloc] initWithText:text];
+          JMSGMessage *message = [conversation createMessageWithContent:textContent];
+          [conversation sendMessage: message];
+          [weak_self handleResultWithValue:@[[message toJsonString]] command:command error:error log:@"send single text message success"];
+        } else {
+          [weak_self handleResultWithValue:nil command:command error:error log:@"send single text message fail"];
         }
-        [weak_self handleResultWithValue:@"send single text message" command:command error:error log:@"send single text message"];
+      
     }];
 }
 
@@ -342,8 +348,11 @@ JMessagePlugin *SharedJMessagePlugin;
                                                                            voiceDuration:[NSNumber numberWithInteger:play.duration]];
             voiceMessage = [conversation createMessageWithContent:voiceContent];
             [conversation sendMessage:voiceMessage];
+          [weakSelf handleResultWithValue:@[[voiceMessage toJsonString]] command:command error:error log:@"send single voice message success"];
+        } else {
+          [weakSelf handleResultWithValue:nil command:command error:error log:@"send single voice message fail"];
         }
-        [weakSelf handleResultWithValue:@"send single voice message" command:command error:error log:@"send single voice message"];
+      
     }];
 }
 
@@ -355,9 +364,14 @@ JMessagePlugin *SharedJMessagePlugin;
         if (error == nil) {
             JMSGConversation *conversation = resultObject;
             NSData *data = [NSData dataWithContentsOfFile:imageUrl];
-            [conversation sendImageMessage:data];
+            JMSGImageContent *imageContent = [[JMSGImageContent alloc] initWithImageData: data];
+            JMSGMessage *imgMessage = [conversation createMessageWithContent:imageContent];
+            [conversation sendImageMessage:imgMessage];
+            [weakSelf handleResultWithValue:@[[imgMessage toJsonString]] command:command error:error log:@"send single image message success"];
+        } else {
+            [weakSelf handleResultWithValue:nil command:command error:error log:@"send single image message fail"];
         }
-        [weakSelf handleResultWithValue:@"send single image message" command:command error:error log:@"send single image message"];
+      
     }];
 }
 
@@ -370,12 +384,21 @@ JMessagePlugin *SharedJMessagePlugin;
         if (error == nil) {
             JMSGConversation *conversation = resultObject;
             JMSGMessage *message = nil;
-            JMSGTextContent *textContent = [[JMSGTextContent alloc] initWithText:text];
-            [textContent addStringExtra:extra forKey:@"extra"];
-            message = [conversation createMessageWithContent:textContent];//!
+            NSError *serializationError = [[NSError alloc] init];
+            NSData *extraData = [extra dataUsingEncoding:NSUTF8StringEncoding];
+            NSDictionary *jsonResponse = [NSJSONSerialization JSONObjectWithData:extraData
+                                                                       options:kNilOptions
+                                                                         error:&serializationError];
+
+            JMSGCustomContent *customContent = [[JMSGCustomContent alloc] initWithCustomDictionary:jsonResponse];
+          
+            message = [conversation createMessageWithContent:customContent];
             [conversation sendMessage:message];
+            [weakSelf handleResultWithValue:@[[message toJsonString]] command:command error:error log:@"send single custom message success"];
+        } else {
+            [weakSelf handleResultWithValue: nil command:command error:error log:@"send single custom message fail"];
         }
-        [weakSelf handleResultWithValue:@"send single custom message" command:command error:error log:@"send single custom message"];
+      
     }];
 }
 
@@ -386,11 +409,18 @@ JMessagePlugin *SharedJMessagePlugin;
     NSString *text = [command argumentAtIndex:1];
     WEAK_SELF(weak_self);
     [JMSGConversation createGroupConversationWithGroupId:gid completionHandler:^(id resultObject, NSError *error) {
-        if (error == nil) {
-            JMSGConversation *conversation = resultObject;
-            [conversation sendTextMessage:text];
-        }
-        [weak_self handleResultWithValue:@"send group text message" command:command error:error log:@"send group text message"];
+
+      if (error == nil) {
+        JMSGConversation *conversation = resultObject;
+        
+        JMSGTextContent *textContent = [[JMSGTextContent alloc] initWithText:text];
+        JMSGMessage *message = [conversation createMessageWithContent:textContent];
+        [conversation sendMessage: message];
+        [weak_self handleResultWithValue:@[[message toJsonString]] command:command error:error log:@"send single text message success"];
+      } else {
+        [weak_self handleResultWithValue:nil command:command error:error log:@"send single text message fail"];
+      }
+      
     }];
 }
 
@@ -399,16 +429,19 @@ JMessagePlugin *SharedJMessagePlugin;
     NSString *voiceUrl = [command argumentAtIndex:1];
     WEAK_SELF(weakSelf);
     [JMSGConversation createGroupConversationWithGroupId:gid completionHandler:^(id resultObject, NSError *error) {
-        if (error == nil) {
-            JMSGConversation *conversation = resultObject;
-            JMSGMessage *voiceMessage = nil;
-            AVAudioPlayer *play = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL fileURLWithPath:voiceUrl] error:nil];
-            JMSGVoiceContent *voiceContent = [[JMSGVoiceContent alloc] initWithVoiceData:[NSData dataWithContentsOfFile:voiceUrl]
-                                                                           voiceDuration:[NSNumber numberWithInteger:play.duration]];
-            voiceMessage = [conversation createMessageWithContent:voiceContent];
-            [conversation sendMessage:voiceMessage];
-        }
-        [weakSelf handleResultWithValue:@"send single voice message" command:command error:error log:@"send single voice message"];
+      
+      if (error == nil) {
+        JMSGConversation *conversation = resultObject;
+        JMSGMessage *voiceMessage = nil;
+        AVAudioPlayer *play = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL fileURLWithPath:voiceUrl] error:nil];
+        JMSGVoiceContent *voiceContent = [[JMSGVoiceContent alloc] initWithVoiceData:[NSData dataWithContentsOfFile:voiceUrl]
+                                                                       voiceDuration:[NSNumber numberWithInteger:play.duration]];
+        voiceMessage = [conversation createMessageWithContent:voiceContent];
+        [conversation sendMessage:voiceMessage];
+        [weakSelf handleResultWithValue:@[[voiceMessage toJsonString]] command:command error:error log:@"send single voice message success"];
+      } else {
+        [weakSelf handleResultWithValue:nil command:command error:error log:@"send single voice message fail"];
+      }
     }];
 }
 
@@ -417,12 +450,17 @@ JMessagePlugin *SharedJMessagePlugin;
     NSString *imageUrl = [command argumentAtIndex:1];
     WEAK_SELF(weakSelf);
     [JMSGConversation createGroupConversationWithGroupId:gid completionHandler:^(id resultObject, NSError *error) {
-        if (error == nil) {
-            JMSGConversation *conversation = resultObject;
-            NSData *data = [NSData dataWithContentsOfFile:imageUrl];
-            [conversation sendImageMessage:data];
-        }
-        [weakSelf handleResultWithValue:@"send single image message" command:command error:error log:@"send single image message"];
+    
+      if (error == nil) {
+        JMSGConversation *conversation = resultObject;
+        NSData *data = [NSData dataWithContentsOfFile:imageUrl];
+        JMSGImageContent *imageContent = [[JMSGImageContent alloc] initWithImageData: data];
+        JMSGMessage *imgMessage = [conversation createMessageWithContent:imageContent];
+        [conversation sendImageMessage:imgMessage];
+        [weakSelf handleResultWithValue:@[[imgMessage toJsonString]] command:command error:error log:@"send single image message success"];
+      } else {
+        [weakSelf handleResultWithValue:nil command:command error:error log:@"send single image message fail"];
+      }
     }];
 }
 
@@ -432,15 +470,24 @@ JMessagePlugin *SharedJMessagePlugin;
     NSString *extra = [command argumentAtIndex:2];
     WEAK_SELF(weakSelf);
     [JMSGConversation createGroupConversationWithGroupId:gid completionHandler:^(id resultObject, NSError *error) {
-        if (error == nil) {
-            JMSGConversation *conversation = resultObject;
-            JMSGMessage *message = nil;
-            JMSGTextContent *textContent = [[JMSGTextContent alloc] initWithText:text];
-            [textContent addStringExtra:extra forKey:@"extra"];
-            message = [conversation createMessageWithContent:textContent];//!
-            [conversation sendMessage:message];
-        }
-        [weakSelf handleResultWithValue:@"send group custom message" command:command error:error log:@"send group custom message"];
+      
+      if (error == nil) {
+        JMSGConversation *conversation = resultObject;
+        JMSGMessage *message = nil;
+        NSError *serializationError = [[NSError alloc] init];
+        NSData *extraData = [extra dataUsingEncoding:NSUTF8StringEncoding];
+        NSDictionary *jsonResponse = [NSJSONSerialization JSONObjectWithData:extraData
+                                                                     options:kNilOptions
+                                                                       error:&serializationError];
+        
+        JMSGCustomContent *customContent = [[JMSGCustomContent alloc] initWithCustomDictionary:jsonResponse];
+        
+        message = [conversation createMessageWithContent:customContent];
+        [conversation sendMessage:message];
+        [weakSelf handleResultWithValue:@[[message toJsonString]] command:command error:error log:@"send single custom message success"];
+      } else {
+        [weakSelf handleResultWithValue: nil command:command error:error log:@"send single custom message fail"];
+      }
     }];
 }
 

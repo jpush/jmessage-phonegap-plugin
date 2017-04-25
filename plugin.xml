@@ -2,7 +2,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="jmessage-phonegap-plugin"
-        version="2.3.3">
+        version="2.3.4">
 
     <name>JMessage</name>
     <description>集成极光 IM 和推送功能</description>
@@ -30,9 +30,6 @@
                 <param name="ios-package" value="JMessagePlugin"/>
             </feature>
         </config-file>
-
-<!--        <hook type="after_plugin_install" src="script/ios-install.js" />-->
-<!--        <hook type="before_plugin_uninstall" src="script/ios-uninstall.js" />-->
 
         <header-file src="src/ios/Plugins/JMessageDefine.h"/>
         <header-file src="src/ios/Plugins/JMessagePlugin.h"/>
