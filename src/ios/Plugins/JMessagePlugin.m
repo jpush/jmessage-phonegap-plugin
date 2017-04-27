@@ -14,10 +14,12 @@
 #import "JMessagePlugin.h"
 #import <JMessage/JMessage.h>
 #import <AVFoundation/AVFoundation.h>
+#import <objc/runtime.h>
 
 #import "JMessageHelper.h"
 #import "JMessageDefine.h"
 #import "AppDelegate+JMessage.h"
+
 
 #pragma mark - Cordova
 
@@ -507,12 +509,44 @@ JMessagePlugin *SharedJMessagePlugin;
             JMSGConversation * conversation = resultObject;
             NSArray * messageList =  [conversation messageArrayFromNewestWithOffset:from limit:limit];
             for (JMSGMessage * msg in messageList) {
-                NSString * jsonString  = [msg toJsonString];
-                [resultArr addObject:[jsonString toDictionary]];
+              
+              NSString *jsonString = [msg toJsonString];
+              NSMutableDictionary *dict = [NSMutableDictionary new];
+              [dict setValue:msg.msgId forKey:KEY_MSGID];
+              [dict setValue:jsonString forKey:KEY_CONTENT];
+              [dict setValue:[NSString stringWithFormat:@"%ld",(long)msg.contentType] forKey:KEY_CONTENTTYPE];
+              NSString *resourcePath;
+              Ivar ivar = class_getInstanceVariable([msg.content class], "_resourcePath");
+              
+              switch (msg.contentType) {
+                case kJMSGContentTypeVoice:
+                  
+                  resourcePath = object_getIvar(msg.content, ivar);
+                  break;
+                case kJMSGContentTypeImage:
+                  resourcePath = object_getIvar(msg.content, ivar);
+                  break;
+                case kJMSGContentTypeFile:
+                  resourcePath = object_getIvar(msg.content, ivar);
+                  break;
+                  
+                default:
+                  break;
+              }
+              if (resourcePath != @"" && resourcePath != nil) {
+                [dict setValue:[self getFullPathWith:resourcePath] forKey:@"resourcePath"];
+              }
+              
+              [resultArr addObject:dict];
             }
         }
         [weakSelf handleResultWithValue:resultArr command:command error:error log:@"JMessagePlugin Get Single History Message"];
     }];
+}
+
+- (NSString *)getFullPathWith:(NSString *) path {
+  NSString * homeDir = NSHomeDirectory();
+  return [NSString stringWithFormat:@"%@/Documents/%@", homeDir,path];
 }
 
 - (void)getAllSingleConversation:(CDVInvokedUrlCommand *)command {

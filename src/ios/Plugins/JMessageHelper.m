@@ -72,7 +72,7 @@
                     Ivar ivar = class_getInstanceVariable([message.content class], "_resourcePath");
                     resourcePath = object_getIvar(message.content, ivar);
                     [dict setValue:objectId     forKey:@"objectId"];
-                    [dict setValue:resourcePath forKey:@"resourcePath"];
+                    [dict setValue:[self getFullPathWith: resourcePath] forKey:@"resourcePath"];
                     [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageReceiveImageData object:dict];
                 }
             }
@@ -87,7 +87,7 @@
                     Ivar ivar = class_getInstanceVariable([message.content class], "_resourcePath");
                     resourcePath = object_getIvar(message.content, ivar);
                     [dict setValue:objectId     forKey:@"objectId"];
-                    [dict setValue:resourcePath forKey:@"resourcePath"];
+                    [dict setValue:[self getFullPathWith:resourcePath] forKey:@"resourcePath"];
                     [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageReceiveVoiceData object:dict];
                 }
             }
@@ -103,7 +103,7 @@
                     Ivar ivar = class_getInstanceVariable([message.content class], "_resourcePath");
                     resourcePath = object_getIvar(message.content, ivar);
                     [dict setValue:objectId     forKey:@"objectId"];
-                    [dict setValue:resourcePath forKey:@"resourcePath"];
+                    [dict setValue:[self getFullPathWith: resourcePath] forKey:@"resourcePath"];
                     [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageReceiveFileData object:dict];
                 }
             }
@@ -120,6 +120,11 @@
     }
 
     [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageReceiveMessage object:dict];
+}
+
+- (NSString *)getFullPathWith:(NSString *) path {
+    NSString * homeDir = NSHomeDirectory();
+    return [NSString stringWithFormat:@"%@/Documents/%@", homeDir,path];
 }
 
 - (void)onSendMessageResponse:(JMSGMessage *)message error:(NSError *)error {

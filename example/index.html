@@ -122,7 +122,14 @@
         });
 
         function gotoAddConversation() {
-            $.mobile.navigate("#addConversationPage", {transition: "slide"});
+            window.JMessage.myGroupArray(function(response) {
+                console.log(response)
+
+            }, function(response){
+
+
+            })
+            // $.mobile.navigate("#addConversationPage", {transition: "slide"});
         }
 
         function updateConversationList() {
@@ -216,9 +223,7 @@
         });
 
         // 在收到消息后将消息对象加入到消息数组的开头。
-        function onReceiveMessage(message) {
-            console.log("onReceiveSingleMessage");
-            alert("onReceiveSingleMessage")
+        function onReceiveMessage(message) {;
             if (device.platform == "Android") {
                 message = window.JMessage.message;
                 console.log(JSON.stringify(message));
@@ -238,6 +243,16 @@
                         messageArray = JSON.parse(response);
                         refreshConversation();
                     } else {
+
+                        for(var i = 0; i< response.length ; i++) {
+                            var msgContent = response[i].content
+                            msgContent = JSON.parse(msgContent)
+                            response[i].content = msgContent
+                        }
+                        for(var i = 0; i< response.length ; i++) {
+                            console.log(response[i])
+                        }
+
                         messageArray = response;
                         refreshConversation();
                     }
@@ -271,7 +286,6 @@
         }
 
         function insertMessage(message) {
-            console.log(message);
 
             var fromName;
             var createTime;
@@ -297,51 +311,35 @@
                 }
                 $('#messageList').append(insertString).listview('refresh');
             } else {
-                if (message.msg_type == "voice") {
-                    lastMessage = "[语音消息]" + message.msg_body.media_id;
+                if (message.content.msg_type == "voice") {
+                    lastMessage = "[语音消息]" + message.resourcePath;
                 }
 
-                if (message.msg_type == "image") {
-                    lastMessage = "[图片消息]" + message.msg_body.media_id;
+                if (message.content.msg_type == "image") {
+                    lastMessage = "[图片消息]" + message.resourcePath;
                 }
 
-                if (message.from_name == undefined) {
 
-                    var message = message.content;
-                    if (message.msg_type == "text") {
-                        lastMessage = message.msg_body.text;
-                    }
-                    fromName = message.from_name;
-                    createTimeStr = message.create_time;
-                    if(message.from_id == window.JMessage.username) {
-                        insertString = '<li style="text-align:right"><span style="font-size:12px">'
-                        + createTimeStr
-                        + "</span><br>"
-                        + fromName + ":" + lastMessage + '</li>';
-                    } else {
-                        insertString = '<li style="text-align:left" style="font-size:12px">'
-                        + createTimeStr + "</span><br>" + fromName + ":"
-                        + lastMessage + '</li>';
-                    }                    
+                // var message = message.content;
+                if (message.content.msg_type == "text") {
+                    console.log("haungmin999")
+                    console.log(message)
+                    lastMessage = message.content.msg_body.text;
+                }
+
+                fromName = message.content.from_name;
+                createTimeStr = message.content.create_time;
+                if(message.content.from_id == window.JMessage.username) {
+                    insertString = '<li style="text-align:right"><span style="font-size:12px">'
+                    + createTimeStr
+                    + "</span><br>"
+                    + fromName + ":" + lastMessage + '</li>';
                 } else {
+                    insertString = '<li style="text-align:left" style="font-size:12px">'
+                    + createTimeStr + "</span><br>" + fromName + ":"
+                    + lastMessage + '</li>';
+                }                    
 
-                    if (message.msg_type == "text") {
-                        lastMessage = message.msg_body.text;
-                    }
-                    fromName = message.from_name;
-                    createTimeStr = message.create_time;
-                    console.log(window.JMessage.username);
-                    if(message.from_id == window.JMessage.username) {
-                        insertString = '<li style="text-align:right"><span style="font-size:12px">'
-                        + createTimeStr
-                        + "</span><br>"
-                        + fromName + ":" + lastMessage + '</li>';
-                    } else {
-                        insertString = '<li style="text-align:left" style="font-size:12px">'
-                        + createTimeStr + "</span><br>" + fromName + ":"
-                        + lastMessage + '</li>';
-                    }
-                }
                 $('#messageList').append(insertString).listview('refresh');
             }
 
