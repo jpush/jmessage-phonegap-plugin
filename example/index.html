@@ -139,11 +139,11 @@
                 function (response) {
                     if (device.platform == "Android") {
                         var conversations = JSON.parse(response);
-                        for(var i = 0; i < conversations.length; i++) {
+                        for (var i = 0; i < conversations.length; i++) {
                             insertConversation(conversations[i]);
                         }                
                     } else {
-                        for(var i = 0; i < response.length; i++) {
+                        for (var i = 0; i < response.length; i++) {
                             insertConversation(response[i]);
                         }
                     }
@@ -243,13 +243,7 @@
                         messageArray = JSON.parse(response);
                         refreshConversation();
                     } else {
-
-                        for(var i = 0; i< response.length ; i++) {
-                            var msgContent = response[i].content
-                            msgContent = JSON.parse(msgContent)
-                            response[i].content = msgContent
-                        }
-                        for(var i = 0; i< response.length ; i++) {
+                        for (var i = 0; i< response.length ; i++) {
                             console.log(response[i])
                         }
 

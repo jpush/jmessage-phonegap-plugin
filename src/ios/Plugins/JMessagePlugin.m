@@ -512,8 +512,17 @@ JMessagePlugin *SharedJMessagePlugin;
               
               NSString *jsonString = [msg toJsonString];
               NSMutableDictionary *dict = [NSMutableDictionary new];
+              
+              NSError *decodeeError;
+              NSDictionary *msgBody = [NSJSONSerialization JSONObjectWithData:[jsonString dataUsingEncoding:NSUTF8StringEncoding] options:0 error:&error];
+              
+              if (decodeeError == nil) {
+                [dict setValue:msgBody forKey:KEY_CONTENT];
+              }
+              
+              [dict setValue:[NSString stringWithFormat:@"%ld",(long)msg.contentType] forKey:KEY_CONTENTTYPE];
+              
               [dict setValue:msg.msgId forKey:KEY_MSGID];
-              [dict setValue:jsonString forKey:KEY_CONTENT];
               [dict setValue:[NSString stringWithFormat:@"%ld",(long)msg.contentType] forKey:KEY_CONTENTTYPE];
               NSString *resourcePath;
               Ivar ivar = class_getInstanceVariable([msg.content class], "_resourcePath");
@@ -581,18 +590,59 @@ JMessagePlugin *SharedJMessagePlugin;
     [JMSGConversation createGroupConversationWithGroupId:rid completionHandler:^(id resultObject, NSError *error) {
         NSMutableArray *resultArr = [NSMutableArray new];
         if (error == nil) {
+          
             JMSGConversation * conversation = resultObject;
             NSArray * messageList =  [conversation messageArrayFromNewestWithOffset:from limit:limit];
             for (JMSGMessage * msg in messageList) {
+              
                 NSString * jsonString  = [msg toJsonString];
                 JMSGGroup *group = msg.target;
                 NSDictionary *groupDict = [group groupToDictionary];
-                NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[jsonString toDictionary]];
+              
+              
+                NSMutableDictionary *dict = [NSMutableDictionary new];
+              
+                NSError *decodeeError;
+                NSDictionary *msgBody = [NSJSONSerialization JSONObjectWithData:[jsonString dataUsingEncoding:NSUTF8StringEncoding] options:0 error:&error];
+              
+                if (decodeeError == nil) {
+                  [dict setValue:msgBody forKey:KEY_CONTENT];
+                }
+              
+                [dict setValue:[NSString stringWithFormat:@"%ld",(long)msg.contentType] forKey:KEY_CONTENTTYPE];
+
                 [dict addEntriesFromDictionary:@{@"groupDict":groupDict}];
-                dict[KEY_LASTMESSAGE] = conversation.latestMessageContentText;
+              
+                NSString *resourcePath;
+                Ivar ivar = class_getInstanceVariable([msg.content class], "_resourcePath");
+              
+                switch (msg.contentType) {
+                  case kJMSGContentTypeVoice:
+                  
+                    resourcePath = object_getIvar(msg.content, ivar);
+                    break;
+                  case kJMSGContentTypeImage:
+                    resourcePath = object_getIvar(msg.content, ivar);
+                    break;
+                  case kJMSGContentTypeFile:
+                    resourcePath = object_getIvar(msg.content, ivar);
+                    break;
+                  
+                  default:
+                    break;
+                }
+              if (resourcePath != @"" && resourcePath != nil) {
+                [dict setValue:[self getFullPathWith:resourcePath] forKey:@"resourcePath"];
+              }
+              
+                [dict setValue:msg.msgId forKey:KEY_MSGID];
                 [resultArr addObject:dict];
+
             }
         }
+      
+          
+        
         [weakSelf handleResultWithValue:resultArr command:command error:error log:@"JMessagePlugin Get Group History Message"];
     }];
 }
