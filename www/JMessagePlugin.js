@@ -1,3 +1,4 @@
+cordova.define("jmessage-phonegap-plugin.JMessagePlugin", function(require, exports, module) {
 var exec = require('cordova/exec')
 
 var JMessagePlugin = function () {
@@ -957,6 +958,7 @@ JMessagePlugin.prototype.onReceiveImageData = function (data) {
 JMessagePlugin.prototype.onReceiveVoiceData = function (data) {
   try {
     var bToObj = JSON.parse(data)
+    console.log(bToObj)
   } catch (exception) {
     console.log('onReceiveVoiceData ' + exception)
   }
@@ -1000,3 +1002,5 @@ if (!window.plugins.jmessagePlugin) {
 }
 
 module.exports = new JMessagePlugin()
+
+});
