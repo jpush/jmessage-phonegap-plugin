@@ -61,11 +61,17 @@
     NSString *jsonString = [message toJsonString];
     NSMutableDictionary *dict = [NSMutableDictionary new];
     [dict setValue:message.msgId forKey:KEY_MSGID];
-    [dict setValue:jsonString forKey:KEY_CONTENT];
+    NSError *decodeeError;
+    NSDictionary *msgBody = [NSJSONSerialization JSONObjectWithData:[jsonString dataUsingEncoding:NSUTF8StringEncoding] options:0 error:&error];
+  
+    if (decodeeError == nil) {
+      [dict setValue:msgBody forKey:KEY_CONTENT];
+    }
+  
     [dict setValue:[NSString stringWithFormat:@"%ld",(long)message.contentType] forKey:KEY_CONTENTTYPE];
 
     if (message.contentType == kJMSGContentTypeImage) {
-        [(JMSGImageContent*)message.content thumbImageData:^(NSData *data, NSString *objectId, NSError *error) {
+        [(JMSGImageContent*)message.content thumbImageData:^(NSData *data, NSString *objectId, NSError *decodeeError) {
             if (!error) {
                 if (data) {
                     NSString *resourcePath;
