@@ -71,26 +71,22 @@ API 统一说明：
 	window.JMessage.updateMyPassword(oldPwd, newPwd, errorCallback);
 
 
-### API - updateMyInfo
+### API - updateMyInfo（与 Android 通用）
 
 获取我的信息（当前登录用户）
 #### 接口定义
 	window.JMessage.updateMyInfo(field, value, successCallback, errorCallback);
 #### 参数说明
-- field：数字、或纯数字字符串
-
-  	/// 用户信息字段: 用户名
-  		kJMSGUserFieldsNickname = 0,
-  		/// 用户信息字段: 生日
-  		kJMSGUserFieldsBirthday = 1,
-  		/// 用户信息字段: 签名
-  		kJMSGUserFieldsSignature = 2,
-  		/// 用户信息字段: 性别
-  		kJMSGUserFieldsGender = 3,
-  		/// 用户信息字段: 区域
-  		kJMSGUserFieldsRegion = 4,
-  		/// 用户信息字段: 头像 (内部定义的 media_id)
-  		kJMSGUserFieldsAvatar = 5,
+- userInfoField：需要更新的用户信息字段。包括：
+	- nickname：昵称。
+	- birthday：生日。
+	- signature：个性签名。
+	- gender：性别。
+	- region：地区。
+	- avatar : 头像。
+- value：更新的值，当更新头像时，为图片路径。
+- successCallback：获取成功的回调函数，无返回值。
+- errorCallback：更新失败的回调函数，以参数形式返回错误信息。如果为 null，默认打印失败信息日志。
 
 
 ### API - updateNoteName

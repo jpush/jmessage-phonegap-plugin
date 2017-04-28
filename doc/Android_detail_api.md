@@ -203,7 +203,8 @@
 	- signature：个性签名。
 	- gender：性别。
 	- region：地区。
-- value：更新的值。
+	- avatar : 头像。
+- value：更新的值，当更新头像时，为图片路径。
 - successCallback：获取成功的回调函数，无返回值。
 - errorCallback：更新失败的回调函数，以参数形式返回错误信息。如果为 null，默认打印失败信息日志。
 
