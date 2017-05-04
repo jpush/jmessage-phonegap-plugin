@@ -33,7 +33,7 @@ JMessage PhoneGap / Cordova Plugin 是基于[极光 IM](https://docs.jiguang.cn/
    cordova plugin add <Plugin Path> --variable APP_KEY=your_app_key
 
 ## API
-- [Android](/doc/Android_detail_api.md)
+- [Android](/doc/Android_API.md)
 - [iOS](/doc/iOS_API.md)
 
 ## Demo

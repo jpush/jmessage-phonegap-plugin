@@ -26,6 +26,7 @@
 	- [sendGroupLocationMessage](#sendgrouplocationmessage)
 	- [sendGroupFileMessage](#sendgroupfilemessage)
 - [获取历史消息](#获取历史消息)
+	- [getOfflineMessages](#getOfflineMessages)
 	- [getLatestMessage](#getlatestmessage)
 	- [getHistoryMessages](#gethistorymessages)
 	- [getAllMessages](#getallmessages)
@@ -545,6 +546,26 @@
 - errorCallback：发送失败的回调函数，以参数形式返回错误信息。如果为 null，默认打印失败信息日志。
 
 ## 获取历史消息
+### getOfflineMessages
+获取上次离线期间收到的离线消息。
+
+#### 接口定义
+
+	window.JMessage.getOfflineMessages(successCallback, errorCallback)
+
+#### 参数说明
+- successCallback: 成功回调。以参数形式返回离线消息的 JSONArray。
+- errorCallback：失败回调。以参数形式返回错误信息。
+
+#### 代码示例
+```javascript
+window.JMessage.getOfflineMessages(function (msgArr) {
+	var content = msgArr[0].content.text	// 文本消息内容
+}, function (errMsg) {
+	console.log(errMsg)
+})
+```
+
 ### getLatestMessage
 获取指定会话中最近的消息。
 
