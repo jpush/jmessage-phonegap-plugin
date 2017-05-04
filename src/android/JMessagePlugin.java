@@ -325,6 +325,7 @@ public class JMessagePlugin extends CordovaPlugin {
     public void userLogout(JSONArray data, CallbackContext callback) {
         try {
             JMessageClient.logout();
+            mOfflineMessageList.clear();
             callback.success();
         } catch (Exception exception) {
             callback.error(exception.toString());
