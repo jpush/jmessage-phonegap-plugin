@@ -21,7 +21,7 @@ var JMessagePlugin = function () {
 }
 
 function isAndroid () {
-  if (device.platform == 'Android') {
+  if (device.platform === 'Android') {
     return true
   }
   return false
@@ -146,7 +146,7 @@ JMessagePlugin.prototype.sendSingleLocationMessage = function (username, appKey,
     this.callNative('sendSingleLocationMessage', [username, appKey, latitude, longitude, scale, address],
             sCallback, eCallback)
   } else {
-    this.callNative('sendLocationMessage', [name, appKey, '1', latitude, longitude, scale, address],
+    this.callNative('sendLocationMessage', [username, appKey, '1', latitude, longitude, scale, address],
             sCallback, eCallback)
   }
 }
@@ -217,10 +217,18 @@ JMessagePlugin.prototype.sendGroupTextMessageWithExtras = function (groupId, tex
   JMessagePlugin.sendGroupCustomMessage_ios(groupId, text, jsonStr, sCallback, eCallback)
 }
 
+JMessagePlugin.prototype.getOfflineMessages = function (sCallback, eCallback) {
+  if (isAndroid()) {
+    this.callNative('getOfflineMessages', [], sCallback, eCallback)
+  } else {
+    // TODO
+  }
+}
+
 // 获取指定 Conversation 的部分历史消息。conversationType: 'single' or 'group'
 // value: username if conversation type is 'single' or groupId if conversation type is 'group'.
 JMessagePlugin.prototype.getHistoryMessages = function (conversationType, value, appKey, from, limit, sCallback, eCallback) {
-  if (device.platform === 'Android') {
+  if (isAndroid()) {
     this.callNative('getHistoryMessages', [conversationType, value, appKey, from, limit], sCallback, eCallback)
   } else {
     if (conversationType === 'single') {
@@ -889,7 +897,7 @@ JMessagePlugin.prototype.cross_getUserInfoArray = function (nameArray, appKey, s
 JMessagePlugin.prototype.onConversationChanged = function (data) {
   try {
     var bToObj = JSON.parse(data)
-    
+
     cordova.fireDocumentEvent('jmessage.onConversationChanged', bToObj)
   } catch (exception) {
     console.log('onConversationChanged ' + exception)
@@ -975,7 +983,7 @@ JMessagePlugin.prototype.onReceiveFileData = function (data) {
 
 JMessagePlugin.prototype.onReceiveLocation = function (data) {
   try {
-    var bToObj = JSON.parse(data);
+    var bToObj = JSON.parse(data)
   } catch (exception) {
     console.log('onReceiveLocation ' + exception)
   }

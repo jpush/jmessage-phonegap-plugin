@@ -63,6 +63,7 @@ import cn.jpush.im.android.api.event.ContactNotifyEvent;
 import cn.jpush.im.android.api.event.LoginStateChangeEvent;
 import cn.jpush.im.android.api.event.MessageEvent;
 import cn.jpush.im.android.api.event.NotificationClickEvent;
+import cn.jpush.im.android.api.event.OfflineMessageEvent;
 import cn.jpush.im.android.api.exceptions.JMFileSizeExceedException;
 import cn.jpush.im.android.api.model.Conversation;
 import cn.jpush.im.android.api.model.GroupInfo;
@@ -80,6 +81,8 @@ public class JMessagePlugin extends CordovaPlugin {
     private ExecutorService threadPool = Executors.newFixedThreadPool(1);
     private Gson mGson = new Gson();
     private Activity mCordovaActivity;
+
+    private List<Message> mOfflineMessageList = new ArrayList<Message>();
 
     public JMessagePlugin() {
         instance = this;
@@ -136,6 +139,10 @@ public class JMessagePlugin extends CordovaPlugin {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    public void onEvent(OfflineMessageEvent event) {
+        mOfflineMessageList = event.getOfflineMessageList();
     }
 
     public void onEvent(LoginStateChangeEvent event) {
@@ -255,6 +262,24 @@ public class JMessagePlugin extends CordovaPlugin {
     public void onDestroy() {
         JMessageClient.unRegisterEventReceiver(this);
         mCordovaActivity = null;
+    }
+
+    public void getOfflineMessages(JSONArray data, CallbackContext callback) {
+        if (mOfflineMessageList.size() == 0) {
+            callback.success("");
+            return;
+        }
+
+        try {
+            JSONArray jsonArr = new JSONArray();
+            for (Message msg : mOfflineMessageList) {
+                jsonArr.put(getMessageJSONObject(msg));
+            }
+            callback.success(jsonArr);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callback.error(e.getMessage());
+        }
     }
 
     // Login and register API.
