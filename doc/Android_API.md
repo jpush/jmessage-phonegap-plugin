@@ -67,7 +67,7 @@
 - [事件处理](#事件处理)
 	- [消息事件](#消息事件)
 		- [消息对象的 JSON 数据格式](#消息对象的-json-数据格式)
-		- [jmessage.onSyncOfflineMessage](#jmessageonsyncmessage)
+		- [jmessage.onSyncOfflineMessage](#jmessageonsyncofflinemessage)
 		- [jmessage.onOpenMessage](#jmessageonopenmessage)
 		- [jmessage.onReceiveMessage](#jmessageonreceivemessage)
 		- [jmessage.onReceiveTextMessage](#jmessageonreceivetextmessage)
@@ -1424,7 +1424,7 @@ window.JMessage.getOfflineMessages(function (msgArr) {
 	    "createTimeInMillis": 1466496463000
 	}
 
-#### jmessage.onSyncOfflineMessage
+#### jmessage.onSyncOfflineMessage（同时适用于 iOS）
 当在上次离线期间收到消息时触发。
 
 ##### 代码示例
