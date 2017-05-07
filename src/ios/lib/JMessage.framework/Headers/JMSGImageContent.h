@@ -41,6 +41,10 @@
  */
 @property(nonatomic, strong, readonly) NSString * JMSG_NULLABLE imageLink;
 
+/*!
+ * @abstract 图片原始大小
+ */
+@property(nonatomic, assign, readonly) CGSize imageSize;
 
 // 不支持使用的初始化方法
 - (nullable instancetype)init NS_UNAVAILABLE;

@@ -149,6 +149,13 @@ JMSG_ASSUME_NONNULL_BEGIN
 @property(nonatomic, assign, readonly) BOOL isNoDisturb;
 
 /*!
+ * @abstract 该群是否已被设置为消息屏蔽
+ *
+ * @discussion YES:是 , NO: 否
+ */
+@property(nonatomic, assign, readonly) BOOL isShieldMessage;
+
+/*!
  * @abstract 设置群组消息免打扰（支持跨应用设置）
  *
  * @param isNoDisturb 是否免打扰 YES:是 NO: 否
@@ -164,6 +171,38 @@ JMSG_ASSUME_NONNULL_BEGIN
  * 这个接口支持跨应用设置免打扰
  */
 - (void)setIsNoDisturb:(BOOL)isNoDisturb handler:(JMSGCompletionHandler)handler;
+
+/*!
+ * @abstract 设置群组消息屏蔽
+ *
+ * @param isShield 是否群消息屏蔽 YES:是 NO: 否
+ * @param handler 结果回调。回调参数：
+ *
+ * - resultObject 相应对象
+ * - error 错误信息
+ *
+ * 如果 error 为 nil, 表示设置成功
+ * 如果 error 不为 nil,表示设置失败
+ *
+ * @discussion 针对单个群组设置群消息屏蔽
+ */
+- (void)setIsShield:(BOOL)isShield handler:(JMSGCompletionHandler)handler;
+
+/*!
+ * @abstract 获取所有设置群消息屏蔽的群组
+ *
+ * @param handler 结果回调。回调参数：
+ *
+ * - resultObject 类型为 NSArray，数组里成员的类型为 JMSGGroup
+ * - error 错误信息
+ *
+ * 如果 error 为 nil, 表示设置成功
+ * 如果 error 不为 nil,表示设置失败
+ *
+ * @discussion 从服务器获取，返回所有设置群消息屏蔽的群组。
+ */
++ (void)shieldList:(JMSGCompletionHandler)handler;
+
 
 
 ///----------------------------------------------------

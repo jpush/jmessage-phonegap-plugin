@@ -28,6 +28,9 @@ typedef NS_ENUM(NSUInteger, JMSGUserField) {
   kJMSGUserFieldsRegion = 4,
   /// 用户信息字段: 头像 (内部定义的 media_id)
   kJMSGUserFieldsAvatar = 5,
+  /// 用户信息字段: 地址
+  kJMSGUserFieldsAddress = 6,
+
 };
 
 /*!
@@ -248,6 +251,9 @@ JMSG_ASSUME_NONNULL_BEGIN
 @property(nonatomic, copy, readonly) NSString * JMSG_NULLABLE region;
 
 @property(nonatomic, copy, readonly) NSString * JMSG_NULLABLE signature;
+
+@property(nonatomic, copy, readonly) NSString * JMSG_NULLABLE address;
+
 /*!
  * @abstract 备注名
  */

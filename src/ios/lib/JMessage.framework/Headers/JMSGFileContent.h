@@ -16,7 +16,9 @@
 
 JMSG_ASSUME_NONNULL_BEGIN
 
-//文件名
+/*!
+ * @abstract 文件名
+ */
 @property(nonatomic, copy, readonly) NSString *fileName;
 
 // 不支持使用的初始化方法
@@ -32,7 +34,9 @@ JMSG_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithFileData:(NSData *)data
                         fileName:(NSString *)fileName;
 
-//获取文件内容的数据
+/*!
+ * @abstract 获取文件内容的数据
+ */
 - (void)fileData:(JMSGAsyncDataHandler)handler;
 
 JMSG_ASSUME_NONNULL_END

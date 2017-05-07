@@ -80,6 +80,30 @@ JMSG_ASSUME_NONNULL_BEGIN
                                        groupId:(NSString *)groupId;
 
 /*!
+ * @abstract 创建@人的群聊消息
+ *
+ * @param content 消息内容对象
+ * @param groupId 群聊ID
+ * @param at_list @对象的数组
+ *
+ * @discussion 不关心会话时的直接创建聊天消息的接口。一般建议使用 JMSGConversation -> createMessageWithContent:
+ */
++ (JMSGMessage *)createGroupMessageWithContent:(JMSGAbstractContent *)content
+                                       groupId:(NSString *)groupId
+                                       at_list:(NSArray<__kindof JMSGUser *> *)at_list;
+
+/*!
+ * @abstract 创建@所有人的群聊消息
+ *
+ * @param content 消息内容对象
+ * @param groupId 群聊ID
+ *
+ * @discussion 不关心会话时的直接创建聊天消息的接口。一般建议使用 JMSGConversation -> createMessageWithContent:
+ */
++ (JMSGMessage *)createGroupAtAllMessageWithContent:(JMSGAbstractContent *)content
+                                       groupId:(NSString *)groupId;
+
+/*!
  * @abstract 发送消息（已经创建好的）
  *
  * @param message 消息对象。
@@ -281,6 +305,32 @@ JMSG_ASSUME_NONNULL_BEGIN
                             scale:(NSNumber *)scale
                           address:(NSString *)address
                            toGroup:(NSString *)groupId;
+
+/*!
+ * @abstract 是否是@自己的消息（只针对群消息，单聊消息无@功能）
+ */
+- (BOOL)isAtMe;
+
+/*!
+ * @abstract 是否是@所有人的消息（只针对群消息，单聊消息无@功能）
+ */
+- (BOOL)isAtAll;
+
+/*!
+ * @abstract 获取消息体中所有@对象（只针对群消息，单聊消息无@功能）
+ *
+ * @param handler 结果回调。回调参数：
+ *
+ * - resultObject 类型为 NSArray，数组里成员的类型为 JMSGUser
+ * 注意：如果该消息为@所有人消息时，resultObject 返回nil，可以通过 isAtAll 接口来判断是否是@所有人的消息
+ * - error 错误信息
+ *
+ * 如果 error 为 nil, 表示获取成功
+ * 如果 error 不为 nil,表示获取失败
+ *
+ * @discussion 从服务器获取，返回消息的所有@对象。
+ */
+- (void)getAt_List:(JMSGCompletionHandler)handler;
 
 
 ///----------------------------------------------------

@@ -145,7 +145,7 @@ JMSG_ASSUME_NONNULL_BEGIN
  *
  * @discussion 返回所有的 conversation 列表，返回是没有排序的列表。
  */
-+ (void)allConversationsByDefault:(JMSGCompletionHandler)handler;
++ (void)allUnsortedConversations:(JMSGCompletionHandler)handler;
 
 
 
@@ -162,6 +162,13 @@ JMSG_ASSUME_NONNULL_BEGIN
  * @abstract 最后一条消息
  */
 @property(nonatomic, strong, readonly) JMSGMessage * JMSG_NULLABLE latestMessage;
+
+/*!
+ * @abstract 会话最近一条消息的创建时间
+ *
+ * @discussion 可用于会话排序，单位为毫秒
+ */
+@property(nonatomic, strong, readonly) NSNumber *latestMsgTime;
 
 /*!
  * @abstract 未读数
@@ -315,6 +322,25 @@ JMSG_ASSUME_NONNULL_BEGIN
  * @discussion 发送消息的多个接口，都未在方法上直接提供回调。你应通过 JMSGMessageDelegate中的onReceiveMessage: error:方法来注册消息发送结果
  */
 - (void)sendMessage:(JMSGMessage *)message;
+
+/*!
+ * @abstract 发送@人消息（已经创建好对象的）
+ *
+ * @param message 通过消息创建类接口，创建好的消息对象
+ * @param at_list @对象的数组
+ *
+ * @discussion 发送消息的多个接口，都未在方法上直接提供回调。你应通过 JMSGMessageDelegate中的onReceiveMessage: error:方法来注册消息发送结果
+ */
+- (void)sendMessage:(JMSGMessage *)message at_list:(NSArray<__kindof JMSGUser *> *)userList;
+
+/*!
+ * @abstract 发送@所有人消息（已经创建好对象的）
+ *
+ * @param message 通过消息创建类接口，创建好的消息对象
+ *
+ * @discussion 发送消息的多个接口，都未在方法上直接提供回调。你应通过 JMSGMessageDelegate中的onReceiveMessage: error:方法来注册消息发送结果
+ */
+- (void)sendAtAllMessage:(JMSGMessage *)message;
 
 /*!
  * @abstract 发送文本消息
