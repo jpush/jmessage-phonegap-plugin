@@ -43,3 +43,7 @@
 @interface JMSGGroup (JMessage)
 -(NSMutableDictionary*)groupToDictionary;
 @end
+
+@interface JMSGMessage (JPush)
+- (NSMutableDictionary *)messageToDictionary;
+@end

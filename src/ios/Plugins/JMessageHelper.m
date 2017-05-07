@@ -168,7 +168,14 @@
 }
 
 - (void)onSyncOfflineMessageConversation:(JMSGConversation *)conversation offlineMessages:(NSArray JMSG_GENERIC ( __kindof JMSGMessage *) *)offlineMessages {
-  [[NSNotificationCenter defaultCenter] postNotificationName: kJJMessageSyncOfflineMessage object: [conversation conversationToDictionary]];
+  NSMutableDictionary *callBackDic = @{}.mutableCopy;
+  callBackDic[@"conversation"] = [conversation conversationToDictionary];
+  NSMutableArray *messageArr = @[].mutableCopy;
+  for (JMSGMessage *message in offlineMessages) {
+    [messageArr addObject: [message messageToDictionary]];
+  }
+  callBackDic[@"messageList"] = messageArr;
+  [[NSNotificationCenter defaultCenter] postNotificationName: kJJMessageSyncOfflineMessage object: callBackDic];
 }
 #pragma mark - Group 回调
 
@@ -219,6 +226,8 @@
     dict[KEY_UNREADCOUNT] = self.unreadCount;
     return dict;
 }
+
+
 @end
 
 @implementation JMSGUser (JPush)
@@ -256,7 +265,51 @@
 }
 @end
 
+@implementation JMSGMessage (JPush)
+- (NSMutableDictionary *)messageToDictionary {
+  NSString *jsonString = [self toJsonString];
+  NSMutableDictionary *dict = [NSMutableDictionary new];
+  NSError *error = nil;
+  NSError *decodeeError;
+  NSDictionary *msgBody = [NSJSONSerialization JSONObjectWithData:[jsonString dataUsingEncoding:NSUTF8StringEncoding] options:0 error:&error];
+  
+  if (decodeeError == nil) {
+    [dict setValue:msgBody forKey:KEY_CONTENT];
+  }
+  
+  [dict setValue:[NSString stringWithFormat:@"%ld",(long)self.contentType] forKey:KEY_CONTENTTYPE];
+  
+  [dict setValue:self.msgId forKey:KEY_MSGID];
+  [dict setValue:[NSString stringWithFormat:@"%ld",(long)self.contentType] forKey:KEY_CONTENTTYPE];
+  NSString *resourcePath;
+  Ivar ivar = class_getInstanceVariable([self.content class], "_resourcePath");
+  
+  switch (self.contentType) {
+    case kJMSGContentTypeVoice:
+      
+      resourcePath = object_getIvar(self.content, ivar);
+      break;
+    case kJMSGContentTypeImage:
+      resourcePath = object_getIvar(self.content, ivar);
+      break;
+    case kJMSGContentTypeFile:
+      resourcePath = object_getIvar(self.content, ivar);
+      break;
+      
+    default:
+      break;
+  }
+  
+  if (resourcePath != @"" && resourcePath != nil) {
+    [dict setValue:[self getFullPathWith:resourcePath] forKey:@"resourcePath"];
+  }
+  
+  return dict;
+}
 
-
-
+- (NSString *)getFullPathWith:(NSString *) path {
+  NSString * homeDir = NSHomeDirectory();
+  return [NSString stringWithFormat:@"%@/Documents/%@", homeDir,path];
+}
+@end
 

@@ -138,7 +138,7 @@ JMessagePlugin *SharedJMessagePlugin;
                         object:nil];
 //  
     [defaultCenter addObserver:self
-                        selector:@selector(onSyncRoamingMessage:)
+                        selector:@selector(onSyncOfflineMessage:)
                             name:kJJMessageSyncOfflineMessage
                           object:nil];
   
