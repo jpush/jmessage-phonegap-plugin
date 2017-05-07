@@ -82,8 +82,6 @@ public class JMessagePlugin extends CordovaPlugin {
     private Gson mGson = new Gson();
     private Activity mCordovaActivity;
 
-    private List<Message> mOfflineMessageList = new ArrayList<Message>();
-
     public JMessagePlugin() {
         instance = this;
     }
@@ -142,7 +140,21 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     public void onEvent(OfflineMessageEvent event) {
-        mOfflineMessageList = event.getOfflineMessageList();
+        try {
+            JSONObject json = new JSONObject();
+
+            String conversationJsonStr = mGson.toJson(event.getConversation());
+            json.put("conversation", new JSONObject(conversationJsonStr));
+
+            JSONArray msgJsonArr = new JSONArray();
+            for (Message msg : event.getOfflineMessageList()) {
+                msgJsonArr.put(getMessageJSONObject(msg));
+            }
+            json.put("messageList", msgJsonArr);
+            fireEvent("onSyncOfflineMessage", json.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public void onEvent(LoginStateChangeEvent event) {
@@ -264,24 +276,6 @@ public class JMessagePlugin extends CordovaPlugin {
         mCordovaActivity = null;
     }
 
-    public void getOfflineMessages(JSONArray data, CallbackContext callback) {
-        if (mOfflineMessageList.size() == 0) {
-            callback.success("");
-            return;
-        }
-
-        try {
-            JSONArray jsonArr = new JSONArray();
-            for (Message msg : mOfflineMessageList) {
-                jsonArr.put(getMessageJSONObject(msg));
-            }
-            callback.success(jsonArr);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            callback.error(e.getMessage());
-        }
-    }
-
     // Login and register API.
 
     public void userRegister(JSONArray data, final CallbackContext callback) {
@@ -325,7 +319,6 @@ public class JMessagePlugin extends CordovaPlugin {
     public void userLogout(JSONArray data, CallbackContext callback) {
         try {
             JMessageClient.logout();
-            mOfflineMessageList.clear();
             callback.success();
         } catch (Exception exception) {
             callback.error(exception.toString());

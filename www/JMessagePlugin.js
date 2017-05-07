@@ -217,14 +217,6 @@ JMessagePlugin.prototype.sendGroupTextMessageWithExtras = function (groupId, tex
   JMessagePlugin.sendGroupCustomMessage_ios(groupId, text, jsonStr, sCallback, eCallback)
 }
 
-JMessagePlugin.prototype.getOfflineMessages = function (sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('getOfflineMessages', [], sCallback, eCallback)
-  } else {
-    // TODO
-  }
-}
-
 // 获取指定 Conversation 的部分历史消息。conversationType: 'single' or 'group'
 // value: username if conversation type is 'single' or groupId if conversation type is 'group'.
 JMessagePlugin.prototype.getHistoryMessages = function (conversationType, value, appKey, from, limit, sCallback, eCallback) {
@@ -708,13 +700,15 @@ JMessagePlugin.prototype.onReceiveCustomMessage = function (jsonStr) {
 }
 
 JMessagePlugin.prototype.onSyncOfflineMessage = function (jsonStr) {
-  jsonStr = JSON.parse(jsonStr)
-  cordova.fireDocumentEvent('jmessage.onSyncOfflineMessage', jsonStr)
+  jsonStr = JSON.stringify(jsonStr)
+  var obj = JSON.parse(jsonStr)
+  cordova.fireDocumentEvent('jmessage.onSyncOfflineMessage', obj)
 }
 
 JMessagePlugin.prototype.onSyncRoamingMessage = function (jsonStr) {
-  jsonStr = JSON.parse(jsonStr)
-  cordova.fireDocumentEvent('jmessage.onSyncRoamingMessage', jsonStr)
+  jsonStr = JSON.stringify(jsonStr)
+  var obj = JSON.parse(jsonStr)
+  cordova.fireDocumentEvent('jmessage.onSyncRoamingMessage', obj)
 }
 
 JMessagePlugin.prototype.onUserPasswordChanged = function (jsonStr) {
