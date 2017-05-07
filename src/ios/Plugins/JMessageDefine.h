@@ -30,6 +30,13 @@ static NSString *const JMessageConfig_Delay        = @"Delay";
 #define kJJMessageConversationChanged @"kJJMessageConversationChanged"
 #define kJJMessageUnreadChanged       @"kJJMessageUnreadChanged"
 
+//离线消息
+#define kJJMessageSyncOfflineMessage @"kJJMessageSyncOfflineMessage"
+
+// 漫游消息同步
+
+#define kJJMessageSyncRoamingMessage @"kJJMessageSyncRoamingMessage"
+
 //Group 回调
 #define kJJMessageGroupInfoChanged @"kJJMessageGroupInfoChanged"
 

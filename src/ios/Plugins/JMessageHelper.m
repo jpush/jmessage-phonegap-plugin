@@ -163,6 +163,13 @@
     [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageUnreadChanged object:[NSNumber numberWithUnsignedInteger:newCount]];
 }
 
+- (void)onSyncRoamingMessageConversation:(JMSGConversation *)conversation {
+  [[NSNotificationCenter defaultCenter] postNotificationName: kJJMessageSyncRoamingMessage object: [conversation conversationToDictionary]];
+}
+
+- (void)onSyncOfflineMessageConversation:(JMSGConversation *)conversation offlineMessages:(NSArray JMSG_GENERIC ( __kindof JMSGMessage *) *)offlineMessages {
+  [[NSNotificationCenter defaultCenter] postNotificationName: kJJMessageSyncOfflineMessage object: [conversation conversationToDictionary]];
+}
 #pragma mark - Group 回调
 
 - (void)onGroupInfoChanged:(JMSGGroup *)group{

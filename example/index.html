@@ -129,7 +129,7 @@
 
 
             })
-            // $.mobile.navigate("#addConversationPage", {transition: "slide"});
+            $.mobile.navigate("#addConversationPage", {transition: "slide"});
         }
 
         function updateConversationList() {
@@ -220,7 +220,7 @@
             document.addEventListener("jmessage.onReceiveMessage",
                 onReceiveMessage, false);
             getMessageHistory(usernameForConversation);
-        });
+        });       
 
         // 在收到消息后将消息对象加入到消息数组的开头。
         function onReceiveMessage(message) {;
@@ -316,8 +316,8 @@
 
                 // var message = message.content;
                 if (message.content.msg_type == "text") {
-                    console.log("haungmin999")
-                    console.log(message)
+                    
+                    
                     lastMessage = message.content.msg_body.text;
                 }
 
@@ -442,6 +442,10 @@
             }
         }
 
+        function onSyncOfflineMessage(event) {
+            console.log(event)
+        }
+
         function onSetTagsWithAlias(event) {
             try {
                 console.log("onSetTagsWithAlias");
@@ -530,6 +534,9 @@
                 onReceiveNotification, false);
             document.addEventListener("jpush.receiveMessage",
                 onReceivePushMessage, false);
+
+            document.addEventListener("jmessage.onSyncOfflineMessage",
+                onSyncOfflineMessage, false);
         }
     </script>
 </head>

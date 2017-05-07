@@ -136,9 +136,26 @@ JMessagePlugin *SharedJMessagePlugin;
                       selector:@selector(onReceiveLocation:)
                           name:kJJMessageReceiveLocationData
                         object:nil];
+//  
+    [defaultCenter addObserver:self
+                        selector:@selector(onSyncRoamingMessage:)
+                            name:kJJMessageSyncOfflineMessage
+                          object:nil];
+  
+    [defaultCenter addObserver:self
+                      selector:@selector(onSyncRoamingMessage:)
+                          name:kJJMessageSyncRoamingMessage
+                        object:nil];
 }
 
 #pragma mark IM - Notifications
+- (void)onSyncOfflineMessage: (NSNotification *) notification {
+  [JMessagePlugin evalFuntionName:@"onSyncOfflineMessage" jsonParm: [notification.object toJsonString]];
+}
+
+- (void)onSyncRoamingMessage: (NSNotification *) notification {
+  [JMessagePlugin evalFuntionName:@"onSyncRoamingMessage" jsonParm: [notification.object toJsonString]];
+}
 
 -(void)didSendMessage:(NSNotification *)notification {
     [JMessagePlugin evalFuntionName:@"onSendMessage" jsonParm:[notification.object toJsonString]];
@@ -771,13 +788,17 @@ JMessagePlugin *SharedJMessagePlugin;
     NSString *groupId = [command argumentAtIndex:0];
     WEAK_SELF(weakSelf);
     [JMSGConversation createGroupConversationWithGroupId:groupId completionHandler:^(id resultObject, NSError *error) {
-        NSArray *arr = nil;
+      
+        NSMutableArray *userArr = @[].mutableCopy;
         if (error == nil) {
             JMSGConversation *conversation = resultObject;
             JMSGGroup *group = conversation.target;
-            arr = [group memberArray];
+            NSArray *arr = [group memberArray];
+            for (JMSGUser *user in arr) {
+                [userArr addObject:[user userToDictionary]];
+            }
         }
-        [weakSelf handleResultWithValue:arr command:command log:@"member array"];
+        [weakSelf handleResultWithValue:userArr command:command log:@"member array"];
     }];
 }
 
@@ -1421,7 +1442,6 @@ JMessagePlugin *SharedJMessagePlugin;
     WEAK_SELF(weakSelf);
     [weakSelf.commandDelegate sendPluginResult:result callbackId:command.callbackId];
 }
-
 @end
 
 

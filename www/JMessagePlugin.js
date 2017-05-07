@@ -707,6 +707,16 @@ JMessagePlugin.prototype.onReceiveCustomMessage = function (jsonStr) {
   cordova.fireDocumentEvent('jmessage.onReceiveCustomMessage', this.customMessage)
 }
 
+JMessagePlugin.prototype.onSyncOfflineMessage = function (jsonStr) {
+  jsonStr = JSON.parse(jsonStr)
+  cordova.fireDocumentEvent('jmessage.onSyncOfflineMessage', jsonStr)
+}
+
+JMessagePlugin.prototype.onSyncRoamingMessage = function (jsonStr) {
+  jsonStr = JSON.parse(jsonStr)
+  cordova.fireDocumentEvent('jmessage.onSyncRoamingMessage', jsonStr)
+}
+
 JMessagePlugin.prototype.onUserPasswordChanged = function (jsonStr) {
   jsonStr = JSON.stringify(jsonStr)
   var obj = JSON.parse(jsonStr)
