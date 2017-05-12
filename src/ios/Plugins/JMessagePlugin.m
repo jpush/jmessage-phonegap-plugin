@@ -575,6 +575,24 @@ JMessagePlugin *SharedJMessagePlugin;
   return [NSString stringWithFormat:@"%@/Documents/%@", homeDir,path];
 }
 
+- (void)getSingleConversation:(CDVInvokedUrlCommand *)command {
+  WEAK_SELF(weakSelf);
+  
+  NSString *username = [command argumentAtIndex:0];
+  NSString *appkey = [command argumentAtIndex:1];
+  
+  [JMSGConversation createSingleConversationWithUsername:username appKey:appkey completionHandler:^(id resultObject, NSError *error) {
+    if (error == nil) {
+      JMSGConversation *conversation = resultObject;
+      NSDictionary *conversationDic = [conversation conversationToDictionary];
+      
+      [weakSelf handleResultWithValue:@[conversationDic] command:command error:error];
+    } else {
+      [weakSelf handleResultWithValue:@[] command:command error:error];
+    }
+  }];
+}
+
 - (void)getAllSingleConversation:(CDVInvokedUrlCommand *)command {
     WEAK_SELF(weakSelf);
     [JMSGConversation allConversations:^(id resultObject, NSError *error) {

@@ -577,9 +577,7 @@ JMessagePlugin.prototype.isGroupConversationExist = function (groupId, sCallback
 }
 
 JMessagePlugin.prototype.getSingleConversation = function (username, appKey, sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('getSingleConversation', [username, appKey], sCallback, eCallback)
-  }
+  this.callNative('getSingleConversation', [username, appKey], sCallback, eCallback)
 }
 
 JMessagePlugin.prototype.setSingleConversationUnreadMessageCount = function (username, appKey, unreadMessageCount,

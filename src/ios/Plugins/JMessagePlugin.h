@@ -53,7 +53,7 @@
 -(void)getGroupConversationHistoryMessage:(CDVInvokedUrlCommand *)command;
 -(void)getAllGroupConversation:(CDVInvokedUrlCommand *)command;
 -(void)deleteGroupConversation:(CDVInvokedUrlCommand *)command;
-
+-(void)getSingleConversation:(CDVInvokedUrlCommand *)command;
 -(void)getAllConversation:(CDVInvokedUrlCommand *)command;
 
 -(void)clearSingleUnreadCount:(CDVInvokedUrlCommand *)command;
