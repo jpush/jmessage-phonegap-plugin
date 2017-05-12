@@ -595,8 +595,9 @@ JMessagePlugin *SharedJMessagePlugin;
 
 - (void)getGroupConversation:(CDVInvokedUrlCommand *)command {
   WEAK_SELF(weakSelf);
-  NSString *gid = [command argumentAtIndex:0];
-  JMSGConversation *conversation = [JMSGConversation groupConversationWithGroupId:gid];
+  NSNumber *gid = [command argumentAtIndex:0];
+  
+  JMSGConversation *conversation = [JMSGConversation groupConversationWithGroupId:[gid description]];
   NSDictionary *conversationDic = [conversation conversationToDictionary];
   if (conversationDic == nil) {
     [weakSelf handleResultWithValue:@[] command:command error:nil];
