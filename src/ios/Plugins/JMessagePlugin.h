@@ -60,6 +60,7 @@
 -(void)clearGroupUnreadCount:(CDVInvokedUrlCommand *)command;
 
 //Group
+- (void)getGroupConversation:(CDVInvokedUrlCommand *)command;
 -(void)createGroupIniOS:(CDVInvokedUrlCommand *)command;
 -(void)updateGroupInfo:(CDVInvokedUrlCommand *)command;
 -(void)getGroupInfo:(CDVInvokedUrlCommand *)command;

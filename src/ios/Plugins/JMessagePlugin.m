@@ -593,6 +593,20 @@ JMessagePlugin *SharedJMessagePlugin;
   }];
 }
 
+- (void)getGroupConversation:(CDVInvokedUrlCommand *)command {
+  WEAK_SELF(weakSelf);
+  NSString *gid = [command argumentAtIndex:0];
+  JMSGConversation *conversation = [JMSGConversation groupConversationWithGroupId:gid];
+  NSDictionary *conversationDic = [conversation conversationToDictionary];
+  if (conversationDic == nil) {
+    [weakSelf handleResultWithValue:@[] command:command error:nil];
+  } else {
+    [weakSelf handleResultWithValue:@[conversationDic] command:command error:nil];
+  }
+  
+  
+}
+
 - (void)getAllSingleConversation:(CDVInvokedUrlCommand *)command {
     WEAK_SELF(weakSelf);
     [JMSGConversation allConversations:^(id resultObject, NSError *error) {

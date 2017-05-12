@@ -588,9 +588,7 @@ JMessagePlugin.prototype.setSingleConversationUnreadMessageCount = function (use
 }
 
 JMessagePlugin.prototype.getGroupConversation = function (groupId, sCallback, eCallback) {
-  if (isAndroid()) {
     this.callNative('getGroupConversation', [groupId], sCallback, eCallback)
-  }
 }
 
 JMessagePlugin.prototype.setGroupConversationUnreadMessageCount = function (groupId, unreadMessageCount,
