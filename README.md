@@ -11,7 +11,7 @@ JMessage PhoneGap / Cordova Plugin 是基于[极光 IM](https://docs.jiguang.cn/
 
 该插件是直接基于原生 SDK，以 JPush 技术为基础，共享 JPush 的网络长连接，在保留了 JPush 全部功能的基础上增加了 IM 功能。集成 JMessage 服务的应用，从客户端 SDK，到服务端 REST API，Web 控制台，都具备并且兼容 JPush 的全部功能。JPush 用户可以直接集成 JMessage SDK，平滑升级到极光IM，让应用具备聊天功能，并且支持后台挂起，无需担心一般 Web IM SDK 在应用退到后台后就无法收到聊天消息的问题。
 
->JMessage PhoneGap Plugin 2.3.0 之前的版本 和 JPush PhoneGap Plugin 3.1.0 之前的版本 不能同时安装。
+>JMessage PhoneGap Plugin 2.3.0 之前的版本 和 JPush PhoneGap Plugin 3.1.0 之前的版本不能同时安装。
 >
 >迁移到 JMessage Phonegap Plugin 2.3.0 之前的版本要先删除 JPush PhoneGap Plugin 插件。
 >
@@ -22,15 +22,20 @@ JMessage PhoneGap / Cordova Plugin 是基于[极光 IM](https://docs.jiguang.cn/
 ## 集成步骤
 - 在线安装
 
-   cordova plugin add jmessage-phonegap-plugin --variable APP_KEY=your_app_key
+  ```
+  cordova plugin add jmessage-phonegap-plugin --variable APP_KEY=your_app_key
+  ```
 
    或
 
-   	cordova plugin add https://github.com/jpush/jmessage-phonegap-plugin.git --variable APP_KEY=your_app_key
-
+   ```
+   cordova plugin add https://github.com/jpush/jmessage-phonegap-plugin.git --variable APP_KEY=your_app_key
+   ```
 - 本地安装
 
-   cordova plugin add <Plugin Path> --variable APP_KEY=your_app_key
+  ```
+  cordova plugin add <Plugin Path> --variable APP_KEY=your_app_key
+  ```
 
 ## API
 - [Android](/doc/Android_API.md)
