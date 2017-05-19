@@ -141,17 +141,35 @@ public class JMessagePlugin extends CordovaPlugin {
 
     public void onEvent(OfflineMessageEvent event) {
         try {
-            JSONObject json = new JSONObject();
+            final JSONObject json = new JSONObject();
 
             String conversationJsonStr = mGson.toJson(event.getConversation());
             json.put("conversation", new JSONObject(conversationJsonStr));
 
-            JSONArray msgJsonArr = new JSONArray();
-            for (Message msg : event.getOfflineMessageList()) {
-                msgJsonArr.put(getMessageJSONObject(msg));
+            final JSONArray msgJsonArr = new JSONArray();
+            for (final Message msg : event.getOfflineMessageList()) {
+                if (msg.getContentType() == ContentType.image) {
+                    ((ImageContent) msg.getContent()).downloadThumbnailImage(msg,
+                            new DownloadCompletionCallback() {
+                        @Override
+                        public void onComplete(int status, String desc, File file) {
+                            if (status == 0) {
+                                try {
+                                    msgJsonArr.put(getMessageJSONObject(msg));
+                                    json.put("messageList", msgJsonArr);
+                                    fireEvent("onSyncOfflineMessage", json.toString());
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    msgJsonArr.put(getMessageJSONObject(msg));
+                    json.put("messageList", msgJsonArr);
+                    fireEvent("onSyncOfflineMessage", json.toString());
+                }
             }
-            json.put("messageList", msgJsonArr);
-            fireEvent("onSyncOfflineMessage", json.toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -2932,7 +2950,7 @@ public class JMessagePlugin extends CordovaPlugin {
 
     private JSONObject getMessageJSONObject(Message msg) throws JSONException {
         String jsonStr = mGson.toJson(msg);
-        JSONObject msgJson = new JSONObject(jsonStr);
+        final JSONObject msgJson = new JSONObject(jsonStr);
 
         if (ContentType.eventNotification != msg.getContentType()) {
             // Add user avatar path.
@@ -2966,11 +2984,6 @@ public class JMessagePlugin extends CordovaPlugin {
 
         switch (msg.getContentType()) {
             case image:
-                ImageContent imageContent = (ImageContent) msg.getContent();
-                if (!msgJson.getJSONObject("content").has("localThumbnailPath")) {
-                    msgJson.getJSONObject("content").put("localThumbnailPath",
-                            imageContent.getLocalThumbnailPath());
-                }
                 break;
             case voice:
                 VoiceContent voiceContent = (VoiceContent) msg.getContent();
