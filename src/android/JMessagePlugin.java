@@ -2967,10 +2967,10 @@ public class JMessagePlugin extends CordovaPlugin {
         switch (msg.getContentType()) {
             case image:
                 ImageContent imageContent = (ImageContent) msg.getContent();
-                String imgPath = imageContent.getLocalPath();
-                String imgLink = imageContent.getImg_link();
-                msgJson.getJSONObject("content").put("imagePath", imgPath);
-                msgJson.getJSONObject("content").put("imageLink", imgLink);
+                if (!msgJson.getJSONObject("content").has("localThumbnailPath")) {
+                    msgJson.getJSONObject("content").put("localThumbnailPath",
+                            imageContent.getLocalThumbnailPath());
+                }
                 break;
             case voice:
                 VoiceContent voiceContent = (VoiceContent) msg.getContent();
