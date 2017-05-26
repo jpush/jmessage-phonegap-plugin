@@ -53,8 +53,8 @@ import cn.jpush.im.android.api.callback.GetUserInfoCallback;
 import cn.jpush.im.android.api.callback.GetUserInfoListCallback;
 import cn.jpush.im.android.api.callback.IntegerCallback;
 import cn.jpush.im.android.api.content.EventNotificationContent;
+import cn.jpush.im.android.api.content.FileContent;
 import cn.jpush.im.android.api.content.ImageContent;
-import cn.jpush.im.android.api.content.MessageContent;
 import cn.jpush.im.android.api.content.TextContent;
 import cn.jpush.im.android.api.content.VoiceContent;
 import cn.jpush.im.android.api.enums.ContentType;
@@ -147,32 +147,76 @@ public class JMessagePlugin extends CordovaPlugin {
             json.put("conversation", new JSONObject(conversationJsonStr));
 
             final JSONArray msgJsonArr = new JSONArray();
-            for (final Message msg : event.getOfflineMessageList()) {
-                if (msg.getContentType() == ContentType.image) {
-                    ((ImageContent) msg.getContent()).downloadThumbnailImage(msg,
-                            new DownloadCompletionCallback() {
-                        @Override
-                        public void onComplete(int status, String desc, File file) {
-                            if (status == 0) {
-                                try {
-                                    msgJsonArr.put(getMessageJSONObject(msg));
-                                    json.put("messageList", msgJsonArr);
-                                    fireEvent("onSyncOfflineMessage", json.toString());
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-                    });
-                } else {
+            int lastMediaMsgIndex = -1;
+
+            for (int i = 0; i < event.getOfflineMessageList().size(); i++) {
+                if (isMediaMessage(event.getOfflineMessageList().get(i))) {
+                    lastMediaMsgIndex = i;
+                }
+            }
+
+            for (int i = 0; i < event.getOfflineMessageList().size(); i++) {
+                final Message msg = event.getOfflineMessageList().get(i);
+
+                if (!isMediaMessage(msg)) {
                     msgJsonArr.put(getMessageJSONObject(msg));
-                    json.put("messageList", msgJsonArr);
-                    fireEvent("onSyncOfflineMessage", json.toString());
+                    continue;
+                }
+
+                if (i == lastMediaMsgIndex) {
+                    switch (msg.getContentType()) {
+                        case image:
+                            ((ImageContent) msg.getContent()).downloadThumbnailImage(msg, new DownloadCompletionCallback() {
+                                @Override
+                                public void onComplete(int status, String desc, File file) {
+                                    try {
+                                        msgJsonArr.put(getMessageJSONObject(msg));
+                                        fireEvent("onSyncOfflineMessage", json.toString());
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
+                            break;
+                        case voice:
+                            ((VoiceContent) msg.getContent()).downloadVoiceFile(msg, new DownloadCompletionCallback() {
+                                @Override
+                                public void onComplete(int status, String desc, File file) {
+                                    try {
+                                        msgJsonArr.put(getMessageJSONObject(msg));
+                                        fireEvent("onSyncOfflineMessage", json.toString());
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
+                            break;
+                        case file:
+                            ((FileContent) msg.getContent()).downloadFile(msg, new DownloadCompletionCallback() {
+                                @Override
+                                public void onComplete(int status, String desc, File file) {
+                                    try {
+                                        msgJsonArr.put(getMessageJSONObject(msg));
+                                        fireEvent("onSyncOfflineMessage", json.toString());
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
+                            break;
+                    }
                 }
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    private boolean isMediaMessage(Message msg) {
+        return msg.getContentType() == ContentType.image ||
+                msg.getContentType() == ContentType.voice ||
+                msg.getContentType() == ContentType.video ||
+                msg.getContentType() == ContentType.file;
     }
 
     public void onEvent(LoginStateChangeEvent event) {
@@ -1698,7 +1742,6 @@ public class JMessagePlugin extends CordovaPlugin {
                     if (conJson.isNull("latestMessage") && con.getLatestMessage() != null) {
                         Message latestMsg = con.getLatestMessage();
                         JSONObject msgJson = new JSONObject(mGson.toJson(latestMsg));
-                        // 如果消息类型为事件
                         if (latestMsg.getContentType() == ContentType.eventNotification) {
                             EventNotificationContent content = ((EventNotificationContent) latestMsg.getContent());
                             List<String> usernameList = content.getUserNames();
@@ -1718,7 +1761,8 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     // 设置会话本地未读消息数的接口。
-    public void setSingleConversationUnreadMessageCount(JSONArray data, CallbackContext callback) {
+    public void setSingleConversationUnreadMessageCount(JSONArray data, CallbackContext
+            callback) {
         try {
             String username = data.getString(0);
             String appKey = data.isNull(1) ? "" : data.getString(1);
@@ -1989,7 +2033,6 @@ public class JMessagePlugin extends CordovaPlugin {
             long groupId = data.getLong(0);
             String[] members = (String[]) data.get(1);
 
-//            String[] members = membersStr.split(",");
             List<String> memberList = new ArrayList<String>();
             Collections.addAll(memberList, members);
             JMessageClient.addGroupMembers(groupId, memberList,
@@ -2466,44 +2509,50 @@ public class JMessagePlugin extends CordovaPlugin {
     /**
      * 取到图片消息的图片原图。
      */
-    public void getOriginImageInSingleConversation(JSONArray data, final CallbackContext callback) {
+    public void getOriginImageInSingleConversation(JSONArray data,
+                                                   final CallbackContext callback) {
+        String username;
+        long msgId;
+        String appKey;
+
         try {
-            String username = data.getString(0);
-            long msgId = data.getLong(1);
-            String appKey = data.isNull(2) ? "" : data.getString(2);
-
-            Conversation con = JMessageClient.getSingleConversation(username, appKey);
-            if (con == null) {
-                callback.error("Conversation isn't exist.");
-                return;
-            }
-
-            List<Message> messageList = con.getAllMessage();
-            for (Message msg : messageList) {
-                if (!msg.getContentType().equals(ContentType.image)) {
-                    continue;
-                }
-                if (msgId == msg.getServerMessageId()) {
-                    ImageContent imgContent = (ImageContent) msg.getContent();
-                    if (!TextUtils.isEmpty(imgContent.getLocalPath())) {
-                        callback.success(imgContent.getLocalPath());
-                        return;
-                    }
-                    imgContent.downloadOriginImage(msg, new DownloadCompletionCallback() {
-                        @Override
-                        public void onComplete(int status, String desc, File file) {
-                            if (status == 0) {
-                                callback.success(file.getAbsolutePath());
-                            } else {
-                                callback.error(status);
-                            }
-                        }
-                    });
-                }
-            }
+            username = data.getString(0);
+            msgId = data.getLong(1);
+            appKey = data.isNull(2) ? "" : data.getString(2);
         } catch (JSONException e) {
             e.printStackTrace();
             callback.error("Argument error.");
+            return;
+        }
+
+        Conversation con = JMessageClient.getSingleConversation(username, appKey);
+        if (con == null) {
+            callback.error("Conversation isn't exist.");
+            return;
+        }
+
+        List<Message> messageList = con.getAllMessage();
+        for (Message msg : messageList) {
+            if (!msg.getContentType().equals(ContentType.image)) {
+                continue;
+            }
+            if (msgId == msg.getServerMessageId()) {
+                ImageContent imgContent = (ImageContent) msg.getContent();
+                if (!TextUtils.isEmpty(imgContent.getLocalPath())) {
+                    callback.success(imgContent.getLocalPath());
+                    return;
+                }
+                imgContent.downloadOriginImage(msg, new DownloadCompletionCallback() {
+                    @Override
+                    public void onComplete(int status, String desc, File file) {
+                        if (status == 0) {
+                            callback.success(file.getAbsolutePath());
+                        } else {
+                            callback.error(status);
+                        }
+                    }
+                });
+            }
         }
     }
 
@@ -2547,40 +2596,182 @@ public class JMessagePlugin extends CordovaPlugin {
         }
     }
 
-    private JSONObject getJSonFormMessage(Message msg) {
-        String contentText = "";
-        String msgType = "";    //上传给 js 层的类型，请和 iOS 保持一致
+    public void downloadVoiceFileInSingleConversation(JSONArray data, final CallbackContext callback) {
+        String username;
+        long msgId;
+        String appKey;
 
-        switch (msg.getContentType()) {
-            case text:
-                contentText = ((TextContent) msg.getContent()).getText();
-                msgType = "text";
-                break;
-            default:
-                break;
-        }
-
-        JSONObject jsonItem = new JSONObject();
         try {
-            MessageContent content = msg.getContent();
-            UserInfo targetUser = (UserInfo) msg.getTargetInfo();
-            UserInfo fromUser = (UserInfo) msg.getFromUser();
-
-            jsonItem.put("target_type", "single");
-            jsonItem.put("target_id", targetUser.getUserName());
-            jsonItem.put("target_name", targetUser.getNickname());
-            jsonItem.put("from_id", fromUser.getUserName());
-            jsonItem.put("from_name", msg.getFromUser().getUserName());
-            jsonItem.put("create_time", msg.getCreateTime());
-            jsonItem.put("msg_type", msgType);
-
-            JSONObject contentBody = new JSONObject();
-            contentBody.put("text", contentText);
-            jsonItem.put("msg_body", contentBody);
+            username = data.getString(0);
+            msgId = data.getLong(1);
+            appKey = data.isNull(2) ? "" : data.getString(2);
         } catch (JSONException e) {
             e.printStackTrace();
+            callback.error("Argument error.");
+            return;
         }
-        return jsonItem;
+
+        Conversation con = JMessageClient.getSingleConversation(username, appKey);
+        if (con == null) {
+            callback.error("Conversation isn't exist.");
+            return;
+        }
+
+        List<Message> messageList = con.getAllMessage();
+        for (Message msg : messageList) {
+            if (!msg.getContentType().equals(ContentType.voice)) {
+                continue;
+            }
+            if (msgId == msg.getServerMessageId()) {
+                VoiceContent content = (VoiceContent) msg.getContent();
+                if (!TextUtils.isEmpty(content.getLocalPath())) {
+                    callback.success(content.getLocalPath());
+                    return;
+                }
+                content.downloadVoiceFile(msg, new DownloadCompletionCallback() {
+                    @Override
+                    public void onComplete(int status, String desc, File file) {
+                        if (status == 0) {
+                            callback.success(file.getAbsolutePath());
+                        } else {
+                            callback.error(status);
+                        }
+                    }
+                });
+            }
+        }
+    }
+
+    public void downloadVoiceFileInGroupConversation(JSONArray data, final CallbackContext callback) {
+        long groupId;
+        long msgId;
+        try {
+            groupId = data.getLong(0);
+            msgId = data.getLong(1);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callback.error("Argument error.");
+            return;
+        }
+
+        Conversation con = JMessageClient.getGroupConversation(groupId);
+        if (con == null) {
+            callback.error("Conversation isn't exist.");
+            return;
+        }
+
+        List<Message> messageList = con.getAllMessage();
+        for (Message msg : messageList) {
+            if (!msg.getContentType().equals(ContentType.voice)) {
+                continue;
+            }
+            if (msgId == msg.getServerMessageId()) {
+                VoiceContent content = (VoiceContent) msg.getContent();
+                if (!TextUtils.isEmpty(content.getLocalPath())) {
+                    callback.success(content.getLocalPath());
+                    return;
+                }
+                content.downloadVoiceFile(msg, new DownloadCompletionCallback() {
+                    @Override
+                    public void onComplete(int status, String desc, File file) {
+                        if (status == 0) {
+                            callback.success(file.getAbsolutePath());
+                        } else {
+                            callback.error(status);
+                        }
+                    }
+                });
+            }
+        }
+    }
+
+    public void downloadFileInSingleConversation(JSONArray data, final CallbackContext callback) {
+        String username;
+        long msgId;
+        String appKey;
+
+        try {
+            username = data.getString(0);
+            msgId = data.getLong(1);
+            appKey = data.isNull(2) ? "" : data.getString(2);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callback.error("Argument error.");
+            return;
+        }
+
+        Conversation con = JMessageClient.getSingleConversation(username, appKey);
+        if (con == null) {
+            callback.error("Conversation isn't exist.");
+            return;
+        }
+
+        List<Message> messageList = con.getAllMessage();
+        for (Message msg : messageList) {
+            if (!msg.getContentType().equals(ContentType.file)) {
+                continue;
+            }
+            if (msgId == msg.getServerMessageId()) {
+                FileContent content = (FileContent) msg.getContent();
+                if (!TextUtils.isEmpty(content.getLocalPath())) {
+                    callback.success(content.getLocalPath());
+                    return;
+                }
+                content.downloadFile(msg, new DownloadCompletionCallback() {
+                    @Override
+                    public void onComplete(int status, String desc, File file) {
+                        if (status == 0) {
+                            callback.success(file.getAbsolutePath());
+                        } else {
+                            callback.error(status);
+                        }
+                    }
+                });
+            }
+        }
+    }
+
+    public void downloadFileInGroupConversation(JSONArray data, final CallbackContext callback) {
+        long groupId;
+        long msgId;
+        try {
+            groupId = data.getLong(0);
+            msgId = data.getLong(1);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callback.error("Argument error.");
+            return;
+        }
+
+        Conversation con = JMessageClient.getGroupConversation(groupId);
+        if (con == null) {
+            callback.error("Conversation isn't exist.");
+            return;
+        }
+
+        List<Message> messageList = con.getAllMessage();
+        for (Message msg : messageList) {
+            if (!msg.getContentType().equals(ContentType.file)) {
+                continue;
+            }
+            if (msgId == msg.getServerMessageId()) {
+                FileContent content = (FileContent) msg.getContent();
+                if (!TextUtils.isEmpty(content.getLocalPath())) {
+                    callback.success(content.getLocalPath());
+                    return;
+                }
+                content.downloadFile(msg, new DownloadCompletionCallback() {
+                    @Override
+                    public void onComplete(int status, String desc, File file) {
+                        if (status == 0) {
+                            callback.success(file.getAbsolutePath());
+                        } else {
+                            callback.error(status);
+                        }
+                    }
+                });
+            }
+        }
     }
 
     public void getSingleConversationHistoryMessage(JSONArray data, CallbackContext callback) {
@@ -2605,7 +2796,7 @@ public class JMessagePlugin extends CordovaPlugin {
             JSONArray jsonResult = new JSONArray();
             for (int i = 0; i < list.size(); ++i) {
                 Message msg = list.get(i);
-                JSONObject obj = this.getJSonFormMessage(msg);
+                JSONObject obj = getMessageJSONObject(msg);
                 jsonResult.put(obj);
             }
             callback.success(jsonResult);
@@ -2867,7 +3058,8 @@ public class JMessagePlugin extends CordovaPlugin {
         return conversation;
     }
 
-    private void handleResult(String successString, int status, String desc, CallbackContext callback) {
+    private void handleResult(String successString, int status, String desc, CallbackContext
+            callback) {
         if (status == 0) {
             if (TextUtils.isEmpty(successString)) {
                 callback.success();
