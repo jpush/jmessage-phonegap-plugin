@@ -1,4 +1,4 @@
-package cn.jmessage.phonegap;
+package cn.jiguang.cordova.im;
 
 import android.Manifest;
 import android.app.Activity;
