@@ -1,4 +1,4 @@
-package cn.jmessage.phonegap;
+package cn.jiguang.cordova.im;
 
 import android.Manifest;
 import android.app.Activity;
@@ -149,7 +149,7 @@ public class JMessagePlugin extends CordovaPlugin {
             final JSONArray msgJsonArr = new JSONArray();
             int lastMediaMsgIndex = -1;
 
-            for (int i = 0; i < event.getOfflineMessageList().size(); i++) {
+            for (int i = event.getOfflineMessageList().size() - 1; i >= 0; i--) {
                 if (isMediaMessage(event.getOfflineMessageList().get(i))) {
                     lastMediaMsgIndex = i;
                     break;
@@ -172,6 +172,7 @@ public class JMessagePlugin extends CordovaPlugin {
                                 public void onComplete(int status, String desc, File file) {
                                     try {
                                         msgJsonArr.put(getMessageJSONObject(msg));
+                                        json.put("messageList", msgJsonArr);
                                         fireEvent("onSyncOfflineMessage", json.toString());
                                     } catch (JSONException e) {
                                         e.printStackTrace();
@@ -185,6 +186,7 @@ public class JMessagePlugin extends CordovaPlugin {
                                 public void onComplete(int status, String desc, File file) {
                                     try {
                                         msgJsonArr.put(getMessageJSONObject(msg));
+                                        json.put("messageList", msgJsonArr);
                                         fireEvent("onSyncOfflineMessage", json.toString());
                                     } catch (JSONException e) {
                                         e.printStackTrace();
@@ -198,6 +200,7 @@ public class JMessagePlugin extends CordovaPlugin {
                                 public void onComplete(int status, String desc, File file) {
                                     try {
                                         msgJsonArr.put(getMessageJSONObject(msg));
+                                        json.put("messageList", msgJsonArr);
                                         fireEvent("onSyncOfflineMessage", json.toString());
                                     } catch (JSONException e) {
                                         e.printStackTrace();
@@ -207,6 +210,11 @@ public class JMessagePlugin extends CordovaPlugin {
                             break;
                     }
                 }
+            }
+
+            if (lastMediaMsgIndex == -1) {
+                json.put("messageList", msgJsonArr);
+                fireEvent("onSyncOfflineMessage", json.toString());
             }
         } catch (JSONException e) {
             e.printStackTrace();
