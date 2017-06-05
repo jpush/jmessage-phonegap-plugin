@@ -152,6 +152,7 @@ public class JMessagePlugin extends CordovaPlugin {
             for (int i = 0; i < event.getOfflineMessageList().size(); i++) {
                 if (isMediaMessage(event.getOfflineMessageList().get(i))) {
                     lastMediaMsgIndex = i;
+                    break;
                 }
             }
 
