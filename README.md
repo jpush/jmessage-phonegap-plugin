@@ -61,4 +61,4 @@ JMessage PhoneGap / Cordova Plugin 是基于[极光 IM](https://docs.jiguang.cn/
 ## 更多
 - QQ 群：413602425
 - [极光官网文档](http://docs.jiguang.cn/guideline/jmessage_guide/)
-- 有问题可访问[极光社区](http://community.jiguang.cn/)搜索和提问
+<!-- - 有问题可访问[极光社区](http://community.jiguang.cn/)搜索和提问 -->
