@@ -156,6 +156,15 @@ public class JMessagePlugin extends CordovaPlugin {
                 }
             }
 
+            if (lastMediaMsgIndex == -1) {
+                for (Message msg : event.getOfflineMessageList()) {
+                  msgJsonArr.put(getMessageJSONObject(msg));
+                }
+                json.put("messageList", msgJsonArr);
+                fireEvent("onSyncOfflineMessage", json.toString());
+                return;
+            }
+
             for (int i = 0; i < event.getOfflineMessageList().size(); i++) {
                 final Message msg = event.getOfflineMessageList().get(i);
 
@@ -163,10 +172,10 @@ public class JMessagePlugin extends CordovaPlugin {
                     continue;
                 }
 
-                final int finalI = i;
                 final int finalLastMediaMsgIndex = lastMediaMsgIndex;
                 switch (msg.getContentType()) {
                     case image:
+                        final int finalI = i;
                         ((ImageContent) msg.getContent()).downloadThumbnailImage(msg, new DownloadCompletionCallback() {
                             @Override
                             public void onComplete(int status, String desc, File file) {
@@ -185,11 +194,12 @@ public class JMessagePlugin extends CordovaPlugin {
                         });
                         break;
                     case voice:
+                        final int vI = i;
                         ((VoiceContent) msg.getContent()).downloadVoiceFile(msg, new DownloadCompletionCallback() {
                             @Override
                             public void onComplete(int status, String desc, File file) {
                                 try {
-                                    if (finalI == finalLastMediaMsgIndex) {
+                                    if (vI == finalLastMediaMsgIndex) {
                                         for (Message msg : event.getOfflineMessageList()) {
                                             msgJsonArr.put(getMessageJSONObject(msg));
                                         }
@@ -203,11 +213,12 @@ public class JMessagePlugin extends CordovaPlugin {
                         });
                         break;
                     case file:
+                        final int fI = i;
                         ((FileContent) msg.getContent()).downloadFile(msg, new DownloadCompletionCallback() {
                             @Override
                             public void onComplete(int status, String desc, File file) {
                                 try {
-                                    if (finalI == finalLastMediaMsgIndex) {
+                                    if (fI == finalLastMediaMsgIndex) {
                                         for (Message msg : event.getOfflineMessageList()) {
                                             msgJsonArr.put(getMessageJSONObject(msg));
                                         }
@@ -221,11 +232,6 @@ public class JMessagePlugin extends CordovaPlugin {
                         });
                         break;
                 }
-            }
-
-            if (lastMediaMsgIndex == -1) {
-                json.put("messageList", msgJsonArr);
-                fireEvent("onSyncOfflineMessage", json.toString());
             }
         } catch (JSONException e) {
             e.printStackTrace();
