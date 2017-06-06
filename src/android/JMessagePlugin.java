@@ -139,7 +139,7 @@ public class JMessagePlugin extends CordovaPlugin {
         }
     }
 
-    public void onEvent(OfflineMessageEvent event) {
+    public void onEvent(final OfflineMessageEvent event) {
         try {
             final JSONObject json = new JSONObject();
 
@@ -160,55 +160,66 @@ public class JMessagePlugin extends CordovaPlugin {
                 final Message msg = event.getOfflineMessageList().get(i);
 
                 if (!isMediaMessage(msg)) {
-                    msgJsonArr.put(getMessageJSONObject(msg));
                     continue;
                 }
 
-                if (i == lastMediaMsgIndex) {
-                    switch (msg.getContentType()) {
-                        case image:
-                            ((ImageContent) msg.getContent()).downloadThumbnailImage(msg, new DownloadCompletionCallback() {
-                                @Override
-                                public void onComplete(int status, String desc, File file) {
-                                    try {
-                                        msgJsonArr.put(getMessageJSONObject(msg));
+                final int finalI = i;
+                final int finalLastMediaMsgIndex = lastMediaMsgIndex;
+                switch (msg.getContentType()) {
+                    case image:
+                        ((ImageContent) msg.getContent()).downloadThumbnailImage(msg, new DownloadCompletionCallback() {
+                            @Override
+                            public void onComplete(int status, String desc, File file) {
+                                try {
+                                    if (finalI == finalLastMediaMsgIndex) {
+                                        for (Message msg : event.getOfflineMessageList()) {
+                                            msgJsonArr.put(getMessageJSONObject(msg));
+                                        }
                                         json.put("messageList", msgJsonArr);
                                         fireEvent("onSyncOfflineMessage", json.toString());
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
                                     }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
                                 }
-                            });
-                            break;
-                        case voice:
-                            ((VoiceContent) msg.getContent()).downloadVoiceFile(msg, new DownloadCompletionCallback() {
-                                @Override
-                                public void onComplete(int status, String desc, File file) {
-                                    try {
-                                        msgJsonArr.put(getMessageJSONObject(msg));
+                            }
+                        });
+                        break;
+                    case voice:
+                        ((VoiceContent) msg.getContent()).downloadVoiceFile(msg, new DownloadCompletionCallback() {
+                            @Override
+                            public void onComplete(int status, String desc, File file) {
+                                try {
+                                    if (finalI == finalLastMediaMsgIndex) {
+                                        for (Message msg : event.getOfflineMessageList()) {
+                                            msgJsonArr.put(getMessageJSONObject(msg));
+                                        }
                                         json.put("messageList", msgJsonArr);
                                         fireEvent("onSyncOfflineMessage", json.toString());
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
                                     }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
                                 }
-                            });
-                            break;
-                        case file:
-                            ((FileContent) msg.getContent()).downloadFile(msg, new DownloadCompletionCallback() {
-                                @Override
-                                public void onComplete(int status, String desc, File file) {
-                                    try {
-                                        msgJsonArr.put(getMessageJSONObject(msg));
+                            }
+                        });
+                        break;
+                    case file:
+                        ((FileContent) msg.getContent()).downloadFile(msg, new DownloadCompletionCallback() {
+                            @Override
+                            public void onComplete(int status, String desc, File file) {
+                                try {
+                                    if (finalI == finalLastMediaMsgIndex) {
+                                        for (Message msg : event.getOfflineMessageList()) {
+                                            msgJsonArr.put(getMessageJSONObject(msg));
+                                        }
                                         json.put("messageList", msgJsonArr);
                                         fireEvent("onSyncOfflineMessage", json.toString());
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
                                     }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
                                 }
-                            });
-                            break;
-                    }
+                            }
+                        });
+                        break;
                 }
             }
 
