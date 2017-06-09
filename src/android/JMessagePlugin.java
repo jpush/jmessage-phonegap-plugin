@@ -423,14 +423,7 @@ public class JMessagePlugin extends CordovaPlugin {
                 public void gotResult(int responseCode, String responseDesc, UserInfo userInfo) {
                     if (responseCode == 0) {
                         try {
-                            String json = mGson.toJson(userInfo);
-                            JSONObject jsonObject = new JSONObject(json);
-                            String avatarPath = "";
-                            if (userInfo.getAvatarFile() != null) {
-                                avatarPath = userInfo.getAvatarFile().getAbsolutePath();
-                            }
-                            jsonObject.put("avatarPath", avatarPath);
-                            callback.success(jsonObject.toString());
+                            callback.success(getUserInfoJsonObject(userInfo));
                         } catch (JSONException e) {
                             e.printStackTrace();
                             callback.error(e.getMessage());
@@ -450,19 +443,7 @@ public class JMessagePlugin extends CordovaPlugin {
         UserInfo myInfo = JMessageClient.getMyInfo();
         if (myInfo != null) {
             try {
-                String json = mGson.toJson(myInfo);
-                JSONObject jsonObject = new JSONObject(json);
-                String avatarPath = myInfo.getAvatarFile().getAbsolutePath();
-                myInfo.getAvatarBitmap(new GetAvatarBitmapCallback() {
-                    @Override
-                    public void gotResult(int status, String desc, Bitmap bitmap) {
-                        if (status != 0) {
-                            callback.error(status + ": " + desc);
-                        }
-                    }
-                });
-                jsonObject.put("avatarPath", avatarPath);
-                callback.success(jsonObject.toString());
+                callback.success(getUserInfoJsonObject(myInfo));
             } catch (JSONException e) {
                 e.printStackTrace();
                 callback.error(e.getMessage());
@@ -2229,8 +2210,7 @@ public class JMessagePlugin extends CordovaPlugin {
                     UserInfo userInfo = groupInfo.getGroupMemberInfo(username, appKey);
                     try {
                         if (userInfo != null) {
-                            JSONObject json = getUserInfoJsonObject(userInfo);
-                            callback.success(json.toString());
+                            callback.success(getUserInfoJsonObject(userInfo));
                         } else {
                             callback.success("");
                         }
@@ -3246,6 +3226,12 @@ public class JMessagePlugin extends CordovaPlugin {
             avatarPath = userInfo.getAvatarFile().getAbsolutePath();
         }
         jsonObject.put("avatarPath", avatarPath);
+        jsonObject.put("noteName", userInfo.getNotename());
+        jsonObject.put("noteText", userInfo.getNoteText());
+        jsonObject.put("isFriend", userInfo.isFriend());
+
+        Log.i(TAG, jsonObject.toString());
+
         return jsonObject;
     }
 
