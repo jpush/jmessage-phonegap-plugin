@@ -224,7 +224,7 @@ JMessagePlugin *SharedJMessagePlugin;
 
 +(void)evalFuntionName:(NSString*)functionName jsonParm:(NSString*)jsonString{
     dispatch_async(dispatch_get_main_queue(), ^{
-        [SharedJMessagePlugin.commandDelegate evalJs:[NSString stringWithFormat:@"%@.%@('%@')",JMessagePluginName,functionName,jsonString]];
+        [SharedJMessagePlugin.commandDelegate evalJs:[NSString stringWithFormat:@"%@.%@(%@)",JMessagePluginName,functionName,jsonString]];
     });
 }
 
