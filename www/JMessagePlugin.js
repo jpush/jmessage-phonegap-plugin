@@ -701,7 +701,8 @@ JMessagePlugin.prototype.onSyncOfflineMessage = function (jsonStr) {
     var obj = JSON.parse(jsonStr)    
     cordova.fireDocumentEvent('jmessage.onSyncOfflineMessage', obj)
   } else {
-    cordova.fireDocumentEvent('jmessage.onSyncOfflineMessage', jsonStr)
+    var obj = JSON.parse(jsonStr)
+    cordova.fireDocumentEvent('jmessage.onSyncOfflineMessage', obj)
   }
 }
 
