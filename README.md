@@ -1,6 +1,6 @@
 # JMessage PhoneGap / Cordova Plugin
 
-[![release](https://img.shields.io/badge/release-2.4.5-blue.svg)](https://github.com/jpush/jmessage-phonegap-plugin/releases)
+[![release](https://img.shields.io/badge/release-2.4.6-blue.svg)](https://github.com/jpush/jmessage-phonegap-plugin/releases)
 [![platforms](https://img.shields.io/badge/platforms-iOS%7CAndroid-lightgrey.svg)](https://github.com/jpush/jmessage-phonegap-plugin)
 [![QQ Group](https://img.shields.io/badge/QQ%20Group-413602425-red.svg)](https://github.com/jpush/jmessage-phonegap-plugin)
 [![weibo](https://img.shields.io/badge/weibo-JPush-blue.svg)](http://weibo.com/jpush?refer_flag=1001030101_&is_all=1)
@@ -58,4 +58,4 @@ JMessage PhoneGap / Cordova Plugin 是基于[极光 IM](https://docs.jiguang.cn/
 ## 更多
 - QQ 群：413602425
 - [极光官网文档](http://docs.jiguang.cn/guideline/jmessage_guide/)
-- 有问题可访问[极光社区](http://community.jiguang.cn/)搜索和提问 
+- 有问题可访问[极光社区](http://community.jiguang.cn/)搜索和提问
