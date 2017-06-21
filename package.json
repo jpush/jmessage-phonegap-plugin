@@ -1,6 +1,6 @@
 {
     "name": "jmessage-phonegap-plugin",
-    "version": "2.4.6",
+    "version": "2.4.7",
     "description": "JMessage Cordova Plugin.",
     "cordova": {
         "id": "jmessage-phonegap-plugin",
