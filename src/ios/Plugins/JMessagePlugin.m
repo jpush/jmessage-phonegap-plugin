@@ -1050,7 +1050,7 @@ JMessagePlugin *SharedJMessagePlugin;
         [dict setValue:username forKey:@"username"];
     }
     if (userDict) {
-        [dict setValue:[dict toJsonString] forKey:@"user"];
+        [dict setValue:userDict forKey:@"user"];
     }
     [JMessagePlugin evalFuntionName:@"onReceiveNotificationEvent" jsonParm:[dict toJsonString]];
 
