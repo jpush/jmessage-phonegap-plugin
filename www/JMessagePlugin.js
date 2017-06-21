@@ -696,9 +696,13 @@ JMessagePlugin.prototype.onReceiveCustomMessage = function (jsonStr) {
 }
 
 JMessagePlugin.prototype.onSyncOfflineMessage = function (jsonStr) {
-  jsonStr = JSON.stringify(jsonStr)
-  var obj = JSON.parse(jsonStr)
-  cordova.fireDocumentEvent('jmessage.onSyncOfflineMessage', obj)
+  if (isAndroid()) {
+    jsonStr = JSON.stringify(jsonStr)
+    var obj = JSON.parse(jsonStr)    
+    cordova.fireDocumentEvent('jmessage.onSyncOfflineMessage', obj)
+  } else {
+    cordova.fireDocumentEvent('jmessage.onSyncOfflineMessage', jsonStr)
+  }
 }
 
 JMessagePlugin.prototype.onSyncRoamingMessage = function (jsonStr) {

@@ -224,7 +224,7 @@ JMessagePlugin *SharedJMessagePlugin;
 
 +(void)evalFuntionName:(NSString*)functionName jsonParm:(NSString*)jsonString{
     dispatch_async(dispatch_get_main_queue(), ^{
-        [SharedJMessagePlugin.commandDelegate evalJs:[NSString stringWithFormat:@"%@.%@(%@)",JMessagePluginName,functionName,jsonString]];
+        [SharedJMessagePlugin.commandDelegate evalJs:[NSString stringWithFormat:@"%@.%@('%@')",JMessagePluginName,functionName,jsonString]];
     });
 }
 
@@ -385,7 +385,7 @@ JMessagePlugin *SharedJMessagePlugin;
             NSData *data = [NSData dataWithContentsOfFile:imageUrl];
             JMSGImageContent *imageContent = [[JMSGImageContent alloc] initWithImageData: data];
             JMSGMessage *imgMessage = [conversation createMessageWithContent:imageContent];
-            [conversation sendImageMessage:imgMessage];
+            [conversation sendMessage:imgMessage];
             [weakSelf handleResultWithValue:@[[imgMessage toJsonString]] command:command error:error log:@"send single image message success"];
         } else {
             [weakSelf handleResultWithValue:nil command:command error:error log:@"send single image message fail"];
@@ -475,7 +475,7 @@ JMessagePlugin *SharedJMessagePlugin;
         NSData *data = [NSData dataWithContentsOfFile:imageUrl];
         JMSGImageContent *imageContent = [[JMSGImageContent alloc] initWithImageData: data];
         JMSGMessage *imgMessage = [conversation createMessageWithContent:imageContent];
-        [conversation sendImageMessage:imgMessage];
+        [conversation sendMessage:imgMessage];
         [weakSelf handleResultWithValue:@[[imgMessage toJsonString]] command:command error:error log:@"send single image message success"];
       } else {
         [weakSelf handleResultWithValue:nil command:command error:error log:@"send single image message fail"];
