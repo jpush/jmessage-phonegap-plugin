@@ -1042,7 +1042,7 @@ JMessagePlugin *SharedJMessagePlugin;
     }
 
     NSMutableDictionary *dict = [NSMutableDictionary dictionary];
-    [dict setValuesForKeysWithDictionary:@{@"eventType":eventType,@"eveventDescriptionentD":event.eventDescription}];
+    [dict setValuesForKeysWithDictionary:@{@"eventType":eventType,@"eveventDescriptionentD":event.eventDescription?:@""}];
     if (reason) {
         [dict setValue:reason forKey:@"reason"];
     }
