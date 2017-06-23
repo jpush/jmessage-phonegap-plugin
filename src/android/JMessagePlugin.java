@@ -59,6 +59,7 @@ import cn.jpush.im.android.api.content.TextContent;
 import cn.jpush.im.android.api.content.VoiceContent;
 import cn.jpush.im.android.api.enums.ContentType;
 import cn.jpush.im.android.api.enums.ConversationType;
+import cn.jpush.im.android.api.enums.MessageDirect;
 import cn.jpush.im.android.api.event.ContactNotifyEvent;
 import cn.jpush.im.android.api.event.LoginStateChangeEvent;
 import cn.jpush.im.android.api.event.MessageEvent;
@@ -161,6 +162,7 @@ public class JMessagePlugin extends CordovaPlugin {
                   msgJsonArr.put(getMessageJSONObject(msg));
                 }
                 json.put("messageList", msgJsonArr);
+                Log.i(TAG, "offline messages: " + json.toString());
                 fireEvent("onSyncOfflineMessage", json.toString());
                 return;
             }
@@ -212,25 +214,6 @@ public class JMessagePlugin extends CordovaPlugin {
                             }
                         });
                         break;
-                    case file:
-                        final int fI = i;
-                        ((FileContent) msg.getContent()).downloadFile(msg, new DownloadCompletionCallback() {
-                            @Override
-                            public void onComplete(int status, String desc, File file) {
-                                try {
-                                    if (fI == finalLastMediaMsgIndex) {
-                                        for (Message msg : event.getOfflineMessageList()) {
-                                            msgJsonArr.put(getMessageJSONObject(msg));
-                                        }
-                                        json.put("messageList", msgJsonArr);
-                                        fireEvent("onSyncOfflineMessage", json.toString());
-                                    }
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        });
-                        break;
                 }
             }
         } catch (JSONException e) {
@@ -241,8 +224,7 @@ public class JMessagePlugin extends CordovaPlugin {
     private boolean isMediaMessage(Message msg) {
         return msg.getContentType() == ContentType.image ||
                 msg.getContentType() == ContentType.voice ||
-                msg.getContentType() == ContentType.video ||
-                msg.getContentType() == ContentType.file;
+                msg.getContentType() == ContentType.video;
     }
 
     public void onEvent(LoginStateChangeEvent event) {
@@ -423,7 +405,14 @@ public class JMessagePlugin extends CordovaPlugin {
                 public void gotResult(int responseCode, String responseDesc, UserInfo userInfo) {
                     if (responseCode == 0) {
                         try {
-                            callback.success(getUserInfoJsonObject(userInfo));
+                            String json = mGson.toJson(userInfo);
+                            JSONObject jsonObject = new JSONObject(json);
+                            String avatarPath = "";
+                            if (userInfo.getAvatarFile() != null) {
+                                avatarPath = userInfo.getAvatarFile().getAbsolutePath();
+                            }
+                            jsonObject.put("avatarPath", avatarPath);
+                            callback.success(jsonObject.toString());
                         } catch (JSONException e) {
                             e.printStackTrace();
                             callback.error(e.getMessage());
@@ -873,8 +862,7 @@ public class JMessagePlugin extends CordovaPlugin {
             String voiceUrlStr = data.getString(1);
             String appKey = data.isNull(2) ? "" : data.getString(2);
 
-            Conversation conversation = JMessageClient.getSingleConversation(
-                    userName, appKey);
+            Conversation conversation = JMessageClient.getSingleConversation(userName, appKey);
             if (conversation == null) {
                 conversation = Conversation.createSingleConversation(userName, appKey);
             }
@@ -893,8 +881,7 @@ public class JMessagePlugin extends CordovaPlugin {
                     Uri.parse(voicePath));
             int duration = mediaPlayer.getDuration();
 
-            final Message msg = JMessageClient.createSingleVoiceMessage(userName, file,
-                    duration);
+            final Message msg = JMessageClient.createSingleVoiceMessage(userName, appKey, file, duration);
             msg.setOnSendCompleteCallback(new BasicCallback() {
                 @Override
                 public void gotResult(int status, String desc) {
@@ -1076,7 +1063,6 @@ public class JMessagePlugin extends CordovaPlugin {
                 }
             }
         });
-
         JMessageClient.sendMessage(locationMsg);
     }
 
@@ -1103,7 +1089,6 @@ public class JMessagePlugin extends CordovaPlugin {
         }
 
         File file = new File(path);
-
         final Message msg;
         try {
             msg = JMessageClient.createSingleFileMessage(username, appKey, file, fileName);
@@ -2210,7 +2195,8 @@ public class JMessagePlugin extends CordovaPlugin {
                     UserInfo userInfo = groupInfo.getGroupMemberInfo(username, appKey);
                     try {
                         if (userInfo != null) {
-                            callback.success(getUserInfoJsonObject(userInfo));
+                            JSONObject json = getUserInfoJsonObject(userInfo);
+                            callback.success(json.toString());
                         } else {
                             callback.success("");
                         }
@@ -3090,7 +3076,6 @@ public class JMessagePlugin extends CordovaPlugin {
                 userInfo.setGender(UserInfo.Gender.male);
             } else if (value.equals("female")) {
                 userInfo.setGender(UserInfo.Gender.female);
-
             } else {
                 userInfo.setGender(UserInfo.Gender.unknown);
             }
@@ -3150,7 +3135,7 @@ public class JMessagePlugin extends CordovaPlugin {
         String jsonStr = mGson.toJson(msg);
         final JSONObject msgJson = new JSONObject(jsonStr);
 
-        if (ContentType.eventNotification != msg.getContentType()) {
+        if (msg.getContentType() != ContentType.eventNotification) {
             // Add user avatar path.
             UserInfo fromUser = msg.getFromUser();
             String avatarPath = "";
@@ -3168,17 +3153,20 @@ public class JMessagePlugin extends CordovaPlugin {
             msgJson.put("fromID", fromUser.getUserID());
         }
 
-        UserInfo myInfo = JMessageClient.getMyInfo();
-        String myInfoJson = mGson.toJson(myInfo);
-        JSONObject myInfoJsonObj = new JSONObject(myInfoJson);
-
-        File myAvatarFile = JMessageClient.getMyInfo().getAvatarFile();
-        String myAvatarPath = "";
-        if (myAvatarFile != null) {
-            myAvatarPath = myAvatarFile.getAbsolutePath();
+        if (msg.getTargetType() == ConversationType.single) {
+            UserInfo targetInfo;
+            if (msg.getDirect() == MessageDirect.send) {
+                targetInfo = (UserInfo) msg.getTargetInfo();
+            } else {
+                targetInfo = JMessageClient.getMyInfo();
+            }
+            File targetAvatarFile = targetInfo.getAvatarFile();
+            String targetAvatarPath = targetAvatarFile != null ? targetAvatarFile.getAbsolutePath() : "";
+            JSONObject targetInfoObject = new JSONObject(mGson.toJson(targetInfo));
+            targetInfoObject.put("avatarPath", targetAvatarPath);
+            msgJson.put("targetInfo", targetInfoObject);
+            msgJson.put("targetName", targetInfo.getUserName());
         }
-        myInfoJsonObj.put("avatarPath", myAvatarPath);
-        msgJson.put("targetInfo", myInfoJsonObj);
 
         switch (msg.getContentType()) {
             case image:
@@ -3226,12 +3214,6 @@ public class JMessagePlugin extends CordovaPlugin {
             avatarPath = userInfo.getAvatarFile().getAbsolutePath();
         }
         jsonObject.put("avatarPath", avatarPath);
-        jsonObject.put("noteName", userInfo.getNotename());
-        jsonObject.put("noteText", userInfo.getNoteText());
-        jsonObject.put("isFriend", userInfo.isFriend());
-
-        Log.i(TAG, jsonObject.toString());
-
         return jsonObject;
     }
 
