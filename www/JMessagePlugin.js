@@ -42,7 +42,7 @@ var MessageSendingOptions = {
 var JMessagePlugin = {
   /**
    * @param {object} params - {'isOpenMessageRoaming': boolean} // 是否开启消息漫游。
-   *  打开消息漫游之后，用户多个设备之间登录时，SDK 会自动将当前登录用户的历史消息同步到本地。
+   * 打开消息漫游之后，用户多个设备之间登录时，SDK 会自动将当前登录用户的历史消息同步到本地。
    */
   init: function (params, success, error) {
     exec(success, null, PLUGIN_NAME, 'init', [JSON.stringify(params)])
@@ -53,7 +53,7 @@ var JMessagePlugin = {
    * @param {function} error - function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   register: function (params, success) {
-    exec(success, null, PLUGIN_NAME, 'userRegister', [JSON.stringify(params)])
+    exec(success, null, PLUGIN_NAME, 'register', [JSON.stringify(params)])
   },
   /**
    * @param {object} params - {'username': '', 'password': ''}
@@ -61,7 +61,7 @@ var JMessagePlugin = {
    * @param {function} error - function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   login: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'userLogin', [JSON.stringify(params)])
+    exec(success, error, PLUGIN_NAME, 'login', [JSON.stringify(params)])
   },
   /**
    * 用户登出接口，调用后用户将无法收到消息。登出动作必定成功，开发者不需要关心结果回调。
@@ -69,7 +69,7 @@ var JMessagePlugin = {
    * @param {function} success - function () {}
    */
   logout: function (success) {
-    exec(success, null, PLUGIN_NAME, 'userLogout', [])
+    exec(success, null, PLUGIN_NAME, 'logout', [])
   },
   /**
    * 登录成功则返回用户信息，已登出或未登录则对应用户信息为 null。
@@ -382,7 +382,7 @@ var JMessagePlugin = {
   },
   /**
    * 下载文件消息文件。
-   * 
+   *
    * @param {object} params - {
    *  'type': 'single or group',
    *  'groupId': '目标群聊会话的 group id',
@@ -394,7 +394,7 @@ var JMessagePlugin = {
    */
   downloadFile: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'downloadFile', [JSON.stringify(params)])
-  }
+  },
   /**
    * 创建聊天会话。
    *
@@ -410,7 +410,7 @@ var JMessagePlugin = {
     exec(success, error, PLUGIN_NAME, 'createConversation', [JSON.stringify(params)])
   },
   /**
-   * 删除聊天会话，会同时删除本地聊天记录。
+   * 删除聊天会话，同时会删除本地聊天记录。
    *
    * @param {object} params - {
    *  'type': 'single or group',
@@ -477,17 +477,17 @@ var JMessagePlugin = {
   /**
    * 同步离线消息。
    */
-  onSyncOfflineMessage: function (event) {
-    event = JSON.stringify(event)
-    var offlineMessageArray = JSON.parse(event)
+  onSyncOfflineMessage: function (offlineMessageArray) {
+    offlineMessageArray = JSON.stringify(offlineMessageArray)
+    offlineMessageArray = JSON.parse(offlineMessageArray)
     cordova.fireDocumentEvent('jmessage.onSyncOfflineMessage', offlineMessageArray)
   },
   /**
    * 同步漫游消息。
    */
-  onSyncRoamingMessage: function (event) {
-    event = JSON.stringify(event)
-    var messageArray = JSON.parse(event)
+  onSyncRoamingMessage: function (messageArray) {
+    messageArray = JSON.stringify(messageArray)
+    messageArray = JSON.parse(messageArray)
     cordova.fireDocumentEvent('jmessage.onSyncRoamingMessage', messageArray)
   },
   /**
