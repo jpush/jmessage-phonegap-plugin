@@ -52,7 +52,7 @@ var JMessagePlugin = {
    * @param {function} success - function () {}
    * @param {function} error - function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  register: function (params, success) {
+  register: function (params, success, error) {
     exec(success, null, PLUGIN_NAME, 'userRegister', [JSON.stringify(params)])
   },
   /**
