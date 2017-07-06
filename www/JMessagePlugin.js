@@ -53,7 +53,7 @@ var JMessagePlugin = {
    * @param {function} error - function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   register: function (params, success) {
-    exec(success, null, PLUGIN_NAME, 'register', [JSON.stringify(params)])
+    exec(success, null, PLUGIN_NAME, 'userRegister', [JSON.stringify(params)])
   },
   /**
    * @param {object} params - {'username': '', 'password': ''}
@@ -61,7 +61,7 @@ var JMessagePlugin = {
    * @param {function} error - function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   login: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'login', [JSON.stringify(params)])
+    exec(success, error, PLUGIN_NAME, 'userLogin', [JSON.stringify(params)])
   },
   /**
    * 用户登出接口，调用后用户将无法收到消息。登出动作必定成功，开发者不需要关心结果回调。
@@ -69,7 +69,7 @@ var JMessagePlugin = {
    * @param {function} success - function () {}
    */
   logout: function (success) {
-    exec(success, null, PLUGIN_NAME, 'logout', [])
+    exec(success, null, PLUGIN_NAME, 'userLogout', [])
   },
   /**
    * 登录成功则返回用户信息，已登出或未登录则对应用户信息为 null。
