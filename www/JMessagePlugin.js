@@ -333,7 +333,7 @@ var JMessagePlugin = {
    * @param {object} params - {'isNoDisturb': boolean}
    */
   setNoDisturbGlobal: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'getNoDisturblist', [JSON.stringify(params)])
+    exec(success, error, PLUGIN_NAME, 'setNoDisturbGlobal', [JSON.stringify(params)])
   },
   /**
    * 判断当前是否全局免打扰。
