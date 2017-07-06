@@ -44,7 +44,7 @@ var JMessagePlugin = {
    * @param {object} params - {'isOpenMessageRoaming': boolean} // 是否开启消息漫游。
    * 打开消息漫游之后，用户多个设备之间登录时，SDK 会自动将当前登录用户的历史消息同步到本地。
    */
-  init: function (params, success, error) {
+  init: function (params, success) {
     exec(success, null, PLUGIN_NAME, 'init', [JSON.stringify(params)])
   },
   /**
@@ -53,7 +53,7 @@ var JMessagePlugin = {
    * @param {function} error - function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   register: function (params, success, error) {
-    exec(success, null, PLUGIN_NAME, 'userRegister', [JSON.stringify(params)])
+    exec(success, error, PLUGIN_NAME, 'userRegister', [JSON.stringify(params)])
   },
   /**
    * @param {object} params - {'username': '', 'password': ''}
@@ -75,7 +75,6 @@ var JMessagePlugin = {
    * 登录成功则返回用户信息，已登出或未登录则对应用户信息为 null。
    *
    * @param {function} success - function (myInfo) {}
-   * @param {function} error - function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   getMyInfo: function (success) {
     exec(success, null, PLUGIN_NAME, 'getMyInfo', [])
@@ -156,13 +155,13 @@ var JMessagePlugin = {
   /**
    * @param {object} params - {
    *  'type': 'single / group', // 对象类型（single 或 group）
-   *  'groupId': '',          // 当 type = group 时，groupId 不能为空
-   *  'username': '',         // 当 type = single 时，username 不能为空
-   *  'appKey': '',           // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用
-   *  'latitude': '',         // 纬度信息
-   *  'longitude': '',        // 经度信息
-   *  'scale': '',            // 地图缩放比例
-   *  'address': '',          // 详细地址信息
+   *  'groupId': '',            // 当 type = group 时，groupId 不能为空
+   *  'username': '',           // 当 type = single 时，username 不能为空
+   *  'appKey': '',             // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用
+   *  'latitude': '',           // 纬度信息
+   *  'longitude': '',          // 经度信息
+   *  'scale': '',              // 地图缩放比例
+   *  'address': '',            // 详细地址信息
    *  'extras': {'key1': 'value1', 'key2': 'value2'}  // 附加信息对象
    * }
    */
@@ -235,7 +234,7 @@ var JMessagePlugin = {
     exec(success, error, PLUGIN_NAME, 'createGroup', [JSON.stringify(params)])
   },
   /**
-   * 获取当前用户所有群聊 id。
+   * 获取当前用户所有所在的群组 id。
    *
    * @param {function} success - function (groupIdArr) {} // 以参数形式返回 group id 数组
    */
