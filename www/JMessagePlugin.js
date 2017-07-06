@@ -26,10 +26,12 @@ var MessageSendingOptions = {
   isCustomNotficationEnabled: null,
   /**
    * 设置此条消息在接收方通知栏所展示通知的标题。
+   * @type {string}
    */
   notificationTitle: null,
   /**
    * 设置此条消息在接收方通知栏所展示通知的内容。
+   * @type {string}
    */
   notificationText: null
 }
