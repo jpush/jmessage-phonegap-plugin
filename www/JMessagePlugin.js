@@ -323,7 +323,7 @@ var JMessagePlugin = {
    * @param {object} params - {'type': 'single / group', 'groupId': '目标群组 ID', 'username': '目标用户名', 'isNoDisturb': boolean}
    */
   setNoDisturb: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'setUserNoDisturb', [JSON.stringify(params)])
+    exec(success, error, PLUGIN_NAME, 'setNoDisturb', [JSON.stringify(params)])
   },
   /**
    * 获取免打扰用户和群组名单。
