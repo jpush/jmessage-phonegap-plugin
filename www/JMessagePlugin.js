@@ -527,7 +527,7 @@ if (!window.plugins) {
 }
 
 if (!window.plugins.jmessagePlugin) {
-  window.plugins.jmessage = new JMessagePlugin()
+  window.plugins.jmessage = JMessagePlugin
 }
 
-module.exports = new JMessagePlugin()
+module.exports = JMessagePlugin
