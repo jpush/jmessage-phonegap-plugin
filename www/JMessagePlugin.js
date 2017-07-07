@@ -262,16 +262,10 @@ var JMessagePlugin = {
     exec(success, error, PLUGIN_NAME, 'getGroupInfo', [JSON.stringify(params)])
   },
   /**
-   * @param {object} params - {'id': '群组 id', 'newName': '新群组名称'}
+   * @param {object} params - {'id': '群组 id', 'newName': '新群组名称', 'newDesc': '新群组介绍'}
    */
-  updateGroupName: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'updateGroupName', [JSON.stringify(params)])
-  },
-  /**
-   * @param {object} params - {'id': '群组 id', 'newDesc': '新群组介绍'}
-   */
-  updateGroupDescription: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'updateGroupDescription', [JSON.stringify(params)])
+  updateGroupInfo: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'updateGroupInfo', [JSON.stringify(params)])
   },
   /**
    * @param {object} params - {'id': '群组 id', 'usernameArray': [用户名数组], 'appKey': '待添加用户所在应用的 appKey'}
