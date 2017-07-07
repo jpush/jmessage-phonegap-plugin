@@ -98,8 +98,14 @@ var JMessagePlugin = {
     exec(success, error, PLUGIN_NAME, 'updateMyPassword', [JSON.stringify(params)])
   },
   /**
-   * @param {object} params - {'field': '需要更新的字段名', 'userInfo': {更新了对应字段值的用户对象（可仅有需要更新的字段）}}
-   *  field 包括：nickname（昵称）, birthday（生日）, signature（签名）, gender（性别）, region（地区）, all（以上全部）。
+   * 更新当前登录用户的信息。
+   *
+   * @param {object} params - {'field': '需要更新的字段值'}
+   *  field 包括：nickname（昵称）, birthday（生日）, signature（签名）, gender（性别）, region（地区）。
+   * 如：{
+   *  'birthday': '生日日期的微秒数'
+   *  'gender': 'male / female'
+   * }
    * @param {function} success - function () {}
    * @param {function} error - function ({'code': '错误码', 'description': '错误信息'}) {}
    */
