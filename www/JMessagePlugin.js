@@ -234,9 +234,13 @@ var JMessagePlugin = {
     exec(success, error, PLUGIN_NAME, 'getFriends', [])
   },
   /**
-   * 创建群聊，创建成功后，创建者默认会包含在群成员中。
+   * 创建群组，创建成功后，创建者默认会包含在群成员中。
    *
-   * @param {object} params - {'name': '群组名称', 'desc': '群组描述', 'usernameArray': [用户名数组]}
+   * @param {object} params - {
+   *  'name': '群组名称',
+   *  'desc': '群组描述',
+   *  'usernameArray': [待添加的用户名数组]
+   * }
    * @param {function} success - function (groupId) {}  // 以参数形式返回 group id
    */
   createGroup: function (params, success, error) {
@@ -365,7 +369,7 @@ var JMessagePlugin = {
    *
    * @param {object} params - {
    *  'type': 'single / group',
-   *  'groupId': '目标群聊会话的 group id',
+   *  'groupId': '目标群组会话的 group id',
    *  'username': '目标单聊会话的用户名',
    *  'appKey': '目标单聊用户所属 appKey',
    *  'messageId': '指定消息 id'
@@ -378,7 +382,7 @@ var JMessagePlugin = {
   /**
    * @param {object} params - {
    *  'type': 'single / group',
-   *  'groupId': '目标群聊会话的 group id',
+   *  'groupId': '目标群组会话的 group id',
    *  'username': '目标单聊会话的用户名',
    *  'appKey': '目标单聊用户所属 appKey',
    *  'messageId': '指定消息 id'
@@ -393,7 +397,7 @@ var JMessagePlugin = {
    *
    * @param {object} params - {
    *  'type': 'single / group',
-   *  'groupId': '目标群聊会话的 group id',
+   *  'groupId': '目标群组会话的 group id',
    *  'username': '目标单聊会话的用户名',
    *  'appKey': '目标单聊用户所属 appKey',
    *  'messageId': '指定消息 id'
@@ -408,7 +412,7 @@ var JMessagePlugin = {
    *
    * @param {object} params - {
    *  'type': 'single / group',
-   *  'groupId': '目标群聊 id',
+   *  'groupId': '目标群组 id',
    *  'username': '目标用户名',
    *  'appKey': '目标用户所属 appKey'
    * }
@@ -422,7 +426,7 @@ var JMessagePlugin = {
    *
    * @param {object} params - {
    *  'type': 'single / group',
-   *  'groupId': '目标群聊 id',
+   *  'groupId': '目标群组 id',
    *  'username': '目标用户名',
    *  'appKey': '目标用户所属 appKey'
    * }
@@ -433,7 +437,7 @@ var JMessagePlugin = {
   /**
    * @param {object} params - {
    *  'type': 'single / group',
-   *  'groupId': '目标群聊 id',
+   *  'groupId': '目标群组 id',
    *  'username': '目标用户名',
    *  'appKey': '目标用户所属 appKey'
    * }
@@ -454,7 +458,7 @@ var JMessagePlugin = {
    *
    * @param {object} params - {
    *  'type': 'single / group',
-   *  'groupId': '目标群聊 id',
+   *  'groupId': '目标群组 id',
    *  'username': '目标用户名',
    *  'appKey': '目标用户所属 appKey',
    *  'unreadCount': '未读消息数'
@@ -464,7 +468,7 @@ var JMessagePlugin = {
     exec(success, error, PLUGIN_NAME, 'setUnreadMessageCount', [JSON.stringify(params)])
   },
   /**
-   * @param {object} msg - {    // 消息对象
+   * @param {object} msg - {
    *  'id': '',
    *  'from': {}    // 消息发送者信息对象
    *  'target': {}  // 消息接收方信息（可能是用户或者群组）
