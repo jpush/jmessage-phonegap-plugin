@@ -186,6 +186,7 @@ var JMessagePlugin = {
    * 当 from = 0 && limit = -1 时，返回所有历史消息。
    *
    * @param {object} params - {'type': 'single', 'groupId': '', 'username': '', 'appKey': '', 'from': 0, 'limit': 10}
+   * @param {function} success - function (messageArray)) {}  // 以参数形式返回历史消息对象数组
    */
   getHistoryMessages: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'getHistoryMessages', [JSON.stringify(params)])
@@ -313,7 +314,7 @@ var JMessagePlugin = {
   },
   /**
    * @param {object} params - {'username': '目标用户名', 'appKey': '目标用户 AppKey'}
-   * @param {function} success - function (isInBlackList) {} // 以参数形式返回目标用户是否在黑名单中
+   * @param {function} success - function (isInBlackList) {} // 以参数形式（bool 类型）返回目标用户是否在黑名单中
    */
   isInBlacklist: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'isInBlacklist', [JSON.stringify(params)])
@@ -321,7 +322,7 @@ var JMessagePlugin = {
   /**
    * 设置某个用户或群组是否免打扰。
    *
-   * @param {object} params - {'type': 'single or group', 'groupId': '目标群组 ID', 'username': '目标用户名', 'isNoDisturb': boolean}
+   * @param {object} params - {'type': 'single / group', 'groupId': '目标群组 ID', 'username': '目标用户名', 'isNoDisturb': boolean}
    */
   setNoDisturb: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'setUserNoDisturb', [JSON.stringify(params)])
@@ -363,7 +364,7 @@ var JMessagePlugin = {
    * 下载指定图片消息的原图。
    *
    * @param {object} params - {
-   *  'type': 'single or group',
+   *  'type': 'single / group',
    *  'groupId': '目标群聊会话的 group id',
    *  'username': '目标单聊会话的用户名',
    *  'appKey': '目标单聊用户所属 appKey',
@@ -376,7 +377,7 @@ var JMessagePlugin = {
   },
   /**
    * @param {object} params - {
-   *  'type': 'single or group',
+   *  'type': 'single / group',
    *  'groupId': '目标群聊会话的 group id',
    *  'username': '目标单聊会话的用户名',
    *  'appKey': '目标单聊用户所属 appKey',
@@ -391,7 +392,7 @@ var JMessagePlugin = {
    * 下载文件消息文件。
    *
    * @param {object} params - {
-   *  'type': 'single or group',
+   *  'type': 'single / group',
    *  'groupId': '目标群聊会话的 group id',
    *  'username': '目标单聊会话的用户名',
    *  'appKey': '目标单聊用户所属 appKey',
@@ -406,7 +407,7 @@ var JMessagePlugin = {
    * 创建聊天会话。
    *
    * @param {object} params - {
-   *  'type': 'single or group',
+   *  'type': 'single / group',
    *  'groupId': '目标群聊 id',
    *  'username': '目标用户名',
    *  'appKey': '目标用户所属 appKey'
@@ -420,7 +421,7 @@ var JMessagePlugin = {
    * 删除聊天会话，同时会删除本地聊天记录。
    *
    * @param {object} params - {
-   *  'type': 'single or group',
+   *  'type': 'single / group',
    *  'groupId': '目标群聊 id',
    *  'username': '目标用户名',
    *  'appKey': '目标用户所属 appKey'
@@ -431,7 +432,7 @@ var JMessagePlugin = {
   },
   /**
    * @param {object} params - {
-   *  'type': 'single or group',
+   *  'type': 'single / group',
    *  'groupId': '目标群聊 id',
    *  'username': '目标用户名',
    *  'appKey': '目标用户所属 appKey'
@@ -442,7 +443,7 @@ var JMessagePlugin = {
     exec(success, error, PLUGIN_NAME, 'getConversation', [JSON.stringify(params)])
   },
   /**
-   * @param {object} params - {type: 'single or group or all'}
+   * @param {object} params - {type: 'single / group or all'}
    * @param {function} success - function ({'single': [], 'group': []}) {}  // 以参数形式返回会话对象数组。
    */
   getConversations: function (params, success, error) {
@@ -452,7 +453,7 @@ var JMessagePlugin = {
    * 设置未读消息数量。
    *
    * @param {object} params - {
-   *  'type': 'single or group',
+   *  'type': 'single / group',
    *  'groupId': '目标群聊 id',
    *  'username': '目标用户名',
    *  'appKey': '目标用户所属 appKey',
