@@ -26,12 +26,12 @@ var MessageSendingOptions = {
   isCustomNotficationEnabled: null,
   /**
    * 设置此条消息在接收方通知栏所展示通知的标题。
-   * @type {string}
+   * @type {?string}
    */
   notificationTitle: null,
   /**
    * 设置此条消息在接收方通知栏所展示通知的内容。
-   * @type {string}
+   * @type {?string}
    */
   notificationText: null
 }
@@ -155,7 +155,7 @@ var JMessagePlugin = {
     exec(success, error, PLUGIN_NAME, 'sendVoiceMessage', [JSON.stringify(params)])
   },
   /**
-   * @param {object} params - {'type': 'single / group', 'groupId': '', 'username': '', 'appKey': '', 'extras': {}}
+   * @param {object} params - {'type': 'single / group', 'groupId': '', 'username': '', 'appKey': '', 'customObject': {}}
    */
   sendCustomMessage: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'sendCustomMessage', [JSON.stringify(params)])
