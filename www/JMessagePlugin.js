@@ -320,7 +320,13 @@ var JMessagePlugin = {
   /**
    * 设置某个用户或群组是否免打扰。
    *
-   * @param {object} params - {'type': 'single / group', 'groupId': '目标群组 ID', 'username': '目标用户名', 'isNoDisturb': boolean}
+   * @param {object} params - {
+   *  'type': 'single / group',
+   *  'groupId': '目标群组 ID',
+   *  'username': '目标用户名',
+   *  'appKey': '目标用户所属 appKey',
+   *  'isNoDisturb': boolean
+   * }
    */
   setNoDisturb: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'setNoDisturb', [JSON.stringify(params)])
