@@ -72,8 +72,8 @@ var JMessagePlugin = {
    *
    * @param {function} success - function () {}
    */
-  logout: function (success) {
-    exec(success, null, PLUGIN_NAME, 'userLogout', [])
+  logout: function () {
+    exec(null, null, PLUGIN_NAME, 'userLogout', [])
   },
   /**
    * 登录成功则返回用户信息，已登出或未登录则对应用户信息为 null。
