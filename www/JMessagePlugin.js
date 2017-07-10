@@ -457,8 +457,8 @@ var JMessagePlugin = {
     exec(success, error, PLUGIN_NAME, 'getConversation', [params])
   },
   /**
-   * @param {object} params - {type: 'single / group or all'}
-   * @param {function} success - function ({'single': [], 'group': []}) {}  // 以参数形式返回会话对象数组。
+   * @param {object} params - {type: 'single / group / all'}
+   * @param {function} success - function (conversationArray) {}  // 以参数形式返回会话对象数组。
    */
   getConversations: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'getConversations', [params])
