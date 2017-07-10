@@ -165,13 +165,13 @@ var JMessagePlugin = {
   /**
    * @param {object} params - {
    *  'type': 'single / group', // 对象类型（single 或 group）
-   *  'groupId': '',            // 当 type = group 时，groupId 不能为空
-   *  'username': '',           // 当 type = single 时，username 不能为空
-   *  'appKey': '',             // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用
-   *  'latitude': '',           // 纬度信息
-   *  'longitude': '',          // 经度信息
-   *  'scale': '',              // 地图缩放比例
-   *  'address': '',            // 详细地址信息
+   *  'groupId': string,        // 当 type = group 时，groupId 不能为空
+   *  'username': string,       // 当 type = single 时，username 不能为空
+   *  'appKey': string,         // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用
+   *  'latitude': double,       // 纬度信息
+   *  'longitude': double,      // 经度信息
+   *  'scale': int,             // 地图缩放比例
+   *  'address': string,        // 详细地址信息
    *  'extras': {'key1': 'value1', 'key2': 'value2'}  // 附加信息对象
    * }
    */
@@ -179,7 +179,15 @@ var JMessagePlugin = {
     exec(success, error, PLUGIN_NAME, 'sendLocationMessage', [params])
   },
   /**
-   * @param {object} params - {'type': 'single', 'groupId': '', 'username': '', 'appKey': '', 'path': '', 'filename': '', 'extras', ''}
+   * @param {object} params - {
+   *  'type': 'single / group',
+   *  'groupId': string,
+   *  'username': string,
+   *  'appKey': string,
+   *  'path': string,       // 文件路径
+   *  'filename': string,
+   *  'extras': {'key1': 'value1', 'key2': 'value2'}  // 附加信息对象
+   * }
    */
   sendFileMessage: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'sendFileMessage', [params])
