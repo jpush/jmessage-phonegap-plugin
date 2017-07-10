@@ -106,7 +106,7 @@ var JMessagePlugin = {
    *  field 包括：nickname（昵称）, birthday（生日）, signature（签名）, gender（性别）, region（地区）。
    * 如：{
    *  'birthday': '生日日期的微秒数'
-   *  'gender': 'male / female'
+   *  'gender': 'male / female / unknow'
    * }
    * @param {function} success - function () {}
    * @param {function} error - function ({'code': '错误码', 'description': '错误信息'}) {}
