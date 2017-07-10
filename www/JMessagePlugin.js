@@ -456,18 +456,17 @@ var JMessagePlugin = {
     exec(success, error, PLUGIN_NAME, 'getConversations', [params])
   },
   /**
-   * 设置未读消息数量。
+   * 重置单个会话的未读消息数。
    *
    * @param {object} params - {
    *  'type': 'single / group',
    *  'groupId': '目标群组 id',
    *  'username': '目标用户名',
    *  'appKey': '目标用户所属 appKey',
-   *  'unreadCount': '未读消息数'
    * }
    */
-  setUnreadMessageCount: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'setUnreadMessageCount', [params])
+  resetUnreadMessageCount: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'resetUnreadMessageCount', [params])
   },
   /**
    * @param {object} msg - {
