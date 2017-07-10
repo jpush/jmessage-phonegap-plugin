@@ -369,7 +369,7 @@ var JMessagePlugin = {
    * 下载用户头像原图。
    *
    * @param {object} params - {'username': '目标用户名', 'appKey': '目标用户 AppKey'}
-   * @param {function} success - function ('imagePath') {}
+   * @param {function} success - function ({'username': '', 'filePath': ''}) {}
    */
   downloadOriginalUserAvatar: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'downloadOriginalUserAvatar', [params])
@@ -384,7 +384,7 @@ var JMessagePlugin = {
    *  'appKey': '目标单聊用户所属 appKey',
    *  'messageId': '指定消息 id'
    * }
-   * @param {function} success - function (imageMessage) {}  // 以参数形式返回消息对象，可用 imageMessage.originPath 获得原图路径。
+   * @param {function} success - function ({'messageId': '', 'filePath': ''}) {}  
    */
   downloadOriginalImage: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'downloadOriginalImage', [params])
@@ -397,7 +397,7 @@ var JMessagePlugin = {
    *  'appKey': '目标单聊用户所属 appKey',
    *  'messageId': '指定消息 id'
    * }
-   * @param {function} success - function (voiceMessage) {}  // 以参数形式返回消息对象，可用 voiceMessage.path 获得录音文件路径。
+   * @param {function} success - function ({'messageId': '', 'filePath': ''}) {} 
    */
   downloadVoiceFile: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'downloadVoiceFile', [params])
@@ -412,7 +412,7 @@ var JMessagePlugin = {
    *  'appKey': '目标单聊用户所属 appKey',
    *  'messageId': '指定消息 id'
    * }
-   * @param {function} success - function (fileMessage) {}  // 以参数形式返回消息对象，可用 fileMessage.path 获得文件路径。
+   * @param {function} success - function ({'messageId': '', 'filePath': ''}) {}  
    */
   downloadFile: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'downloadFile', [params])
