@@ -290,7 +290,6 @@ var JMessagePlugin = {
    * @param {object} params - {
    *  'name': String          // 群组名称。
    *  'desc': String          // 群组描述。
-   *  'usernameArray': Array  // 待添加的用户名数组。
    * }
    * @param {function} success - function (groupId) {}  // 以参数形式返回 group id
    */
@@ -338,7 +337,7 @@ var JMessagePlugin = {
   },
   /**
    * @param {object} params - {'id': '群组 id'}
-   * @param {function} success - function (usernameArray) {} // 以参数形式返回用户名数组
+   * @param {function} success - function (userInfoArray) {} // 以参数形式返回用户对象数组
    */
   getGroupMembers: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'getGroupMembers', [params])
@@ -360,13 +359,6 @@ var JMessagePlugin = {
    */
   getBlacklist: function (success, error) {
     exec(success, error, PLUGIN_NAME, 'getBlacklist', [])
-  },
-  /**
-   * @param {object} params - {'username': String, 'appKey': String}
-   * @param {function} success - function ({'isInBlackList': Boolean}) {} // 以参数形式返回目标用户是否在黑名单中
-   */
-  isInBlacklist: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'isInBlacklist', [params])
   },
   /**
    * 设置某个用户或群组是否免打扰。
