@@ -17,6 +17,7 @@
 @class JMSGAbstractContent;
 @class JMSGUser;
 @protocol JMSGTargetProtocol;
+@class JMSGOptionalContent;
 
 /*!
  * 消息
@@ -111,6 +112,17 @@ JMSG_ASSUME_NONNULL_BEGIN
  * @discussion 此接口与 createMessage:: 相关接口配合使用，创建好后使用此接口发送。
  */
 + (void)sendMessage:(JMSGMessage *)message;
+
+/*!
+ * @abstract 发送消息（附带可选功能，如：控制离线消息存储、自定义通知栏内容等）
+ *
+ * @param message           通过消息创建类接口，创建好的消息对象
+ * @param optionalContent   可选功能，具体请查看 JMSGOptionalContent 类
+ *
+ * @discussion 可选功能里可以设置离线消息存储、自定义通知栏内容等，具体请查看 JMSGOptionalContent 类。
+ *
+ */
++ (void)sendMessage:(JMSGMessage *)message optionalContent:(JMSGOptionalContent *)optionalContent;
 
 /*!
  * @abstract 发送单聊文本消息
@@ -305,6 +317,18 @@ JMSG_ASSUME_NONNULL_BEGIN
                             scale:(NSNumber *)scale
                           address:(NSString *)address
                            toGroup:(NSString *)groupId;
+/*!
+ * @abstract 消息撤回
+ *
+ * @param message 需要撤回的消息
+ * @param handler 结果回调
+ *
+ * - resultObject 撤回后的消息
+ * - error        错误信息
+ *
+ * @discussion 注意：SDK可撤回3分钟内的消息
+ */
++ (void)retractMessage:(JMSGMessage *)message completionHandler:(JMSGCompletionHandler)handler;
 
 /*!
  * @abstract 是否是@自己的消息（只针对群消息，单聊消息无@功能）
@@ -359,7 +383,7 @@ JMSG_ASSUME_NONNULL_BEGIN
  *      单聊是对方用户;
  *      群聊是聊天群组, 也与当前会话的目标一致 [JMSGConversation target]
  */
-@property(nonatomic, strong, readonly) id<JMSGTargetProtocol> target;
+@property(nonatomic, strong, readonly) id target;
 
 /*!
  * @abstract 消息发送目标应用

@@ -16,6 +16,7 @@
 @class JMSGMessage;
 @class JMSGAbstractContent;
 @class JMSGImageContent;
+@class JMSGOptionalContent;
 
 
 /*!
@@ -147,6 +148,12 @@ JMSG_ASSUME_NONNULL_BEGIN
  */
 + (void)allUnsortedConversations:(JMSGCompletionHandler)handler;
 
+/*!
+ * @abstract 获取当前所有会话的未读消息的总数
+ *
+ * @discussion 获取所有会话未读消息总数
+ */
++ (NSNumber *)getAllUnreadCount;
 
 
 ///----------------------------------------------------------
@@ -257,13 +264,15 @@ JMSG_ASSUME_NONNULL_BEGIN
  * @abstract 删除一条消息
  *
  * @param msgId 本地消息ID
+ *
+ * @discussion 注意：如果被删除消息是多媒体消息，也会将本地缓存的多媒体文件删除
  */
 - (BOOL)deleteMessageWithMessageId:(NSString *)msgId;
 
 /*!
  * @abstract 删除全部消息
  *
- * @discussion 清空当前会话的所有消息。
+ * @discussion 清空当前会话的所有消息，并清空当前会话的所有本地文件缓存。
  */
 - (BOOL)deleteAllMessages;
 
@@ -322,6 +331,17 @@ JMSG_ASSUME_NONNULL_BEGIN
  * @discussion 发送消息的多个接口，都未在方法上直接提供回调。你应通过 JMSGMessageDelegate中的onReceiveMessage: error:方法来注册消息发送结果
  */
 - (void)sendMessage:(JMSGMessage *)message;
+
+/*!
+ * @abstract 发送消息（附带可选功能，如：控制离线消息存储、自定义通知栏内容等）
+ *
+ * @param message           通过消息创建类接口，创建好的消息对象
+ * @param optionalContent   可选功能，具体请查看 JMSGOptionalContent 类
+ *
+ * @discussion 可选功能里可以设置离线消息存储、自定义通知栏内容等，具体请查看 JMSGOptionalContent 类。
+ *
+ */
+- (void)sendMessage:(JMSGMessage *)message optionalContent:(JMSGOptionalContent *)optionalContent;
 
 /*!
  * @abstract 发送@人消息（已经创建好对象的）
@@ -388,7 +408,20 @@ JMSG_ASSUME_NONNULL_BEGIN
                     address:(NSString *)address;
 
 /*!
- * @abstract 异步获取会话头像
+ * @abstract 消息撤回
+ *
+ * @param message 需要撤回的消息
+ * @param handler 结果回调
+ *
+ * - resultObject 撤回后的消息
+ * - error        错误信息
+ *
+ * @discussion 注意：SDK可撤回3分钟内的消息
+ */
+- (void)retractMessage:(JMSGMessage *)message completionHandler:(JMSGCompletionHandler)handler;
+
+/*!
+ * @abstract 异步获取会话头像(仅限单聊)
  *
  * @param handler 结果回调。回调参数:
  *
@@ -400,11 +433,17 @@ JMSG_ASSUME_NONNULL_BEGIN
  *
  * 如果 error 为 ni, data 也为 nil, 表示没有数据.
  *
- * @discussion 会话的头像来自于聊天对象, 单聊就是用户的头像, 群聊是群组头像.
+ * @discussion 会话的头像来自于聊天对象, 单聊就是用户的头像.
  * 建议在会话列表时, 使用此接口来显示会话的头像, 而不要使用 target 属性里的用户头像.
  */
 - (void)avatarData:(JMSGAsyncDataHandler)handler;
 
+/*!
+ * @abstract 获取会话头像的本地路径(仅限单聊)
+ *
+ * @return 返回本地路，返回值只有在下载完成之后才有意义
+ */
+- (NSString *)avatarLocalPath;
 
 ///----------------------------------------------------
 /// @name Conversation State Maintenance 会话状态维护
@@ -416,13 +455,6 @@ JMSG_ASSUME_NONNULL_BEGIN
  * @discussion 把未读数设置为 0
  */
 - (void)clearUnreadCount;
-
-/*!
- * @abstract 获取当前所有会话的未读消息的总数
- *
- * @discussion 获取所有会话未读消息总数
- */
-+ (NSNumber *)getAllUnreadCount;
 
 /*!
  * @abstract 获取最后一条消息的内容文本

@@ -10,12 +10,13 @@
  */
 
 #import <Foundation/Foundation.h>
+#import <JMessage/JMSGConversation.h>
 
 /*!
  * @abstract 通知事件
  *
  * @discussion 服务器端下发的事件通知, 如：用户被踢下线,加好友, SDK 作为一个通知事件下发.
- * 上层通过 JMSGEventDelegate 类中的 onReceiveNotificationEvent: 代理方法接收事件,详见官方文档.
+ * 上层通过 JMSGEventDelegate 类中的 -(void)onReceiveNotificationEvent: 代理方法接收事件,详见官方文档.
  *
  * 注意：消息事件(如：群事件)，SDK 依旧作为一个特殊的消息类型下发，依旧通过 JMSGMessageDelegate 接收消息事件.
  */
@@ -32,5 +33,25 @@
  * @discussion 下发事件的文字描述，可能为空
  */
 @property(nonatomic, strong, readonly) NSString *eventDescription;
+
+@end
+
+
+/*!
+ * @abstract 消息撤回事件
+ *
+ * @discussion 上层通过 JMSGEventDelegate 类中的 -(void)onReceiveNotificationEvent: 代理方法监听此事件,详见官方文档.
+ */
+@interface JMSGMessageRetractEvent : JMSGNotificationEvent
+
+/**
+ * @abstract 消息撤回所属会话
+ */
+@property(nonatomic, strong, readonly) JMSGConversation *conversation;
+
+/**
+ * @abstract 撤回之后的消息
+ */
+@property(nonatomic, strong, readonly) JMSGMessage *retractMessage;
 
 @end

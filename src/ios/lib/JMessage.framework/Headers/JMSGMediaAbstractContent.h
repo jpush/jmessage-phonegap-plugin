@@ -49,6 +49,12 @@ JMSG_ASSUME_NONNULL_BEGIN
  */
 @property(nonatomic, copy)JMSGMediaProgressHandler JMSG_NULLABLE uploadHandler;
 
+/*!
+ * @abstract 获取原文件的本地路径
+ *
+ * @discussion 此属性是通过懒加载的方式获取，必须在下载完成之后此属性值才有意义
+ */
+@property(nonatomic, strong, readonly) NSString *originMediaLocalPath;
 
 // 不支持使用的初始化方法
 - (nullable instancetype)init NS_UNAVAILABLE;

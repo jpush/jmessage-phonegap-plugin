@@ -46,6 +46,13 @@
  */
 @property(nonatomic, assign, readonly) CGSize imageSize;
 
+/*!
+ * @abstract 获取缩略图的本地路径
+ *
+ * @discussion 此属性是通过懒加载的方式获取，必须在下载完成之后此属性值才有意义
+ */
+@property(nonatomic, strong, readonly) NSString * JMSG_NULLABLE thumbImageLocalPath;
+
 // 不支持使用的初始化方法
 - (nullable instancetype)init NS_UNAVAILABLE;
 
