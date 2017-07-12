@@ -12,7 +12,7 @@
 
 #define WEAK_SELF(weakSelf)  __weak __typeof(&*self)weakSelf = self;
 
-static NSString *const JMessagePluginName = @"window.plugins.jmessagePlugin";
+static NSString *const JMessagePluginName = @"window.plugins.jmessage";
 static NSString *const JPushPluginName    = @"window.plugins.jPushPlugin";
 
 static NSString *const JMessageConfig_FileName     = @"JMessageConfig";
@@ -42,12 +42,6 @@ static NSString *const JMessageConfig_Delay        = @"Delay";
 
 //User 回调
 #define kJJMessageLoginUserKicked  @"kJJMessageLoginUserKicked"
-
-//image voice 消息 回调
-#define kJJMessageReceiveImageData     @"kJJMessageReceiveImageData"
-#define kJJMessageReceiveVoiceData     @"kJJMessageReceiveVoiceData"
-#define kJJMessageReceiveFileData      @"kJJMessageReceiveFileData"
-#define kJJMessageReceiveLocationData  @"kJJMessageReceiveLocationData"
 
 
 
