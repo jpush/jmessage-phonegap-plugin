@@ -604,9 +604,9 @@ var JMessagePlugin = {
     JMessagePlugin.handlers.loginStateChanged.push(success)
   },
   removeLoginStateChangedListener: function (success) {
-    var handleIndex = JMessagePlugin.handlers.syncRoamingMessage.indexOf(success);
+    var handleIndex = JMessagePlugin.handlers.loginStateChanged.indexOf(success);
     if (handleIndex >= 0) {
-      JMessagePlugin.handlers.syncRoamingMessage.splice(handleIndex, 1);
+      JMessagePlugin.handlers.loginStateChanged.splice(handleIndex, 1);
     }
   },
   /**
