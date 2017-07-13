@@ -47,7 +47,7 @@ var JMessagePlugin = {
       'syncOfflineMessage': [],
       'syncRoamingMessage': [],
       'loginStateChanged': [],
-      'contactNotify': [],
+      'contactNotify': []
     }
   
     var success = function(result) {
