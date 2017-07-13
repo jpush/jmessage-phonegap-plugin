@@ -47,7 +47,8 @@ var JMessagePlugin = {
       'syncOfflineMessage': [],
       'syncRoamingMessage': [],
       'loginStateChanged': [],
-      'contactNotify': []
+      'contactNotify': [],
+      'retractMessage': []
     }
   
     var success = function(result) {
@@ -218,6 +219,20 @@ var JMessagePlugin = {
    */
   sendFileMessage: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'sendFileMessage', [params])
+  },
+  /**
+   * 消息撤回。
+   * 
+   * @param {object} params - {
+   *  'type': String,       // 'single' / 'group'
+   *  'groupId': String,    // 当 type = group 时，groupId 不能为空。
+   *  'username': String,   // 当 type = single 时，username 不能为空。
+   *  'appKey': String,     // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
+   *  'messageId': String   // 消息 id。
+   * }
+   */
+  retractMessage: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'retractMessage', [params])
   },
   /**
    * 从最新的消息开始获取历史消息。
@@ -529,7 +544,7 @@ var JMessagePlugin = {
   /**
    * 添加收到消息事件监听。
    * 
-   * @param {function} success - function (message) {}  // 以参数形式返回消息对象。
+   * @param {function} listener - function (message) {}  // 以参数形式返回消息对象。
    * 
    * message {
    *  'id': String,
@@ -539,80 +554,79 @@ var JMessagePlugin = {
    *  ...                // 不同消息类型还有其他对应的相关字段，具体可参考文档。
    * } 
    */
-  addReceiveMessageListener: function (success) {
-    JMessagePlugin.handlers.receiveMessage.push(success)
+  addReceiveMessageListener: function (listener) {
+    JMessagePlugin.handlers.receiveMessage.push(listener)
   },
-
-  removeReceiveMessageListener: function (success) {
-    var handleIndex = JMessagePlugin.handlers.receiveMessage.indexOf(success);
-    if (handleIndex >= 0) {
-      JMessagePlugin.handlers.receiveMessage.splice(handleIndex, 1);
+  removeReceiveMessageListener: function (listener) {
+    var handlerIndex = JMessagePlugin.handlers.receiveMessage.indexOf(listener)
+    if (handlerIndex >= 0) {
+      JMessagePlugin.handlers.receiveMessage.splice(handlerIndex, 1)
     }
   },
   /**
    * 添加点击通知栏消息通知事件监听。
    * 
-   * @param {function} success - function (message) {}  // 以参数形式返回消息对象。
+   * @param {function} listener - function (message) {}  // 以参数形式返回消息对象。
    */
-  addClickMessageNotificationListener: function (success) {
-    JMessagePlugin.handlers.clickMessageNotification.push(success)
+  addClickMessageNotificationListener: function (listener) {
+    JMessagePlugin.handlers.clickMessageNotification.push(listener)
   },
-  removeClickMessageNotificationListener: function (success) {
-    var handleIndex = JMessagePlugin.handlers.clickMessageNotification.indexOf(success);
-    if (handleIndex >= 0) {
-      JMessagePlugin.handlers.clickMessageNotification.splice(handleIndex, 1);
+  removeClickMessageNotificationListener: function (listener) {
+    var handlerIndex = JMessagePlugin.handlers.clickMessageNotification.indexOf(listener)
+    if (handlerIndex >= 0) {
+      JMessagePlugin.handlers.clickMessageNotification.splice(handlerIndex, 1)
     }
   },
   /**
    * 添加同步离线消息事件监听。
    * 
-   * @param {function} success - function ({'conversation': {}, 'messageArray': []}) {}  // 以参数形式返回消息对象数组。
+   * @param {function} listener - function ({'conversation': {}, 'messageArray': []}) {}  // 以参数形式返回消息对象数组。
    */
-  addSyncOfflineMessageListener: function (success) {
-    JMessagePlugin.handlers.syncOfflineMessage.push(success)
+  addSyncOfflineMessageListener: function (listener) {
+    JMessagePlugin.handlers.syncOfflineMessage.push(listener)
   },
-  removeSyncOfflineMessageListener: function (success) {
-    var handleIndex = JMessagePlugin.handlers.syncOfflineMessage.indexOf(success);
-    if (handleIndex >= 0) {
-      JMessagePlugin.handlers.syncOfflineMessage.splice(handleIndex, 1);
+  removeSyncOfflineMessageListener: function (listener) {
+    var handlerIndex = JMessagePlugin.handlers.syncOfflineMessage.indexOf(listener)
+    if (handlerIndex >= 0) {
+      JMessagePlugin.handlers.syncOfflineMessage.splice(handlerIndex, 1)
     }
   },
   /**
    * 添加同步漫游消息事件监听。
    * 
-   * @param {function} success - function ({'conversation': {}, 'messageArray': []}) {}  // 以参数形式返回消息对象数组。
+   * @param {function} listener - function ({'conversation': {}}) {}  // 以参数形式返回消息对象数组。
    */
-  addSyncRoamingMessageListener: function (success) {
-    JMessagePlugin.handlers.syncRoamingMessage.push(success)
+  addSyncRoamingMessageListener: function (listener) {
+    JMessagePlugin.handlers.syncRoamingMessage.push(listener)
   },
-  removeSyncRoamingMessageListener: function (success) {
-    var handleIndex = JMessagePlugin.handlers.syncRoamingMessage.indexOf(success);
-    if (handleIndex >= 0) {
-      JMessagePlugin.handlers.syncRoamingMessage.splice(handleIndex, 1);
+  removeSyncRoamingMessageListener: function (listener) {
+    var handlerIndex = JMessagePlugin.handlers.syncRoamingMessage.indexOf(listener)
+    if (handlerIndex >= 0) {
+      JMessagePlugin.handlers.syncRoamingMessage.splice(handlerIndex, 1)
     }
   },
   /**
    * 添加登录状态变更事件监听。
    *
-   * @param {function} success - function (event) {}  // 以参数形式返回事件信息。
+   * @param {function} listener - function (event) {}  // 以参数形式返回事件信息。
    * 
    * event {
    *  'type': String, // 'user_password_change' / 'user_logout' / 'user_deleted' / 'user_login_status_unexpected'
    * }
    */
-  addLoginStateChangedListener: function (success) {
-    JMessagePlugin.handlers.loginStateChanged.push(success)
+  addLoginStateChangedListener: function (listener) {
+    JMessagePlugin.handlers.loginStateChanged.push(listener)
   },
-  removeLoginStateChangedListener: function (success) {
-    var handleIndex = JMessagePlugin.handlers.loginStateChanged.indexOf(success);
-    if (handleIndex >= 0) {
-      JMessagePlugin.handlers.loginStateChanged.splice(handleIndex, 1);
+  removeLoginStateChangedListener: function (listener) {
+    var handlerIndex = JMessagePlugin.handlers.loginStateChanged.indexOf(listener)
+    if (handlerIndex >= 0) {
+      JMessagePlugin.handlers.loginStateChanged.splice(handlerIndex, 1)
     }
   },
   /**
    * 好友相关通知事件。
    *
-   * @param {function} success - function (event) {}  // 以参数形式返回事件信息。
+   * @param {function} listener - function (event) {}  // 以参数形式返回事件信息。
    * 
    * event {
    *  'type': String,            // 'invite_received' / 'invite_accepted' / 'invite_declined' / 'contact_deleted'
@@ -621,13 +635,27 @@ var JMessagePlugin = {
    *  'fromUserAppKey': String   // 事件发送者的 AppKey。
    * }
    */
-  addContactNotifyListener: function (success) {
-    JMessagePlugin.handlers.contactNotify.push(success)
+  addContactNotifyListener: function (listener) {
+    JMessagePlugin.handlers.contactNotify.push(listener);
   },
-  removeContactNotifyListener: function (success) {
-    var handleIndex = JMessagePlugin.handlers.contactNotify.indexOf(success);
-    if (handleIndex >= 0) {
-      JMessagePlugin.handlers.contactNotify.splice(handleIndex, 1);
+  removeContactNotifyListener: function (listener) {
+    var handlerIndex = JMessagePlugin.handlers.contactNotify.indexOf(listener)
+    if (handlerIndex >= 0) {
+      JMessagePlugin.handlers.contactNotify.splice(handlerIndex, 1)
+    }
+  },
+  /**
+   * 消息撤回事件监听。
+   * 
+   * @param {function} listener - function (event) {} // 以参数形式返回事件信息。
+   */
+  addMessageRetractListener: function (listener) {
+    JMessagePlugin.handlers.retractMessage.push(listener)
+  },
+  removeMessageRetractListener: function (listener) {
+    var handlerIndex = JMessagePlugin.handlers.retractMessage.indexOf(listener)
+    if (handlerIndex >= 0) {
+      JMessagePlugin.handlers.retractMessage.splice(handlerIndex, 1)
     }
   }
 }
