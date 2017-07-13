@@ -41,7 +41,25 @@ var JMessagePlugin = {
    * 打开消息漫游之后，用户多个设备之间登录时，SDK 会自动将当前登录用户的历史消息同步到本地。
    */
   init: function (params) {
-    exec(null, null, PLUGIN_NAME, 'init', [params])
+    JMessagePlugin.handlers = {
+      'receiveMessage': [],
+      'clickMessageNotification': [],
+      'syncOfflineMessage': [],
+      'syncRoamingMessage': [],
+      'loginStateChanged': [],
+      'contactNotify': [],
+    }
+  
+    var success = function(result) {
+      if ( !JMessagePlugin.handlers.hasOwnProperty(result.eventName) ) {
+        return
+      }
+
+      for (var index in JMessagePlugin.handlers[result.eventName]) {
+         JMessagePlugin.handlers[result.eventName][index].apply(undefined,[result.value])
+        }
+    }
+    exec(success, null, PLUGIN_NAME, 'init', [params])
   },
   /**
   * 设置是否开启 debug 模式，开启后 SDK 将会输出更多日志信息。应用对外发布时应关闭。
@@ -509,6 +527,15 @@ var JMessagePlugin = {
   resetUnreadMessageCount: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'resetUnreadMessageCount', [params])
   },
+
+  // handlers: {
+  //   receiveMessageCallbacks: [],
+  //   clickMessageNotification: [],
+  //   syncOfflineMessage: [],
+  //   syncRoamingMessage: [],
+  //   loginStateChanged: [],
+  //   contactNotify: [],
+  // },
   /**
    * 添加收到消息事件监听。
    * 
@@ -523,7 +550,15 @@ var JMessagePlugin = {
    * } 
    */
   addReceiveMessageListener: function (success) {
-    exec(success, null, PLUGIN_NAME, 'addReceiveMessageListener', [])
+    // exec(success, null, PLUGIN_NAME, 'addReceiveMessageListener', [])
+    JMessagePlugin.handlers.receiveMessage.push(success)
+  },
+
+  removeReceiveMessageListener: function (success) {
+    var handleIndex = JMessagePlugin.handlers.receiveMessage.indexOf(success);
+    if (handleIndex >= 0) {
+      JMessagePlugin.handlers.receiveMessage.splice(handleIndex, 1);
+    }
   },
   /**
    * 添加点击通知栏消息通知事件监听。
@@ -531,15 +566,28 @@ var JMessagePlugin = {
    * @param {function} success - function (message) {}  // 以参数形式返回消息对象。
    */
   addClickMessageNotificationListener: function (success) {
-    exec(success, null, PLUGIN_NAME, 'addClickMessageNotificationListener', [])
+    JMessagePlugin.handlers.clickMessageNotification.push(success)
   },
+  removeClickMessageNotificationListener: function (success) {
+    var handleIndex = JMessagePlugin.handlers.clickMessageNotification.indexOf(success);
+    if (handleIndex >= 0) {
+      JMessagePlugin.handlers.clickMessageNotification.splice(handleIndex, 1);
+    }
+  },
+
   /**
    * 添加同步离线消息事件监听。
    * 
    * @param {function} success - function (messageArray) {}  // 以参数形式返回消息对象数组。
    */
   addSyncOfflineMessageListener: function (success) {
-    exec(success, null, PLUGIN_NAME, 'addSyncOfflineMessageListener', [])
+    JMessagePlugin.handlers.syncOfflineMessage.push(success)
+  },
+  addSyncOfflineMessageListener: function (success) {
+    var handleIndex = JMessagePlugin.handlers.syncOfflineMessage.indexOf(success);
+    if (handleIndex >= 0) {
+      JMessagePlugin.handlers.syncOfflineMessage.splice(handleIndex, 1);
+    }
   },
   /**
    * 添加同步漫游消息事件监听。
@@ -547,7 +595,13 @@ var JMessagePlugin = {
    * @param {function} success - function (messageArray) {}  // 以参数形式返回消息对象数组。
    */
   addSyncRoamingMessageListener: function (success) {
-    exec(success, null, PLUGIN_NAME, 'addSyncRoamingMessageListener', [])
+    JMessagePlugin.handlers.syncRoamingMessage.push(success)
+  },
+  removeSyncRoamingMessageListener: function (success) {
+    var handleIndex = JMessagePlugin.handlers.syncRoamingMessage.indexOf(success);
+    if (handleIndex >= 0) {
+      JMessagePlugin.handlers.syncRoamingMessage.splice(handleIndex, 1);
+    }
   },
   /**
    * 添加登录状态变更事件监听。
@@ -561,7 +615,13 @@ var JMessagePlugin = {
    * }
    */
   addLoginStateChangedListener: function (success) {
-    exec(success, null, PLUGIN_NAME, 'addLoginStateChangedListener', [])
+    JMessagePlugin.handlers.loginStateChanged.push(success)
+  },
+  removeLoginStateChangedListener: function (success) {
+    var handleIndex = JMessagePlugin.handlers.syncRoamingMessage.indexOf(success);
+    if (handleIndex >= 0) {
+      JMessagePlugin.handlers.syncRoamingMessage.splice(handleIndex, 1);
+    }
   },
   /**
    * 好友相关通知事件。
@@ -576,8 +636,16 @@ var JMessagePlugin = {
    * }
    */
   addContactNotifyListener: function (success) {
-    exec(success, null, PLUGIN_NAME, 'addContactNotifyListener', [])
+    JMessagePlugin.handlers.contactNotify.push(success)
+  },
+  removeContactNotifyListener: function (success) {
+    var handleIndex = JMessagePlugin.handlers.contactNotify.indexOf(success);
+    if (handleIndex >= 0) {
+      JMessagePlugin.handlers.contactNotify.splice(handleIndex, 1);
+    }
   }
+
 }
+
 
 module.exports = JMessagePlugin
