@@ -648,6 +648,11 @@ var JMessagePlugin = {
    * 消息撤回事件监听。
    * 
    * @param {function} listener - function (event) {} // 以参数形式返回事件信息。
+   * 
+   * event {
+   *  'conversation': Object      // 会话对象。
+   *  'retractedMessage': Object  // 被撤回的消息对象。
+   * }
    */
   addMessageRetractListener: function (listener) {
     JMessagePlugin.handlers.retractMessage.push(listener)
