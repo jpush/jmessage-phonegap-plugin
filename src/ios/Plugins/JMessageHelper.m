@@ -37,7 +37,7 @@
   
   NSString *plistPath = [[NSBundle mainBundle] pathForResource:JMessageConfig_FileName ofType:@"plist"];
   if (plistPath == nil) {
-    NSLog(@"error: JMessageConfig.plist ");
+    NSLog(@"error: JMessageConfig.plist");
     assert(0);
   }
   
@@ -56,11 +56,98 @@
                  category:nil];
 }
 
+- (void)onReceiveMessageRetractEvent:(JMSGMessageRetractEvent *)retractEvent {
+  NSDictionary *conversation = [retractEvent.conversation conversationToDictionary];
+  NSDictionary *messageDic = [retractEvent.retractMessage messageToDictionary];
+  [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageReceiveMessage object:@{
+                                                                                               @"conversation":conversation,
+                                                                                               @"retractedMessage":messageDic}];
+}
+
 - (void)onReceiveMessage:(JMSGMessage *)message error:(NSError *)error{// TODO:!!!!!
   NSString *jsonString = [message toJsonString];
   NSMutableDictionary *dict = [NSMutableDictionary new];
   dict = [message messageToDictionary];
   [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageReceiveMessage object:dict];
+}
+
+- (void)onReceiveNotificationEvent:(JMSGNotificationEvent *)event {
+  
+  switch (event.eventType) {
+    case kJMSGEventNotificationLoginKicked:
+      [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageLoginStateChanged object:@{@"type":@"user_kicked"}];
+      break;
+    case kJMSGEventNotificationServerAlterPassword:
+      [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageLoginStateChanged object:@{@"type":@"user_password_change"}];
+      break;
+      break;
+    case kJMSGEventNotificationUserLoginStatusUnexpected:
+      [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageLoginStateChanged object:@{@"type":@"user_login_state_unexpected"}];
+      break;
+    case kJMSGEventNotificationCurrentUserInfoChange:
+      break;
+    case kJMSGEventNotificationReceiveFriendInvitation:{
+      JMSGFriendNotificationEvent *friendEvent = event;
+      JMSGUser *user = [friendEvent getFromUser];
+      [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageContactNotify object:@{
+                                                                                                    @"type":@"invite_received",
+                                                                                                    @"reason":[friendEvent eventDescription],
+                                                                                                    @"fromUsername":[friendEvent getFromUsername],
+                                                                                                    @"fromUserAppKey":user.appKey}];
+    }
+      break;
+    case kJMSGEventNotificationAcceptedFriendInvitation:{
+      JMSGFriendNotificationEvent *friendEvent = event;
+      JMSGUser *user = [friendEvent getFromUser];
+      [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageContactNotify object:@{
+                                                                                                  @"type":@"invite_accepted",
+                                                                                                  @"reason":[friendEvent eventDescription],
+                                                                                                  @"fromUsername":[friendEvent getFromUsername],
+                                                                                                  @"fromUserAppKey":user.appKey}];
+    }
+      break;
+    case kJMSGEventNotificationDeclinedFriendInvitation:{
+      JMSGFriendNotificationEvent *friendEvent = event;
+      JMSGUser *user = [friendEvent getFromUser];
+      [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageContactNotify object:@{
+                                                                                                  @"type":@"invite_declined",
+                                                                                                  @"reason":[friendEvent eventDescription],
+                                                                                                  @"fromUsername":[friendEvent getFromUsername],
+                                                                                                  @"fromUserAppKey":user.appKey}];
+    }
+      break;
+    case kJMSGEventNotificationDeletedFriend:{
+      JMSGFriendNotificationEvent *friendEvent = event;
+      JMSGUser *user = [friendEvent getFromUser];
+      [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageContactNotify object:@{
+                                                                                                  @"type":@"contact_deleted",
+                                                                                                  @"reason":[friendEvent eventDescription],
+                                                                                                  @"fromUsername":[friendEvent getFromUsername],
+                                                                                                  @"fromUserAppKey":user.appKey}];
+    }
+      break;
+    case kJMSGEventNotificationReceiveServerFriendUpdate:
+      
+      break;
+    case kJMSGEventNotificationCreateGroup:
+      
+      break;
+    case kJMSGEventNotificationExitGroup:
+      
+      break;
+    case kJMSGEventNotificationAddGroupMembers:
+      
+      break;
+    case kJMSGEventNotificationRemoveGroupMembers:
+      
+      break;
+    case kJMSGEventNotificationUpdateGroupInfo:
+      
+      break;
+      
+    default:
+      break;
+  }
 }
 
 - (NSString *)getFullPathWith:(NSString *) path {
@@ -69,21 +156,17 @@
 }
 
 - (void)onSendMessageResponse:(JMSGMessage *)message error:(NSError *)error {
-  NSMutableDictionary * dict = [NSMutableDictionary new];
-  [dict setValue:message.msgId forKey:KEY_MSGID];
-  
-  if (error == nil) {
-    dict[KEY_RESPONE] = @"send message sucess";
-  }else{
-    dict[KEY_RESPONE]      = @"send message fail";
-    dict[KEY_ERRORCODE]    = [NSNumber numberWithLong:error.code];
-    dict[KEY_ERRORDESCRIP] = error.description;
+  NSMutableDictionary *response = @{}.mutableCopy;
+  if (error) {
+    response[@"error"] = error;
   }
-  [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageSendMessageRespone object:dict];
+  response[@"message"] = [message messageToDictionary];
+  [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageSendMessageRespone object:response];
 }
 
 - (void)onReceiveMessageDownloadFailed:(JMSGMessage *)message{
   NSLog(@"onReceiveMessageDownloadFailed");
+  
 }
 
 #pragma mark - Conversation 回调
@@ -109,19 +192,13 @@
   for (JMSGMessage *message in offlineMessages) {
     [messageArr addObject: [message messageToDictionary]];
   }
-  callBackDic[@"messageList"] = messageArr;
+  callBackDic[@"messageArray"] = messageArr;
   [[NSNotificationCenter defaultCenter] postNotificationName: kJJMessageSyncOfflineMessage object: callBackDic];
 }
 #pragma mark - Group 回调
 
 - (void)onGroupInfoChanged:(JMSGGroup *)group{
   [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageGroupInfoChanged object:[group groupToDictionary]];
-}
-
-#pragma mark - User 回调
-
--(void)onLoginUserKicked{
-  [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageLoginUserKicked object:nil];
 }
 
 @end
@@ -241,7 +318,7 @@
   
   NSError *error = nil;
   NSError *decodeeError;
-  //  NSDictionary *msgBody = [NSJSONSerialization JSONObjectWithData:[jsonString dataUsingEncoding:NSUTF8StringEncoding] options:0 error:&error];
+
   dict[@"id"] = self.msgId;
   dict[@"from"] = [self.fromUser userToDictionary];
   if (self.content.extras != nil) {
@@ -406,23 +483,6 @@
     default:
       break;
   }
-  
-  
-  //  if (decodeeError == nil) {
-  //    [dict setValue:msgBody forKey:KEY_CONTENT];
-  //  }
-  
-  //  [dict setValue:[NSString stringWithFormat:@"%ld",(long)self.contentType] forKey:KEY_CONTENTTYPE];
-  //
-  //  [dict setValue:self.msgId forKey:KEY_MSGID];
-  //  [dict setValue:[NSString stringWithFormat:@"%ld",(long)self.contentType] forKey:KEY_CONTENTTYPE];
-  //  NSString *resourcePath;
-  //  Ivar ivar = class_getInstanceVariable([self.content class], "_resourcePath");
-  
-  
-  //  if (resourcePath != @"" && resourcePath != nil) {
-  //    [dict setValue:[self getFullPathWith:resourcePath] forKey:@"resourcePath"];
-  //  }
   
   return dict;
 }

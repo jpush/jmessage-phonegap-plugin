@@ -61,7 +61,6 @@
 - (void)removeUsersFromBlacklist:(CDVInvokedUrlCommand *)command;
 
 - (void)getBlacklist:(CDVInvokedUrlCommand *)command;
-- (void)isInBlacklist:(CDVInvokedUrlCommand *)command;
 - (void)setNoDisturb:(CDVInvokedUrlCommand *)command;
 - (void)getNoDisturbList:(CDVInvokedUrlCommand *)command;
 - (void)setNoDisturbGlobal:(CDVInvokedUrlCommand *)command;
@@ -75,5 +74,6 @@
 - (void)getConversation:(CDVInvokedUrlCommand *)command;
 - (void)getConversations:(CDVInvokedUrlCommand *)command;
 - (void)resetUnreadMessageCount:(CDVInvokedUrlCommand *)command;
+- (void)retractMessage:(CDVInvokedUrlCommand *)command;
 
 @end
