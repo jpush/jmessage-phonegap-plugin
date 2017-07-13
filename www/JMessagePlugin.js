@@ -37,7 +37,11 @@ var MessageSendingOptions = {
 
 var JMessagePlugin = {
   /**
-   * @param {object} params - {'isOpenMessageRoaming': Boolean} // 是否开启消息漫游。
+   * @param {object} params - {
+   *  'isOpenMessageRoaming': Boolean,  // 是否开启消息漫游。
+   *  'isProduction': Boolean           // 是否为生产环境（仅 iOS 有效）。
+   * } 
+   * 
    * 打开消息漫游之后，用户多个设备之间登录时，SDK 会自动将当前登录用户的历史消息同步到本地。
    */
   init: function (params) {
@@ -125,8 +129,8 @@ var JMessagePlugin = {
    * 
    *  field 包括：nickname（昵称）, birthday（生日）, signature（签名）, gender（性别）, region（地区）。
    *  如：{
-   *    'birthday': Number  // 生日日期的微秒数
-   *    'gender': String    // 'male' / 'female' / 'unknow'
+   *    'birthday': Number,  // 生日日期的微秒数
+   *    'gender': String,    // 'male' / 'female' / 'unknow'
    *    ...                 // 其余皆为 String 类型
    *  }
    * 
