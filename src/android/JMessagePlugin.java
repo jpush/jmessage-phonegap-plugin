@@ -47,8 +47,10 @@ import cn.jpush.im.android.api.content.TextContent;
 import cn.jpush.im.android.api.content.VoiceContent;
 import cn.jpush.im.android.api.enums.ContentType;
 import cn.jpush.im.android.api.event.ContactNotifyEvent;
+import cn.jpush.im.android.api.event.ConversationRefreshEvent;
 import cn.jpush.im.android.api.event.LoginStateChangeEvent;
 import cn.jpush.im.android.api.event.MessageEvent;
+import cn.jpush.im.android.api.event.MessageRetractEvent;
 import cn.jpush.im.android.api.event.NotificationClickEvent;
 import cn.jpush.im.android.api.event.OfflineMessageEvent;
 import cn.jpush.im.android.api.exceptions.JMFileSizeExceedException;
@@ -514,6 +516,10 @@ public class JMessagePlugin extends CordovaPlugin {
             JSONObject params = data.getJSONObject(0);
 
             conversation = JMessageUtils.getConversation(params);
+            if (conversation == null) {
+                handleResult(ERR_CODE_CONVERSATION, ERR_MSG_CONVERSATION, callback);
+                return;
+            }
 
             path = params.getString("path");
             fileName = params.getString("fileName");
@@ -546,6 +552,34 @@ public class JMessagePlugin extends CordovaPlugin {
         }
     }
 
+    void retractMessage(JSONArray data, final CallbackContext callback) {
+        Conversation conversation;
+        String messageId;
+
+        try {
+            JSONObject params = data.getJSONObject(0);
+            conversation = JMessageUtils.getConversation(params);
+            if (conversation == null) {
+                handleResult(ERR_CODE_CONVERSATION, ERR_MSG_CONVERSATION, callback);
+                return;
+            }
+
+            messageId = params.getString("messageId");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
+            return;
+        }
+
+        Message msg = conversation.getMessage(Integer.parseInt(messageId));
+        conversation.retractMessage(msg, new BasicCallback() {
+            @Override
+            public void gotResult(int status, String desc) {
+                handleResult(status, desc, callback);
+            }
+        });
+    }
+
     void getHistoryMessages(JSONArray data, CallbackContext callback) {
         Conversation conversation;
         int from, limit;
@@ -553,6 +587,11 @@ public class JMessagePlugin extends CordovaPlugin {
         try {
             JSONObject params = data.getJSONObject(0);
             conversation = JMessageUtils.getConversation(params);
+            if (conversation == null) {
+                handleResult(ERR_CODE_CONVERSATION, ERR_MSG_CONVERSATION, callback);
+                return;
+            }
+
             from = params.getInt("from");
             limit = params.getInt("limit");
         } catch (JSONException e) {
@@ -1531,6 +1570,19 @@ public class JMessagePlugin extends CordovaPlugin {
         mCallback.success(toJson("syncOfflineMessage", json));
     }
 
+    public void onEvent(ConversationRefreshEvent event) {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("conversation", toJson(event.getConversation()));
+
+            if (event.getReason() == ConversationRefreshEvent.Reason.MSG_ROAMING_COMPLETE) {
+                mCallback.success(toJson("syncRoamingMessage", json));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * 用户登录状态变更事件。
      *
@@ -1562,5 +1614,21 @@ public class JMessagePlugin extends CordovaPlugin {
             e.printStackTrace();
         }
         mCallback.success(toJson("contactNotify", json));
+    }
+
+    /**
+     * 消息接收方收到的消息撤回事件。
+     *
+     * @param event 消息撤回事件。
+     */
+    public void onEvent(MessageRetractEvent event) {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("conversation", event.getConversation());
+            json.put("retractedMessage", event.getRetractedMessage());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        mCallback.success(toJson("retractMessage", json));
     }
 }
