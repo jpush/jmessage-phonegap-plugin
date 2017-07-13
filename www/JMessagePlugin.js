@@ -597,7 +597,7 @@ var JMessagePlugin = {
    * @param {function} success - function (event) {}  // 以参数形式返回事件信息。
    * 
    * event {
-   *  'type': String,     // 'user_password_change' / 'user_logout' / 'user_deleted'
+   *  'type': String,     // 'user_password_change' / 'user_logout' / 'user_deleted' / 'user_login_state_unexpected'
    *  'reason': String,   // 变更的原因。
    * }
    */
