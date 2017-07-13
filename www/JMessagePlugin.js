@@ -599,7 +599,6 @@ var JMessagePlugin = {
    * event {
    *  'type': String,     // 'user_password_change' / 'user_logout' / 'user_deleted'
    *  'reason': String,   // 变更的原因。
-   *  'userInfo': Object  // 涉及的用户信息。
    * }
    */
   addLoginStateChangedListener: function (success) {
