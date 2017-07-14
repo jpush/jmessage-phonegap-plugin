@@ -35,8 +35,10 @@ NSDictionary *_launchOptions;
 }
 
 -(void)startJMessageSDK{
-    [[JMessageHelper shareInstance] initJMessage:_launchOptions];
+//  [[JMessageHelper shareInstance] initJMessage:_launchOptions];
+  [JMessageHelper shareInstance].launchOptions = _launchOptions;
 
+  
 }
 
 @end

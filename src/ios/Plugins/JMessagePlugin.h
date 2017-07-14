@@ -20,9 +20,9 @@
 
 @interface JMessagePlugin : CDVPlugin
 
+
+
 -(void)startJMessageSDK:(CDVInvokedUrlCommand *)command;
-
-
 
 - (void)init:(CDVInvokedUrlCommand *)command;
 // account
