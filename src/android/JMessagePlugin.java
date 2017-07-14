@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Handler;
 
 import cn.jpush.im.android.api.ContactManager;
 import cn.jpush.im.android.api.JMessageClient;
@@ -61,7 +60,6 @@ import cn.jpush.im.android.api.model.UserInfo;
 import cn.jpush.im.android.api.options.MessageSendingOptions;
 import cn.jpush.im.api.BasicCallback;
 
-import static cn.jiguang.cordova.im.JMessageUtils.getConversation;
 import static cn.jiguang.cordova.im.JMessageUtils.handleResult;
 import static cn.jiguang.cordova.im.JMessageUtils.sendMessage;
 import static cn.jiguang.cordova.im.JMessageUtils.toMessageSendingOptions;
@@ -1481,7 +1479,6 @@ public class JMessagePlugin extends CordovaPlugin {
             }
 
             callback.success();
-
         } catch (JSONException e) {
             e.printStackTrace();
             handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
@@ -1554,32 +1551,28 @@ public class JMessagePlugin extends CordovaPlugin {
      *
      * @param event 离线消息事件。
      */
-    public void onEvent(OfflineMessageEvent event) {
+    public void onEvent(OfflineMessageEvent event) throws JSONException {
         JSONObject json = new JSONObject();
-        try {
-            json.put("conversation", event.getConversation());
+        json.put("conversation", toJson(event.getConversation()));
 
-            JSONArray msgJsonArr = new JSONArray();
-            for (Message msg : event.getOfflineMessageList()) {
-                msgJsonArr.put(toJson(msg));
-            }
-            json.put("messageArray", msgJsonArr);
-        } catch (JSONException e) {
-            e.printStackTrace();
+        JSONArray msgJsonArr = new JSONArray();
+        for (Message msg : event.getOfflineMessageList()) {
+            msgJsonArr.put(toJson(msg));
         }
+        json.put("messageArray", msgJsonArr);
         mCallback.success(toJson("syncOfflineMessage", json));
     }
 
-    public void onEvent(ConversationRefreshEvent event) {
-        JSONObject json = new JSONObject();
-        try {
+    /**
+     * 漫游消息同步事件。
+     *
+     * @param event 漫游消息同步事件。
+     */
+    public void onEvent(ConversationRefreshEvent event) throws JSONException {
+        if (event.getReason() == ConversationRefreshEvent.Reason.MSG_ROAMING_COMPLETE) {
+            JSONObject json = new JSONObject();
             json.put("conversation", toJson(event.getConversation()));
-
-            if (event.getReason() == ConversationRefreshEvent.Reason.MSG_ROAMING_COMPLETE) {
-                mCallback.success(toJson("syncRoamingMessage", json));
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
+            mCallback.success(toJson("syncRoamingMessage", json));
         }
     }
 
@@ -1588,13 +1581,9 @@ public class JMessagePlugin extends CordovaPlugin {
      *
      * @param event 用户登录状态变更事件。
      */
-    public void onEvent(LoginStateChangeEvent event) {
+    public void onEvent(LoginStateChangeEvent event) throws JSONException {
         JSONObject json = new JSONObject();
-        try {
-            json.put("type", event.getReason());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        json.put("type", event.getReason());
         mCallback.success(toJson("loginStateChanged", json));
     }
 
@@ -1603,16 +1592,12 @@ public class JMessagePlugin extends CordovaPlugin {
      *
      * @param event 联系人相关通知事件。
      */
-    public void onEvent(ContactNotifyEvent event) {
+    public void onEvent(ContactNotifyEvent event) throws JSONException {
         JSONObject json = new JSONObject();
-        try {
-            json.put("type", event.getType());
-            json.put("reason", event.getReason());
-            json.put("fromUsername", event.getFromUsername());
-            json.put("fromUserAppKey", event.getfromUserAppKey());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        json.put("type", event.getType());
+        json.put("reason", event.getReason());
+        json.put("fromUsername", event.getFromUsername());
+        json.put("fromUserAppKey", event.getfromUserAppKey());
         mCallback.success(toJson("contactNotify", json));
     }
 
@@ -1621,14 +1606,10 @@ public class JMessagePlugin extends CordovaPlugin {
      *
      * @param event 消息撤回事件。
      */
-    public void onEvent(MessageRetractEvent event) {
+    public void onEvent(MessageRetractEvent event) throws JSONException {
         JSONObject json = new JSONObject();
-        try {
-            json.put("conversation", event.getConversation());
-            json.put("retractedMessage", event.getRetractedMessage());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        json.put("conversation", toJson(event.getConversation()));
+        json.put("retractedMessage", toJson(event.getRetractedMessage()));
         mCallback.success(toJson("retractMessage", json));
     }
 }
