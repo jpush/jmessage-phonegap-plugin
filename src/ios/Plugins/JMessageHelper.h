@@ -19,6 +19,7 @@
 
 @interface JMessageHelper : NSObject<JMessageDelegate>
 @property(nonatomic, strong)NSString *JMessageAppKey;
+@property(strong,nonatomic)NSDictionary *launchOptions;
 + (JMessageHelper *)shareInstance;
 
 -(void)initJMessage:(NSDictionary*)launchOptions;

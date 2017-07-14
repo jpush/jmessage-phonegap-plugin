@@ -1,4 +1,4 @@
-//	            __    __                ________
+ //	            __    __                ________
 //	| |    | |  \ \  / /  | |    | |   / _______|
 //	| |____| |   \ \/ /   | |____| |  / /
 //	| |____| |    \  /    | |____| |  | |   _____
@@ -65,6 +65,7 @@ JMessagePlugin *SharedJMessagePlugin;
 //    [JMSGFriendManager getFriendList:^(id resultObject, NSError *error) {
 //      
 //    }];
+    
   }
 }
 
@@ -94,6 +95,9 @@ JMessagePlugin *SharedJMessagePlugin;
 - (void)init:(CDVInvokedUrlCommand *)command {
   
   self.callBack = command;
+  NSDictionary * param = [command argumentAtIndex:0];
+  
+  [[JMessageHelper shareInstance] initJMessage:param];
 }
 
 -(void)initNotifications {
@@ -131,7 +135,7 @@ JMessagePlugin *SharedJMessagePlugin;
                       object:nil];
   [defaultCenter addObserver:self
                     selector:@selector(didReceiveRetractMessage:)
-                        name:kJJMessageReceiveMessage
+                        name:kJJMessageRetractMessage
                       object:nil];
   
   
@@ -217,7 +221,7 @@ JMessagePlugin *SharedJMessagePlugin;
 
 - (void)didReceiveRetractMessage:(NSNotification *)notification{
   NSDictionary *eventDic = notification.object;
-  CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:@{@"eventName": @"contactNotify", @"value": notification.object}];
+  CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:@{@"eventName": @"retractMessage", @"value": notification.object}];
   
   [result setKeepCallback:@(true)];
   [self.commandDelegate sendPluginResult:result callbackId:self.callBack.callbackId];
@@ -225,7 +229,7 @@ JMessagePlugin *SharedJMessagePlugin;
 
 //didReceiveJMessageMessage change name
 - (void)didReceiveJMessageMessage:(NSNotification *)notification {
-  CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:@{@"eventName": @"retractMessage", @"value": notification.object}];
+  CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:@{@"eventName": @"receiveMessage", @"value": notification.object}];
   [result setKeepCallback:@(true)];
   
   [self.commandDelegate sendPluginResult:result callbackId:self.callBack.callbackId];
@@ -852,12 +856,14 @@ JMessagePlugin *SharedJMessagePlugin;
   NSDictionary * param = [command argumentAtIndex:0];
   
   if (param[@"type"] == nil ||
-      param[@"path"] == nil ||
-      param[@"filename"] == nil) {
+      param[@"path"] == nil) {
     [self returnParamError:command];
     return;
   }
-  
+  NSString *fileName = @"";
+  if (param[@"fileName"]) {
+    fileName = param[@"fileName"];
+  }
   NSString *mediaPath = param[@"path"];
   if([[NSFileManager defaultManager] fileExistsAtPath: mediaPath]){
     mediaPath = mediaPath;
@@ -880,7 +886,7 @@ JMessagePlugin *SharedJMessagePlugin;
   
   if ([param[@"type"] isEqual: @"single"] && param[@"username"] != nil) {
     // send single text message
-    JMSGFileContent *content = [[JMSGFileContent alloc] initWithFileData:[NSData dataWithContentsOfFile: mediaPath] fileName: param[@"filename"]];
+    JMSGFileContent *content = [[JMSGFileContent alloc] initWithFileData:[NSData dataWithContentsOfFile: mediaPath] fileName: fileName];
     JMSGMessage *message = [JMSGMessage createSingleMessageWithContent:content username: param[@"username"]];
     if (param[@"extras"] && [param[@"extras"] isKindOfClass: [NSDictionary class]]) {
       NSDictionary *extras = param[@"extras"];
@@ -904,7 +910,7 @@ JMessagePlugin *SharedJMessagePlugin;
   } else {
     if ([param[@"type"] isEqual: @"group"] && param[@"groupId"] != nil) {
       // send group text message
-      JMSGFileContent *content = [[JMSGFileContent alloc] initWithFileData:[NSData dataWithContentsOfFile: mediaPath] fileName: param[@"filename"]];
+      JMSGFileContent *content = [[JMSGFileContent alloc] initWithFileData:[NSData dataWithContentsOfFile: mediaPath] fileName: fileName];
       JMSGMessage *message = [JMSGMessage createGroupMessageWithContent: content groupId: param[@"groupId"]];
       if (param[@"extras"] && [param[@"extras"] isKindOfClass: [NSDictionary class]]) {
         NSDictionary *extras = param[@"extras"];
@@ -1808,7 +1814,8 @@ JMessagePlugin *SharedJMessagePlugin;
             [self handleResultWithDictionary: nil command: command error: error];
             return;
           }
-          [self handleResultWithDictionary:[message messageToDictionary] command:command error:error];
+          JMSGFileContent *fileContent = message.content;
+          [self handleResultWithDictionary:@{@"messageId": message.msgId, @"filePath":[fileContent originMediaLocalPath]} command:command error:error];
         }];
       }
     }];
@@ -1839,7 +1846,8 @@ JMessagePlugin *SharedJMessagePlugin;
               [self handleResultWithDictionary: nil command: command error: error];
               return;
             }
-            [self handleResultWithDictionary:[message messageToDictionary] command:command error:error];
+            JMSGFileContent *fileContent = message.content;
+            [self handleResultWithDictionary:@{@"messageId": message.msgId, @"filePath":[fileContent originMediaLocalPath]} command:command error:error];
           }];
         }
       }];

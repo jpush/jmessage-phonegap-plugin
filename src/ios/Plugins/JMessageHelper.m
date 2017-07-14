@@ -18,7 +18,6 @@
 #import <UserNotifications/UserNotifications.h>
 
 @interface JMessageHelper ()
-
 @end
 
 @implementation JMessageHelper
@@ -33,7 +32,11 @@
 }
 
 
--(void)initJMessage:(NSDictionary*)launchOptions{
+-(void)initJMessage:(NSDictionary*)options{
+  NSNumber *isOpenMessageRoaming = @(false);
+  if (options[@"isOpenMessageRoaming"]) {
+    isOpenMessageRoaming = options[@"isOpenMessageRoaming"];
+  }
   
   NSString *plistPath = [[NSBundle mainBundle] pathForResource:JMessageConfig_FileName ofType:@"plist"];
   if (plistPath == nil) {
@@ -49,19 +52,22 @@
   
   // init third-party SDK
   [JMessage addDelegate:self withConversation:nil];
-  [JMessage setupJMessage:launchOptions
+
+  [JMessage setupJMessage:_launchOptions
                    appKey:appkey
                   channel:channel
          apsForProduction:[isProduction boolValue]
-                 category:nil];
+                 category:nil
+           messageRoaming:[isOpenMessageRoaming boolValue]];
 }
 
 - (void)onReceiveMessageRetractEvent:(JMSGMessageRetractEvent *)retractEvent {
   NSDictionary *conversation = [retractEvent.conversation conversationToDictionary];
   NSDictionary *messageDic = [retractEvent.retractMessage messageToDictionary];
-  [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageReceiveMessage object:@{
-                                                                                               @"conversation":conversation,
-                                                                                               @"retractedMessage":messageDic}];
+  [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageRetractMessage
+                                                      object:@{
+                                                               @"conversation":conversation,
+                                                               @"retractedMessage":messageDic}];
 }
 
 - (void)onReceiveMessage:(JMSGMessage *)message error:(NSError *)error{// TODO:!!!!!
@@ -75,56 +81,63 @@
   
   switch (event.eventType) {
     case kJMSGEventNotificationLoginKicked:
-      [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageLoginStateChanged object:@{@"type":@"user_kicked"}];
+      [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageLoginStateChanged
+                                                          object:@{@"type":@"user_kicked"}];
       break;
     case kJMSGEventNotificationServerAlterPassword:
-      [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageLoginStateChanged object:@{@"type":@"user_password_change"}];
+      [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageLoginStateChanged
+                                                          object:@{@"type":@"user_password_change"}];
       break;
       break;
     case kJMSGEventNotificationUserLoginStatusUnexpected:
-      [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageLoginStateChanged object:@{@"type":@"user_login_state_unexpected"}];
+      [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageLoginStateChanged
+                                                          object:@{@"type":@"user_login_state_unexpected"}];
       break;
     case kJMSGEventNotificationCurrentUserInfoChange:
       break;
     case kJMSGEventNotificationReceiveFriendInvitation:{
       JMSGFriendNotificationEvent *friendEvent = event;
       JMSGUser *user = [friendEvent getFromUser];
-      [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageContactNotify object:@{
-                                                                                                    @"type":@"invite_received",
-                                                                                                    @"reason":[friendEvent eventDescription],
-                                                                                                    @"fromUsername":[friendEvent getFromUsername],
-                                                                                                    @"fromUserAppKey":user.appKey}];
+      [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageContactNotify
+                                                          object:@{
+                                                                    @"type":@"invite_received",
+                                                                    @"reason":[friendEvent eventDescription],
+                                                                    @"fromUsername":[friendEvent getFromUsername],
+                                                                    @"fromUserAppKey":user.appKey}];
     }
       break;
     case kJMSGEventNotificationAcceptedFriendInvitation:{
       JMSGFriendNotificationEvent *friendEvent = event;
       JMSGUser *user = [friendEvent getFromUser];
-      [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageContactNotify object:@{
-                                                                                                  @"type":@"invite_accepted",
-                                                                                                  @"reason":[friendEvent eventDescription],
-                                                                                                  @"fromUsername":[friendEvent getFromUsername],
-                                                                                                  @"fromUserAppKey":user.appKey}];
+      [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageContactNotify
+                                                          object:@{
+                                                                    @"type":@"invite_accepted",
+                                                                    @"reason":[friendEvent eventDescription],
+                                                                    @"fromUsername":[friendEvent getFromUsername],
+                                                                    @"fromUserAppKey":user.appKey}];
     }
       break;
     case kJMSGEventNotificationDeclinedFriendInvitation:{
       JMSGFriendNotificationEvent *friendEvent = event;
       JMSGUser *user = [friendEvent getFromUser];
-      [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageContactNotify object:@{
-                                                                                                  @"type":@"invite_declined",
-                                                                                                  @"reason":[friendEvent eventDescription],
-                                                                                                  @"fromUsername":[friendEvent getFromUsername],
-                                                                                                  @"fromUserAppKey":user.appKey}];
+      [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageContactNotify
+                                                          object:@{
+                                                                    @"type":@"invite_declined",
+                                                                    @"reason":[friendEvent eventDescription],
+                                                                    @"fromUsername":[friendEvent getFromUsername],
+                                                                    @"fromUserAppKey":user.appKey}];
     }
       break;
     case kJMSGEventNotificationDeletedFriend:{
       JMSGFriendNotificationEvent *friendEvent = event;
       JMSGUser *user = [friendEvent getFromUser];
-      [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageContactNotify object:@{
-                                                                                                  @"type":@"contact_deleted",
-                                                                                                  @"reason":[friendEvent eventDescription],
-                                                                                                  @"fromUsername":[friendEvent getFromUsername],
-                                                                                                  @"fromUserAppKey":user.appKey}];
-    }
+      [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageContactNotify
+                                                          object:@{
+                                                                    @"type":@"contact_deleted",
+                                                                    @"reason":[friendEvent eventDescription],
+                                                                    @"fromUsername":[friendEvent getFromUsername],
+                                                                    @"fromUserAppKey":user.appKey}];
+}
       break;
     case kJMSGEventNotificationReceiveServerFriendUpdate:
       
@@ -178,11 +191,13 @@
 }
 
 - (void)onUnreadChanged:(NSUInteger)newCount{
-  [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageUnreadChanged object:[NSNumber numberWithUnsignedInteger:newCount]];
+  [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageUnreadChanged
+                                                      object:[NSNumber numberWithUnsignedInteger:newCount]];
 }
 
 - (void)onSyncRoamingMessageConversation:(JMSGConversation *)conversation {
-  [[NSNotificationCenter defaultCenter] postNotificationName: kJJMessageSyncRoamingMessage object: [conversation conversationToDictionary]];
+  [[NSNotificationCenter defaultCenter] postNotificationName: kJJMessageSyncRoamingMessage
+                                                      object: [conversation conversationToDictionary]];
 }
 
 - (void)onSyncOfflineMessageConversation:(JMSGConversation *)conversation offlineMessages:(NSArray JMSG_GENERIC ( __kindof JMSGMessage *) *)offlineMessages {
@@ -351,14 +366,14 @@
       dict[@"type"] = @"image";
       JMSGImageContent *imageContent = self.content;
       dict[@"thumbPath"] = [imageContent thumbImageLocalPath];
-      dict[@"originPath"] = [self getOriginMediaFilePath];
+//      dict[@"originPath"] = [self getOriginMediaFilePath];
       break;
     }//      resourcePath = object_getIvar(self.content, ivar);
       
     case kJMSGContentTypeVoice:
     {
       dict[@"type"] = @"voice";
-      dict[@"originPath"] = [self getOriginMediaFilePath];
+      dict[@"path"] = [self getOriginMediaFilePath];
       break;
     }
       
@@ -458,7 +473,7 @@
     {
       dict[@"type"] = @"file";
       JMSGFileContent *fileContent = self.content;
-      dict[@"path"] = fileContent.originMediaLocalPath;
+      dict[@"fileName"] = [fileContent fileName];
       break;
     }
     case kJMSGContentTypeLocation:

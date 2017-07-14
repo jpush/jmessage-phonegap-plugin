@@ -44,7 +44,7 @@ static NSString *const JMessageConfig_Delay        = @"Delay";
 #define kJJMessageLoginUserKicked  @"kJJMessageLoginUserKicked"
 #define kJJMessageLoginStateChanged  @"kJJMessageLoginStateChanged"
 #define kJJMessageContactNotify  @"kJJMessageContactNotify"
-#define kJJMessageretractMessage  @"kJJMessageretractMessage"
+#define kJJMessageRetractMessage  @"kJJMessageretractMessage"
 //message
 static NSString *const KEY_ERRORCODE    = @"errorCode";
 static NSString *const KEY_ERRORDESCRIP = @"errorDscription";
