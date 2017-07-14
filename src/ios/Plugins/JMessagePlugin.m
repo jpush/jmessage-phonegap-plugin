@@ -1574,7 +1574,10 @@ JMessagePlugin *SharedJMessagePlugin;
         return ;
       }
       
-      [self handleResultWithDictionary:[user userToDictionary] command:command error:error];
+      [self handleResultWithDictionary:@{@"username": user.username,
+                                         @"appKey": user.appKey,
+                                         @"filePath": [user largeAvatarLocalPath]}
+                               command:command error:error];
     }];
   }];
   
@@ -1631,7 +1634,10 @@ JMessagePlugin *SharedJMessagePlugin;
             return;
           }
           
-          [self handleResultWithDictionary:[message messageToDictionary] command:command error:error];
+          JMSGMediaAbstractContent *mediaContent = message.content;
+          [self handleResultWithDictionary:@{@"messageId": message.msgId,
+                                             @"filePath": [mediaContent originMediaLocalPath]}
+                                   command:command error:error];
         }];
       }
     }];
@@ -1664,8 +1670,10 @@ JMessagePlugin *SharedJMessagePlugin;
                 [self handleResultWithDictionary: nil command: command error: error];
                 return;
               }
-              
-              [self handleResultWithDictionary:[message messageToDictionary] command:command error:error];
+              JMSGMediaAbstractContent *mediaContent = message.content;
+              [self handleResultWithDictionary:@{@"messageId": message.msgId,
+                                                 @"filePath": [mediaContent originMediaLocalPath]}
+                                       command:command error:error];
             }];
           }
         }];
@@ -1724,7 +1732,11 @@ JMessagePlugin *SharedJMessagePlugin;
             [self handleResultWithDictionary: nil command: command error: error];
             return;
           }
-          [self handleResultWithDictionary:[message messageToDictionary] command:command error:error];
+          
+          JMSGMediaAbstractContent *mediaContent = message.content;
+          [self handleResultWithDictionary:@{@"messageId": message.msgId,
+                                             @"filePath": [mediaContent originMediaLocalPath]}
+                                   command:command error:error];
         }];
       }
     }];
@@ -1755,7 +1767,12 @@ JMessagePlugin *SharedJMessagePlugin;
               [self handleResultWithDictionary: nil command: command error: error];
               return;
             }
-            [self handleResultWithDictionary:[message messageToDictionary] command:command error:error];
+            
+            JMSGMediaAbstractContent *mediaContent = message.content;
+            [self handleResultWithDictionary:@{@"messageId": message.msgId,
+                                               @"filePath": [mediaContent originMediaLocalPath]}
+                                     command:command
+                                       error:error];
           }];
         }
       }];

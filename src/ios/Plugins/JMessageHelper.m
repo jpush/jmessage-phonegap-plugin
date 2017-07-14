@@ -268,7 +268,6 @@
   dict[@"username"] = self.username;
   dict[@"nickname"] = self.nickname;
   dict[@"avatarThumbPath"] = [self thumbAvatarLocalPath];
-  dict[@"avatarOriginPath"] = [self getLargeAvatarFilePath];
   dict[@"birthday"] = self.birthday;
   dict[@"region"] = self.region;
   dict[@"signature"] = self.signature;
@@ -366,9 +365,8 @@
       dict[@"type"] = @"image";
       JMSGImageContent *imageContent = self.content;
       dict[@"thumbPath"] = [imageContent thumbImageLocalPath];
-//      dict[@"originPath"] = [self getOriginMediaFilePath];
       break;
-    }//      resourcePath = object_getIvar(self.content, ivar);
+    }
       
     case kJMSGContentTypeVoice:
     {
