@@ -145,8 +145,8 @@ var JMessagePlugin = {
    *  'type': String,                                // 'single' / 'group'
    *  'groupId': String,                             // 当 type = group 时，groupId 不能为空
    *  'username': String,                            // 当 type = single 时，username 不能为空
-   *  'appKey': String,                              // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用
-   *  'text': String,                                // 图片路径
+   *  'appKey': String,                              // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
+   *  'text': String,                                // 本地图片路径
    *  'extras': Object,                              // Optional. 自定义键值对 = {'key1': 'value1'}
    *  'messageSendingOptions': MessageSendingOptions // Optional. MessageSendingOptions 对象
    * }
@@ -159,8 +159,8 @@ var JMessagePlugin = {
    *  'type': String,                                // 'single' / 'group'
    *  'groupId': String,                             // 当 type = group 时，groupId 不能为空
    *  'username': String,                            // 当 type = single 时，username 不能为空
-   *  'appKey': String,                              // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用
-   *  'path': String,                                // 图片路径
+   *  'appKey': String,                              // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
+   *  'path': String,                                // 本地图片路径
    *  'extras': Object,                              // Optional. 自定义键值对 = {'key1': 'value1'}
    *  'messageSendingOptions': MessageSendingOptions // Optional. MessageSendingOptions 对象
    * }
@@ -173,8 +173,8 @@ var JMessagePlugin = {
    *  'type': String,                                // 'single' / 'group'
    *  'groupId': String,                             // 当 type = group 时，groupId 不能为空
    *  'username': String,                            // 当 type = single 时，username 不能为空
-   *  'appKey': String,                              // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用
-   *  'path': String,                                // 图片路径
+   *  'appKey': String,                              // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
+   *  'path': String,                                // 本地图片路径
    *  'extras': Object,                              // Optional. 自定义键值对 = {'key1': 'value1'}
    *  'messageSendingOptions': MessageSendingOptions // Optional. MessageSendingOptions 对象
    * }
@@ -187,7 +187,7 @@ var JMessagePlugin = {
    *  'type': String,           // 'single' / 'group'
    *  'groupId': String,        // 当 type = group 时，groupId 不能为空
    *  'username': String,       // 当 type = single 时，username 不能为空
-   *  'appKey': String,         // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用
+   *  'appKey': String,         // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
    *  'customObject': {'key1': 'value1'}  // Optional. 自定义键值对
    * }
    */
@@ -199,7 +199,7 @@ var JMessagePlugin = {
    *  'type': String,           // 'single' / 'group'
    *  'groupId': String,        // 当 type = group 时，groupId 不能为空
    *  'username': String,       // 当 type = single 时，username 不能为空
-   *  'appKey': String,         // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用
+   *  'appKey': String,         // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
    *  'latitude': Number,       // 纬度信息
    *  'longitude': Number,      // 经度信息
    *  'scale': Number,          // 地图缩放比例
@@ -216,7 +216,7 @@ var JMessagePlugin = {
    *  'groupId': String,                             // 当 type = group 时，groupId 不能为空。
    *  'username': String,                            // 当 type = single 时，username 不能为空。
    *  'appKey': String,                              // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
-   *  'path': String,                                // 文件路径。
+   *  'path': String,                                // 本地文件路径。
    *  'extras': Object,                              // Optional. 自定义键值对 = {'key1': 'value1'}
    *  'messageSendingOptions': MessageSendingOptions // Optional. MessageSendingOptions 对象。
    * }
@@ -336,7 +336,7 @@ var JMessagePlugin = {
   /**
    * 获取当前用户所有所在的群组 id。
    *
-   * @param {function} success = function (groupIdArr) {} // 以参数形式返回 group id 数组
+   * @param {function} success = function (groupIdArray) {} // 以参数形式返回 group id 数组
    */
   getGroupIds: function (success, error) {
     exec(success, error, PLUGIN_NAME, 'getGroupIds', [])
@@ -569,7 +569,7 @@ var JMessagePlugin = {
   },
   /**
    * 添加点击通知栏消息通知事件监听。
-   * Note: Android only, (如果想要 iOS 端 实现相同的功能，需要同时集成 jpush-phonegap-plugin z这个插件)
+   * Note: Android only, (如果想要 iOS 端 实现相同的功能，需要同时集成 jpush-phonegap-plugin)
    * @param {function} listener = function (message) {}  // 以参数形式返回消息对象。
    */
   addClickMessageNotificationListener: function (listener) {
