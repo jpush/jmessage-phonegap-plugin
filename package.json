@@ -22,7 +22,7 @@
         "JiGuang",
         "Jiguang"
     ],
-    "dependencies": {
+    "devDependencies": {
         "cordova-plugin-device": "*",
         "cordova-plugin-jcore": "*"
     },
