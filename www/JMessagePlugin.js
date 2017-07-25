@@ -150,6 +150,8 @@ var JMessagePlugin = {
    *  'extras': Object,                              // Optional. 自定义键值对 = {'key1': 'value1'}
    *  'messageSendingOptions': MessageSendingOptions // Optional. MessageSendingOptions 对象
    * }
+   * @param {function} success = function (msg) {}   // 以参数形式返回消息对象。
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   sendTextMessage: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'sendTextMessage', [params])
@@ -164,6 +166,8 @@ var JMessagePlugin = {
    *  'extras': Object,                              // Optional. 自定义键值对 = {'key1': 'value1'}
    *  'messageSendingOptions': MessageSendingOptions // Optional. MessageSendingOptions 对象
    * }
+   * @param {function} success = function (msg) {}   // 以参数形式返回消息对象。
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   sendImageMessage: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'sendImageMessage', [params])
@@ -178,6 +182,8 @@ var JMessagePlugin = {
    *  'extras': Object,                              // Optional. 自定义键值对 = {'key1': 'value1'}
    *  'messageSendingOptions': MessageSendingOptions // Optional. MessageSendingOptions 对象
    * }
+   * @param {function} success = function (msg) {}   // 以参数形式返回消息对象。
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   sendVoiceMessage: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'sendVoiceMessage', [params])
@@ -190,6 +196,8 @@ var JMessagePlugin = {
    *  'appKey': String,         // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
    *  'customObject': {'key1': 'value1'}  // Optional. 自定义键值对
    * }
+   * @param {function} success = function (msg) {}   // 以参数形式返回消息对象。
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   sendCustomMessage: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'sendCustomMessage', [params])
@@ -206,6 +214,8 @@ var JMessagePlugin = {
    *  'address': String,        // 详细地址信息
    *  'extras': Object          // Optional. 自定义键值对 = {'key1': 'value1'}
    * }
+   * @param {function} success = function (msg) {}   // 以参数形式返回消息对象。
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   sendLocationMessage: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'sendLocationMessage', [params])
@@ -220,6 +230,8 @@ var JMessagePlugin = {
    *  'extras': Object,                              // Optional. 自定义键值对 = {'key1': 'value1'}
    *  'messageSendingOptions': MessageSendingOptions // Optional. MessageSendingOptions 对象。
    * }
+   * @param {function} success = function (msg) {}   // 以参数形式返回消息对象。
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   sendFileMessage: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'sendFileMessage', [params])
@@ -234,6 +246,7 @@ var JMessagePlugin = {
    *  'appKey': String,     // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
    *  'messageId': String   // 消息 id。
    * }
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   retractMessage: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'retractMessage', [params])
@@ -251,6 +264,7 @@ var JMessagePlugin = {
    *  'limit': Number            // 要获取的消息数。比如当 from = 0, limit = 10 时，是获取第 0 = 9 条历史消息。
    * }
    * @param {function} success = function (messageArray)) {}  // 以参数形式返回历史消息对象数组
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   getHistoryMessages: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'getHistoryMessages', [params])
@@ -263,6 +277,7 @@ var JMessagePlugin = {
    *  'appKey': String,     // 对方用户所属应用的 AppKey。
    *  'reason': String      // 申请原因。
    * }
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   sendInvitationRequest: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'sendInvitationRequest', [params])
@@ -272,6 +287,7 @@ var JMessagePlugin = {
    *  'username': String,   // 对方用户用户名。
    *  'appKey': String,     // 对方用户所属应用的 AppKey。
    * }
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   acceptInvitation: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'acceptInvitation', [params])
@@ -282,6 +298,7 @@ var JMessagePlugin = {
    *  'appKey': String,     // 对方用户所属应用的 AppKey。
    *  'reason': String      // 拒绝原因。
    * }
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   declineInvitation: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'declineInvitation', [params])
@@ -291,6 +308,7 @@ var JMessagePlugin = {
    *  'username': String,   // 好友用户名。
    *  'appKey': String,     // 好友所属应用的 AppKey。
    * }
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   removeFromFriendList: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'removeFromFriendList', [params])
@@ -301,6 +319,7 @@ var JMessagePlugin = {
    *  'appKey': String,     // 好友所属应用的 AppKey。
    *  'noteName': String    // 备注名。
    * }
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   updateFriendNoteName: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'updateFriendNoteName', [params])
@@ -311,12 +330,14 @@ var JMessagePlugin = {
    *  'appKey': String,     // 好友所属应用的 AppKey。
    *  'noteName': String    // 备注信息。
    * }
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   updateFriendNoteText: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'updateFriendNoteText', [params])
   },
   /**
    * @param {function} success = function (friendArr) {}  // 以参数形式返回好友对象数组
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   getFriends: function (success, error) {
     exec(success, error, PLUGIN_NAME, 'getFriends', [])
@@ -329,6 +350,7 @@ var JMessagePlugin = {
    *  'desc': String          // 群组描述。
    * }
    * @param {function} success = function (groupId) {}  // 以参数形式返回 group id
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   createGroup: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'createGroup', [params])
@@ -337,6 +359,7 @@ var JMessagePlugin = {
    * 获取当前用户所有所在的群组 id。
    *
    * @param {function} success = function (groupIdArray) {} // 以参数形式返回 group id 数组
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   getGroupIds: function (success, error) {
     exec(success, error, PLUGIN_NAME, 'getGroupIds', [])
@@ -344,30 +367,35 @@ var JMessagePlugin = {
   /**
    * @param {object} params = {'id': '群组 id'}
    * @param {function} success = function (groupInfo) {} // 以参数形式返回群组信息对象
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   getGroupInfo: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'getGroupInfo', [params])
   },
   /**
    * @param {object} params = {'id': '群组 id', 'newName': '新群组名称', 'newDesc': '新群组介绍'}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   updateGroupInfo: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'updateGroupInfo', [params])
   },
   /**
    * @param {object} params = {'id': '群组 id', 'usernameArray': [用户名数组], 'appKey': '待添加用户所在应用的 appKey'}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   addGroupMembers: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'addGroupMembers', [params])
   },
   /**
    * @param {object} params = {'id': '群组 id', 'usernameArray': [用户名数组], 'appKey': '待删除用户所在应用的 appKey'}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   removeGroupMembers: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'removeGroupMembers', [params])
   },
   /**
    * @param {object} params = {'id': '群组 id'}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   exitGroup: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'exitGroup', [params])
@@ -375,24 +403,28 @@ var JMessagePlugin = {
   /**
    * @param {object} params = {'id': '群组 id'}
    * @param {function} success = function (userInfoArray) {} // 以参数形式返回用户对象数组
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   getGroupMembers: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'getGroupMembers', [params])
   },
   /**
    * @param {object} params = {'usernameArray': [用户名数组], 'appKey': '用户所属 AppKey'}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   addUsersToBlacklist: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'addUsersToBlacklist', [params])
   },
   /**
    * @param {object} params = {'usernameArray': [用户名数组], 'appKey': '用户所属 AppKey'}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   removeUsersFromBlacklist: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'removeUsersFromBlacklist', [params])
   },
   /**
    * @param {function} success = function (userInfoArray) {} // 以参数形式返回黑名单中的用户信息数组
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   getBlacklist: function (success, error) {
     exec(success, error, PLUGIN_NAME, 'getBlacklist', [])
@@ -407,6 +439,7 @@ var JMessagePlugin = {
    *  'appKey': String,          // 目标用户所属 AppKey。
    *  'isNoDisturb': Boolean     // 是否免打扰。
    * }
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   setNoDisturb: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'setNoDisturb', [params])
@@ -415,6 +448,7 @@ var JMessagePlugin = {
    * 获取免打扰用户和群组名单。
    *
    * @param {function} success = function ({userInfoArray: [], groupInfoArray: []}) {}  // 以参数形式返回用户和群组对象数组
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   getNoDisturbList: function (success, error) {
     exec(success, error, PLUGIN_NAME, 'getNoDisturbList', [])
@@ -423,6 +457,7 @@ var JMessagePlugin = {
    * 设置是否全局免打扰。
    *
    * @param {object} params = {'isNoDisturb': Boolean}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   setNoDisturbGlobal: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'setNoDisturbGlobal', [params])
@@ -431,6 +466,7 @@ var JMessagePlugin = {
    * 判断当前是否全局免打扰。
    *
    * @param {function} success = function ({'isNoDisturb': Boolean}) {} // 以参数形式返回结果
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   isNoDisturbGlobal: function (success, error) {
     exec(success, error, PLUGIN_NAME, 'isNoDisturbGlobal', [])
@@ -440,6 +476,7 @@ var JMessagePlugin = {
    *
    * @param {object} params = {'username': String, 'appKey': String}
    * @param {function} success = function ({'username': String, 'appKey': String, 'filePath': String}) {}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   downloadOriginalUserAvatar: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'downloadOriginalUserAvatar', [params])
@@ -455,6 +492,7 @@ var JMessagePlugin = {
    *  'messageId': String        // 指定消息 id。
    * }
    * @param {function} success = function ({'messageId': String, 'filePath': String}) {}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   downloadOriginalImage: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'downloadOriginalImage', [params])
@@ -468,6 +506,7 @@ var JMessagePlugin = {
    *  'messageId': String        // 指定消息 id。
    * }
    * @param {function} success = function ({'messageId': String, 'filePath': String}) {}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   downloadVoiceFile: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'downloadVoiceFile', [params])
@@ -483,6 +522,7 @@ var JMessagePlugin = {
    *  'messageId': String        // 指定消息 id。
    * }
    * @param {function} success = function ({'messageId': String, 'filePath': String}) {}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   downloadFile: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'downloadFile', [params])
@@ -497,6 +537,7 @@ var JMessagePlugin = {
    *  'appKey': String,          // 目标用户所属 AppKey。
    * }
    * @param {function} success = function (conversation) {} // 以参数形式返回聊天会话对象。
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   createConversation: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'createConversation', [params])
@@ -510,6 +551,7 @@ var JMessagePlugin = {
    *  'username': String,        // 目标用户名。
    *  'appKey': String,          // 目标用户所属 AppKey。
    * }
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   deleteConversation: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'deleteConversation', [params])
@@ -522,12 +564,14 @@ var JMessagePlugin = {
    *  'appKey': String,          // 目标用户所属 AppKey。
    * }
    * @param {function} success = function (conversation) {} // 以参数形式返回聊天会话对象。
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   getConversation: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'getConversation', [params])
   },
   /**
    * @param {function} success = function (conversationArray) {}  // 以参数形式返回会话对象数组。
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   getConversations: function (success, error) {
     exec(success, error, PLUGIN_NAME, 'getConversations', [])
@@ -541,6 +585,7 @@ var JMessagePlugin = {
    *  'username': String,        // 目标用户名。
    *  'appKey': String,          // 目标用户所属 AppKey。
    * }
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   resetUnreadMessageCount: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'resetUnreadMessageCount', [params])
