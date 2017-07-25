@@ -118,11 +118,12 @@ class JMessageUtils {
 
     static void sendMessage(Conversation conversation, MessageContent content,
                             MessageSendingOptions options, final CallbackContext callback) {
-        Message msg = conversation.createSendMessage(content);
+        final Message msg = conversation.createSendMessage(content);
         msg.setOnSendCompleteCallback(new BasicCallback() {
             @Override
             public void gotResult(int status, String desc) {
-                handleResult(status, desc, callback);
+                JSONObject json = JsonUtils.toJson(msg);
+                handleResult(json, status, desc, callback);
             }
         });
 

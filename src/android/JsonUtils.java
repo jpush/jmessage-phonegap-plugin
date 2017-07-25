@@ -91,7 +91,13 @@ class JsonUtils {
             result.put("username", userInfo.getUserName());
             result.put("appKey", userInfo.getAppKey());
             result.put("nickname", userInfo.getNickname());
-            result.put("avatarThumbPath", userInfo.getAvatarFile().getAbsolutePath());
+
+            if (userInfo.getAvatarFile() != null) {
+                result.put("avatarThumbPath", userInfo.getAvatarFile().getAbsolutePath());
+            } else {
+                result.put("avatarThumbPath", "");
+            }
+
             result.put("birthday", userInfo.getBirthday());
             result.put("region", userInfo.getRegion());
             result.put("signature", userInfo.getSignature());
@@ -146,6 +152,8 @@ class JsonUtils {
             } else {
                 result.put("extras", new JSONObject());
             }
+
+            result.put("createTime", msg.getCreateTime());
 
             switch (msg.getContentType()) {
                 case text:
@@ -210,7 +218,12 @@ class JsonUtils {
             json.put("title", conversation.getTitle());
             json.put("conversationType", conversation.getType());
             json.put("unreadCount", conversation.getUnReadMsgCnt());
-            json.put("latestMessage", toJson(conversation.getLatestMessage()));
+
+            if (conversation.getLatestMessage() != null) {
+                json.put("latestMessage", toJson(conversation.getLatestMessage()));
+            } else {
+                json.put("latestMessage", "");
+            }
 
             if (conversation.getType() == ConversationType.single) {
                 UserInfo targetInfo = (UserInfo) conversation.getTargetInfo();
