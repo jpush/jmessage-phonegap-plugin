@@ -344,7 +344,12 @@ JMessagePlugin *SharedJMessagePlugin;
 }
 
 - (void)getMyInfo:(CDVInvokedUrlCommand *)command {
-  [self handleResultWithDictionary: [[JMSGUser myInfo] userToDictionary] command:command error: nil];
+  JMSGUser *myInfo = [JMSGUser myInfo];
+  if (myInfo.username == nil) {
+    [self handleResultWithDictionary: @{} command:command error: nil];
+  } else {
+    [self handleResultWithDictionary: [myInfo userToDictionary] command:command error: nil];
+  }
 }
 
 - (void)getUserInfo:(CDVInvokedUrlCommand *)command {
