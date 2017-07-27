@@ -65,20 +65,17 @@
   NSDictionary *conversation = [retractEvent.conversation conversationToDictionary];
   NSDictionary *messageDic = [retractEvent.retractMessage messageToDictionary];
   [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageRetractMessage
-                                                      object:@{
-                                                               @"conversation":conversation,
+                                                      object:@{@"conversation":conversation,
                                                                @"retractedMessage":messageDic}];
 }
 
-- (void)onReceiveMessage:(JMSGMessage *)message error:(NSError *)error{// TODO:!!!!!
-  NSString *jsonString = [message toJsonString];
+- (void)onReceiveMessage:(JMSGMessage *)message error:(NSError *)error{
   NSMutableDictionary *dict = [NSMutableDictionary new];
   dict = [message messageToDictionary];
   [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageReceiveMessage object:dict];
 }
 
 - (void)onReceiveNotificationEvent:(JMSGNotificationEvent *)event {
-  
   switch (event.eventType) {
     case kJMSGEventNotificationLoginKicked:
       [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageLoginStateChanged
@@ -88,7 +85,6 @@
       [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageLoginStateChanged
                                                           object:@{@"type":@"user_password_change"}];
       break;
-      break;
     case kJMSGEventNotificationUserLoginStatusUnexpected:
       [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageLoginStateChanged
                                                           object:@{@"type":@"user_login_state_unexpected"}];
@@ -96,7 +92,7 @@
     case kJMSGEventNotificationCurrentUserInfoChange:
       break;
     case kJMSGEventNotificationReceiveFriendInvitation:{
-      JMSGFriendNotificationEvent *friendEvent = event;
+      JMSGFriendNotificationEvent *friendEvent = (JMSGFriendNotificationEvent *) event;
       JMSGUser *user = [friendEvent getFromUser];
       [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageContactNotify
                                                           object:@{
@@ -104,10 +100,10 @@
                                                                     @"reason":[friendEvent eventDescription],
                                                                     @"fromUsername":[friendEvent getFromUsername],
                                                                     @"fromUserAppKey":user.appKey}];
-    }
+      }
       break;
     case kJMSGEventNotificationAcceptedFriendInvitation:{
-      JMSGFriendNotificationEvent *friendEvent = event;
+      JMSGFriendNotificationEvent *friendEvent = (JMSGFriendNotificationEvent *) event;
       JMSGUser *user = [friendEvent getFromUser];
       [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageContactNotify
                                                           object:@{
@@ -115,10 +111,10 @@
                                                                     @"reason":[friendEvent eventDescription],
                                                                     @"fromUsername":[friendEvent getFromUsername],
                                                                     @"fromUserAppKey":user.appKey}];
-    }
+      }
       break;
     case kJMSGEventNotificationDeclinedFriendInvitation:{
-      JMSGFriendNotificationEvent *friendEvent = event;
+      JMSGFriendNotificationEvent *friendEvent = (JMSGFriendNotificationEvent *) event;
       JMSGUser *user = [friendEvent getFromUser];
       [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageContactNotify
                                                           object:@{
@@ -126,10 +122,10 @@
                                                                     @"reason":[friendEvent eventDescription],
                                                                     @"fromUsername":[friendEvent getFromUsername],
                                                                     @"fromUserAppKey":user.appKey}];
-    }
+      }
       break;
     case kJMSGEventNotificationDeletedFriend:{
-      JMSGFriendNotificationEvent *friendEvent = event;
+      JMSGFriendNotificationEvent *friendEvent = (JMSGFriendNotificationEvent *) event;
       JMSGUser *user = [friendEvent getFromUser];
       [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageContactNotify
                                                           object:@{
@@ -137,7 +133,7 @@
                                                                     @"reason":[friendEvent eventDescription],
                                                                     @"fromUsername":[friendEvent getFromUsername],
                                                                     @"fromUserAppKey":user.appKey}];
-}
+      }
       break;
     case kJMSGEventNotificationReceiveServerFriendUpdate:
       
@@ -157,7 +153,6 @@
     case kJMSGEventNotificationUpdateGroupInfo:
       
       break;
-      
     default:
       break;
   }
@@ -179,7 +174,6 @@
 
 - (void)onReceiveMessageDownloadFailed:(JMSGMessage *)message{
   NSLog(@"onReceiveMessageDownloadFailed");
-  
 }
 
 #pragma mark - Conversation 回调
@@ -200,7 +194,8 @@
                                                       object: [conversation conversationToDictionary]];
 }
 
-- (void)onSyncOfflineMessageConversation:(JMSGConversation *)conversation offlineMessages:(NSArray JMSG_GENERIC ( __kindof JMSGMessage *) *)offlineMessages {
+- (void)onSyncOfflineMessageConversation:(JMSGConversation *)conversation
+                         offlineMessages:(NSArray JMSG_GENERIC ( __kindof JMSGMessage *) *)offlineMessages {
   NSMutableDictionary *callBackDic = @{}.mutableCopy;
   callBackDic[@"conversation"] = [conversation conversationToDictionary];
   NSMutableArray *messageArr = @[].mutableCopy;
@@ -208,8 +203,9 @@
     [messageArr addObject: [message messageToDictionary]];
   }
   callBackDic[@"messageArray"] = messageArr;
-  [[NSNotificationCenter defaultCenter] postNotificationName: kJJMessageSyncOfflineMessage object: callBackDic];
+  [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageSyncOfflineMessage object:callBackDic];
 }
+
 #pragma mark - Group 回调
 
 - (void)onGroupInfoChanged:(JMSGGroup *)group{
@@ -242,17 +238,19 @@
 @implementation JMSGConversation (JMessage)
 -(NSMutableDictionary*)conversationToDictionary{
   NSMutableDictionary *dict = [NSMutableDictionary dictionary];
-//  TODO: adjust 字段
+  
   if (self.conversationType == kJMSGConversationTypeSingle) {
     JMSGUser *user = self.target;
     dict[@"target"] = [user userToDictionary];
     dict[@"conversationType"] = @"single";
+    
   } else {
     JMSGGroup *group = self.target;
-    dict = [group groupToDictionary];
+    dict[@"target"] = [group groupToDictionary];
     dict[@"conversationType"] = @"group";
   }
-  dict[@"latestMessage"] = self.latestMessageContentText;
+  
+  dict[@"latestMessage"] = [self.latestMessage messageToDictionary];
   dict[@"unreadCount"] = self.unreadCount;
   dict[@"title"] = [self title];
   return dict;
@@ -296,7 +294,6 @@
 }
 
 - (NSString *)getLargeAvatarFilePath {
-  
   NSString *avatarPath = [self largeAvatarLocalPath];
   if([[NSFileManager defaultManager] fileExistsAtPath: avatarPath]){
     return avatarPath;
@@ -309,12 +306,12 @@
 @implementation JMSGGroup (JMessage)
 -(NSMutableDictionary*)groupToDictionary{
   NSMutableDictionary *dict = [NSMutableDictionary dictionary];
-  dict[@"type"]   = @"group";
-  dict[@"id"]   = self.gid;
-  dict[@"name"]  = self.name;
-  dict[@"desc"]  = self.desc;
+  dict[@"type"] = @"group";
+  dict[@"id"] = self.gid;
+  dict[@"name"] = self.name;
+  dict[@"desc"] = self.desc;
   dict[@"level"] = self.level;
-  dict[KEY_GROUP_GLAG]  = self.flag;
+  dict[KEY_GROUP_GLAG] = self.flag;
   dict[@"owner"] = self.owner;
   dict[@"ownerAppKey"] = self.ownerAppKey;
   dict[@"maxMemberCount"] = self.maxMemberCount;
@@ -326,12 +323,9 @@
 @end
 
 @implementation JMSGMessage (JMessage)
+
 - (NSMutableDictionary *)messageToDictionary {
-  NSString *jsonString = [self toJsonString];
   NSMutableDictionary *dict = [NSMutableDictionary new];
-  
-  NSError *error = nil;
-  NSError *decodeeError;
 
   dict[@"id"] = self.msgId;
   dict[@"from"] = [self.fromUser userToDictionary];
@@ -346,119 +340,99 @@
     JMSGGroup *group = self.target;
     dict[@"target"] = [group groupToDictionary];
   }
+    
+  dict[@"createTime"] = self.timestamp;
   
   switch (self.contentType) {
-    case kJMSGContentTypeUnknown:
-    {
+    case kJMSGContentTypeUnknown: {
       dict[@"type"] = @"unknown";
       break;
     }
-    case kJMSGContentTypeText:
-    {
+    case kJMSGContentTypeText: {
       dict[@"type"] = @"text";
-      JMSGTextContent *textContent = self.content;
+      JMSGTextContent *textContent = (JMSGTextContent *) self.content;
       dict[@"text"] = textContent.text;
       break;
     }
-    case kJMSGContentTypeImage:
-    {
+    case kJMSGContentTypeImage: {
       dict[@"type"] = @"image";
-      JMSGImageContent *imageContent = self.content;
+      JMSGImageContent *imageContent = (JMSGImageContent *) self.content;
       dict[@"thumbPath"] = [imageContent thumbImageLocalPath];
       break;
     }
-      
-    case kJMSGContentTypeVoice:
-    {
+    case kJMSGContentTypeVoice: {
       dict[@"type"] = @"voice";
       dict[@"path"] = [self getOriginMediaFilePath];
       break;
     }
-      
     case kJMSGContentTypeCustom: {
       dict[@"type"] = @"custom";
-      JMSGCustomContent *customContent = self.content;
+      JMSGCustomContent *customContent = (JMSGCustomContent *) self.content;
       dict[@"customObject"] = customContent.customDictionary;
       break;
     }
-      
     case kJMSGContentTypeEventNotification: {
       dict[@"type"] = @"event";
-      JMSGEventContent *eventContent = self.content;
+      JMSGEventContent *eventContent = (JMSGEventContent *) self.content;
       
       switch (eventContent.eventType) {
-        case kJMSGEventNotificationAcceptedFriendInvitation:
-        {
+        case kJMSGEventNotificationAcceptedFriendInvitation: {
           dict[@"evenType"] = @"acceptedFriendInvitation";
           break;
         }
-        case kJMSGEventNotificationAddGroupMembers:
-        {
+        case kJMSGEventNotificationAddGroupMembers: {
           dict[@"evenType"] = @"addGroupMembers";
           break;
         }
-        case kJMSGEventNotificationCreateGroup:
-        {
+        case kJMSGEventNotificationCreateGroup: {
           dict[@"evenType"] = @"createGroup";
           break;
         }
-        case kJMSGEventNotificationCurrentUserInfoChange:
-        {
+        case kJMSGEventNotificationCurrentUserInfoChange: {
           dict[@"evenType"] = @"currentUserInfoChange";
           break;
         }
-        case kJMSGEventNotificationDeclinedFriendInvitation:
-        {
+        case kJMSGEventNotificationDeclinedFriendInvitation: {
           dict[@"evenType"] = @"declinedFriendInvitation";
           break;
         }
-        case kJMSGEventNotificationDeletedFriend:
-        {
+        case kJMSGEventNotificationDeletedFriend: {
           dict[@"evenType"] = @"deletedFriend";
           break;
         }
-        case kJMSGEventNotificationExitGroup:
-        {
+        case kJMSGEventNotificationExitGroup: {
           dict[@"evenType"] = @"exitGroup";
           break;
         }
-        case kJMSGEventNotificationLoginKicked:
-        {
+        case kJMSGEventNotificationLoginKicked: {
           dict[@"evenType"] = @"loginKicked";
           break;
         }
-        case kJMSGEventNotificationMessageRetract:
-        {
+        case kJMSGEventNotificationMessageRetract: {
           dict[@"evenType"] = @"messageRetract";
           break;
         }
-        case kJMSGEventNotificationReceiveFriendInvitation:
-        {
+        case kJMSGEventNotificationReceiveFriendInvitation: {
           dict[@"evenType"] = @"receiveFriendInvitation";
           break;
         }
-        case kJMSGEventNotificationReceiveServerFriendUpdate:
-        {
+        case kJMSGEventNotificationReceiveServerFriendUpdate: {
           dict[@"evenType"] = @"receiveServerFriendUpdate";
           break;
         }
-        case kJMSGEventNotificationRemoveGroupMembers:
-        {
+        case kJMSGEventNotificationRemoveGroupMembers: {
           dict[@"evenType"] = @"removeGroupMembers";
           break;
         }
-        case kJMSGEventNotificationServerAlterPassword:
-        {
+        case kJMSGEventNotificationServerAlterPassword: {
           dict[@"evenType"] = @"serverAlterPassword";
           break;
         }
-        case kJMSGEventNotificationUpdateGroupInfo:
-        {
+        case kJMSGEventNotificationUpdateGroupInfo: {
           dict[@"evenType"] = @"updateGroupInfo";
           break;
         }
-        case kJMSGEventNotificationUserLoginStatusUnexpected:
-        {
+        case kJMSGEventNotificationUserLoginStatusUnexpected: {
           dict[@"evenType"] = @"userLoginStatusUnexpected";
           break;
         }
@@ -467,41 +441,35 @@
       }
       break;
     }
-    case kJMSGContentTypeFile:
-    {
+    case kJMSGContentTypeFile: {
       dict[@"type"] = @"file";
-      JMSGFileContent *fileContent = self.content;
+      JMSGFileContent *fileContent = (JMSGFileContent *) self.content;
       dict[@"fileName"] = [fileContent fileName];
       break;
     }
-    case kJMSGContentTypeLocation:
-    {
+    case kJMSGContentTypeLocation: {
       dict[@"type"] = @"location";
-      JMSGLocationContent *locationContent = self.content;
+      JMSGLocationContent *locationContent = (JMSGLocationContent *) self.content;
       dict[@"latitude"] = locationContent.latitude;
       dict[@"longitude"] = locationContent.longitude;
       dict[@"scale"] = locationContent.scale;
       dict[@"address"] = locationContent.address;
-      
       break;
     }
-    case kJMSGContentTypePrompt:
-    {
+    case kJMSGContentTypePrompt: {
       dict[@"type"] = @"prompt";
-      JMSGPromptContent *promptContent = self.content;
+      JMSGPromptContent *promptContent = (JMSGPromptContent *) self.content;
       dict[@"promptText"] = promptContent.promptText;
       break;
     }
-      
     default:
       break;
   }
-  
   return dict;
 }
 
 - (NSString *)getOriginMediaFilePath {
-  JMSGMediaAbstractContent *content = self.content;
+  JMSGMediaAbstractContent *content = (JMSGMediaAbstractContent *) self.content;
   NSString *mediaPath = [content originMediaLocalPath];
   if([[NSFileManager defaultManager] fileExistsAtPath:mediaPath]){
     return mediaPath;
@@ -515,4 +483,3 @@
   return [NSString stringWithFormat:@"%@/Documents/%@", homeDir,path];
 }
 @end
-

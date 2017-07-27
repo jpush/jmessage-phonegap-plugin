@@ -1,30 +1,14 @@
-//	            __    __                ________
-//	| |    | |  \ \  / /  | |    | |   / _______|
-//	| |____| |   \ \/ /   | |____| |  / /
-//	| |____| |    \  /    | |____| |  | |   _____
-//	| |    | |    /  \    | |    | |  | |  |____ |
-//  | |    | |   / /\ \   | |    | |  \ \______| |
-//  | |    | |  /_/  \_\  | |    | |   \_________|
-//
-//	Copyright (c) 2012年 HXHG. All rights reserved.
-//	http://www.jpush.cn
-//  Created by liangjianguo
-//
-
-
-
 #import <Cordova/CDV.h>
 #import <JMessage/JMessage.h>
 
 
-
 @interface JMessagePlugin : CDVPlugin
 
-
-
--(void)startJMessageSDK:(CDVInvokedUrlCommand *)command;
+- (void)startJMessageSDK:(CDVInvokedUrlCommand *)command;
 
 - (void)init:(CDVInvokedUrlCommand *)command;
+- (void)setDebugMode:(CDVInvokedUrlCommand *)command;
+
 // account
 - (void)userRegister:(CDVInvokedUrlCommand *)command;
 - (void)userLogin:(CDVInvokedUrlCommand *)command;
