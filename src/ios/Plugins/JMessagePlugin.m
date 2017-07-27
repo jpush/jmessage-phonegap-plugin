@@ -954,7 +954,19 @@ JMessagePlugin *SharedJMessagePlugin;
   
   if ([param[@"type"] isEqual: @"single"] && param[@"username"] != nil) {
     [JMSGConversation createSingleConversationWithUsername:param[@"username"] appKey:appKey completionHandler:^(id resultObject, NSError *error) {
+      if (error) {
+        [self handleResultWithDictionary:@{} command: command error:error];
+        return;
+      }
       
+      JMSGConversation *conversation = resultObject;
+      
+      NSArray *messageList = [conversation messageArrayFromNewestWithOffset:param[@"from"] limit:param[@"limit"]];
+      NSMutableArray *messageDicList = @{}.mutableCopy;
+      for (JMSGMessage *message in messageList) {
+        [messageDicList addObject:[message messageToDictionary]];
+      }
+      [self handleResultWithArray:messageDicList command:command error:error];
     }];
   } else {
     if ([param[@"type"] isEqual: @"group"] && param[@"groupId"] != nil) {
