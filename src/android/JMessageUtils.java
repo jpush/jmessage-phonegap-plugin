@@ -4,6 +4,7 @@ package cn.jiguang.cordova.im;
 import android.graphics.Bitmap;
 import android.os.Environment;
 import android.text.Html;
+import android.util.Log;
 
 import org.apache.cordova.CallbackContext;
 import org.json.JSONArray;
@@ -122,8 +123,12 @@ class JMessageUtils {
         msg.setOnSendCompleteCallback(new BasicCallback() {
             @Override
             public void gotResult(int status, String desc) {
-                JSONObject json = JsonUtils.toJson(msg);
-                handleResult(json, status, desc, callback);
+                if (status == 0) {
+                    JSONObject json = JsonUtils.toJson(msg);
+                    handleResult(json, status, desc, callback);
+                } else {
+                    handleResult(status, desc, callback);
+                }
             }
         });
 

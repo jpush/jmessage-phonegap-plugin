@@ -227,11 +227,11 @@ class JsonUtils {
 
             if (conversation.getType() == ConversationType.single) {
                 UserInfo targetInfo = (UserInfo) conversation.getTargetInfo();
-                json.put("targetInfo", toJson(targetInfo));
+                json.put("target", toJson(targetInfo));
 
             } else if (conversation.getType() == ConversationType.group) {
                 GroupInfo targetInfo = (GroupInfo) conversation.getTargetInfo();
-                json.put("targetInfo", toJson(targetInfo));
+                json.put("target", toJson(targetInfo));
             }
 
         } catch (JSONException e) {
