@@ -962,7 +962,7 @@ JMessagePlugin *SharedJMessagePlugin;
       JMSGConversation *conversation = resultObject;
       
       NSArray *messageList = [conversation messageArrayFromNewestWithOffset:param[@"from"] limit:param[@"limit"]];
-      NSMutableArray *messageDicList = @{}.mutableCopy;
+      NSMutableArray *messageDicList = @[].mutableCopy;
       for (JMSGMessage *message in messageList) {
         [messageDicList addObject:[message messageToDictionary]];
       }
@@ -978,7 +978,7 @@ JMessagePlugin *SharedJMessagePlugin;
         
         JMSGConversation *conversation = resultObject;
         NSArray *messageList = [conversation messageArrayFromNewestWithOffset:param[@"from"] limit:param[@"limit"]];
-        NSMutableArray *messageDicList = @{}.mutableCopy;
+        NSMutableArray *messageDicList = @[].mutableCopy;
         for (JMSGMessage *message in messageList) {
           [messageDicList addObject:[message messageToDictionary]];
         }
