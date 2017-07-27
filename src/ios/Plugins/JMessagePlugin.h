@@ -26,7 +26,7 @@
 
 - (void)init:(CDVInvokedUrlCommand *)command;
 // account
-- (void)register:(CDVInvokedUrlCommand *)command;
+- (void)userRegister:(CDVInvokedUrlCommand *)command;
 - (void)userLogin:(CDVInvokedUrlCommand *)command;
 - (void)userLogout:(CDVInvokedUrlCommand *)command;
 - (void)getMyInfo:(CDVInvokedUrlCommand *)command;
