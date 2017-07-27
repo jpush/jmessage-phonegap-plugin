@@ -99,7 +99,7 @@ var JMessagePlugin = {
     exec(null, null, PLUGIN_NAME, 'userLogout', [])
   },
   /**
-   * 登录成功则返回用户信息，已登出或未登录则对应用户信息为 null。
+   * 登录成功则返回用户信息，已登出或未登录则对应用户信息为空对象。
    *
    * @param {function} success = function (myInfo) {}
    */
@@ -110,7 +110,7 @@ var JMessagePlugin = {
    * 获取用户信息，此接口可用来获取不同 appKey 下用户的信息，如果 appKey 为空，则默认获取当前 appKey 下的用户信息。
    *
    * @param {object} params = {'username': String, 'appKey': String}
-   * @param {function} success = function (userInfo) {}
+   * @param {function} success = function (userInfo) {} // 通过参数返回用户对象。
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   getUserInfo: function (params, success, error) {
@@ -130,10 +130,9 @@ var JMessagePlugin = {
    *  field 包括：nickname（昵称）, birthday（生日）, signature（签名）, gender（性别）, region（地区）。
    *  如：{
    *    'birthday': Number,  // 生日日期的微秒数
-   *    'gender': String,    // 'male' / 'female' / 'unknow'
+   *    'gender': String,    // 'male' / 'female' / 'unknown'
    *    ...                  // 其余皆为 String 类型
    *  }
-   *
    * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
@@ -246,6 +245,7 @@ var JMessagePlugin = {
    *  'appKey': String,     // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
    *  'messageId': String   // 消息 id。
    * }
+   * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   retractMessage: function (params, success, error) {
@@ -277,6 +277,7 @@ var JMessagePlugin = {
    *  'appKey': String,     // 对方用户所属应用的 AppKey。
    *  'reason': String      // 申请原因。
    * }
+   * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   sendInvitationRequest: function (params, success, error) {
@@ -287,6 +288,7 @@ var JMessagePlugin = {
    *  'username': String,   // 对方用户用户名。
    *  'appKey': String,     // 对方用户所属应用的 AppKey。
    * }
+   * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   acceptInvitation: function (params, success, error) {
@@ -298,6 +300,7 @@ var JMessagePlugin = {
    *  'appKey': String,     // 对方用户所属应用的 AppKey。
    *  'reason': String      // 拒绝原因。
    * }
+   * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   declineInvitation: function (params, success, error) {
@@ -308,6 +311,7 @@ var JMessagePlugin = {
    *  'username': String,   // 好友用户名。
    *  'appKey': String,     // 好友所属应用的 AppKey。
    * }
+   * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   removeFromFriendList: function (params, success, error) {
@@ -374,6 +378,7 @@ var JMessagePlugin = {
   },
   /**
    * @param {object} params = {'id': '群组 id', 'newName': '新群组名称', 'newDesc': '新群组介绍'}
+   * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   updateGroupInfo: function (params, success, error) {
@@ -381,6 +386,7 @@ var JMessagePlugin = {
   },
   /**
    * @param {object} params = {'id': '群组 id', 'usernameArray': [用户名数组], 'appKey': '待添加用户所在应用的 appKey'}
+   * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   addGroupMembers: function (params, success, error) {
@@ -388,6 +394,7 @@ var JMessagePlugin = {
   },
   /**
    * @param {object} params = {'id': '群组 id', 'usernameArray': [用户名数组], 'appKey': '待删除用户所在应用的 appKey'}
+   * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   removeGroupMembers: function (params, success, error) {
@@ -395,6 +402,7 @@ var JMessagePlugin = {
   },
   /**
    * @param {object} params = {'id': '群组 id'}
+   * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   exitGroup: function (params, success, error) {
@@ -410,6 +418,7 @@ var JMessagePlugin = {
   },
   /**
    * @param {object} params = {'usernameArray': [用户名数组], 'appKey': '用户所属 AppKey'}
+   * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   addUsersToBlacklist: function (params, success, error) {
@@ -417,6 +426,7 @@ var JMessagePlugin = {
   },
   /**
    * @param {object} params = {'usernameArray': [用户名数组], 'appKey': '用户所属 AppKey'}
+   * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   removeUsersFromBlacklist: function (params, success, error) {
@@ -439,6 +449,7 @@ var JMessagePlugin = {
    *  'appKey': String,          // 目标用户所属 AppKey。
    *  'isNoDisturb': Boolean     // 是否免打扰。
    * }
+   * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   setNoDisturb: function (params, success, error) {
@@ -457,6 +468,7 @@ var JMessagePlugin = {
    * 设置是否全局免打扰。
    *
    * @param {object} params = {'isNoDisturb': Boolean}
+   * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   setNoDisturbGlobal: function (params, success, error) {
@@ -551,10 +563,33 @@ var JMessagePlugin = {
    *  'username': String,        // 目标用户名。
    *  'appKey': String,          // 目标用户所属 AppKey。
    * }
+   * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   deleteConversation: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'deleteConversation', [params])
+  },
+  /**
+   * 进入聊天会话。可以在进入聊天会话页面时调用该方法，这样在收到当前聊天用户的消息时，不会显示通知。
+   *  
+   * @param {object} params = {
+   *  'type': String,            // 'single' / 'group'
+   *  'groupId': String,         // 目标群组 id。
+   *  'username': String,        // 目标用户名。
+   *  'appKey': String,          // 目标用户所属 AppKey。
+   * }
+   * @param {function} success = function () {}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  enterConversation: function (params, success, error) {
+    if (device.platform === 'Android') {
+      exec(success, error, PLUGIN_NAME, 'enterConversation', [params])
+    }
+  },
+  exitConversation: function () {
+    if (device.platform === 'Android') {
+      exec(null, null, PLUGIN_NAME, 'exitConversation', [])
+    }
   },
   /**
    * @param {object} params = {
@@ -585,6 +620,7 @@ var JMessagePlugin = {
    *  'username': String,        // 目标用户名。
    *  'appKey': String,          // 目标用户所属 AppKey。
    * }
+   * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   resetUnreadMessageCount: function (params, success, error) {
@@ -594,7 +630,6 @@ var JMessagePlugin = {
    * 添加收到消息事件监听。
    *
    * @param {function} listener = function (message) {}  // 以参数形式返回消息对象。
-   *
    * message = {
    *  'id': String,
    *  'from': object,    // 消息发送者信息对象。
@@ -658,7 +693,6 @@ var JMessagePlugin = {
    * 添加登录状态变更事件监听。
    *
    * @param {function} listener = function (event) {}  // 以参数形式返回事件信息。
-   *
    * event = {
    *  'type': String, // 'user_password_change' / 'user_logout' / 'user_deleted' / 'user_login_status_unexpected'
    * }
@@ -676,7 +710,6 @@ var JMessagePlugin = {
    * 好友相关通知事件。
    *
    * @param {function} listener = function (event) {}  // 以参数形式返回事件信息。
-   *
    * event = {
    *  'type': String,            // 'invite_received' / 'invite_accepted' / 'invite_declined' / 'contact_deleted'
    *  'reason': String,          // 事件发生的理由，该字段由对方发起请求时所填，对方如果未填则返回默认字符串。
@@ -697,7 +730,6 @@ var JMessagePlugin = {
    * 消息撤回事件监听。
    *
    * @param {function} listener = function (event) {} // 以参数形式返回事件信息。
-   *
    * event = {
    *  'conversation': Object      // 会话对象。
    *  'retractedMessage': Object  // 被撤回的消息对象。

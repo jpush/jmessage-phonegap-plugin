@@ -1473,6 +1473,36 @@ public class JMessagePlugin extends CordovaPlugin {
         }
     }
 
+    void enterConversation(JSONArray data, CallbackContext callback) {
+        try {
+            JSONObject params = data.getJSONObject(0);
+            String type = params.getString("type");
+
+            if (type.equals("single")) {
+                String username = params.getString("username");
+                String appKey = params.has("appKey") ? params.getString("appKey") : "";
+                JMessageClient.enterSingleConversation(username, appKey);
+
+            } else if (type.equals("group")) {
+                long groupId = Long.parseLong(params.getString("groupId"));
+                JMessageClient.enterGroupConversation(groupId);
+
+            } else {
+                handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
+                return;
+            }
+
+            callback.success();
+        } catch (JSONException e) {
+            e.printStackTrace();
+            handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
+        }
+    }
+
+    void exitConversation(JSONArray data, CallbackContext callback) {
+        JMessageClient.exitConversation();
+    }
+
     void getConversation(JSONArray data, CallbackContext callback) {
         try {
             JSONObject params = data.getJSONObject(0);
