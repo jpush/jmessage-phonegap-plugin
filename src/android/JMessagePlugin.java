@@ -112,17 +112,9 @@ public class JMessagePlugin extends CordovaPlugin {
         return true;
     }
 
-    void init(JSONArray data, CallbackContext callback) {
-        boolean isOpenMessageRoaming;
-
-        try {
-            JSONObject params = data.getJSONObject(0);
-            isOpenMessageRoaming = params.getBoolean("isOpenMessageRoaming");
-        } catch (JSONException e) {
-            e.printStackTrace();
-            handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
-            return;
-        }
+    void init(JSONArray data, CallbackContext callback) throws JSONException {
+        JSONObject params = data.getJSONObject(0);
+        boolean isOpenMessageRoaming = params.getBoolean("isOpenMessageRoaming");
 
         JMessageClient.init(mCordovaActivity.getApplicationContext(), isOpenMessageRoaming);
         JMessageClient.registerEventReceiver(this);
@@ -130,18 +122,9 @@ public class JMessagePlugin extends CordovaPlugin {
         mCallback = callback;
     }
 
-    void setDebugMode(JSONArray data, CallbackContext callback) {
-        boolean enable;
-
-        try {
-            JSONObject params = data.getJSONObject(0);
-            enable = params.getBoolean("enable");
-        } catch (JSONException e) {
-            e.printStackTrace();
-            handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
-            return;
-        }
-
+    void setDebugMode(JSONArray data, CallbackContext callback) throws JSONException {
+        JSONObject params = data.getJSONObject(0);
+        boolean enable = params.getBoolean("enable");
         JMessageClient.setDebugMode(enable);
     }
 
@@ -198,7 +181,7 @@ public class JMessagePlugin extends CordovaPlugin {
         if (myInfo != null) {
             callback.success(toJson(myInfo));
         } else {
-            callback.success();
+            callback.success(new JSONObject());
         }
     }
 
@@ -219,7 +202,11 @@ public class JMessagePlugin extends CordovaPlugin {
 
             @Override
             public void gotResult(int status, String desc, UserInfo userInfo) {
-                handleResult(toJson(userInfo), status, desc, callback);
+                if (status == 0) {
+                    handleResult(toJson(userInfo), status, desc, callback);
+                } else {
+                    handleResult(status, desc, callback);
+                }
             }
         });
     }
@@ -246,28 +233,26 @@ public class JMessagePlugin extends CordovaPlugin {
         });
     }
 
-    void updateMyInfo(JSONArray data, final CallbackContext callback) {
+    void updateMyInfo(JSONArray data, CallbackContext callback) {
         UserInfo myInfo = JMessageClient.getMyInfo();
-        String fieldStr;
         UserInfo.Field field = null;
 
         try {
             JSONObject params = data.getJSONObject(0);
-            fieldStr = params.getString("field");
 
-            if (fieldStr.equals("nickname")) {
+            if (params.has("nickname")) {
                 field = UserInfo.Field.nickname;
                 myInfo.setNickname(params.getString("nickname"));
 
-            } else if (fieldStr.equals("birthday")) {
+            } else if (params.has("birthday")) {
                 field = UserInfo.Field.birthday;
                 myInfo.setBirthday(params.getLong("birthday"));
 
-            } else if (fieldStr.equals("signature")) {
+            } else if (params.has("signature")) {
                 field = UserInfo.Field.signature;
                 myInfo.setSignature(params.getString("signature"));
 
-            } else if (fieldStr.equals("gender")) {
+            } else if (params.has("gender")) {
                 field = UserInfo.Field.gender;
 
                 if (params.getString("gender").equals("male")) {
@@ -278,7 +263,7 @@ public class JMessagePlugin extends CordovaPlugin {
                     myInfo.setGender(UserInfo.Gender.unknown);
                 }
 
-            } else if (fieldStr.equals("region")) {
+            } else if (params.has("region")) {
                 field = UserInfo.Field.region;
                 myInfo.setRegion(params.getString("region"));
 
@@ -291,11 +276,13 @@ public class JMessagePlugin extends CordovaPlugin {
             return;
         }
 
+        final CallbackContext fcallback = callback;
+
         JMessageClient.updateMyInfo(field, myInfo, new BasicCallback() {
 
             @Override
             public void gotResult(int status, String desc) {
-                handleResult(status, desc, callback);
+                handleResult(status, desc, fcallback);
             }
         });
     }
@@ -604,6 +591,7 @@ public class JMessagePlugin extends CordovaPlugin {
         for (Message msg : messageList) {
             messageJSONArr.put(toJson(msg));
         }
+        callback.success(messageJSONArr);
     }
 
     void sendInvitationRequest(JSONArray data, final CallbackContext callback) {
