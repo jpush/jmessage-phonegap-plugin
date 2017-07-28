@@ -1,6 +1,6 @@
 # API
 
-API 使用文档可以直接参考 [JMessagePlugin.js](./www/JMessagePlugin.js) 中的注释。
+API 使用文档可以直接参考 [JMessagePlugin.js](../www/JMessagePlugin.js) 中的注释。
 
 这里列出插件中会返回的各对象组成：
 
