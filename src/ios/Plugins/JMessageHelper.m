@@ -329,8 +329,9 @@
 
   dict[@"id"] = self.msgId;
   dict[@"from"] = [self.fromUser userToDictionary];
+  
   if (self.content.extras != nil) {
-    dict[@"extra"] = self.content.extras;
+    dict[@"extras"] = self.content.extras;
   }
   
   if (self.targetType == kJMSGConversationTypeSingle) {
