@@ -31,7 +31,7 @@
 
 ## API
 
-目前可直接参阅 [JMessagePlugin.js](./www/JMessagePlugin.js)，之后会补上详细文档。
+[API doc](./doc/api.md)
 
 ## 常见问题
 
