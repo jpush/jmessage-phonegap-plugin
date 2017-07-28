@@ -127,7 +127,7 @@ var JMessagePlugin = {
    *
    * @param {object} params = {'field': '需要更新的字段值'}
    *
-   *  field 包括：nickname（昵称）, birthday（生日）, signature（签名）, gender（性别）, region（地区）。
+   *  field 包括：nickname（昵称）, birthday（生日）, signature（签名）, gender（性别）, region（地区）, address（具体地址）。
    *  如：{
    *    'birthday': Number,  // 生日日期的微秒数
    *    'gender': String,    // 'male' / 'female' / 'unknown'

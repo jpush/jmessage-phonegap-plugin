@@ -233,7 +233,7 @@ public class JMessagePlugin extends CordovaPlugin {
         });
     }
 
-    void updateMyInfo(JSONArray data, CallbackContext callback) {
+    void updateMyInfo(JSONArray data, final CallbackContext callback) {
         UserInfo myInfo = JMessageClient.getMyInfo();
         UserInfo.Field field = null;
 
@@ -267,6 +267,10 @@ public class JMessagePlugin extends CordovaPlugin {
                 field = UserInfo.Field.region;
                 myInfo.setRegion(params.getString("region"));
 
+            } else if (params.has("address")) {
+                field = UserInfo.Field.address;
+                myInfo.setAddress(params.getString("address"));
+
             } else {
                 handleResult(0, "field error", callback);
             }
@@ -276,13 +280,11 @@ public class JMessagePlugin extends CordovaPlugin {
             return;
         }
 
-        final CallbackContext fcallback = callback;
-
         JMessageClient.updateMyInfo(field, myInfo, new BasicCallback() {
 
             @Override
             public void gotResult(int status, String desc) {
-                handleResult(status, desc, fcallback);
+                handleResult(status, desc, callback);
             }
         });
     }
