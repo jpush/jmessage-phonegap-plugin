@@ -484,7 +484,7 @@ var JMessagePlugin = {
     exec(success, error, PLUGIN_NAME, 'isNoDisturbGlobal', [])
   },
   /**
-   * 下载用户头像原图。
+   * 下载用户头像原图，如果已经下载，不会重复下载。
    *
    * @param {object} params = {'username': String, 'appKey': String}
    * @param {function} success = function ({'username': String, 'appKey': String, 'filePath': String}) {}
@@ -494,7 +494,7 @@ var JMessagePlugin = {
     exec(success, error, PLUGIN_NAME, 'downloadOriginalUserAvatar', [params])
   },
   /**
-   * 下载指定图片消息的原图。
+   * 下载指定图片消息的原图，如果已经下载，会直接返回本地文件路径，不会重复下载。
    *
    * @param {object} params = {
    *  'type': String,            // 'single' / 'group'
@@ -510,6 +510,8 @@ var JMessagePlugin = {
     exec(success, error, PLUGIN_NAME, 'downloadOriginalImage', [params])
   },
   /**
+   * 下载语音消息文件，如果已经下载，会直接返回本地文件路径，不会重复下载。
+   * 
    * @param {object} params = {
    *  'type': String,            // 'single' / 'group'
    *  'groupId': String,         // 目标群组 id。
@@ -524,7 +526,7 @@ var JMessagePlugin = {
     exec(success, error, PLUGIN_NAME, 'downloadVoiceFile', [params])
   },
   /**
-   * 下载文件消息文件。
+   * 下载文件消息文件，如果已经下载，会直接返回本地文件路径，不会重复下载。
    *
    * @param {object} params = {
    *  'type': String,            // 'single' / 'group'
