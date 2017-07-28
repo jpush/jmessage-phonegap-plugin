@@ -127,7 +127,8 @@ typedef NS_ENUM(NSInteger, JMSGContentType) {
   kJMSGContentTypeFile = 6,
   /// 地理位置消息
   kJMSGContentTypeLocation = 7,
-  
+  /// 提示性消息
+  kJMSGContentTypePrompt = 8,
 };
 
 
@@ -194,19 +195,10 @@ typedef NS_ENUM(NSInteger, JMSGEventNotificationType) {
   kJMSGEventNotificationServerAlterPassword = 2,
   /// 事件类型：用户登录状态异常事件（需要重新登录）
   kJMSGEventNotificationUserLoginStatusUnexpected = 70,
-  
   /// 事件类型：当前登录用户信息变更通知事件(非客户端修改)
   kJMSGEventNotificationCurrentUserInfoChange = 40,
   
-  // 免打扰事件
-  /// 事件类型: 免打扰变更
-  kJMSGEventNotificationNoDisturbChange = 37,
-  /// 事件类型: 黑名单变更
-  kJMSGEventNotificationBlacklistChange = 38,
-  
   // 好友相关事件
-  /// 事件类型: 好友邀请相关
-  kJMSGEventNotificationFriendInvitation          = 5,
   /// 事件类型: 收到好友邀请
   kJMSGEventNotificationReceiveFriendInvitation   = 51,
   /// 事件类型: 对方接受了你的好友邀请
@@ -217,6 +209,9 @@ typedef NS_ENUM(NSInteger, JMSGEventNotificationType) {
   kJMSGEventNotificationDeletedFriend             = 6,
   /// 事件类型：非客户端修改好友关系收到好友更新事件
   kJMSGEventNotificationReceiveServerFriendUpdate = 7,
+  
+  /// 事件类型: 消息撤回
+  kJMSGEventNotificationMessageRetract = 55,
 
   // 消息事件
   /// 事件类型: 群组被创建
@@ -350,6 +345,10 @@ typedef NS_ENUM(NSInteger, JMSGSDKErrorCode) {
   kJMSGErrorSDKParamConversationUsernameInvalid = 866002,
   /// 会话 groupId 无效
   kJMSGErrorSDKParamConversationGroupIdInvalid = 866003,
+  /// 会话没有找到
+  kJMSGErrorSDKparamConversationNotFound = 866004,
+  /// 会话头像没找到
+  kJMSGErrorSDKConversationAvatarNotFound = 866005,
 
   // ------------------------ Group (867xxx)
 
@@ -448,20 +447,23 @@ static NSString *const KEY_PASSWORD = @"password";
 static NSString *const KEY_NEW_PASSWORD = @"new_password";
 static NSString *const KEY_OLD_PASSWORD = @"old_password";
 
-static NSString *const KEY_NICKNAME = @"nickname";
-static NSString *const KEY_AVATAR = @"avatar";
-static NSString *const KEY_GENDER = @"gender";
-static NSString *const KEY_BIRTHDAY = @"birthday";
-static NSString *const KEY_REGION = @"region";
-static NSString *const KEY_SIGNATURE = @"signature";
+static NSString *const KEY_NICKNAME = @"nickname";  //昵称
+static NSString *const KEY_AVATAR = @"avatar";      //头像
+static NSString *const KEY_GENDER = @"gender";      //性别
+static NSString *const KEY_BIRTHDAY = @"birthday";  //生日
+static NSString *const KEY_REGION = @"region";      //区域
+static NSString *const KEY_SIGNATURE = @"signature";//签名
+static NSString *const KEY_ADDRESS = @"address";    //地址
 static NSString *const KEY_STAR = @"star";
 static NSString *const KEY_UID = @"uid";
-static NSString *const KEY_ADDRESS = @"address";
 static NSString *const KEY_NO_DISTURB = @"no_disturb";
 static NSString *const KEY_BLACKLIST = @"blicklist";
 static NSString *const KEY_NOTE_NAME = @"memo_name";//note_name
 static NSString *const KEY_NOTE_TEXT = @"memo_others";//note_text
 static NSString *const KEY_SHIELD_GROUP = @"shield_group";
+static NSString *const KEY_USER_MTIME = @"mtime";
+static NSString *const KEY_USER_CTIME = @"ctime";
+
 
 
 

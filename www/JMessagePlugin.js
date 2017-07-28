@@ -1,1016 +1,749 @@
 var exec = require('cordova/exec')
 
-var JMessagePlugin = function () {
-  const NOTI_MODE_DEFAULT = 0
-  const NOTI_MODE_NO_SOUND = 1
-  const NOTI_MODE_NO_VIBRATE = 2
-  const NOTI_MODE_SILENCE = 3
-  const NOTI_MODE_NO_NOTIFICATION = 4
+var PLUGIN_NAME = 'JMessagePlugin'
 
-  this.username = ''
-  this.nickname = ''
-  this.gender = ''
-  this.avatarUrl = ''
-
-  this.message = {}
-  this.openedMessage = {}
-  this.textMessage = {}
-  this.imageMessage = {}
-  this.voiceMessage = {}
-  this.customMessage = {}
+/**
+ * 针对消息发送动作的控制选项，可附加在消息发送方法的参数中。
+ */
+var MessageSendingOptions = {
+  /**
+   * 接收方是否针对此次消息发送展示通知栏通知。
+   * @type {Boolean}
+   * @defaultvalue
+   */
+  isShowNotification: true,
+  /**
+   * 是否让后台在对方不在线时保存这条离线消息，等到对方上线后再推送给对方。
+   * @type {Boolean}
+   * @defaultvalue
+   */
+  isRetainOffline: true,
+  /**
+   * 是否开启了自定义接收方通知栏功能。
+   * @type {?Boolean}
+   */
+  isCustomNotificationEnabled: null,
+  /**
+   * 设置此条消息在接收方通知栏所展示通知的标题。
+   * @type {?String}
+   */
+  notificationTitle: null,
+  /**
+   * 设置此条消息在接收方通知栏所展示通知的内容。
+   * @type {?String}
+   */
+  notificationText: null
 }
 
-function isAndroid () {
-  if (device.platform === 'Android') {
-    return true
-  }
-  return false
-}
-
-JMessagePlugin.prototype.init = function () {}
-
-JMessagePlugin.prototype.errorCallback = function (msg) {
-  console.log('JMessagePlugin callback error:' + msg)
-}
-
-JMessagePlugin.prototype.callNative = function (name, args, sCallback, eCallback) {
-  if (eCallback == null) {
-    exec(sCallback, this.errorCallback, 'JMessagePlugin', name, args)
-  } else {
-    exec(sCallback, eCallback, 'JMessagePlugin', name, args)
-  }
-}
-
-// Common API start
-// Login and register API.
-JMessagePlugin.prototype.register = function (username, password, sCallback, eCallback) {
-  this.callNative('userRegister', [username, password], sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.login = function (username, password, sCallback, eCallback) {
-  this.callNative('userLogin', [username, password], sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.logout = function (sCallback, eCallback) {
-  this.callNative('userLogout', [], sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.getMyInfo = function (sCallback, eCallback) {
-  this.callNative('getMyInfo', [], sCallback, eCallback)
-}
-
-// 如果 appKey 为空，获取当前 AppKey 下的用户信息。
-JMessagePlugin.prototype.getUserInfo = function (username, appKey, sCallback, eCallback) {
-  this.callNative('getUserInfo', [username, appKey], sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.updateMyPassword = function (oldPwd, newPwd, sCallback, eCallback) {
-  this.callNative('updateMyPassword', [oldPwd, newPwd], sCallback, eCallback)
-}
-
-// 注意在更新用户头像时，Android 与 iOS 的文件路径不同，需要分别调用该方法。
-JMessagePlugin.prototype.updateMyInfo = function (field, value, sCallback, eCallback) {
-  if (isAndroid()) {
-    if (field === 'avatar') {
-      JMessagePlugin.updateMyAvatar(value, sCallback, eCallback)
-    } else {
-      this.callNative('updateMyInfo', [field, value], sCallback, eCallback)
+var JMessagePlugin = {
+  /**
+   * @param {object} params = {
+   *  'isOpenMessageRoaming': Boolean,  // 是否开启消息漫游。
+   *  'isProduction': Boolean           // 是否为生产环境（仅 iOS 有效）。
+   * }
+   *
+   * 打开消息漫游之后，用户多个设备之间登录时，SDK 会自动将当前登录用户的历史消息同步到本地。
+   */
+  init: function (params) {
+    JMessagePlugin.handlers = {
+      'receiveMessage': [],
+      'clickMessageNotification': [],
+      'syncOfflineMessage': [],
+      'syncRoamingMessage': [],
+      'loginStateChanged': [],
+      'contactNotify': [],
+      'retractMessage': []
     }
-  } else {
-    var iosField
-    switch (field) {
-      case 'nickname':
-        iosField = 0
-        break
-      case 'birthday':
-        iosField = 1
-        break
-      case 'signature':
-        iosField = 2
-        break
-      case 'gender':
-        iosField = 3
-        break
-      case 'region':
-        iosField = 4
-        break
-      case 'avatar':
-        iosField = 5
-        break
-      default:
-        throw new Error('Error field.')
-    }
-    this.callNative('updateMyInfo', [iosField, value], sCallback, eCallback)
-  }
-}
 
-JMessagePlugin.prototype.sendSingleTextMessage = function (username, text, appKey, sCallback, eCallback) {
-  if (appKey && !isAndroid()) {
-    JMessagePlugin.cross_sendSingleTextMessage(username, appKey, text, sCallback, eCallback)
-    return
-  }
-  this.callNative('sendSingleTextMessage', [username, text, appKey], sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.sendSingleImageMessage = function (username, imageUrl, appKey, sCallback, eCallback) {
-  if (appKey && !isAndroid()) {
-    JMessagePlugin.cross_sendSingleImageMessage(username, appKey, imageUrl, sCallback, eCallback)
-    return
-  }
-  this.callNative('sendSingleImageMessage', [username, imageUrl, appKey], sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.sendSingleVoiceMessage = function (username, fileUrl, appKey, sCallback, eCallback) {
-  if (appKey && !isAndroid()) {
-    JMessagePlugin.cross_sendSingleVoiceMessage(username, appKey, fileUrl, sCallback, eCallback)
-    return
-  }
-  this.callNative('sendSingleVoiceMessage', [username, fileUrl, appKey], sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.sendSingleCustomMessage = function (username, jsonStr, appKey, sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('sendSingleCustomMessage', [username, jsonStr, appKey], sCallback, eCallback)
-  } else {
-    if (appKey) {
-      JMessagePlugin.cross_sendSingleCustomMessage_ios(username, appKey, '', jsonStr, sCallback, eCallback)
-    } else {
-      JMessagePlugin.sendSingleCustomMessage_ios(username, '', jsonStr, sCallback, eCallback)
-    }
-  }
-}
-
-JMessagePlugin.prototype.sendSingleLocationMessage = function (username, appKey, latitude, longitude, scale, address,
-    sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('sendSingleLocationMessage', [username, appKey, latitude, longitude, scale, address],
-            sCallback, eCallback)
-  } else {
-    this.callNative('sendLocationMessage', [username, appKey, '1', latitude, longitude, scale, address],
-            sCallback, eCallback)
-  }
-}
-
-JMessagePlugin.prototype.sendSingleFileMessage = function (username, appKey, filePath, fileName, sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('sendSingleFileMessage', [username, appKey, filePath, fileName], sCallback, eCallback)
-  } else {
-    JMessagePlugin.sendFileMessage(username, appKey, '1', filePath, fileName, sCallback, eCallback)
-  }
-}
-
-JMessagePlugin.prototype.sendGroupTextMessage = function (groupId, text, sCallback, eCallback) {
-  this.callNative('sendGroupTextMessage', [groupId, text], sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.sendGroupImageMessage = function (groupId, imageUrl, sCallback, eCallback) {
-  this.callNative('sendGroupImageMessage', [groupId, imageUrl], sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.sendGroupVoiceMessage = function (groupId, fileUrl, sCallback, eCallback) {
-  this.callNative('sendGroupVoiceMessage', [groupId, fileUrl], sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.sendGroupCustomMessage = function (groupId, jsonStr, sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('sendGroupCustomMessage', [groupId, jsonStr], sCallback, eCallback)
-  } else {
-    JMessagePlugin.sendGroupCustomMessage_ios(groupId, '', jsonStr, sCallback, eCallback)
-  }
-}
-
-JMessagePlugin.prototype.sendGroupLocationMessage = function (groupId, latitude, longitude, scale, address,
-    sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('sendGroupLocationMessage', [groupId, latitude, longitude, scale, address],
-            sCallback, eCallback)
-  } else {
-    JMessagePlugin.sendLocationMessage(groupId, '', '0', latitude, longitude, scale, address, sCallback, eCallback)
-  }
-}
-
-JMessagePlugin.prototype.sendGroupFileMessage = function (groupId, filePath, fileName, sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('sendGroupFileMessage', [groupId, filePath, fileName], sCallback, eCallback)
-    return
-  }
-  JMessagePlugin.sendFileMessage(groupId, '', '0', filePath, fileName, sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.sendSingleTextMessageWithExtras = function (username, text, json, appKey, sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('sendSingleTextMessageWithExtras', [username, text, json, appKey], sCallback, eCallback)
-  } else {
-    if (appKey) {
-      JMessagePlugin.cross_sendSingleCustomMessage_ios(username, appKey, text, json, sCallback, eCallback)
-    } else {
-      JMessagePlugin.sendSingleCustomMessage_ios(username, text, json, sCallback, eCallback)
-    }
-  }
-}
-
-JMessagePlugin.prototype.sendGroupTextMessageWithExtras = function (groupId, text, extrasJson, sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('sendGroupTextMessageWithExtras', [groupId, text, extrasJson], sCallback, eCallback)
-    return
-  }
-  JMessagePlugin.sendGroupCustomMessage_ios(groupId, text, jsonStr, sCallback, eCallback)
-}
-
-// 获取指定 Conversation 的部分历史消息。conversationType: 'single' or 'group'
-// value: username if conversation type is 'single' or groupId if conversation type is 'group'.
-JMessagePlugin.prototype.getHistoryMessages = function (conversationType, value, appKey, from, limit, sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('getHistoryMessages', [conversationType, value, appKey, from, limit], sCallback, eCallback)
-  } else {
-    if (conversationType === 'single') {
-      if (appKey) {
-        JMessagePlugin.prototype.cross_getSingleConversationHistoryMessage(value, appKey, from, limit, sCallback, eCallback)
-      } else {
-        JMessagePlugin.prototype.getSingleConversationHistoryMessage(value, from, limit, sCallback, eCallback)
+    var success = function (result) {
+      if (!JMessagePlugin.handlers.hasOwnProperty(result.eventName)) {
+        return
       }
-    } else if (conversationType === 'group') {
-      JMessagePlugin.getGroupConversationHistoryMessage(value, from, limit, sCallback, eCallback)
-    }
-  }
-}
 
-JMessagePlugin.prototype.getAllMessages = function (conversationType, value, appKey, sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('getAllMessages', [conversationType, value, appKey], sCallback, eCallback)
-  } else {
-    if (conversationType === 'single') {
-      if (appKey) {
-        JMessagePlugin.cross_getSingleConversationHistoryMessage(value, appKey, null, null, sCallback, eCallback)
-      } else {
-        JMessagePlugin.getSingleConversationHistoryMessage(value, null, null, sCallback, eCallback)
+      for (var index in JMessagePlugin.handlers[result.eventName]) {
+        JMessagePlugin.handlers[result.eventName][index].apply(undefined, [result.value])
       }
-    } else if (conversationType === 'group') {
-      JMessagePlugin.getGroupConversationHistoryMessage(value, null, null, sCallback, eCallback)
+    }
+    exec(success, null, PLUGIN_NAME, 'init', [params])
+  },
+  /**
+  * 设置是否开启 debug 模式，开启后 SDK 将会输出更多日志信息。应用对外发布时应关闭。
+  *
+  * @param {object} params = {'enable': Boolean}
+  */
+  setDebugMode: function (params) {
+    exec(null, null, PLUGIN_NAME, 'setDebugMode', [params])
+  },
+  /**
+   * @param {object} params = {'username': String, 'password': String}
+   * @param {function} success = function () {}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  register: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'userRegister', [params])
+  },
+  /**
+   * @param {object} params = {'username': String, 'password': String}
+   * @param {function} success = function () {}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  login: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'userLogin', [params])
+  },
+  /**
+   * 用户登出接口，调用后用户将无法收到消息。登出动作必定成功，开发者不需要关心结果回调。
+   *
+   * @param {function} success = function () {}
+   */
+  logout: function () {
+    exec(null, null, PLUGIN_NAME, 'userLogout', [])
+  },
+  /**
+   * 登录成功则返回用户信息，已登出或未登录则对应用户信息为空对象。
+   *
+   * @param {function} success = function (myInfo) {}
+   */
+  getMyInfo: function (success) {
+    exec(success, null, PLUGIN_NAME, 'getMyInfo', [])
+  },
+  /**
+   * 获取用户信息，此接口可用来获取不同 appKey 下用户的信息，如果 appKey 为空，则默认获取当前 appKey 下的用户信息。
+   *
+   * @param {object} params = {'username': String, 'appKey': String}
+   * @param {function} success = function (userInfo) {} // 通过参数返回用户对象。
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  getUserInfo: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'getUserInfo', [params])
+  },
+  /**
+   * @param {object} params = {'oldPwd': String, 'newPwd': String}
+   */
+  updateMyPassword: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'updateMyPassword', [params])
+  },
+  /**
+   * 更新当前登录用户的信息。
+   *
+   * @param {object} params = {'field': '需要更新的字段值'}
+   *
+   *  field 包括：nickname（昵称）, birthday（生日）, signature（签名）, gender（性别）, region（地区）, address（具体地址）。
+   *  如：{
+   *    'birthday': Number,  // 生日日期的微秒数
+   *    'gender': String,    // 'male' / 'female' / 'unknown'
+   *    ...                  // 其余皆为 String 类型
+   *  }
+   * @param {function} success = function () {}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  updateMyInfo: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'updateMyInfo', [params])
+  },
+  /**
+   * @param {object} params = {
+   *  'type': String,                                // 'single' / 'group'
+   *  'groupId': String,                             // 当 type = group 时，groupId 不能为空
+   *  'username': String,                            // 当 type = single 时，username 不能为空
+   *  'appKey': String,                              // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
+   *  'text': String,                                // 本地图片路径
+   *  'extras': Object,                              // Optional. 自定义键值对 = {'key1': 'value1'}
+   *  'messageSendingOptions': MessageSendingOptions // Optional. MessageSendingOptions 对象
+   * }
+   * @param {function} success = function (msg) {}   // 以参数形式返回消息对象。
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  sendTextMessage: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'sendTextMessage', [params])
+  },
+  /**
+   * @param {object} params = {
+   *  'type': String,                                // 'single' / 'group'
+   *  'groupId': String,                             // 当 type = group 时，groupId 不能为空
+   *  'username': String,                            // 当 type = single 时，username 不能为空
+   *  'appKey': String,                              // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
+   *  'path': String,                                // 本地图片路径
+   *  'extras': Object,                              // Optional. 自定义键值对 = {'key1': 'value1'}
+   *  'messageSendingOptions': MessageSendingOptions // Optional. MessageSendingOptions 对象
+   * }
+   * @param {function} success = function (msg) {}   // 以参数形式返回消息对象。
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  sendImageMessage: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'sendImageMessage', [params])
+  },
+  /**
+   * @param {object} params = {
+   *  'type': String,                                // 'single' / 'group'
+   *  'groupId': String,                             // 当 type = group 时，groupId 不能为空
+   *  'username': String,                            // 当 type = single 时，username 不能为空
+   *  'appKey': String,                              // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
+   *  'path': String,                                // 本地图片路径
+   *  'extras': Object,                              // Optional. 自定义键值对 = {'key1': 'value1'}
+   *  'messageSendingOptions': MessageSendingOptions // Optional. MessageSendingOptions 对象
+   * }
+   * @param {function} success = function (msg) {}   // 以参数形式返回消息对象。
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  sendVoiceMessage: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'sendVoiceMessage', [params])
+  },
+  /**
+   * @param {object} params = {
+   *  'type': String,           // 'single' / 'group'
+   *  'groupId': String,        // 当 type = group 时，groupId 不能为空
+   *  'username': String,       // 当 type = single 时，username 不能为空
+   *  'appKey': String,         // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
+   *  'customObject': {'key1': 'value1'}  // Optional. 自定义键值对
+   * }
+   * @param {function} success = function (msg) {}   // 以参数形式返回消息对象。
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  sendCustomMessage: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'sendCustomMessage', [params])
+  },
+  /**
+   * @param {object} params = {
+   *  'type': String,           // 'single' / 'group'
+   *  'groupId': String,        // 当 type = group 时，groupId 不能为空
+   *  'username': String,       // 当 type = single 时，username 不能为空
+   *  'appKey': String,         // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
+   *  'latitude': Number,       // 纬度信息
+   *  'longitude': Number,      // 经度信息
+   *  'scale': Number,          // 地图缩放比例
+   *  'address': String,        // 详细地址信息
+   *  'extras': Object          // Optional. 自定义键值对 = {'key1': 'value1'}
+   * }
+   * @param {function} success = function (msg) {}   // 以参数形式返回消息对象。
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  sendLocationMessage: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'sendLocationMessage', [params])
+  },
+  /**
+   * @param {object} params = {
+   *  'type': String,                                // 'single' / 'group'
+   *  'groupId': String,                             // 当 type = group 时，groupId 不能为空。
+   *  'username': String,                            // 当 type = single 时，username 不能为空。
+   *  'appKey': String,                              // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
+   *  'path': String,                                // 本地文件路径。
+   *  'extras': Object,                              // Optional. 自定义键值对 = {'key1': 'value1'}
+   *  'messageSendingOptions': MessageSendingOptions // Optional. MessageSendingOptions 对象。
+   * }
+   * @param {function} success = function (msg) {}   // 以参数形式返回消息对象。
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  sendFileMessage: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'sendFileMessage', [params])
+  },
+  /**
+   * 消息撤回。
+   *
+   * @param {object} params = {
+   *  'type': String,       // 'single' / 'group'
+   *  'groupId': String,    // 当 type = group 时，groupId 不能为空。
+   *  'username': String,   // 当 type = single 时，username 不能为空。
+   *  'appKey': String,     // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
+   *  'messageId': String   // 消息 id。
+   * }
+   * @param {function} success = function () {}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  retractMessage: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'retractMessage', [params])
+  },
+  /**
+   * 从最新的消息开始获取历史消息。
+   * 当 from = 0 && limit = =1 时，返回所有历史消息。
+   *
+   * @param {object} params = {
+   *  'type': String,            // 'single' / 'group'
+   *  'groupId': String,         // 当 type = group 时，groupId 不能为空。
+   *  'username': String,        // 当 type = single 时，username 不能为空。
+   *  'appKey': String,          // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
+   *  'from': Number,            // 开始的消息下标。
+   *  'limit': Number            // 要获取的消息数。比如当 from = 0, limit = 10 时，是获取第 0 = 9 条历史消息。
+   * }
+   * @param {function} success = function (messageArray)) {}  // 以参数形式返回历史消息对象数组
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  getHistoryMessages: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'getHistoryMessages', [params])
+  },
+  /**
+   * 发送好友请求。
+   *
+   * @param {object} params = {
+   *  'username': String,   // 对方用户用户名。
+   *  'appKey': String,     // 对方用户所属应用的 AppKey。
+   *  'reason': String      // 申请原因。
+   * }
+   * @param {function} success = function () {}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  sendInvitationRequest: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'sendInvitationRequest', [params])
+  },
+  /**
+   * @param {object} params = {
+   *  'username': String,   // 对方用户用户名。
+   *  'appKey': String,     // 对方用户所属应用的 AppKey。
+   * }
+   * @param {function} success = function () {}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  acceptInvitation: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'acceptInvitation', [params])
+  },
+  /**
+   * @param {object} params = {
+   *  'username': String,   // 对方用户用户名。
+   *  'appKey': String,     // 对方用户所属应用的 AppKey。
+   *  'reason': String      // 拒绝原因。
+   * }
+   * @param {function} success = function () {}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  declineInvitation: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'declineInvitation', [params])
+  },
+  /**
+   * @param {object} params = {
+   *  'username': String,   // 好友用户名。
+   *  'appKey': String,     // 好友所属应用的 AppKey。
+   * }
+   * @param {function} success = function () {}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  removeFromFriendList: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'removeFromFriendList', [params])
+  },
+  /**
+   * @param {object} params = {
+   *  'username': String,   // 好友用户名。
+   *  'appKey': String,     // 好友所属应用的 AppKey。
+   *  'noteName': String    // 备注名。
+   * }
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  updateFriendNoteName: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'updateFriendNoteName', [params])
+  },
+  /**
+   * @param {object} params = {
+   *  'username': String,   // 好友用户名。
+   *  'appKey': String,     // 好友所属应用的 AppKey。
+   *  'noteName': String    // 备注信息。
+   * }
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  updateFriendNoteText: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'updateFriendNoteText', [params])
+  },
+  /**
+   * @param {function} success = function (friendArr) {}  // 以参数形式返回好友对象数组
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  getFriends: function (success, error) {
+    exec(success, error, PLUGIN_NAME, 'getFriends', [])
+  },
+  /**
+   * 创建群组，创建成功后，创建者默认会包含在群成员中。
+   *
+   * @param {object} params = {
+   *  'name': String          // 群组名称。
+   *  'desc': String          // 群组描述。
+   * }
+   * @param {function} success = function (groupId) {}  // 以参数形式返回 group id
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  createGroup: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'createGroup', [params])
+  },
+  /**
+   * 获取当前用户所有所在的群组 id。
+   *
+   * @param {function} success = function (groupIdArray) {} // 以参数形式返回 group id 数组
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  getGroupIds: function (success, error) {
+    exec(success, error, PLUGIN_NAME, 'getGroupIds', [])
+  },
+  /**
+   * @param {object} params = {'id': '群组 id'}
+   * @param {function} success = function (groupInfo) {} // 以参数形式返回群组信息对象
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  getGroupInfo: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'getGroupInfo', [params])
+  },
+  /**
+   * @param {object} params = {'id': '群组 id', 'newName': '新群组名称', 'newDesc': '新群组介绍'}
+   * @param {function} success = function () {}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  updateGroupInfo: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'updateGroupInfo', [params])
+  },
+  /**
+   * @param {object} params = {'id': '群组 id', 'usernameArray': [用户名数组], 'appKey': '待添加用户所在应用的 appKey'}
+   * @param {function} success = function () {}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  addGroupMembers: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'addGroupMembers', [params])
+  },
+  /**
+   * @param {object} params = {'id': '群组 id', 'usernameArray': [用户名数组], 'appKey': '待删除用户所在应用的 appKey'}
+   * @param {function} success = function () {}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  removeGroupMembers: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'removeGroupMembers', [params])
+  },
+  /**
+   * @param {object} params = {'id': '群组 id'}
+   * @param {function} success = function () {}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  exitGroup: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'exitGroup', [params])
+  },
+  /**
+   * @param {object} params = {'id': '群组 id'}
+   * @param {function} success = function (userInfoArray) {} // 以参数形式返回用户对象数组
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  getGroupMembers: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'getGroupMembers', [params])
+  },
+  /**
+   * @param {object} params = {'usernameArray': [用户名数组], 'appKey': '用户所属 AppKey'}
+   * @param {function} success = function () {}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  addUsersToBlacklist: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'addUsersToBlacklist', [params])
+  },
+  /**
+   * @param {object} params = {'usernameArray': [用户名数组], 'appKey': '用户所属 AppKey'}
+   * @param {function} success = function () {}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  removeUsersFromBlacklist: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'removeUsersFromBlacklist', [params])
+  },
+  /**
+   * @param {function} success = function (userInfoArray) {} // 以参数形式返回黑名单中的用户信息数组
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  getBlacklist: function (success, error) {
+    exec(success, error, PLUGIN_NAME, 'getBlacklist', [])
+  },
+  /**
+   * 设置某个用户或群组是否免打扰。
+   *
+   * @param {object} params = {
+   *  'type': String,            // 'single' / 'group'
+   *  'groupId': String,         // 目标群组 id。
+   *  'username': String,        // 目标用户名。
+   *  'appKey': String,          // 目标用户所属 AppKey。
+   *  'isNoDisturb': Boolean     // 是否免打扰。
+   * }
+   * @param {function} success = function () {}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  setNoDisturb: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'setNoDisturb', [params])
+  },
+  /**
+   * 获取免打扰用户和群组名单。
+   *
+   * @param {function} success = function ({userInfoArray: [], groupInfoArray: []}) {}  // 以参数形式返回用户和群组对象数组
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  getNoDisturbList: function (success, error) {
+    exec(success, error, PLUGIN_NAME, 'getNoDisturbList', [])
+  },
+  /**
+   * 设置是否全局免打扰。
+   *
+   * @param {object} params = {'isNoDisturb': Boolean}
+   * @param {function} success = function () {}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  setNoDisturbGlobal: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'setNoDisturbGlobal', [params])
+  },
+  /**
+   * 判断当前是否全局免打扰。
+   *
+   * @param {function} success = function ({'isNoDisturb': Boolean}) {} // 以参数形式返回结果
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  isNoDisturbGlobal: function (success, error) {
+    exec(success, error, PLUGIN_NAME, 'isNoDisturbGlobal', [])
+  },
+  /**
+   * 下载用户头像原图。
+   *
+   * @param {object} params = {'username': String, 'appKey': String}
+   * @param {function} success = function ({'username': String, 'appKey': String, 'filePath': String}) {}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  downloadOriginalUserAvatar: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'downloadOriginalUserAvatar', [params])
+  },
+  /**
+   * 下载指定图片消息的原图。
+   *
+   * @param {object} params = {
+   *  'type': String,            // 'single' / 'group'
+   *  'groupId': String,         // 目标群组 id。
+   *  'username': String,        // 目标用户名。
+   *  'appKey': String,          // 目标用户所属 AppKey。
+   *  'messageId': String        // 指定消息 id。
+   * }
+   * @param {function} success = function ({'messageId': String, 'filePath': String}) {}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  downloadOriginalImage: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'downloadOriginalImage', [params])
+  },
+  /**
+   * @param {object} params = {
+   *  'type': String,            // 'single' / 'group'
+   *  'groupId': String,         // 目标群组 id。
+   *  'username': String,        // 目标用户名。
+   *  'appKey': String,          // 目标用户所属 AppKey。
+   *  'messageId': String        // 指定消息 id。
+   * }
+   * @param {function} success = function ({'messageId': String, 'filePath': String}) {}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  downloadVoiceFile: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'downloadVoiceFile', [params])
+  },
+  /**
+   * 下载文件消息文件。
+   *
+   * @param {object} params = {
+   *  'type': String,            // 'single' / 'group'
+   *  'groupId': String,         // 目标群组 id。
+   *  'username': String,        // 目标用户名。
+   *  'appKey': String,          // 目标用户所属 AppKey。
+   *  'messageId': String        // 指定消息 id。
+   * }
+   * @param {function} success = function ({'messageId': String, 'filePath': String}) {}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  downloadFile: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'downloadFile', [params])
+  },
+  /**
+   * 创建聊天会话。
+   *
+   * @param {object} params = {
+   *  'type': String,            // 'single' / 'group'
+   *  'groupId': String,         // 目标群组 id。
+   *  'username': String,        // 目标用户名。
+   *  'appKey': String,          // 目标用户所属 AppKey。
+   * }
+   * @param {function} success = function (conversation) {} // 以参数形式返回聊天会话对象。
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  createConversation: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'createConversation', [params])
+  },
+  /**
+   * 删除聊天会话，同时会删除本地聊天记录。
+   *
+   * @param {object} params = {
+   *  'type': String,            // 'single' / 'group'
+   *  'groupId': String,         // 目标群组 id。
+   *  'username': String,        // 目标用户名。
+   *  'appKey': String,          // 目标用户所属 AppKey。
+   * }
+   * @param {function} success = function () {}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  deleteConversation: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'deleteConversation', [params])
+  },
+  /**
+   * 进入聊天会话。可以在进入聊天会话页面时调用该方法，这样在收到当前聊天用户的消息时，不会显示通知。
+   *  
+   * @param {object} params = {
+   *  'type': String,            // 'single' / 'group'
+   *  'groupId': String,         // 目标群组 id。
+   *  'username': String,        // 目标用户名。
+   *  'appKey': String,          // 目标用户所属 AppKey。
+   * }
+   * @param {function} success = function () {}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  enterConversation: function (params, success, error) {
+    if (device.platform === 'Android') {
+      exec(success, error, PLUGIN_NAME, 'enterConversation', [params])
+    }
+  },
+  exitConversation: function () {
+    if (device.platform === 'Android') {
+      exec(null, null, PLUGIN_NAME, 'exitConversation', [])
+    }
+  },
+  /**
+   * @param {object} params = {
+   *  'type': String,            // 'single' / 'group'
+   *  'groupId': String,         // 目标群组 id。
+   *  'username': String,        // 目标用户名。
+   *  'appKey': String,          // 目标用户所属 AppKey。
+   * }
+   * @param {function} success = function (conversation) {} // 以参数形式返回聊天会话对象。
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  getConversation: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'getConversation', [params])
+  },
+  /**
+   * @param {function} success = function (conversationArray) {}  // 以参数形式返回会话对象数组。
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  getConversations: function (success, error) {
+    exec(success, error, PLUGIN_NAME, 'getConversations', [])
+  },
+  /**
+   * 重置单个会话的未读消息数。
+   *
+   * @param {object} params = {
+   *  'type': String,            // 'single' / 'group'
+   *  'groupId': String,         // 目标群组 id。
+   *  'username': String,        // 目标用户名。
+   *  'appKey': String,          // 目标用户所属 AppKey。
+   * }
+   * @param {function} success = function () {}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  resetUnreadMessageCount: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'resetUnreadMessageCount', [params])
+  },
+  /**
+   * 添加收到消息事件监听。
+   *
+   * @param {function} listener = function (message) {}  // 以参数形式返回消息对象。
+   * message = {
+   *  'id': String,
+   *  'from': object,    // 消息发送者信息对象。
+   *  'target': object,  // 消息接收方信息（可能为用户或者群组）。
+   *  'type': String     // 'text' / 'image' / 'voice' / 'location' / 'file' / 'custom' / 'event'
+   *  ...                // 不同消息类型还有其他对应的相关字段，具体可参考文档。
+   * }
+   */
+  addReceiveMessageListener: function (listener) {
+    JMessagePlugin.handlers.receiveMessage.push(listener)
+  },
+  removeReceiveMessageListener: function (listener) {
+    var handlerIndex = JMessagePlugin.handlers.receiveMessage.indexOf(listener)
+    if (handlerIndex >= 0) {
+      JMessagePlugin.handlers.receiveMessage.splice(handlerIndex, 1)
+    }
+  },
+  /**
+   * 添加点击通知栏消息通知事件监听。
+   * Note: Android only, (如果想要 iOS 端 实现相同的功能，需要同时集成 jpush-phonegap-plugin)
+   * @param {function} listener = function (message) {}  // 以参数形式返回消息对象。
+   */
+  addClickMessageNotificationListener: function (listener) {
+    JMessagePlugin.handlers.clickMessageNotification.push(listener)
+  },
+  removeClickMessageNotificationListener: function (listener) {
+    var handlerIndex = JMessagePlugin.handlers.clickMessageNotification.indexOf(listener)
+    if (handlerIndex >= 0) {
+      JMessagePlugin.handlers.clickMessageNotification.splice(handlerIndex, 1)
+    }
+  },
+  /**
+   * 添加同步离线消息事件监听。
+   *
+   * @param {function} listener = function ({'conversation': {}, 'messageArray': []}) {}  // 以参数形式返回消息对象数组。
+   */
+  addSyncOfflineMessageListener: function (listener) {
+    JMessagePlugin.handlers.syncOfflineMessage.push(listener)
+  },
+  removeSyncOfflineMessageListener: function (listener) {
+    var handlerIndex = JMessagePlugin.handlers.syncOfflineMessage.indexOf(listener)
+    if (handlerIndex >= 0) {
+      JMessagePlugin.handlers.syncOfflineMessage.splice(handlerIndex, 1)
+    }
+  },
+  /**
+   * 添加同步漫游消息事件监听。
+   *
+   * @param {function} listener = function ({'conversation': {}}) {}  // 以参数形式返回消息对象数组。
+   */
+  addSyncRoamingMessageListener: function (listener) {
+    JMessagePlugin.handlers.syncRoamingMessage.push(listener)
+  },
+  removeSyncRoamingMessageListener: function (listener) {
+    var handlerIndex = JMessagePlugin.handlers.syncRoamingMessage.indexOf(listener)
+    if (handlerIndex >= 0) {
+      JMessagePlugin.handlers.syncRoamingMessage.splice(handlerIndex, 1)
+    }
+  },
+  /**
+   * 添加登录状态变更事件监听。
+   *
+   * @param {function} listener = function (event) {}  // 以参数形式返回事件信息。
+   * event = {
+   *  'type': String, // 'user_password_change' / 'user_logout' / 'user_deleted' / 'user_login_status_unexpected'
+   * }
+   */
+  addLoginStateChangedListener: function (listener) {
+    JMessagePlugin.handlers.loginStateChanged.push(listener)
+  },
+  removeLoginStateChangedListener: function (listener) {
+    var handlerIndex = JMessagePlugin.handlers.loginStateChanged.indexOf(listener)
+    if (handlerIndex >= 0) {
+      JMessagePlugin.handlers.loginStateChanged.splice(handlerIndex, 1)
+    }
+  },
+  /**
+   * 好友相关通知事件。
+   *
+   * @param {function} listener = function (event) {}  // 以参数形式返回事件信息。
+   * event = {
+   *  'type': String,            // 'invite_received' / 'invite_accepted' / 'invite_declined' / 'contact_deleted'
+   *  'reason': String,          // 事件发生的理由，该字段由对方发起请求时所填，对方如果未填则返回默认字符串。
+   *  'fromUsername': String,    // 事件发送者的 username。
+   *  'fromUserAppKey': String   // 事件发送者的 AppKey。
+   * }
+   */
+  addContactNotifyListener: function (listener) {
+    JMessagePlugin.handlers.contactNotify.push(listener)
+  },
+  removeContactNotifyListener: function (listener) {
+    var handlerIndex = JMessagePlugin.handlers.contactNotify.indexOf(listener)
+    if (handlerIndex >= 0) {
+      JMessagePlugin.handlers.contactNotify.splice(handlerIndex, 1)
+    }
+  },
+  /**
+   * 消息撤回事件监听。
+   *
+   * @param {function} listener = function (event) {} // 以参数形式返回事件信息。
+   * event = {
+   *  'conversation': Object      // 会话对象。
+   *  'retractedMessage': Object  // 被撤回的消息对象。
+   * }
+   */
+  addMessageRetractListener: function (listener) {
+    JMessagePlugin.handlers.retractMessage.push(listener)
+  },
+  removeMessageRetractListener: function (listener) {
+    var handlerIndex = JMessagePlugin.handlers.retractMessage.indexOf(listener)
+    if (handlerIndex >= 0) {
+      JMessagePlugin.handlers.retractMessage.splice(handlerIndex, 1)
     }
   }
 }
 
-// 发送添加好友请求
-JMessagePlugin.prototype.sendInvitationRequest = function (targetUsername, targetUserAppkey, reason, sCallback, eCallback) {
-  this.callNative('sendInvitationRequest', [targetUsername, targetUserAppkey, reason], sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.acceptInvitation = function (targetUsername, targetUserAppkey, sCallback, eCallback) {
-  this.callNative('acceptInvitation', [targetUsername, targetUserAppkey], sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.declineInvitation = function (targetUsername, targetUserAppkey, reason, sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('declineInvitation', [targetUsername, targetUserAppkey, reason], sCallback, eCallback)
-  } else {
-    this.callNative('rejectInvitation', [targetUsername, targetUserAppkey, reason], sCallback, eCallback)
-  }
-}
-
-JMessagePlugin.prototype.removeFromFriendList = function (targetUsername, targetUserAppkey, sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('removeFromFriendList', [targetUsername, targetUserAppkey], sCallback, eCallback)
-  } else {
-    this.callNative('removeFriend', [targetUsername, targetUserAppkey], sCallback, eCallback)
-  }
-}
-
-// 修改当前用户好友的备注名
-JMessagePlugin.prototype.updateFriendNoteName = function (friendName, friendAppKey, noteName, sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('updateFriendNoteName', [friendName, friendAppKey, noteName], sCallback, eCallback)
-  } else {
-    this.callNative('updateNoteName', [friendName, friendAppKey, noteName], sCallback, eCallback)
-  }
-}
-
-// 修改当前用户好友的备注信息
-JMessagePlugin.prototype.updateFriendNoteText = function (friendName, friendAppKey, noteText, sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('updateFriendNoteText', [friendName, friendAppKey, noteText], sCallback, eCallback)
-  } else {
-    this.callNative('updateNoteText', [friendName, friendAppKey, noteText], sCallback, eCallback)
-  }
-}
-
-// 获取当前登录用户的好友列表
-JMessagePlugin.prototype.getFriendList = function (sCallback, eCallback) {
-  this.callNative('getFriendList', [], sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.getConversationList = function (sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('getConversationList', [], sCallback, eCallback)
-  } else {
-    JMessagePlugin.prototype.getAllConversation(sCallback, eCallback)
-  }
-}
-
-JMessagePlugin.prototype.getAllSingleConversation = function (sCallback, eCallback) {
-  this.callNative('getAllSingleConversation', [], sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.getAllGroupConversation = function (sCallback, eCallback) {
-  this.callNative('getAllGroupConversation', [], sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.deleteSingleConversation = function (username, appKey, sCallback, eCallback) {
-  this.callNative('deleteSingleConversation', [username, appKey], sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.deleteGroupConversation = function (groupId, sCallback, eCallback) {
-  this.callNative('deleteGroupConversation', [groupId], sCallback, eCallback)
-}
-
-// sCallback：以参数形式返回 Group ID，创建成功后，创建者默认会包含在群成员中。
-JMessagePlugin.prototype.createGroup = function (name, desc, usernameArr, sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('createGroup', [name, desc, usernameArr.toString()], sCallback, eCallback)
-  } else {
-    JMessagePlugin.createGroupIniOS(name, desc, usernameArr, sCallback, eCallback)
-  }
-}
-
-JMessagePlugin.prototype.getGroupIds = function (sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('getGroupIDList', [], sCallback, eCallback)
-  } else {
-    JMessagePlugin.myGroupArray(sCallback, eCallback)
-  }
-}
-
-JMessagePlugin.prototype.getGroupInfo = function (groupId, sCallback, eCallback) {
-  this.callNative('getGroupInfo', [groupId], sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.updateGroupName = function (groupId, newName, sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('updateGroupName', [groupId, newName], sCallback, eCallback)
-  } else {
-    JMessagePlugin.updateGroupInfo(groupId, newName, sCallback, eCallback)
-  }
-}
-
-JMessagePlugin.prototype.updateGroupDescription = function (groupId, newDesc, sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('updateGroupDescription', [groupId, newDesc], sCallback, eCallback)
-  } else {
-    JMessagePlugin.updateGroupInfo(groupId, null, newDesc, sCallback, eCallback)
-  }
-}
-
-// usernameArr: 用户名数组。
-JMessagePlugin.prototype.addGroupMembers = function (groupId, usernameArr, sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('addGroupMembers', [groupId, usernameArr.toString()], sCallback, eCallback)
-  } else {
-    JMessagePlugin.addMembers(groupId, usernameArr, sCallback, eCallback)
-  }
-}
-
-JMessagePlugin.prototype.removeGroupMembers = function (groupId, usernameArr, sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('removeGroupMembers', [groupId, usernameArr.toString()], sCallback, eCallback)
-  } else {
-    JMessagePlugin.removeMembers(groupId, usernameArr, sCallback, eCallback)
-  }
-}
-
-JMessagePlugin.prototype.exitGroup = function (groupId, sCallback, eCallback) {
-  this.callNative('exitGroup', [groupId], sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.getGroupMembers = function (groupId, sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('getGroupMembers', [groupId], sCallback, eCallback)
-  } else {
-    JMessagePlugin.memberArray(groupId, sCallback, eCallback)
-  }
-}
-
-JMessagePlugin.prototype.addUsersToBlacklist = function (usernameArr, appKey, sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('addUsersToBlacklist', [usernameArr.toString(), appKey], sCallback, eCallback)
-  } else {
-    if (appKey) {
-      this.callNative('cross_addUsersToBlacklist', [usernameArr, appKey], sCallback, eCallback)
-    } else {
-      this.callNative('addUsersToBlacklist', [usernameArr], sCallback, eCallback)
-    }
-  }
-}
-
-JMessagePlugin.prototype.delUsersFromBlacklist = function (usernameArr, appKey, sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('delUsersFromBlacklist', [usernameArr.toString(), appKey], sCallback, eCallback)
-  } else {
-    if (appKey) {
-      this.callNative('cross_delUsersFromBlacklist', [usernameArr, appKey], sCallback, eCallback)
-    } else {
-      this.callNative('delUsersFromBlacklist', [usernameArr], sCallback, eCallback)
-    }
-  }
-}
-
-JMessagePlugin.prototype.getBlacklist = function (sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('getBlacklist', [], sCallback, eCallback)
-  } else {
-    this.callNative('blackList', [], sCallback, eCallback)
-  }
-}
-
-JMessagePlugin.prototype.isInBlacklist = function (username, appkey, sCallback, eCallback) {
-  this.callNative('isInBlacklist', [username, appkey], sCallback, eCallback)
-}
-
-// 设置对某个用户免打扰。isNoDisturb: 0 - 普通状态，1 - 免打扰状态。
-JMessagePlugin.prototype.setUserNoDisturb = function (username, isNoDisturb, sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('setUserNoDisturb', [username, isNoDisturb], sCallback, eCallback)
-  } else {
-    this.callNative('userSetIsNoDisturb', [username, isNoDisturb], sCallback, eCallback)
-  }
-}
-
-// 获取免打扰列表，结果包含 "userList": 免打扰用户，"groupList": 免打扰群组。
-JMessagePlugin.prototype.getNoDisturblist = function (sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('getNoDisturblist', [], sCallback, eCallback)
-  } else {
-    this.callNative('noDisturblist', [], sCallback, eCallback)
-  }
-}
-
-// 设置是否全局免打扰，isNoDisturb: 0 - 普通状态, 1 - 免打扰。
-JMessagePlugin.prototype.setNoDisturbGlobal = function (isNoDisturb, sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('setNoDisturbGlobal', [isNoDisturb], sCallback, eCallback)
-  } else {
-    this.callNative('setIsGlobalNoDisturb', [isNoDisturb], sCallback, eCallback)
-  }
-}
-
-// 判断当前是否是全局免打扰。
-JMessagePlugin.prototype.getNoDisturbGlobal = function (sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('getNoDisturbGlobal', [], sCallback, eCallback)
-  } else {
-    this.callNative('isSetGlobalNoDisturb', [], sCallback, eCallback)
-  }
-}
-
-JMessagePlugin.prototype.setGroupNoDisturb = function (groupId, isNoDisturb, sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('setGroupNoDisturb', [groupId, isNoDisturb], sCallback, eCallback)
-  } else {
-    this.callNative('groupSetIsNoDisturb', [groupId, isNoDisturb], sCallback, eCallback)
-  }
-}
-// Common API end
-
-// Android only start.
-// 用于 Android 6.0 以上动态申请权限。
-JMessagePlugin.prototype.requestAndroidPermission = function (permission, sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('requestPermission', [permission], sCallback, eCallback)
-  }
-}
-
-JMessagePlugin.prototype.updateMyAvatar = function (avatarFileUrl, sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('updateMyAvatar', [avatarFileUrl], sCallback, eCallback)
-  }
-}
-
-JMessagePlugin.prototype.updateMyAvatarByPath = function (avatarFilePath, sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('updateMyAvatarByPath', [avatarFilePath], sCallback, eCallback)
-  }
-}
-
-// 取得用户头像的缩略图地址，如果 username 为空，默认取得当前登录用户的头像缩略图地址。
-JMessagePlugin.prototype.getUserAvatar = function (username, sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('getUserAvatar', [username], sCallback, eCallback)
-  }
-}
-
-// 下载用户头像大图，如果 username 为空，默认为当前用户。
-JMessagePlugin.prototype.getOriginalUserAvatar = function (username, sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('getOriginalUserAvatar', [username], sCallback, eCallback)
-  }
-}
-
-JMessagePlugin.prototype.sendSingleImageMessageWithExtras = function (username, imageUrl, json, appKey, sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('sendSingleImageMessageWithExtras', [username, imageUrl, json, appKey],
-            sCallback, eCallback)
-  }
-}
-
-JMessagePlugin.prototype.sendSingleVoiceMessageWithExtras = function (username, fileUrl, json, appKey, sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('sendSingleVoiceMessageWithExtras', [username, fileUrl, json, appKey],
-            sCallback, eCallback)
-  }
-}
-
-JMessagePlugin.prototype.sendGroupImageMessageWithExtras = function (groupId, imageUrl, extrasJson, sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('sendGroupImageMessageWithExtras', [groupId, imageUrl, extrasJson], sCallback, eCallback)
-  }
-}
-
-JMessagePlugin.prototype.sendGroupVoiceMessageWithExtras = function (groupId, fileUrl, extrasJson, sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('sendGroupVoiceMessageWithExtras', [groupId, fileUrl, extrasJson], sCallback, eCallback)
-  }
-}
-
-JMessagePlugin.prototype.getLatestMessage = function (conversationType, value, appKey, sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('getLatestMessage', [conversationType, value, appKey], sCallback, eCallback)
-  }
-}
-
-// 获取指定单聊会话中指定图片消息的原图。
-JMessagePlugin.prototype.getOriginImageInSingleConversation = function (username, msgServerId, sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('getOriginImageInSingleConversation', [username, msgServerId], sCallback, eCallback)
-  }
-}
-
-// 获取指定群聊会话中指定图片消息的原图。
-JMessagePlugin.prototype.getOriginImageInGroupConversation = function (groupId, msgServerId, sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('getOriginImageInGroupConversation', [groupId, msgServerId], sCallback, eCallback)
-  }
-}
-
-JMessagePlugin.prototype.createSingleConversation = function (username, appKey, sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('createSingleConversation', [username, appKey], sCallback, eCallback)
-  }
-}
-
-JMessagePlugin.prototype.createGroupConversation = function (groupId, sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('createGroupConversation', [groupId], sCallback, eCallback)
-  }
-}
-
-// 判断单聊会话是否存在。返回值：0 - 不存在；1 - 存在。
-JMessagePlugin.prototype.isSingleConversationExist = function (username, appKey, sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('isSingleConversationExist', [username, appKey], sCallback, eCallback)
-  }
-}
-
-// 判断群聊会话是否存在。返回值：0 - 不存在；1 - 存在。
-JMessagePlugin.prototype.isGroupConversationExist = function (groupId, sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('isGroupConversationExist', [groupId], sCallback, eCallback)
-  }
-}
-
-JMessagePlugin.prototype.getSingleConversation = function (username, appKey, sCallback, eCallback) {
-  this.callNative('getSingleConversation', [username, appKey], sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.setSingleConversationUnreadMessageCount = function (username, appKey, unreadMessageCount,
-    sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('setSingleConversationUnreadMessageCount', [username, appKey, unreadMessageCount], sCallback, eCallback)
-  }
-}
-
-JMessagePlugin.prototype.getGroupConversation = function (groupId, sCallback, eCallback) {
-    this.callNative('getGroupConversation', [groupId], sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.setGroupConversationUnreadMessageCount = function (groupId, unreadMessageCount,
-    sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('setGroupConversationUnreadMessageCount', [groupId, unreadMessageCount], sCallback, eCallback)
-  }
-}
-
-JMessagePlugin.prototype.enterSingleConversation = function (username, appKey, sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('enterSingleConversation', [username, appKey], sCallback, eCallback)
-  }
-}
-
-JMessagePlugin.prototype.enterGroupConversation = function (groupId, sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('enterGroupConversation', [groupId], sCallback, eCallback)
-  }
-}
-
-JMessagePlugin.prototype.exitConversation = function (sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('exitConversation', [], sCallback, eCallback)
-  }
-}
-
-// 向群组中添加成员, 通过指定 AppKey 可以实现跨应用添加其他 AppKey 下用户进群组。
-JMessagePlugin.prototype.addGroupMembersCrossApp = function (groupId, appKey, usernameList, sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('addGroupMembersCrossApp', [groupId, appKey, usernameList], sCallback, eCallback)
-  }
-}
-
-// 跨应用踢出群成员
-JMessagePlugin.prototype.removeGroupMembersCrossApp = function (groupId, appKey, usernameList, sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('removeGroupMembersCrossApp', [groupId, appKey, usernameList], sCallback, eCallback)
-  }
-}
-
-JMessagePlugin.prototype.getGroupMemberInfo = function (groupId, appKey, username, sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('getGroupMemberInfo', [groupId, appKey, username], sCallback, eCallback)
-  }
-}
-
-
-// 获取对特定用户的免打扰状态。0 - 普通状态，1 - 免打扰状态。
-JMessagePlugin.prototype.getUserNoDisturb = function (username, sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('getUserNoDisturb', [username], sCallback, eCallback)
-  }
-}
-
-// 获取对特定群组的免打扰状态。0 - 普通状态，1 - 免打扰状态。
-JMessagePlugin.prototype.getGroupNoDisturb = function (groupId, sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('getGroupNoDisturb', [groupId], sCallback, eCallback)
-  }
-}
-
-JMessagePlugin.prototype.setNotificationMode = function (mode, sCallback, eCallback) {
-  if (isAndroid()) {
-    this.callNative('setNotificationMode', [mode], sCallback, eCallback)
-  }
-}
-// Android only end.
-
-// Event.
-JMessagePlugin.prototype.onOpenMessage = function (jsonStr) {
-  jsonStr = JSON.stringify(jsonStr)
-  this.openedMessage = JSON.parse(jsonStr)
-  cordova.fireDocumentEvent('jmessage.onOpenMessage', this.openedMessage)
-}
-
-JMessagePlugin.prototype.onReceiveMessage = function (jsonStr) {
-  jsonStr = JSON.stringify(jsonStr)
-  this.message = JSON.parse(jsonStr)
-  cordova.fireDocumentEvent('jmessage.onReceiveMessage', this.message)
-}
-
-JMessagePlugin.prototype.onReceiveTextMessage = function (jsonStr) {
-  jsonStr = JSON.stringify(jsonStr)
-  this.textMessage = JSON.parse(jsonStr)
-  cordova.fireDocumentEvent('jmessage.onReceiveTextMessage', this.textMessage)
-}
-
-JMessagePlugin.prototype.onReceiveImageMessage = function (jsonStr) {
-  jsonStr = JSON.stringify(jsonStr)
-  this.imageMessage = JSON.parse(jsonStr)
-  cordova.fireDocumentEvent('jmessage.onReceiveImageMessage', this.imageMessage)
-}
-
-JMessagePlugin.prototype.onReceiveVoiceMessage = function (jsonStr) {
-  jsonStr = JSON.stringify(jsonStr)
-  this.voiceMessage = JSON.parse(jsonStr)
-  cordova.fireDocumentEvent('jmessage.onReceiveVoiceMessage', this.voiceMessage)
-}
-
-JMessagePlugin.prototype.onReceiveCustomMessage = function (jsonStr) {
-  jsonStr = JSON.stringify(jsonStr)
-  this.customMessage = JSON.parse(jsonStr)
-  cordova.fireDocumentEvent('jmessage.onReceiveCustomMessage', this.customMessage)
-}
-
-JMessagePlugin.prototype.onSyncOfflineMessage = function (jsonStr) {
-  if (isAndroid()) {
-    jsonStr = JSON.stringify(jsonStr)
-    var obj = JSON.parse(jsonStr)    
-    cordova.fireDocumentEvent('jmessage.onSyncOfflineMessage', obj)
-  } else {
-    var obj = JSON.parse(jsonStr)
-    cordova.fireDocumentEvent('jmessage.onSyncOfflineMessage', obj)
-  }
-}
-
-JMessagePlugin.prototype.onSyncRoamingMessage = function (jsonStr) {
-  jsonStr = JSON.stringify(jsonStr)
-  var obj = JSON.parse(jsonStr)
-  cordova.fireDocumentEvent('jmessage.onSyncRoamingMessage', obj)
-}
-
-JMessagePlugin.prototype.onUserPasswordChanged = function (jsonStr) {
-  jsonStr = JSON.stringify(jsonStr)
-  var obj = JSON.parse(jsonStr)
-  cordova.fireDocumentEvent('jmessage.onUserPasswordChanged', obj)
-}
-
-JMessagePlugin.prototype.onUserLogout = function (jsonStr) {
-  jsonStr = JSON.stringify(jsonStr)
-  var obj = JSON.parse(jsonStr)
-  cordova.fireDocumentEvent('jmessage.onUserLogout', obj)
-}
-
-JMessagePlugin.prototype.onUserDeleted = function (jsonStr) {
-  jsonStr = JSON.stringify(jsonStr)
-  var obj = JSON.parse(jsonStr)
-  cordova.fireDocumentEvent('jmessage.onUserDeleted', obj)
-}
-
-JMessagePlugin.prototype.onGroupMemberAdded = function (jsonStr) {
-  jsonStr = JSON.stringify(jsonStr)
-  var obj = JSON.parse(jsonStr)
-  cordova.fireDocumentEvent('jmessage.onGroupMemberAdded', obj)
-}
-
-JMessagePlugin.prototype.onGroupMemberRemoved = function (jsonStr) {
-  jsonStr = JSON.stringify(jsonStr)
-  var obj = JSON.parse(jsonStr)
-  cordova.fireDocumentEvent('jmessage.onGroupMemberRemoved', obj)
-}
-
-JMessagePlugin.prototype.onGroupMemberExit = function (jsonStr) {
-  jsonStr = JSON.stringify(jsonStr)
-  var obj = JSON.parse(jsonStr)
-  cordova.fireDocumentEvent('jmessage.onGroupMemberExit', obj)
-}
-
-// 当收到好友邀请
-JMessagePlugin.prototype.onInviteReceived = function (jsonStr) {
-  jsonStr = JSON.stringify(jsonStr)
-  var obj = JSON.parse(jsonStr)
-  cordova.fireDocumentEvent('jmessage.onInviteReceived', obj)
-}
-
-// 当发送的好友请求被接受
-JMessagePlugin.prototype.onInviteAccepted = function (jsonStr) {
-  jsonStr = JSON.stringify(jsonStr)
-  var obj = JSON.parse(jsonStr)
-  cordova.fireDocumentEvent('jmessage.onInviteAccepted', obj)
-}
-
-// 当对方拒绝了你的好友请求
-JMessagePlugin.prototype.onInviteDeclined = function (jsonStr) {
-  jsonStr = JSON.stringify(jsonStr)
-  var obj = JSON.parse(jsonStr)
-  cordova.fireDocumentEvent('jmessage.onInviteDeclined', obj)
-}
-
-// 当对方将你从好友列表中删除
-JMessagePlugin.prototype.onContactDeleted = function (jsonStr) {
-  jsonStr = JSON.stringify(jsonStr)
-  var obj = JSON.parse(jsonStr)
-  cordova.fireDocumentEvent('jmessage.onContactDeleted', obj)
-}
-
-// ---------- iOS only ----------//
-/*
-JPush 推送功能相关 API 说明可参照 https:## github.com/jpush/jpush-phonegap-plugin/blob/master/doc/iOS_API.md
-
-API 统一说明：
-    iOS 中跨应用接口均以 `cross_` 开头，需要传有效的 `appkey`，其余方法的 `appkey` 参数一律传 `null`
-    参数 `sCallback`、`eCallback` 分别为成功、失败回调
-    参数名为 `xxxArray` 则传数组，其余无特殊说明传字符串
-    调用示例：`window.JMessage.funcName(args, sCallback, eCallback)`
-*/
-
-// User
-JMessagePlugin.prototype.getUserInfoArray = function (usernameArray, sCallback, eCallback) {
-  this.callNative('getUserInfoArray', [usernameArray], sCallback, eCallback)
-}
-
-// Conversation
-JMessagePlugin.prototype.getSingleConversationHistoryMessage = function (username, from, limit, sCallback, eCallback) {
-  this.callNative('getSingleConversationHistoryMessage', [username, from, limit], sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.getGroupConversationHistoryMessage = function (groupId, from, limit, sCallback, eCallback) {
-  this.callNative('getGroupConversationHistoryMessage', [groupId, from, limit], sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.getAllConversation = function (sCallback, eCallback) {
-  this.callNative('getAllConversation', [], sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.getAllUnreadCount = function (sCallback, eCallback) {
-  this.callNative('getAllUnreadCount', [], sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.clearSingleUnreadCount = function (username, sCallback, eCallback) {
-  this.callNative('clearSingleUnreadCount', [username], sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.cross_clearSingleUnreadCount = function (username, appkey, sCallback, eCallback) {
-  this.callNative('cross_clearSingleUnreadCount', [username, appkey], sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.clearGroupUnreadCount = function (groupId, sCallback, eCallback) {
-  this.callNative('clearGroupUnreadCount', [groupId], sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.sendFileMessage = function (name, appKey, single, filePath, fileName, sCallback, eCallback) {
-  this.callNative('sendFileMessage', [name, appKey, single, filePath, fileName], sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.sendLocationMessage = function (name, appKey, single, latitude, longitude, scale, address, sCallback, eCallback) {
-  this.callNative('sendLocationMessage', [name, appKey, single, latitude, longitude, scale, address], sCallback, eCallback)
-}
-
-// Group
-JMessagePlugin.prototype.createGroupIniOS = function (name, desc, memebersArray, sCallback, eCallback) {
-  this.callNative('createGroupIniOS', [name, desc, memebersArray], sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.updateGroupInfo = function (groupId, name, desc, sCallback, eCallback) {
-  this.callNative('updateGroupInfo', [groupId, name, desc], sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.myGroupArray = function (sCallback, eCallback) {
-  this.callNative('myGroupArray', [], sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.memberArray = function (groupId, sCallback, eCallback) {
-  this.callNative('memberArray', [groupId], sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.addMembers = function (groupId, memberArray, sCallback, eCallback) {
-  this.callNative('addMembers', [groupId, memberArray], sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.removeMembers = function (groupId, memberArray, sCallback, eCallback) {
-  this.callNative('removeMembers', [groupId, memberArray], sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.sendSingleCustomMessage_ios = function (username, text, extra, sCallback, eCallback) {
-  this.callNative('sendSingleCustomMessage', [username, text, extra], sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.sendGroupCustomMessage_ios = function (gid, text, extra, sCallback, eCallback) {
-  this.callNative('sendGroupCustomMessage', [gid, text, extra], sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.cross_sendSingleCustomMessage_ios = function (username, appkey, text, extra, sCallback, eCallback) {
-  this.callNative('cross_sendSingleCustomMessage', [username, appkey, text, extra], sCallback, eCallback)
-}
-
-// Cross App
-
-JMessagePlugin.prototype.cross_sendSingleTextMessage = function (username, appKey, text, sCallback, eCallback) {
-  this.callNative('cross_sendSingleTextMessage', [username, appKey, text], sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.cross_sendSingleImageMessage = function (username, appKey, imageUrl, sCallback, eCallback) {
-  this.callNative('cross_sendSingleImageMessage', [username, imageUrl, appKey], sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.cross_sendSingleVoiceMessage = function (username, appKey, fileUrl, sCallback, eCallback) {
-  this.callNative('cross_sendSingleVoiceMessage', [username, fileUrl, appKey], sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.cross_getSingleConversationHistoryMessage = function (username, appKey, from, limit, sCallback, eCallback) {
-  this.callNative('cross_getSingleConversationHistoryMessage', [username, appKey, from, limit],
-        sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.cross_deleteSingleConversation = function (username, appKey, sCallback, eCallback) {
-  this.callNative('cross_deleteSingleConversation', [username, appKey], sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.cross_getUserInfoArray = function (username, appkey, sCallback, eCallback) {
-  this.callNative('cross_getUserInfoArray', [username, appkey], sCallback, eCallback)
-}
-
-JMessagePlugin.prototype.cross_getUserInfoArray = function (nameArray, appKey, sCallback, eCallback) {
-  this.callNative('cross_getUserInfoArray', [nameArray, appKey], sCallback, eCallback)
-}
-
-// iOS handle event
-
-JMessagePlugin.prototype.onConversationChanged = function (data) {
-  try {
-    var bToObj = JSON.parse(data)
-
-    cordova.fireDocumentEvent('jmessage.onConversationChanged', bToObj)
-  } catch (exception) {
-    console.log('onConversationChanged ' + exception)
-  }
-}
-
-JMessagePlugin.prototype.onUnreadChanged = function (data) {
-  try {
-    var bToObj = JSON.parse(data)
-    cordova.fireDocumentEvent('jmessage.onUnreadChanged', bToObj)
-  } catch (exception) {
-    console.log('onUnreadChanged ' + exception)
-  }
-}
-
-JMessagePlugin.prototype.onGroupInfoChanged = function (data) {
-  try {
-    var bToObj = JSON.parse(data)
-    cordova.fireDocumentEvent('jmessage.onGroupInfoChanged', bToObj)
-  } catch (exception) {
-    console.log('onGroupInfoChanged ' + exception)
-  }
-}
-
-JMessagePlugin.prototype.loginUserKicked = function (data) {
-  try {
-    var bToObj = JSON.parse(data)
-    if (isAndroid()) {
-      cordova.fireDocumentEvent('jmessage.loginUserKicked', bToObj)
-    } else {
-      cordova.fireDocumentEvent('jmessage.onLoginUserKicked', bToObj)
-    }
-  } catch (exception) {
-    console.log('loginUserKicked ' + exception)
-  }
-}
-
-JMessagePlugin.prototype.onReceiveConversationMessage = function (data) {
-  try {
-    var bToObj = JSON.parse(data)
-  } catch (exception) {
-    console.log('onConversationMessageReceived ' + exception)
-  }
-  cordova.fireDocumentEvent('jmessage.onReceiveMessage', bToObj)
-}
-
-JMessagePlugin.prototype.onSendMessage = function (data) {
-  try {
-    var bToObj = JSON.parse(data)
-  } catch (exception) {
-    console.log('onSendMessage ' + exception)
-  }
-  cordova.fireDocumentEvent('jmessage.onSendMessage', bToObj)
-}
-
-JMessagePlugin.prototype.onReceiveImageData = function (data) {
-  try {
-    var bToObj = JSON.parse(data)
-  } catch (exception) {
-    console.log('onReceiveImageData ' + exception)
-  }
-  cordova.fireDocumentEvent('jmessage.onReceiveImageData', bToObj)
-}
-
-JMessagePlugin.prototype.onReceiveVoiceData = function (data) {
-  try {
-    var bToObj = JSON.parse(data)
-    console.log(bToObj)
-  } catch (exception) {
-    console.log('onReceiveVoiceData ' + exception)
-  }
-  cordova.fireDocumentEvent('jmessage.onReceiveVoiceData', bToObj)
-}
-
-JMessagePlugin.prototype.onReceiveFileData = function (data) {
-  try {
-    var bToObj = JSON.parse(data)
-  } catch (exception) {
-    console.log('onReceiveFileData ' + exception)
-  }
-  cordova.fireDocumentEvent('jmessage.onReceiveFileData', bToObj)
-}
-
-JMessagePlugin.prototype.onReceiveLocation = function (data) {
-  try {
-    var bToObj = JSON.parse(data)
-  } catch (exception) {
-    console.log('onReceiveLocation ' + exception)
-  }
-  cordova.fireDocumentEvent('jmessage.onReceiveLocation', bToObj)
-}
-
-JMessagePlugin.prototype.onReceiveNotificationEvent = function (data) {
-  try {
-    var bToObj = JSON.parse(data)
-  } catch (exception) {
-    console.log('onReceiveNotificationEvent ' + exception)
-  }
-  cordova.fireDocumentEvent('jmessage.onReceiveNotificationEvent', bToObj)
-}
-// ---------- iOS only end ----------//
-
-if (!window.plugins) {
-  window.plugins = {}
-}
-
-if (!window.plugins.jmessagePlugin) {
-  window.plugins.jmessagePlugin = new JMessagePlugin()
-}
-
-module.exports = new JMessagePlugin()
+module.exports = JMessagePlugin

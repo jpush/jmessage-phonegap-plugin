@@ -28,6 +28,8 @@
 #import <JMessage/JMSGNotificationEvent.h>
 #import <JMessage/JMSGFriendNotificationEvent.h>
 #import <JMessage/JMSGLocationContent.h>
+#import <JMessage/JMSGPromptContent.h>
+#import <JMessage/JMSGOptionalContent.h>
 #import <JMessage/JMSGConstants.h>
 
 @protocol JMSGMessageDelegate;
@@ -51,10 +53,10 @@ extern NSString *const kJMSGServiceErrorNotification;                 // 错误�
 @interface JMessage : NSObject
 
 /*! JMessage SDK 版本号。用于展示 SDK 的版本信息 */
-#define JMESSAGE_VERSION @"3.1.1"
+#define JMESSAGE_VERSION @"3.2.0"
 
 /*! JMessage SDK 构建ID. 每次构建都会增加 */
-#define JMESSAGE_BUILD 71
+#define JMESSAGE_BUILD 45
 
 /*! API Version - int for program logic. SDK API 有变更时会增加 */
 extern NSInteger const JMESSAGE_API_VERSION;
@@ -106,7 +108,6 @@ extern NSInteger const JMESSAGE_API_VERSION;
  *
  * - 为 nil, 表示接收所有的通知, 不区分会话.
  * - 不为 nil，表示只接收指定的 conversation 相关的通知.
- * - 注意：如果是监听非消息事件，直接传nil,如：加好友、被踢、登录状态异常等事件.
  *
  * @discussion 默认监听全局 JMessageDelegate 即可.
  *
@@ -293,6 +294,7 @@ extern NSInteger const JMESSAGE_API_VERSION;
  * 参考 [JMessage setBadge:] 说明来理解其作用.
  */
 + (void)resetBadge;
+
 
 @end
 

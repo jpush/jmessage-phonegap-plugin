@@ -15,8 +15,12 @@
 #import <Foundation/Foundation.h>
 #import <JMessage/JMessage.h>
 
+//static NSString *JMessageAppKey;
+
 @interface JMessageHelper : NSObject<JMessageDelegate>
-+ (id)shareInstance;
+@property(nonatomic, strong)NSString *JMessageAppKey;
+@property(strong,nonatomic)NSDictionary *launchOptions;
++ (JMessageHelper *)shareInstance;
 
 -(void)initJMessage:(NSDictionary*)launchOptions;
 
@@ -44,6 +48,6 @@
 -(NSMutableDictionary*)groupToDictionary;
 @end
 
-@interface JMSGMessage (JPush)
+@interface JMSGMessage (JMessage)
 - (NSMutableDictionary *)messageToDictionary;
 @end
