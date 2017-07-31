@@ -12,6 +12,7 @@ import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CordovaWebView;
+import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -80,11 +81,9 @@ public class JMessagePlugin extends CordovaPlugin {
     private static final String ERR_MSG_CONVERSATION = "Can't get the conversation";
     private static final String ERR_MSG_MESSAGE = "No such message";
 
-    private ExecutorService threadPool = Executors.newFixedThreadPool(1);
-
     private Activity mCordovaActivity;
 
-    private static CallbackContext mCallback;
+    private CallbackContext mCallback;
 
     @Override
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
@@ -95,8 +94,7 @@ public class JMessagePlugin extends CordovaPlugin {
     @Override
     public boolean execute(final String action, final JSONArray data,
                            final CallbackContext callback) throws JSONException {
-        threadPool.execute(new Runnable() {
-
+        cordova.getThreadPool().execute(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -108,7 +106,6 @@ public class JMessagePlugin extends CordovaPlugin {
                 }
             }
         });
-
         return true;
     }
 
@@ -1547,7 +1544,7 @@ public class JMessagePlugin extends CordovaPlugin {
      * @param event 消息事件。
      */
     public void onEvent(MessageEvent event) {
-        mCallback.success(toJson("receiveMessage", toJson(event.getMessage())));
+        eventSuccess(toJson("receiveMessage", toJson(event.getMessage())));
     }
 
     /**
@@ -1556,7 +1553,7 @@ public class JMessagePlugin extends CordovaPlugin {
      * @param event 通知栏点击事件。
      */
     public void onEvent(NotificationClickEvent event) {
-        mCallback.success(toJson("clickMessageNotification", toJson(event.getMessage())));
+        eventSuccess(toJson("clickMessageNotification", toJson(event.getMessage())));
 
         // 点击通知启动应用。
         Intent launch = mCordovaActivity.getApplicationContext().getPackageManager()
@@ -1580,7 +1577,7 @@ public class JMessagePlugin extends CordovaPlugin {
             msgJsonArr.put(toJson(msg));
         }
         json.put("messageArray", msgJsonArr);
-        mCallback.success(toJson("syncOfflineMessage", json));
+        eventSuccess(toJson("syncOfflineMessage", json));
     }
 
     /**
@@ -1592,7 +1589,7 @@ public class JMessagePlugin extends CordovaPlugin {
         if (event.getReason() == ConversationRefreshEvent.Reason.MSG_ROAMING_COMPLETE) {
             JSONObject json = new JSONObject();
             json.put("conversation", toJson(event.getConversation()));
-            mCallback.success(toJson("syncRoamingMessage", json));
+            eventSuccess(toJson("syncRoamingMessage", json));
         }
     }
 
@@ -1604,7 +1601,7 @@ public class JMessagePlugin extends CordovaPlugin {
     public void onEvent(LoginStateChangeEvent event) throws JSONException {
         JSONObject json = new JSONObject();
         json.put("type", event.getReason());
-        mCallback.success(toJson("loginStateChanged", json));
+        eventSuccess(toJson("loginStateChanged", json));
     }
 
     /**
@@ -1618,7 +1615,7 @@ public class JMessagePlugin extends CordovaPlugin {
         json.put("reason", event.getReason());
         json.put("fromUsername", event.getFromUsername());
         json.put("fromUserAppKey", event.getfromUserAppKey());
-        mCallback.success(toJson("contactNotify", json));
+        eventSuccess(toJson("contactNotify", json));
     }
 
     /**
@@ -1630,6 +1627,12 @@ public class JMessagePlugin extends CordovaPlugin {
         JSONObject json = new JSONObject();
         json.put("conversation", toJson(event.getConversation()));
         json.put("retractedMessage", toJson(event.getRetractedMessage()));
-        mCallback.success(toJson("retractMessage", json));
+        eventSuccess(toJson("retractMessage", json));
+    }
+
+    private void eventSuccess(JSONObject value) {
+        PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, value);
+        pluginResult.setKeepCallback(true);
+        mCallback.sendPluginResult(pluginResult);
     }
 }
