@@ -24,7 +24,7 @@
     ],
     "devDependencies": {
         "cordova-plugin-device": "*",
-        "cordova-plugin-jcore": "*",
+        "cordova-plugin-jcore": "*"
     },
     "author": "JiGuang",
     "license": "MIT",
