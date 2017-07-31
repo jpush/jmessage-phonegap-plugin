@@ -1,6 +1,6 @@
 {
     "name": "jmessage-phonegap-plugin",
-    "version": "3.0.0",
+    "version": "3.0.1",
     "description": "JMessage Cordova Plugin.",
     "cordova": {
         "id": "jmessage-phonegap-plugin",
@@ -24,7 +24,7 @@
     ],
     "devDependencies": {
         "cordova-plugin-device": "*",
-        "cordova-plugin-jcore": "*"
+        "cordova-plugin-jcore": "*",
     },
     "author": "JiGuang",
     "license": "MIT",
