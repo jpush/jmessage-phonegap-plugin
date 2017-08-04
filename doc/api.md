@@ -59,7 +59,7 @@ Conversation: {
 ## Message
 
 ```js
-TestMessage: {
+TextMessage: {
     id: string,                     // 消息 id。
     type: 'text',                   // 消息类型。
     from: UserInfo,                 // 消息发送者对象。
