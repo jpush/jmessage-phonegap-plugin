@@ -67,10 +67,10 @@ var JMessagePlugin = {
     exec(success, null, PLUGIN_NAME, 'init', [params])
   },
   /**
-  * 设置是否开启 debug 模式，开启后 SDK 将会输出更多日志信息。应用对外发布时应关闭。
-  *
-  * @param {object} params = {'enable': Boolean}
-  */
+   * 设置是否开启 debug 模式，开启后 SDK 将会输出更多日志信息。应用对外发布时应关闭。
+   *
+   * @param {object} params = {'enable': Boolean}
+   */
   setDebugMode: function (params) {
     exec(null, null, PLUGIN_NAME, 'setDebugMode', [params])
   },
@@ -144,8 +144,8 @@ var JMessagePlugin = {
    *  'type': String,                                // 'single' / 'group'
    *  'groupId': String,                             // 当 type = group 时，groupId 不能为空
    *  'username': String,                            // 当 type = single 时，username 不能为空
-   *  'appKey': String,                              // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
-   *  'text': String,                                // 本地图片路径
+   *  'appKey': String,                              // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用
+   *  'text': String,                                // 消息内容
    *  'extras': Object,                              // Optional. 自定义键值对 = {'key1': 'value1'}
    *  'messageSendingOptions': MessageSendingOptions // Optional. MessageSendingOptions 对象
    * }
