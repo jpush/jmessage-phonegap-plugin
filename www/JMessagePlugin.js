@@ -8,29 +8,29 @@ var PLUGIN_NAME = 'JMessagePlugin'
 var MessageSendingOptions = {
   /**
    * 接收方是否针对此次消息发送展示通知栏通知。
-   * @type {Boolean}
+   * @type {boolean}
    * @defaultvalue
    */
   isShowNotification: true,
   /**
    * 是否让后台在对方不在线时保存这条离线消息，等到对方上线后再推送给对方。
-   * @type {Boolean}
+   * @type {boolean}
    * @defaultvalue
    */
   isRetainOffline: true,
   /**
    * 是否开启了自定义接收方通知栏功能。
-   * @type {?Boolean}
+   * @type {?boolean}
    */
   isCustomNotificationEnabled: null,
   /**
    * 设置此条消息在接收方通知栏所展示通知的标题。
-   * @type {?String}
+   * @type {?string}
    */
   notificationTitle: null,
   /**
    * 设置此条消息在接收方通知栏所展示通知的内容。
-   * @type {?String}
+   * @type {?string}
    */
   notificationText: null
 }
@@ -38,8 +38,8 @@ var MessageSendingOptions = {
 var JMessagePlugin = {
   /**
    * @param {object} params = {
-   *  'isOpenMessageRoaming': Boolean,  // 是否开启消息漫游。
-   *  'isProduction': Boolean           // 是否为生产环境（仅 iOS 有效）。
+   *  'isOpenMessageRoaming': boolean,  // 是否开启消息漫游。
+   *  'isProduction': boolean           // 是否为生产环境（仅 iOS 有效）。
    * }
    *
    * 打开消息漫游之后，用户多个设备之间登录时，SDK 会自动将当前登录用户的历史消息同步到本地。
@@ -69,13 +69,13 @@ var JMessagePlugin = {
   /**
    * 设置是否开启 debug 模式，开启后 SDK 将会输出更多日志信息。应用对外发布时应关闭。
    *
-   * @param {object} params = {'enable': Boolean}
+   * @param {object} params = {'enable': boolean}
    */
   setDebugMode: function (params) {
     exec(null, null, PLUGIN_NAME, 'setDebugMode', [params])
   },
   /**
-   * @param {object} params = {'username': String, 'password': String}
+   * @param {object} params = {'username': string, 'password': string}
    * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
@@ -83,7 +83,7 @@ var JMessagePlugin = {
     exec(success, error, PLUGIN_NAME, 'userRegister', [params])
   },
   /**
-   * @param {object} params = {'username': String, 'password': String}
+   * @param {object} params = {'username': string, 'password': string}
    * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
@@ -109,7 +109,7 @@ var JMessagePlugin = {
   /**
    * 获取用户信息，此接口可用来获取不同 appKey 下用户的信息，如果 appKey 为空，则默认获取当前 appKey 下的用户信息。
    *
-   * @param {object} params = {'username': String, 'appKey': String}
+   * @param {object} params = {'username': string, 'appKey': string}
    * @param {function} success = function (userInfo) {} // 通过参数返回用户对象。
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
@@ -117,7 +117,7 @@ var JMessagePlugin = {
     exec(success, error, PLUGIN_NAME, 'getUserInfo', [params])
   },
   /**
-   * @param {object} params = {'oldPwd': String, 'newPwd': String}
+   * @param {object} params = {'oldPwd': string, 'newPwd': string}
    */
   updateMyPassword: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'updateMyPassword', [params])
@@ -130,8 +130,8 @@ var JMessagePlugin = {
    *  field 包括：nickname（昵称）, birthday（生日）, signature（签名）, gender（性别）, region（地区）, address（具体地址）。
    *  如：{
    *    'birthday': Number,  // 生日日期的微秒数
-   *    'gender': String,    // 'male' / 'female' / 'unknown'
-   *    ...                  // 其余皆为 String 类型
+   *    'gender': string,    // 'male' / 'female' / 'unknown'
+   *    ...                  // 其余皆为 string 类型
    *  }
    * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
@@ -141,11 +141,11 @@ var JMessagePlugin = {
   },
   /**
    * @param {object} params = {
-   *  'type': String,                                // 'single' / 'group'
-   *  'groupId': String,                             // 当 type = group 时，groupId 不能为空
-   *  'username': String,                            // 当 type = single 时，username 不能为空
-   *  'appKey': String,                              // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用
-   *  'text': String,                                // 消息内容
+   *  'type': string,                                // 'single' / 'group'
+   *  'groupId': string,                             // 当 type = group 时，groupId 不能为空
+   *  'username': string,                            // 当 type = single 时，username 不能为空
+   *  'appKey': string,                              // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用
+   *  'text': string,                                // 消息内容
    *  'extras': Object,                              // Optional. 自定义键值对 = {'key1': 'value1'}
    *  'messageSendingOptions': MessageSendingOptions // Optional. MessageSendingOptions 对象
    * }
@@ -157,11 +157,11 @@ var JMessagePlugin = {
   },
   /**
    * @param {object} params = {
-   *  'type': String,                                // 'single' / 'group'
-   *  'groupId': String,                             // 当 type = group 时，groupId 不能为空
-   *  'username': String,                            // 当 type = single 时，username 不能为空
-   *  'appKey': String,                              // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
-   *  'path': String,                                // 本地图片路径
+   *  'type': string,                                // 'single' / 'group'
+   *  'groupId': string,                             // 当 type = group 时，groupId 不能为空
+   *  'username': string,                            // 当 type = single 时，username 不能为空
+   *  'appKey': string,                              // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
+   *  'path': string,                                // 本地图片路径
    *  'extras': Object,                              // Optional. 自定义键值对 = {'key1': 'value1'}
    *  'messageSendingOptions': MessageSendingOptions // Optional. MessageSendingOptions 对象
    * }
@@ -173,11 +173,11 @@ var JMessagePlugin = {
   },
   /**
    * @param {object} params = {
-   *  'type': String,                                // 'single' / 'group'
-   *  'groupId': String,                             // 当 type = group 时，groupId 不能为空
-   *  'username': String,                            // 当 type = single 时，username 不能为空
-   *  'appKey': String,                              // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
-   *  'path': String,                                // 本地图片路径
+   *  'type': string,                                // 'single' / 'group'
+   *  'groupId': string,                             // 当 type = group 时，groupId 不能为空
+   *  'username': string,                            // 当 type = single 时，username 不能为空
+   *  'appKey': string,                              // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
+   *  'path': string,                                // 本地图片路径
    *  'extras': Object,                              // Optional. 自定义键值对 = {'key1': 'value1'}
    *  'messageSendingOptions': MessageSendingOptions // Optional. MessageSendingOptions 对象
    * }
@@ -189,10 +189,10 @@ var JMessagePlugin = {
   },
   /**
    * @param {object} params = {
-   *  'type': String,           // 'single' / 'group'
-   *  'groupId': String,        // 当 type = group 时，groupId 不能为空
-   *  'username': String,       // 当 type = single 时，username 不能为空
-   *  'appKey': String,         // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
+   *  'type': string,           // 'single' / 'group'
+   *  'groupId': string,        // 当 type = group 时，groupId 不能为空
+   *  'username': string,       // 当 type = single 时，username 不能为空
+   *  'appKey': string,         // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
    *  'customObject': {'key1': 'value1'}  // Optional. 自定义键值对
    * }
    * @param {function} success = function (msg) {}   // 以参数形式返回消息对象。
@@ -203,14 +203,14 @@ var JMessagePlugin = {
   },
   /**
    * @param {object} params = {
-   *  'type': String,           // 'single' / 'group'
-   *  'groupId': String,        // 当 type = group 时，groupId 不能为空
-   *  'username': String,       // 当 type = single 时，username 不能为空
-   *  'appKey': String,         // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
+   *  'type': string,           // 'single' / 'group'
+   *  'groupId': string,        // 当 type = group 时，groupId 不能为空
+   *  'username': string,       // 当 type = single 时，username 不能为空
+   *  'appKey': string,         // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
    *  'latitude': Number,       // 纬度信息
    *  'longitude': Number,      // 经度信息
    *  'scale': Number,          // 地图缩放比例
-   *  'address': String,        // 详细地址信息
+   *  'address': string,        // 详细地址信息
    *  'extras': Object          // Optional. 自定义键值对 = {'key1': 'value1'}
    * }
    * @param {function} success = function (msg) {}   // 以参数形式返回消息对象。
@@ -221,11 +221,11 @@ var JMessagePlugin = {
   },
   /**
    * @param {object} params = {
-   *  'type': String,                                // 'single' / 'group'
-   *  'groupId': String,                             // 当 type = group 时，groupId 不能为空。
-   *  'username': String,                            // 当 type = single 时，username 不能为空。
-   *  'appKey': String,                              // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
-   *  'path': String,                                // 本地文件路径。
+   *  'type': string,                                // 'single' / 'group'
+   *  'groupId': string,                             // 当 type = group 时，groupId 不能为空。
+   *  'username': string,                            // 当 type = single 时，username 不能为空。
+   *  'appKey': string,                              // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
+   *  'path': string,                                // 本地文件路径。
    *  'extras': Object,                              // Optional. 自定义键值对 = {'key1': 'value1'}
    *  'messageSendingOptions': MessageSendingOptions // Optional. MessageSendingOptions 对象。
    * }
@@ -239,11 +239,11 @@ var JMessagePlugin = {
    * 消息撤回。
    *
    * @param {object} params = {
-   *  'type': String,       // 'single' / 'group'
-   *  'groupId': String,    // 当 type = group 时，groupId 不能为空。
-   *  'username': String,   // 当 type = single 时，username 不能为空。
-   *  'appKey': String,     // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
-   *  'messageId': String   // 消息 id。
+   *  'type': string,       // 'single' / 'group'
+   *  'groupId': string,    // 当 type = group 时，groupId 不能为空。
+   *  'username': string,   // 当 type = single 时，username 不能为空。
+   *  'appKey': string,     // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
+   *  'messageId': string   // 消息 id。
    * }
    * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
@@ -256,10 +256,10 @@ var JMessagePlugin = {
    * 当 from = 0 && limit = =1 时，返回所有历史消息。
    *
    * @param {object} params = {
-   *  'type': String,            // 'single' / 'group'
-   *  'groupId': String,         // 当 type = group 时，groupId 不能为空。
-   *  'username': String,        // 当 type = single 时，username 不能为空。
-   *  'appKey': String,          // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
+   *  'type': string,            // 'single' / 'group'
+   *  'groupId': string,         // 当 type = group 时，groupId 不能为空。
+   *  'username': string,        // 当 type = single 时，username 不能为空。
+   *  'appKey': string,          // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
    *  'from': Number,            // 开始的消息下标。
    *  'limit': Number            // 要获取的消息数。比如当 from = 0, limit = 10 时，是获取第 0 = 9 条历史消息。
    * }
@@ -273,9 +273,9 @@ var JMessagePlugin = {
    * 发送好友请求。
    *
    * @param {object} params = {
-   *  'username': String,   // 对方用户用户名。
-   *  'appKey': String,     // 对方用户所属应用的 AppKey。
-   *  'reason': String      // 申请原因。
+   *  'username': string,   // 对方用户用户名。
+   *  'appKey': string,     // 对方用户所属应用的 AppKey。
+   *  'reason': string      // 申请原因。
    * }
    * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
@@ -285,8 +285,8 @@ var JMessagePlugin = {
   },
   /**
    * @param {object} params = {
-   *  'username': String,   // 对方用户用户名。
-   *  'appKey': String,     // 对方用户所属应用的 AppKey。
+   *  'username': string,   // 对方用户用户名。
+   *  'appKey': string,     // 对方用户所属应用的 AppKey。
    * }
    * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
@@ -296,9 +296,9 @@ var JMessagePlugin = {
   },
   /**
    * @param {object} params = {
-   *  'username': String,   // 对方用户用户名。
-   *  'appKey': String,     // 对方用户所属应用的 AppKey。
-   *  'reason': String      // 拒绝原因。
+   *  'username': string,   // 对方用户用户名。
+   *  'appKey': string,     // 对方用户所属应用的 AppKey。
+   *  'reason': string      // 拒绝原因。
    * }
    * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
@@ -308,8 +308,8 @@ var JMessagePlugin = {
   },
   /**
    * @param {object} params = {
-   *  'username': String,   // 好友用户名。
-   *  'appKey': String,     // 好友所属应用的 AppKey。
+   *  'username': string,   // 好友用户名。
+   *  'appKey': string,     // 好友所属应用的 AppKey。
    * }
    * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
@@ -319,9 +319,9 @@ var JMessagePlugin = {
   },
   /**
    * @param {object} params = {
-   *  'username': String,   // 好友用户名。
-   *  'appKey': String,     // 好友所属应用的 AppKey。
-   *  'noteName': String    // 备注名。
+   *  'username': string,   // 好友用户名。
+   *  'appKey': string,     // 好友所属应用的 AppKey。
+   *  'noteName': string    // 备注名。
    * }
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
@@ -330,9 +330,9 @@ var JMessagePlugin = {
   },
   /**
    * @param {object} params = {
-   *  'username': String,   // 好友用户名。
-   *  'appKey': String,     // 好友所属应用的 AppKey。
-   *  'noteName': String    // 备注信息。
+   *  'username': string,   // 好友用户名。
+   *  'appKey': string,     // 好友所属应用的 AppKey。
+   *  'noteName': string    // 备注信息。
    * }
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
@@ -350,8 +350,8 @@ var JMessagePlugin = {
    * 创建群组，创建成功后，创建者默认会包含在群成员中。
    *
    * @param {object} params = {
-   *  'name': String          // 群组名称。
-   *  'desc': String          // 群组描述。
+   *  'name': string          // 群组名称。
+   *  'desc': string          // 群组描述。
    * }
    * @param {function} success = function (groupId) {}  // 以参数形式返回 group id
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
@@ -443,11 +443,11 @@ var JMessagePlugin = {
    * 设置某个用户或群组是否免打扰。
    *
    * @param {object} params = {
-   *  'type': String,            // 'single' / 'group'
-   *  'groupId': String,         // 目标群组 id。
-   *  'username': String,        // 目标用户名。
-   *  'appKey': String,          // 目标用户所属 AppKey。
-   *  'isNoDisturb': Boolean     // 是否免打扰。
+   *  'type': string,            // 'single' / 'group'
+   *  'groupId': string,         // 目标群组 id。
+   *  'username': string,        // 目标用户名。
+   *  'appKey': string,          // 目标用户所属 AppKey。
+   *  'isNoDisturb': boolean     // 是否免打扰。
    * }
    * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
@@ -467,7 +467,7 @@ var JMessagePlugin = {
   /**
    * 设置是否全局免打扰。
    *
-   * @param {object} params = {'isNoDisturb': Boolean}
+   * @param {object} params = {'isNoDisturb': boolean}
    * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
@@ -477,7 +477,7 @@ var JMessagePlugin = {
   /**
    * 判断当前是否全局免打扰。
    *
-   * @param {function} success = function ({'isNoDisturb': Boolean}) {} // 以参数形式返回结果
+   * @param {function} success = function ({'isNoDisturb': boolean}) {} // 以参数形式返回结果
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   isNoDisturbGlobal: function (success, error) {
@@ -486,8 +486,8 @@ var JMessagePlugin = {
   /**
    * 下载用户头像原图，如果已经下载，不会重复下载。
    *
-   * @param {object} params = {'username': String, 'appKey': String}
-   * @param {function} success = function ({'username': String, 'appKey': String, 'filePath': String}) {}
+   * @param {object} params = {'username': string, 'appKey': string}
+   * @param {function} success = function ({'username': string, 'appKey': string, 'filePath': string}) {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   downloadOriginalUserAvatar: function (params, success, error) {
@@ -497,13 +497,13 @@ var JMessagePlugin = {
    * 下载指定图片消息的原图，如果已经下载，会直接返回本地文件路径，不会重复下载。
    *
    * @param {object} params = {
-   *  'type': String,            // 'single' / 'group'
-   *  'groupId': String,         // 目标群组 id。
-   *  'username': String,        // 目标用户名。
-   *  'appKey': String,          // 目标用户所属 AppKey。
-   *  'messageId': String        // 指定消息 id。
+   *  'type': string,            // 'single' / 'group'
+   *  'groupId': string,         // 目标群组 id。
+   *  'username': string,        // 目标用户名。
+   *  'appKey': string,          // 目标用户所属 AppKey。
+   *  'messageId': string        // 指定消息 id。
    * }
-   * @param {function} success = function ({'messageId': String, 'filePath': String}) {}
+   * @param {function} success = function ({'messageId': string, 'filePath': string}) {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   downloadOriginalImage: function (params, success, error) {
@@ -513,13 +513,13 @@ var JMessagePlugin = {
    * 下载语音消息文件，如果已经下载，会直接返回本地文件路径，不会重复下载。
    * 
    * @param {object} params = {
-   *  'type': String,            // 'single' / 'group'
-   *  'groupId': String,         // 目标群组 id。
-   *  'username': String,        // 目标用户名。
-   *  'appKey': String,          // 目标用户所属 AppKey。
-   *  'messageId': String        // 指定消息 id。
+   *  'type': string,            // 'single' / 'group'
+   *  'groupId': string,         // 目标群组 id。
+   *  'username': string,        // 目标用户名。
+   *  'appKey': string,          // 目标用户所属 AppKey。
+   *  'messageId': string        // 指定消息 id。
    * }
-   * @param {function} success = function ({'messageId': String, 'filePath': String}) {}
+   * @param {function} success = function ({'messageId': string, 'filePath': string}) {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   downloadVoiceFile: function (params, success, error) {
@@ -529,13 +529,13 @@ var JMessagePlugin = {
    * 下载文件消息文件，如果已经下载，会直接返回本地文件路径，不会重复下载。
    *
    * @param {object} params = {
-   *  'type': String,            // 'single' / 'group'
-   *  'groupId': String,         // 目标群组 id。
-   *  'username': String,        // 目标用户名。
-   *  'appKey': String,          // 目标用户所属 AppKey。
-   *  'messageId': String        // 指定消息 id。
+   *  'type': string,            // 'single' / 'group'
+   *  'groupId': string,         // 目标群组 id。
+   *  'username': string,        // 目标用户名。
+   *  'appKey': string,          // 目标用户所属 AppKey。
+   *  'messageId': string        // 指定消息 id。
    * }
-   * @param {function} success = function ({'messageId': String, 'filePath': String}) {}
+   * @param {function} success = function ({'messageId': string, 'filePath': string}) {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   downloadFile: function (params, success, error) {
@@ -545,10 +545,10 @@ var JMessagePlugin = {
    * 创建聊天会话。
    *
    * @param {object} params = {
-   *  'type': String,            // 'single' / 'group'
-   *  'groupId': String,         // 目标群组 id。
-   *  'username': String,        // 目标用户名。
-   *  'appKey': String,          // 目标用户所属 AppKey。
+   *  'type': string,            // 'single' / 'group'
+   *  'groupId': string,         // 目标群组 id。
+   *  'username': string,        // 目标用户名。
+   *  'appKey': string,          // 目标用户所属 AppKey。
    * }
    * @param {function} success = function (conversation) {} // 以参数形式返回聊天会话对象。
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
@@ -560,10 +560,10 @@ var JMessagePlugin = {
    * 删除聊天会话，同时会删除本地聊天记录。
    *
    * @param {object} params = {
-   *  'type': String,            // 'single' / 'group'
-   *  'groupId': String,         // 目标群组 id。
-   *  'username': String,        // 目标用户名。
-   *  'appKey': String,          // 目标用户所属 AppKey。
+   *  'type': string,            // 'single' / 'group'
+   *  'groupId': string,         // 目标群组 id。
+   *  'username': string,        // 目标用户名。
+   *  'appKey': string,          // 目标用户所属 AppKey。
    * }
    * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
@@ -575,10 +575,10 @@ var JMessagePlugin = {
    * 进入聊天会话。可以在进入聊天会话页面时调用该方法，这样在收到当前聊天用户的消息时，不会显示通知。
    *  
    * @param {object} params = {
-   *  'type': String,            // 'single' / 'group'
-   *  'groupId': String,         // 目标群组 id。
-   *  'username': String,        // 目标用户名。
-   *  'appKey': String,          // 目标用户所属 AppKey。
+   *  'type': string,            // 'single' / 'group'
+   *  'groupId': string,         // 目标群组 id。
+   *  'username': string,        // 目标用户名。
+   *  'appKey': string,          // 目标用户所属 AppKey。
    * }
    * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
@@ -595,10 +595,10 @@ var JMessagePlugin = {
   },
   /**
    * @param {object} params = {
-   *  'type': String,            // 'single' / 'group'
-   *  'groupId': String,         // 目标群组 id。
-   *  'username': String,        // 目标用户名。
-   *  'appKey': String,          // 目标用户所属 AppKey。
+   *  'type': string,            // 'single' / 'group'
+   *  'groupId': string,         // 目标群组 id。
+   *  'username': string,        // 目标用户名。
+   *  'appKey': string,          // 目标用户所属 AppKey。
    * }
    * @param {function} success = function (conversation) {} // 以参数形式返回聊天会话对象。
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
@@ -617,10 +617,10 @@ var JMessagePlugin = {
    * 重置单个会话的未读消息数。
    *
    * @param {object} params = {
-   *  'type': String,            // 'single' / 'group'
-   *  'groupId': String,         // 目标群组 id。
-   *  'username': String,        // 目标用户名。
-   *  'appKey': String,          // 目标用户所属 AppKey。
+   *  'type': string,            // 'single' / 'group'
+   *  'groupId': string,         // 目标群组 id。
+   *  'username': string,        // 目标用户名。
+   *  'appKey': string,          // 目标用户所属 AppKey。
    * }
    * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
@@ -633,10 +633,10 @@ var JMessagePlugin = {
    *
    * @param {function} listener = function (message) {}  // 以参数形式返回消息对象。
    * message = {
-   *  'id': String,
+   *  'id': string,
    *  'from': object,    // 消息发送者信息对象。
    *  'target': object,  // 消息接收方信息（可能为用户或者群组）。
-   *  'type': String     // 'text' / 'image' / 'voice' / 'location' / 'file' / 'custom' / 'event'
+   *  'type': string     // 'text' / 'image' / 'voice' / 'location' / 'file' / 'custom' / 'event'
    *  ...                // 不同消息类型还有其他对应的相关字段，具体可参考文档。
    * }
    */
@@ -696,7 +696,7 @@ var JMessagePlugin = {
    *
    * @param {function} listener = function (event) {}  // 以参数形式返回事件信息。
    * event = {
-   *  'type': String, // 'user_password_change' / 'user_logout' / 'user_deleted' / 'user_login_status_unexpected'
+   *  'type': string, // 'user_password_change' / 'user_logout' / 'user_deleted' / 'user_login_status_unexpected'
    * }
    */
   addLoginStateChangedListener: function (listener) {
@@ -713,10 +713,10 @@ var JMessagePlugin = {
    *
    * @param {function} listener = function (event) {}  // 以参数形式返回事件信息。
    * event = {
-   *  'type': String,            // 'invite_received' / 'invite_accepted' / 'invite_declined' / 'contact_deleted'
-   *  'reason': String,          // 事件发生的理由，该字段由对方发起请求时所填，对方如果未填则返回默认字符串。
-   *  'fromUsername': String,    // 事件发送者的 username。
-   *  'fromUserAppKey': String   // 事件发送者的 AppKey。
+   *  'type': string,            // 'invite_received' / 'invite_accepted' / 'invite_declined' / 'contact_deleted'
+   *  'reason': string,          // 事件发生的理由，该字段由对方发起请求时所填，对方如果未填则返回默认字符串。
+   *  'fromUsername': string,    // 事件发送者的 username。
+   *  'fromUserAppKey': string   // 事件发送者的 AppKey。
    * }
    */
   addContactNotifyListener: function (listener) {
