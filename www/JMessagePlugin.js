@@ -261,7 +261,7 @@ var JMessagePlugin = {
    *  'username': string,        // 当 type = single 时，username 不能为空。
    *  'appKey': string,          // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
    *  'from': Number,            // 开始的消息下标。
-   *  'limit': Number            // 要获取的消息数。比如当 from = 0, limit = 10 时，是获取第 0 = 9 条历史消息。
+   *  'limit': Number            // 要获取的消息数。比如当 from = 0, limit = 10 时，是获取第 0 - 9 的 10 条历史消息。
    * }
    * @param {function} success = function (messageArray)) {}  // 以参数形式返回历史消息对象数组
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
