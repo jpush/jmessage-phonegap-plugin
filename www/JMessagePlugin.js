@@ -35,6 +35,16 @@ var MessageSendingOptions = {
   notificationText: null
 }
 
+var EventHandlers = {
+  'receiveMessage': [],
+  'clickMessageNotification': [],
+  'syncOfflineMessage': [],
+  'syncRoamingMessage': [],
+  'loginStateChanged': [],
+  'contactNotify': [],
+  'retractMessage': []
+}
+
 var JMessagePlugin = {
   /**
    * @param {object} params = {
@@ -45,25 +55,16 @@ var JMessagePlugin = {
    * 打开消息漫游之后，用户多个设备之间登录时，SDK 会自动将当前登录用户的历史消息同步到本地。
    */
   init: function (params) {
-    JMessagePlugin.handlers = {
-      'receiveMessage': [],
-      'clickMessageNotification': [],
-      'syncOfflineMessage': [],
-      'syncRoamingMessage': [],
-      'loginStateChanged': [],
-      'contactNotify': [],
-      'retractMessage': []
-    }
-
     var success = function (result) {
-      if (!JMessagePlugin.handlers.hasOwnProperty(result.eventName)) {
+      if (!EventHandlers.hasOwnProperty(result.eventName)) {
         return
       }
 
-      for (var index in JMessagePlugin.handlers[result.eventName]) {
-        JMessagePlugin.handlers[result.eventName][index].apply(undefined, [result.value])
+      for (var index in EventHandlers[result.eventName]) {
+        EventHandlers[result.eventName][index].apply(undefined, [result.value])
       }
     }
+
     exec(success, null, PLUGIN_NAME, 'init', [params])
   },
   /**
@@ -146,7 +147,7 @@ var JMessagePlugin = {
    *  'username': string,                            // 当 type = single 时，username 不能为空
    *  'appKey': string,                              // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用
    *  'text': string,                                // 消息内容
-   *  'extras': Object,                              // Optional. 自定义键值对 = {'key1': 'value1'}
+   *  'extras': object,                              // Optional. 自定义键值对 = {'key1': 'value1'}
    *  'messageSendingOptions': MessageSendingOptions // Optional. MessageSendingOptions 对象
    * }
    * @param {function} success = function (msg) {}   // 以参数形式返回消息对象。
@@ -162,7 +163,7 @@ var JMessagePlugin = {
    *  'username': string,                            // 当 type = single 时，username 不能为空
    *  'appKey': string,                              // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
    *  'path': string,                                // 本地图片路径
-   *  'extras': Object,                              // Optional. 自定义键值对 = {'key1': 'value1'}
+   *  'extras': object,                              // Optional. 自定义键值对 = {'key1': 'value1'}
    *  'messageSendingOptions': MessageSendingOptions // Optional. MessageSendingOptions 对象
    * }
    * @param {function} success = function (msg) {}   // 以参数形式返回消息对象。
@@ -178,7 +179,7 @@ var JMessagePlugin = {
    *  'username': string,                            // 当 type = single 时，username 不能为空
    *  'appKey': string,                              // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
    *  'path': string,                                // 本地图片路径
-   *  'extras': Object,                              // Optional. 自定义键值对 = {'key1': 'value1'}
+   *  'extras': object,                              // Optional. 自定义键值对 = {'key1': 'value1'}
    *  'messageSendingOptions': MessageSendingOptions // Optional. MessageSendingOptions 对象
    * }
    * @param {function} success = function (msg) {}   // 以参数形式返回消息对象。
@@ -193,7 +194,7 @@ var JMessagePlugin = {
    *  'groupId': string,        // 当 type = group 时，groupId 不能为空
    *  'username': string,       // 当 type = single 时，username 不能为空
    *  'appKey': string,         // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
-   *  'customObject': {'key1': 'value1'}  // Optional. 自定义键值对
+   *  'customobject': {'key1': 'value1'}  // Optional. 自定义键值对
    * }
    * @param {function} success = function (msg) {}   // 以参数形式返回消息对象。
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
@@ -211,7 +212,7 @@ var JMessagePlugin = {
    *  'longitude': Number,      // 经度信息
    *  'scale': Number,          // 地图缩放比例
    *  'address': string,        // 详细地址信息
-   *  'extras': Object          // Optional. 自定义键值对 = {'key1': 'value1'}
+   *  'extras': object          // Optional. 自定义键值对 = {'key1': 'value1'}
    * }
    * @param {function} success = function (msg) {}   // 以参数形式返回消息对象。
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
@@ -226,7 +227,7 @@ var JMessagePlugin = {
    *  'username': string,                            // 当 type = single 时，username 不能为空。
    *  'appKey': string,                              // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
    *  'path': string,                                // 本地文件路径。
-   *  'extras': Object,                              // Optional. 自定义键值对 = {'key1': 'value1'}
+   *  'extras': object,                              // Optional. 自定义键值对 = {'key1': 'value1'}
    *  'messageSendingOptions': MessageSendingOptions // Optional. MessageSendingOptions 对象。
    * }
    * @param {function} success = function (msg) {}   // 以参数形式返回消息对象。
@@ -261,7 +262,7 @@ var JMessagePlugin = {
    *  'username': string,        // 当 type = single 时，username 不能为空。
    *  'appKey': string,          // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
    *  'from': Number,            // 开始的消息下标。
-   *  'limit': Number            // 要获取的消息数。比如当 from = 0, limit = 10 时，是获取第 0 = 9 条历史消息。
+   *  'limit': Number            // 要获取的消息数。比如当 from = 0, limit = 10 时，是获取第 0 - 9 的 10 条历史消息。
    * }
    * @param {function} success = function (messageArray)) {}  // 以参数形式返回历史消息对象数组
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
@@ -511,7 +512,7 @@ var JMessagePlugin = {
   },
   /**
    * 下载语音消息文件，如果已经下载，会直接返回本地文件路径，不会重复下载。
-   * 
+   *
    * @param {object} params = {
    *  'type': string,            // 'single' / 'group'
    *  'groupId': string,         // 目标群组 id。
@@ -573,7 +574,7 @@ var JMessagePlugin = {
   },
   /**
    * 进入聊天会话。可以在进入聊天会话页面时调用该方法，这样在收到当前聊天用户的消息时，不会显示通知。
-   *  
+   *
    * @param {object} params = {
    *  'type': string,            // 'single' / 'group'
    *  'groupId': string,         // 目标群组 id。
@@ -641,12 +642,12 @@ var JMessagePlugin = {
    * }
    */
   addReceiveMessageListener: function (listener) {
-    JMessagePlugin.handlers.receiveMessage.push(listener)
+    EventHandlers.receiveMessage.push(listener)
   },
   removeReceiveMessageListener: function (listener) {
-    var handlerIndex = JMessagePlugin.handlers.receiveMessage.indexOf(listener)
+    var handlerIndex = EventHandlers.receiveMessage.indexOf(listener)
     if (handlerIndex >= 0) {
-      JMessagePlugin.handlers.receiveMessage.splice(handlerIndex, 1)
+      EventHandlers.receiveMessage.splice(handlerIndex, 1)
     }
   },
   /**
@@ -655,12 +656,12 @@ var JMessagePlugin = {
    * @param {function} listener = function (message) {}  // 以参数形式返回消息对象。
    */
   addClickMessageNotificationListener: function (listener) {
-    JMessagePlugin.handlers.clickMessageNotification.push(listener)
+    EventHandlers.clickMessageNotification.push(listener)
   },
   removeClickMessageNotificationListener: function (listener) {
-    var handlerIndex = JMessagePlugin.handlers.clickMessageNotification.indexOf(listener)
+    var handlerIndex = EventHandlers.clickMessageNotification.indexOf(listener)
     if (handlerIndex >= 0) {
-      JMessagePlugin.handlers.clickMessageNotification.splice(handlerIndex, 1)
+      EventHandlers.clickMessageNotification.splice(handlerIndex, 1)
     }
   },
   /**
@@ -669,12 +670,12 @@ var JMessagePlugin = {
    * @param {function} listener = function ({'conversation': {}, 'messageArray': []}) {}  // 以参数形式返回消息对象数组。
    */
   addSyncOfflineMessageListener: function (listener) {
-    JMessagePlugin.handlers.syncOfflineMessage.push(listener)
+    EventHandlers.syncOfflineMessage.push(listener)
   },
   removeSyncOfflineMessageListener: function (listener) {
-    var handlerIndex = JMessagePlugin.handlers.syncOfflineMessage.indexOf(listener)
+    var handlerIndex = EventHandlers.syncOfflineMessage.indexOf(listener)
     if (handlerIndex >= 0) {
-      JMessagePlugin.handlers.syncOfflineMessage.splice(handlerIndex, 1)
+      EventHandlers.syncOfflineMessage.splice(handlerIndex, 1)
     }
   },
   /**
@@ -683,12 +684,12 @@ var JMessagePlugin = {
    * @param {function} listener = function ({'conversation': {}}) {}  // 以参数形式返回消息对象数组。
    */
   addSyncRoamingMessageListener: function (listener) {
-    JMessagePlugin.handlers.syncRoamingMessage.push(listener)
+    EventHandlers.syncRoamingMessage.push(listener)
   },
   removeSyncRoamingMessageListener: function (listener) {
-    var handlerIndex = JMessagePlugin.handlers.syncRoamingMessage.indexOf(listener)
+    var handlerIndex = EventHandlers.syncRoamingMessage.indexOf(listener)
     if (handlerIndex >= 0) {
-      JMessagePlugin.handlers.syncRoamingMessage.splice(handlerIndex, 1)
+      EventHandlers.syncRoamingMessage.splice(handlerIndex, 1)
     }
   },
   /**
@@ -700,12 +701,12 @@ var JMessagePlugin = {
    * }
    */
   addLoginStateChangedListener: function (listener) {
-    JMessagePlugin.handlers.loginStateChanged.push(listener)
+    EventHandlers.loginStateChanged.push(listener)
   },
   removeLoginStateChangedListener: function (listener) {
-    var handlerIndex = JMessagePlugin.handlers.loginStateChanged.indexOf(listener)
+    var handlerIndex = EventHandlers.loginStateChanged.indexOf(listener)
     if (handlerIndex >= 0) {
-      JMessagePlugin.handlers.loginStateChanged.splice(handlerIndex, 1)
+      EventHandlers.loginStateChanged.splice(handlerIndex, 1)
     }
   },
   /**
@@ -720,12 +721,12 @@ var JMessagePlugin = {
    * }
    */
   addContactNotifyListener: function (listener) {
-    JMessagePlugin.handlers.contactNotify.push(listener)
+    EventHandlers.contactNotify.push(listener)
   },
   removeContactNotifyListener: function (listener) {
-    var handlerIndex = JMessagePlugin.handlers.contactNotify.indexOf(listener)
+    var handlerIndex = EventHandlers.contactNotify.indexOf(listener)
     if (handlerIndex >= 0) {
-      JMessagePlugin.handlers.contactNotify.splice(handlerIndex, 1)
+      EventHandlers.contactNotify.splice(handlerIndex, 1)
     }
   },
   /**
@@ -733,17 +734,17 @@ var JMessagePlugin = {
    *
    * @param {function} listener = function (event) {} // 以参数形式返回事件信息。
    * event = {
-   *  'conversation': Object      // 会话对象。
-   *  'retractedMessage': Object  // 被撤回的消息对象。
+   *  'conversation': object      // 会话对象。
+   *  'retractedMessage': object  // 被撤回的消息对象。
    * }
    */
   addMessageRetractListener: function (listener) {
-    JMessagePlugin.handlers.retractMessage.push(listener)
+    EventHandlers.retractMessage.push(listener)
   },
   removeMessageRetractListener: function (listener) {
-    var handlerIndex = JMessagePlugin.handlers.retractMessage.indexOf(listener)
+    var handlerIndex = EventHandlers.retractMessage.indexOf(listener)
     if (handlerIndex >= 0) {
-      JMessagePlugin.handlers.retractMessage.splice(handlerIndex, 1)
+      EventHandlers.retractMessage.splice(handlerIndex, 1)
     }
   }
 }
