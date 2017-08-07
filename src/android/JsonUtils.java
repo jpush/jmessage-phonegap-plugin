@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import cn.jpush.im.android.api.JMessageClient;
 import cn.jpush.im.android.api.content.CustomContent;
 import cn.jpush.im.android.api.content.EventNotificationContent;
 import cn.jpush.im.android.api.content.FileContent;
@@ -22,6 +23,7 @@ import cn.jpush.im.android.api.content.MessageContent;
 import cn.jpush.im.android.api.content.TextContent;
 import cn.jpush.im.android.api.content.VoiceContent;
 import cn.jpush.im.android.api.enums.ConversationType;
+import cn.jpush.im.android.api.enums.MessageDirect;
 import cn.jpush.im.android.api.model.Conversation;
 import cn.jpush.im.android.api.model.GroupInfo;
 import cn.jpush.im.android.api.model.Message;
@@ -140,10 +142,16 @@ class JsonUtils {
             result.put("id", msg.getId());
             result.put("from", toJson(msg.getFromUser()));
 
-            if (msg.getTargetType() == ConversationType.single) {
-                result.put("target", toJson((UserInfo) msg.getTargetInfo()));
-            } else if (msg.getTargetType() == ConversationType.group) {
-                result.put("target", toJson((GroupInfo) msg.getTargetInfo()));
+            if (msg.getDirect() == MessageDirect.send) {
+                if (msg.getTargetType() == ConversationType.single) {
+                    result.put("target", toJson((UserInfo) msg.getTargetInfo()));
+                } else if (msg.getTargetType() == ConversationType.group) {
+                    result.put("target", toJson((GroupInfo) msg.getTargetInfo()));
+                }
+
+            } else {
+                UserInfo myInfo = JMessageClient.getMyInfo();
+                result.put("target", toJson(myInfo));
             }
 
             MessageContent content = msg.getContent();
