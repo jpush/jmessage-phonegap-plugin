@@ -48,8 +48,7 @@ var EventHandlers = {
 var JMessagePlugin = {
   /**
    * @param {object} params = {
-   *  'isOpenMessageRoaming': boolean,  // 是否开启消息漫游。
-   *  'isProduction': boolean           // 是否为生产环境（仅 iOS 有效）。
+   *  'isOpenMessageRoaming': boolean  // 是否开启消息漫游，不传默认关闭。
    * }
    *
    * 打开消息漫游之后，用户多个设备之间登录时，SDK 会自动将当前登录用户的历史消息同步到本地。
@@ -178,9 +177,9 @@ var JMessagePlugin = {
    *  'groupId': string,                             // 当 type = group 时，groupId 不能为空
    *  'username': string,                            // 当 type = single 时，username 不能为空
    *  'appKey': string,                              // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
-   *  'path': string,                                // 本地图片路径
+   *  'path': string,                                // 本地语音文件路径。
    *  'extras': object,                              // Optional. 自定义键值对 = {'key1': 'value1'}
-   *  'messageSendingOptions': MessageSendingOptions // Optional. MessageSendingOptions 对象
+   *  'messageSendingOptions': MessageSendingOptions // Optional. MessageSendingOptions 对象。
    * }
    * @param {function} success = function (msg) {}   // 以参数形式返回消息对象。
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
@@ -194,7 +193,7 @@ var JMessagePlugin = {
    *  'groupId': string,        // 当 type = group 时，groupId 不能为空
    *  'username': string,       // 当 type = single 时，username 不能为空
    *  'appKey': string,         // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
-   *  'customobject': {'key1': 'value1'}  // Optional. 自定义键值对
+   *  'customObject': {'key1': 'value1'}  // Optional. 自定义键值对
    * }
    * @param {function} success = function (msg) {}   // 以参数形式返回消息对象。
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
