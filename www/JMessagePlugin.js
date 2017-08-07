@@ -48,8 +48,7 @@ var EventHandlers = {
 var JMessagePlugin = {
   /**
    * @param {object} params = {
-   *  'isOpenMessageRoaming': boolean,  // 是否开启消息漫游。
-   *  'isProduction': boolean           // 是否为生产环境（仅 iOS 有效）。
+   *  'isOpenMessageRoaming': boolean  // 是否开启消息漫游，不传默认关闭。
    * }
    *
    * 打开消息漫游之后，用户多个设备之间登录时，SDK 会自动将当前登录用户的历史消息同步到本地。
