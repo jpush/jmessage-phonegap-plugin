@@ -31,38 +31,16 @@ import cn.jpush.im.android.api.model.UserInfo;
 
 class JsonUtils {
 
-    static Map fromJson(JSONObject jsonObject) throws JSONException {
-        Map<String, Object> map = new HashMap<String, Object>();
+    static Map<String, String> fromJson(JSONObject jsonObject) throws JSONException {
+        Map<String, String> map = new HashMap<String, String>();
 
         Iterator<String> keysItr = jsonObject.keys();
         while (keysItr.hasNext()) {
             String key = keysItr.next();
-            Object value = jsonObject.get(key);
-
-            if (value instanceof JSONArray) {
-                value = fromJson((JSONArray) value);
-
-            } else if (value instanceof JSONObject) {
-                value = fromJson((JSONObject) value);
-            }
+            String value = jsonObject.getString(key);
             map.put(key, value);
         }
         return map;
-    }
-
-    static List<Object> fromJson(JSONArray array) throws JSONException {
-        List<Object> list = new ArrayList<Object>();
-        for (int i = 0; i < array.length(); i++) {
-            Object value = array.get(i);
-
-            if (value instanceof JSONArray) {
-                value = fromJson((JSONArray) value);
-            } else if (value instanceof JSONObject) {
-                value = fromJson((JSONObject) value);
-            }
-            list.add(value);
-        }
-        return list;
     }
 
     static JSONObject toJson(Map<String, String> map) {
@@ -70,12 +48,12 @@ class JsonUtils {
 
         JSONObject jsonObject = new JSONObject();
         while (iterator.hasNext()) {
-            for (String key : map.keySet()) {
-                try {
-                    jsonObject.put(key, map.get(key));
-                } catch (JSONException jsone) {
-                    Log.wtf("RequestManager", "Failed to put value for " + key + " into JSONObject.", jsone);
-                }
+            String key = iterator.next();
+
+            try {
+                jsonObject.put(key, map.get(key));
+            } catch (JSONException e) {
+                Log.wtf("RequestManager", "Failed to put value for " + key + " into JSONObject.", e);
             }
         }
         return jsonObject;

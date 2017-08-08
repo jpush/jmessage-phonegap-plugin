@@ -111,7 +111,7 @@ public class JMessagePlugin extends CordovaPlugin {
 
     void init(JSONArray data, CallbackContext callback) throws JSONException {
         JSONObject params = data.getJSONObject(0);
-        boolean isOpenMessageRoaming = params.has("isOpenMessageRoaming") ? params.getBoolean("isOpenMessageRoaming") : false;
+        boolean isOpenMessageRoaming = params.getBoolean("isOpenMessageRoaming");
 
         JMessageClient.init(mCordovaActivity.getApplicationContext(), isOpenMessageRoaming);
         JMessageClient.registerEventReceiver(this);
