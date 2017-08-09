@@ -364,6 +364,8 @@
     case kJMSGContentTypeVoice: {
       dict[@"type"] = @"voice";
       dict[@"path"] = [self getOriginMediaFilePath];
+      JMSGVoiceContent *voiceContent = (JMSGVoiceContent *) self.content;
+      dict[@"duration"] = [voiceContent duration];
       break;
     }
     case kJMSGContentTypeCustom: {
