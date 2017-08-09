@@ -1569,15 +1569,77 @@ public class JMessagePlugin extends CordovaPlugin {
      * @param event 离线消息事件。
      */
     public void onEvent(OfflineMessageEvent event) throws JSONException {
-        JSONObject json = new JSONObject();
+        final JSONObject json = new JSONObject();
         json.put("conversation", toJson(event.getConversation()));
 
-        JSONArray msgJsonArr = new JSONArray();
-        for (Message msg : event.getOfflineMessageList()) {
-            msgJsonArr.put(toJson(msg));
+        final List<Message> offlineMsgList = event.getOfflineMessageList();
+        int latestMediaMessageIndex = -1;
+
+        for (int i = offlineMsgList.size() - 1; i >= 0; i--) {
+            Message msg = offlineMsgList.get(i);
+            if (msg.getContentType() == ContentType.image || msg.getContentType() == ContentType.voice) {
+                latestMediaMessageIndex = i;
+                break;
+            }
         }
-        json.put("messageArray", msgJsonArr);
-        eventSuccess(toJson("syncOfflineMessage", json));
+
+        final JSONArray msgJsonArr = new JSONArray();
+
+        if (latestMediaMessageIndex == -1) { // 没有多媒体消息
+            for (Message msg : offlineMsgList) {
+                msgJsonArr.put(toJson(msg));
+            }
+            json.put("messageArray", msgJsonArr);
+            eventSuccess(toJson("syncOfflineMessage", json));
+
+        } else {
+            final int fLatestMediaMessageIndex = latestMediaMessageIndex;
+
+            for (int i = 0; i < offlineMsgList.size(); i++) {
+                Message msg = offlineMsgList.get(i);
+
+                final int fI = i;
+
+                switch (msg.getContentType()) {
+                    case image:
+                        ((ImageContent) msg.getContent()).downloadThumbnailImage(msg, new DownloadCompletionCallback() {
+                            @Override
+                            public void onComplete(int status, String desc, File file) {
+                                if (fI == fLatestMediaMessageIndex) {
+                                    for (Message msg : offlineMsgList) {
+                                        msgJsonArr.put(toJson(msg));
+                                    }
+                                    try {
+                                        json.put("messageArray", msgJsonArr);
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                    eventSuccess(toJson("syncOfflineMessage", json));
+                                }
+                            }
+                        });
+                        break;
+                    case voice:
+                        ((VoiceContent) msg.getContent()).downloadVoiceFile(msg, new DownloadCompletionCallback() {
+                            @Override
+                            public void onComplete(int status, String desc, File file) {
+                                if (fI == fLatestMediaMessageIndex) {
+                                    for (Message msg : offlineMsgList) {
+                                        msgJsonArr.put(toJson(msg));
+                                    }
+                                    try {
+                                        json.put("messageArray", msgJsonArr);
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                    eventSuccess(toJson("syncOfflineMessage", json));
+                                }
+                            }
+                        });
+                        default:
+                }
+            }
+        }
     }
 
     /**
