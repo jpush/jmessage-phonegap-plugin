@@ -33,7 +33,7 @@
 
 [API doc](./doc/api.md)
 
-## 常见问题
+## FAQ
 
 若要使用 CLI 来编译项目，注意应使用 *cordova compile* 而不是 *cordova build* 命令，因为 *cordova build* 可能会清除对插件文件中 AndroidManifest.xml 文件的修改。
 具体的 Cordova CLI 用法可参考 [Cordova CLI 官方文档](https://cordova.apache.org/docs/en/latest/reference/cordova-cli/index.html)。
@@ -43,6 +43,11 @@
 - Eclipse 中 import PhoneGap 工程之后出现：*Type CallbackContext cannot be resolved to a type*。
 
   解决方案：Eclipse 中右键单击工程名，Build Path -> Config Build Path -> Projects -> 选中工程名称 -> CordovaLib -> 点击 add。
+
+- 发送图片、语音或文件消息，提示 'File not found'。
+
+  1. 请先确认文件路径格式是否正确，需要为绝对路径，类似于：/storage/emulated/0/DCIM/Camera/IMG_20160526_130223.jpg
+  2. 如果系统为 Android 6.0 以上，还需要在应用中动态请求存储（WRITE_EXTERNAL_STORAGE）权限。对于动态请求权限，可以使用这个[插件](https://github.com/dpa99c/cordova-diagnostic-plugin#requestruntimepermission)。
 
 ### iOS
 

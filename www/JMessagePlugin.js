@@ -161,7 +161,7 @@ var JMessagePlugin = {
    *  'groupId': string,                             // 当 type = group 时，groupId 不能为空
    *  'username': string,                            // 当 type = single 时，username 不能为空
    *  'appKey': string,                              // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
-   *  'path': string,                                // 本地图片路径
+   *  'path': string,                                // 本地图片绝对路径，类似：/storage/emulated/0/DCIM/Camera/IMG_20160526_130223.jpg
    *  'extras': object,                              // Optional. 自定义键值对 = {'key1': 'value1'}
    *  'messageSendingOptions': MessageSendingOptions // Optional. MessageSendingOptions 对象
    * }
