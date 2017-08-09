@@ -88,7 +88,8 @@ VoiceMessage: {
     from: UserInfo,
     target: UserInfo / GroupInfo,
     extras: object,
-    path: string                    // 语音文件路径。
+    path: string,                   // 语音文件路径。
+    duration: number                // 语音时长
 }
 ```
 
