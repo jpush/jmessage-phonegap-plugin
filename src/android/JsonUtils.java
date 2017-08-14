@@ -1,6 +1,5 @@
 package cn.jiguang.cordova.im;
 
-
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -142,55 +141,53 @@ class JsonUtils {
             result.put("createTime", msg.getCreateTime());
 
             switch (msg.getContentType()) {
-                case text:
-                    result.put("type", "text");
-                    result.put("text", ((TextContent) content).getText());
+            case text:
+                result.put("type", "text");
+                result.put("text", ((TextContent) content).getText());
+                break;
+            case image:
+                result.put("type", "image");
+                result.put("thumbPath", ((ImageContent) content).getLocalThumbnailPath());
+                break;
+            case voice:
+                result.put("type", "voice");
+                result.put("path", ((VoiceContent) content).getLocalPath());
+                result.put("duration", ((VoiceContent) content).getDuration());
+                break;
+            case file:
+                result.put("type", "file");
+                result.put("fileName", ((FileContent) content).getFileName());
+                break;
+            case custom:
+                result.put("type", "custom");
+                Map<String, String> customObject = ((CustomContent) content).getAllStringValues();
+                result.put("customObject", toJson(customObject));
+                break;
+            case location:
+                result.put("type", "location");
+                result.put("latitude", ((LocationContent) content).getLatitude());
+                result.put("longitude", ((LocationContent) content).getLongitude());
+                result.put("address", ((LocationContent) content).getAddress());
+                result.put("scale", ((LocationContent) content).getScale());
+                break;
+            case eventNotification:
+                result.put("type", "event");
+                List usernameList = ((EventNotificationContent) content).getUserNames();
+                result.put("usernames", toJson(usernameList));
+                switch (((EventNotificationContent) content).getEventNotificationType()) {
+                case group_member_added:
+                    //群成员加群事件
+                    result.put("eventType", "group_member_added");
                     break;
-                case image:
-                    result.put("type", "image");
-                    result.put("thumbPath", ((ImageContent) content).getLocalThumbnailPath());
+                case group_member_removed:
+                    //群成员被踢事件
+                    result.put("eventType", "group_member_removed");
                     break;
-                case voice:
-                    result.put("type", "voice");
-                    result.put("path", ((VoiceContent) content).getLocalPath());
-                    result.put("duration", ((VoiceContent) content).getDuration());
+                case group_member_exit:
+                    //群成员退群事件
+                    result.put("eventType", "group_member_exit");
                     break;
-                case file:
-                    result.put("type", "file");
-                    result.put("fileName", ((FileContent) content).getFileName());
-                    break;
-                case custom:
-                    result.put("type", "custom");
-                    Map<String, String> customObject = ((CustomContent) content).getAllStringValues();
-                    result.put("customObject", toJson(customObject));
-                    break;
-                case location:
-                    result.put("type", "location");
-                    result.put("latitude", ((LocationContent) content).getLatitude());
-                    result.put("longitude", ((LocationContent) content).getLongitude());
-                    result.put("address", ((LocationContent) content).getAddress());
-                    result.put("scale", ((LocationContent) content).getScale());
-                    break;
-                case eventNotification:
-                    result.put("type", "event");
-                    List usernameList = ((EventNotificationContent) content).getUserNames();
-                    result.put("usernames", toJson(usernameList));
-                    switch (((EventNotificationContent) content).getEventNotificationType()) {
-                        case group_member_added:
-                            //群成员加群事件
-                            result.put("eventType", "group_member_added");
-                            break;
-                        case group_member_removed:
-                            //群成员被踢事件
-                            result.put("eventType", "group_member_removed");
-                            break;
-                        case group_member_exit:
-                            //群成员退群事件
-                            result.put("eventType", "group_member_exit");
-                            break;
-                    }
-                default:
-                    return null;
+                }
             }
         } catch (JSONException e) {
             e.printStackTrace();
