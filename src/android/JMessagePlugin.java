@@ -23,8 +23,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import cn.jpush.im.android.api.ContactManager;
 import cn.jpush.im.android.api.JMessageClient;
@@ -110,8 +108,11 @@ public class JMessagePlugin extends CordovaPlugin {
 
     void init(JSONArray data, CallbackContext callback) throws JSONException {
         JSONObject params = data.getJSONObject(0);
-        boolean isOpenMessageRoaming = params.getBoolean("isOpenMessageRoaming");
 
+        boolean isOpenMessageRoaming = false;
+        if (params.has("isOpenMessageRoaming")) {
+            isOpenMessageRoaming = params.getBoolean("isOpenMessageRoaming");
+        }
         JMessageClient.init(mCordovaActivity.getApplicationContext(), isOpenMessageRoaming);
         JMessageClient.registerEventReceiver(this);
 
@@ -229,7 +230,7 @@ public class JMessagePlugin extends CordovaPlugin {
         });
     }
 
-    void updateMyAvatar(JSONArray data, final CallbackContext callback) {
+    void updateMyAvatar(JSONArray data, final CallbackContext callback) throws JSONException {
         JSONObject params = data.getJSONObject(0);
         if (!params.has("imgPath")) {
             handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
@@ -1613,42 +1614,42 @@ public class JMessagePlugin extends CordovaPlugin {
                 final int fI = i;
 
                 switch (msg.getContentType()) {
-                case image:
-                    ((ImageContent) msg.getContent()).downloadThumbnailImage(msg, new DownloadCompletionCallback() {
-                        @Override
-                        public void onComplete(int status, String desc, File file) {
-                            if (fI == fLatestMediaMessageIndex) {
-                                for (Message msg : offlineMsgList) {
-                                    msgJsonArr.put(toJson(msg));
+                    case image:
+                        ((ImageContent) msg.getContent()).downloadThumbnailImage(msg, new DownloadCompletionCallback() {
+                            @Override
+                            public void onComplete(int status, String desc, File file) {
+                                if (fI == fLatestMediaMessageIndex) {
+                                    for (Message msg : offlineMsgList) {
+                                        msgJsonArr.put(toJson(msg));
+                                    }
+                                    try {
+                                        json.put("messageArray", msgJsonArr);
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                    eventSuccess(toJson("syncOfflineMessage", json));
                                 }
-                                try {
-                                    json.put("messageArray", msgJsonArr);
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                                eventSuccess(toJson("syncOfflineMessage", json));
                             }
-                        }
-                    });
-                    break;
-                case voice:
-                    ((VoiceContent) msg.getContent()).downloadVoiceFile(msg, new DownloadCompletionCallback() {
-                        @Override
-                        public void onComplete(int status, String desc, File file) {
-                            if (fI == fLatestMediaMessageIndex) {
-                                for (Message msg : offlineMsgList) {
-                                    msgJsonArr.put(toJson(msg));
+                        });
+                        break;
+                    case voice:
+                        ((VoiceContent) msg.getContent()).downloadVoiceFile(msg, new DownloadCompletionCallback() {
+                            @Override
+                            public void onComplete(int status, String desc, File file) {
+                                if (fI == fLatestMediaMessageIndex) {
+                                    for (Message msg : offlineMsgList) {
+                                        msgJsonArr.put(toJson(msg));
+                                    }
+                                    try {
+                                        json.put("messageArray", msgJsonArr);
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                    eventSuccess(toJson("syncOfflineMessage", json));
                                 }
-                                try {
-                                    json.put("messageArray", msgJsonArr);
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                                eventSuccess(toJson("syncOfflineMessage", json));
                             }
-                        }
-                    });
-                default:
+                        });
+                    default:
                 }
             }
         }
