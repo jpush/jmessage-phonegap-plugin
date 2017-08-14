@@ -125,7 +125,12 @@ var JMessagePlugin = {
   /**
    * 更新当前用户头像。
    * 
-   * @param {object} params = {imgPath: string}  // 本地图片绝对路径。类似：/storage/emulated/0/DCIM/Camera/IMG_20160526_130223.jpg
+   * @param {object} params = {
+   *  imgPath: string // 本地图片绝对路径。
+   * }  
+   * 注意 Android 与 iOS 的文件路径是不同的：
+   *   - Android 类似：/storage/emulated/0/DCIM/Camera/IMG_20160526_130223.jpg
+   *   - iOS 类似：/var/mobile/Containers/Data/Application/7DC5CDFF-6581-4AD3-B165-B604EBAB1250/tmp/photo.jpg
    */
   updateMyAvatar: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'updateMyAvatar', [params])
@@ -169,10 +174,14 @@ var JMessagePlugin = {
    *  'groupId': string,                             // 当 type = group 时，groupId 不能为空
    *  'username': string,                            // 当 type = single 时，username 不能为空
    *  'appKey': string,                              // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
-   *  'path': string,                                // 本地图片绝对路径，类似：/storage/emulated/0/DCIM/Camera/IMG_20160526_130223.jpg
+   *  'path': string,                                // 本地图片绝对路径。
    *  'extras': object,                              // Optional. 自定义键值对 = {'key1': 'value1'}
    *  'messageSendingOptions': MessageSendingOptions // Optional. MessageSendingOptions 对象
    * }
+   * 注意 Android 与 iOS 的文件路径是不同的：
+   *   - Android 类似：/storage/emulated/0/DCIM/Camera/IMG_20160526_130223.jpg
+   *   - iOS 类似：/var/mobile/Containers/Data/Application/7DC5CDFF-6581-4AD3-B165-B604EBAB1250/tmp/photo.jpg
+   * 
    * @param {function} success = function (msg) {}   // 以参数形式返回消息对象。
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
