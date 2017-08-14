@@ -384,7 +384,7 @@
           break;
         }
         case kJMSGEventNotificationAddGroupMembers: {
-          dict[@"evenType"] = @"addGroupMembers";
+          dict[@"evenType"] = @"group_member_added";
           break;
         }
         case kJMSGEventNotificationCreateGroup: {
@@ -404,7 +404,7 @@
           break;
         }
         case kJMSGEventNotificationExitGroup: {
-          dict[@"evenType"] = @"exitGroup";
+          dict[@"evenType"] = @"group_member_exit";
           break;
         }
         case kJMSGEventNotificationLoginKicked: {
@@ -424,7 +424,7 @@
           break;
         }
         case kJMSGEventNotificationRemoveGroupMembers: {
-          dict[@"evenType"] = @"removeGroupMembers";
+          dict[@"evenType"] = @"group_member_removed";
           break;
         }
         case kJMSGEventNotificationServerAlterPassword: {

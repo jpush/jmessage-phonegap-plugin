@@ -123,6 +123,14 @@ var JMessagePlugin = {
     exec(success, error, PLUGIN_NAME, 'updateMyPassword', [params])
   },
   /**
+   * 更新当前用户头像。
+   * 
+   * @param {object} params = {imgPath: string}  // 本地图片绝对路径。类似：/storage/emulated/0/DCIM/Camera/IMG_20160526_130223.jpg
+   */
+  updateMyAvatar: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'updateMyAvatar', [params])
+  },
+  /**
    * 更新当前登录用户的信息。
    *
    * @param {object} params = {'field': '需要更新的字段值'}

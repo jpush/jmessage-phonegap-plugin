@@ -385,6 +385,29 @@ JMessagePlugin *SharedJMessagePlugin;
     }
 }
 
+- (void)updateMyAvatar:(CDVInvokedUrlCommand *)command {
+  NSDictionary * param = [command argumentAtIndex:0];
+  
+  if (!param[@"imgPath"]) {
+    [self returnParamError:command];
+    return;
+  }
+  
+  NSString *mediaPath = param[@"imgPath"];
+    
+  if([[NSFileManager defaultManager] fileExistsAtPath: mediaPath]){
+    mediaPath = mediaPath;
+    NSData *img = [NSData dataWithContentsOfFile: mediaPath];
+    
+    [JMSGUser updateMyInfoWithParameter:img userFieldType:kJMSGUserFieldsAvatar completionHandler:^(id resultObject, NSError *error) {
+      [self handleResultWithDictionary:nil command:command error:error];
+    }];
+    
+  } else {
+    [self returnMediaFileError:command];
+  }
+}
+
 - (void)updateMyInfo:(CDVInvokedUrlCommand *)command {
     NSDictionary * param = [command argumentAtIndex:0];
   
