@@ -1,7 +1,6 @@
 #import <Cordova/CDV.h>
 #import <JMessage/JMessage.h>
 
-
 @interface JMessagePlugin : CDVPlugin
 
 - (void)startJMessageSDK:(CDVInvokedUrlCommand *)command;
@@ -15,6 +14,7 @@
 - (void)userLogout:(CDVInvokedUrlCommand *)command;
 - (void)getMyInfo:(CDVInvokedUrlCommand *)command;
 - (void)getUserInfo:(CDVInvokedUrlCommand *)command;
+- (void)updateMyAvatar:(CDVInvokedUrlCommand *)command;
 - (void)updateMyPassword:(CDVInvokedUrlCommand *)command;
 - (void)updateMyInfo:(CDVInvokedUrlCommand *)command;
 

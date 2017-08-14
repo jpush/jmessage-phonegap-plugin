@@ -67,7 +67,6 @@ import static cn.jiguang.cordova.im.JMessageUtils.toMessageSendingOptions;
 import static cn.jiguang.cordova.im.JsonUtils.fromJson;
 import static cn.jiguang.cordova.im.JsonUtils.toJson;
 
-
 public class JMessagePlugin extends CordovaPlugin {
 
     private static String TAG = JMessagePlugin.class.getSimpleName();
@@ -92,14 +91,14 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     @Override
-    public boolean execute(final String action, final JSONArray data,
-                           final CallbackContext callback) throws JSONException {
+    public boolean execute(final String action, final JSONArray data, final CallbackContext callback)
+            throws JSONException {
         cordova.getThreadPool().execute(new Runnable() {
             @Override
             public void run() {
                 try {
-                    Method method = JMessagePlugin.class.getDeclaredMethod(action,
-                            JSONArray.class, CallbackContext.class);
+                    Method method = JMessagePlugin.class.getDeclaredMethod(action, JSONArray.class,
+                            CallbackContext.class);
                     method.invoke(JMessagePlugin.this, data, callback);
                 } catch (Exception e) {
                     Log.e(TAG, e.toString());
@@ -230,6 +229,23 @@ public class JMessagePlugin extends CordovaPlugin {
         });
     }
 
+    void updateMyAvatar(JSONArray data, final CallbackContext callback) {
+        JSONObject params = data.getJSONObject(0);
+        if (!params.has("imgPath")) {
+            handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
+            return;
+        }
+
+        String imgPath = params.getString("imgPath");
+        File img = new File(imgPath);
+        JMessageClient.updateUserAvatar(img, new BasicCallback() {
+            @Override
+            public void gotResult(int status, String desc) {
+                handleResult(status, desc, callback);
+            }
+        });
+    }
+
     void updateMyInfo(JSONArray data, final CallbackContext callback) {
         UserInfo myInfo = JMessageClient.getMyInfo();
         UserInfo.Field field = null;
@@ -308,8 +324,7 @@ public class JMessagePlugin extends CordovaPlugin {
             }
 
             if (params.has("messageSendingOptions")) {
-                messageSendingOptions = toMessageSendingOptions(
-                        params.getJSONObject("messageSendingOptions"));
+                messageSendingOptions = toMessageSendingOptions(params.getJSONObject("messageSendingOptions"));
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -347,8 +362,7 @@ public class JMessagePlugin extends CordovaPlugin {
             }
 
             if (params.has("messageSendingOptions")) {
-                messageSendingOptions = toMessageSendingOptions(
-                        params.getJSONObject("messageSendingOptions"));
+                messageSendingOptions = toMessageSendingOptions(params.getJSONObject("messageSendingOptions"));
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -394,8 +408,7 @@ public class JMessagePlugin extends CordovaPlugin {
             }
 
             if (params.has("messageSendingOptions")) {
-                messageSendingOptions = toMessageSendingOptions(
-                        params.getJSONObject("messageSendingOptions"));
+                messageSendingOptions = toMessageSendingOptions(params.getJSONObject("messageSendingOptions"));
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -1144,8 +1157,7 @@ public class JMessagePlugin extends CordovaPlugin {
         JMessageClient.getNoDisturblist(new GetNoDisurbListCallback() {
 
             @Override
-            public void gotResult(int status, String desc, List userInfoList,
-                                  List groupInfoList) {
+            public void gotResult(int status, String desc, List userInfoList, List groupInfoList) {
                 if (status == 0) {
                     JSONObject result = new JSONObject();
                     try {
@@ -1241,8 +1253,8 @@ public class JMessagePlugin extends CordovaPlugin {
                                         @Override
                                         public void gotResult(int status, String desc, Bitmap bitmap) {
                                             if (status == 0) {
-                                                String bigImagePath = JMessageUtils.storeImage(
-                                                        bitmap, fileName, pkgName);
+                                                String bigImagePath = JMessageUtils.storeImage(bitmap, fileName,
+                                                        pkgName);
                                                 try {
                                                     result.put("username", username);
                                                     result.put("appKey", appKey);
@@ -1601,42 +1613,42 @@ public class JMessagePlugin extends CordovaPlugin {
                 final int fI = i;
 
                 switch (msg.getContentType()) {
-                    case image:
-                        ((ImageContent) msg.getContent()).downloadThumbnailImage(msg, new DownloadCompletionCallback() {
-                            @Override
-                            public void onComplete(int status, String desc, File file) {
-                                if (fI == fLatestMediaMessageIndex) {
-                                    for (Message msg : offlineMsgList) {
-                                        msgJsonArr.put(toJson(msg));
-                                    }
-                                    try {
-                                        json.put("messageArray", msgJsonArr);
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
-                                    eventSuccess(toJson("syncOfflineMessage", json));
+                case image:
+                    ((ImageContent) msg.getContent()).downloadThumbnailImage(msg, new DownloadCompletionCallback() {
+                        @Override
+                        public void onComplete(int status, String desc, File file) {
+                            if (fI == fLatestMediaMessageIndex) {
+                                for (Message msg : offlineMsgList) {
+                                    msgJsonArr.put(toJson(msg));
                                 }
-                            }
-                        });
-                        break;
-                    case voice:
-                        ((VoiceContent) msg.getContent()).downloadVoiceFile(msg, new DownloadCompletionCallback() {
-                            @Override
-                            public void onComplete(int status, String desc, File file) {
-                                if (fI == fLatestMediaMessageIndex) {
-                                    for (Message msg : offlineMsgList) {
-                                        msgJsonArr.put(toJson(msg));
-                                    }
-                                    try {
-                                        json.put("messageArray", msgJsonArr);
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
-                                    eventSuccess(toJson("syncOfflineMessage", json));
+                                try {
+                                    json.put("messageArray", msgJsonArr);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
                                 }
+                                eventSuccess(toJson("syncOfflineMessage", json));
                             }
-                        });
-                        default:
+                        }
+                    });
+                    break;
+                case voice:
+                    ((VoiceContent) msg.getContent()).downloadVoiceFile(msg, new DownloadCompletionCallback() {
+                        @Override
+                        public void onComplete(int status, String desc, File file) {
+                            if (fI == fLatestMediaMessageIndex) {
+                                for (Message msg : offlineMsgList) {
+                                    msgJsonArr.put(toJson(msg));
+                                }
+                                try {
+                                    json.put("messageArray", msgJsonArr);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                eventSuccess(toJson("syncOfflineMessage", json));
+                            }
+                        }
+                    });
+                default:
                 }
             }
         }
