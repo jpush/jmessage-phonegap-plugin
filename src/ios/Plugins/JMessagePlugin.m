@@ -418,7 +418,7 @@ JMessagePlugin *SharedJMessagePlugin;
     }
     
     if (param[@"birthday"]) {
-        NSNumber *birthday = param[@"birthday"];
+        NSNumber *birthday = param[@"birthday"] / 1000; // 毫秒转成秒
         info.birthday = birthday;
     }
     
@@ -966,7 +966,7 @@ JMessagePlugin *SharedJMessagePlugin;
       JMSGConversation *conversation = resultObject;
       
       NSArray *messageList = [conversation messageArrayFromNewestWithOffset:param[@"from"] limit:param[@"limit"]];
-      NSMutableArray *messageDicList = @{}.mutableCopy;
+      NSMutableArray *messageDicList = @[].mutableCopy;
       for (JMSGMessage *message in messageList) {
         [messageDicList addObject:[message messageToDictionary]];
       }
@@ -983,7 +983,7 @@ JMessagePlugin *SharedJMessagePlugin;
         
         JMSGConversation *conversation = resultObject;
         NSArray *messageList = [conversation messageArrayFromNewestWithOffset:param[@"from"] limit:param[@"limit"]];
-        NSMutableArray *messageDicList = @{}.mutableCopy;
+        NSMutableArray *messageDicList = @[].mutableCopy;
         for (JMSGMessage *message in messageList) {
           [messageDicList addObject:[message messageToDictionary]];
         }

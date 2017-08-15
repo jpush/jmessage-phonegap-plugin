@@ -142,7 +142,7 @@ var JMessagePlugin = {
    *
    *  field 包括：nickname（昵称）, birthday（生日）, signature（签名）, gender（性别）, region（地区）, address（具体地址）。
    *  如：{
-   *    'birthday': Number,  // 生日日期的微秒数
+   *    'birthday': Number,  // 生日日期的毫秒数
    *    'gender': string,    // 'male' / 'female' / 'unknown'
    *    ...                  // 其余皆为 string 类型
    *  }
@@ -181,7 +181,6 @@ var JMessagePlugin = {
    * 注意 Android 与 iOS 的文件路径是不同的：
    *   - Android 类似：/storage/emulated/0/DCIM/Camera/IMG_20160526_130223.jpg
    *   - iOS 类似：/var/mobile/Containers/Data/Application/7DC5CDFF-6581-4AD3-B165-B604EBAB1250/tmp/photo.jpg
-   * 
    * @param {function} success = function (msg) {}   // 以参数形式返回消息对象。
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
