@@ -418,7 +418,7 @@ JMessagePlugin *SharedJMessagePlugin;
     }
     
     if (param[@"birthday"]) {
-        NSNumber *birthday = param[@"birthday"] / 1000; // 毫秒转成秒
+        NSNumber *birthday = param[@"birthday"] / 1000; // Millisecond to second.
         info.birthday = birthday;
     }
     
