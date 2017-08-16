@@ -151,7 +151,7 @@ class JsonUtils {
             case voice:
                 result.put("type", "voice");
                 result.put("path", ((VoiceContent) content).getLocalPath());
-                result.put("duration", ((VoiceContent) content).getDuration() / 1000);
+                result.put("duration", ((VoiceContent) content).getDuration());
                 break;
             case file:
                 result.put("type", "file");

@@ -420,7 +420,7 @@ public class JMessagePlugin extends CordovaPlugin {
         try {
             File file = new File(path);
             MediaPlayer mediaPlayer = MediaPlayer.create(mCordovaActivity, Uri.parse(path));
-            int duration = mediaPlayer.getDuration();
+            int duration = mediaPlayer.getDuration() / 1000;    // Millisecond to second.
             VoiceContent content = new VoiceContent(file, duration);
             mediaPlayer.release();
 
