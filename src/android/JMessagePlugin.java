@@ -248,21 +248,27 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     void updateMyInfo(JSONArray data, final CallbackContext callback) {
-        final UserInfo myInfo = JMessageClient.getMyInfo();
+        UserInfo myInfo = JMessageClient.getMyInfo();
+        UserInfo.Field field = null;
 
         try {
             JSONObject params = data.getJSONObject(0);
 
             if (params.has("nickname")) {
+                field = UserInfo.Field.nickname;
                 myInfo.setNickname(params.getString("nickname"));
 
             } else if (params.has("birthday")) {
+                field = UserInfo.Field.birthday;
                 myInfo.setBirthday(params.getLong("birthday"));
 
             } else if (params.has("signature")) {
+                field = UserInfo.Field.signature;
                 myInfo.setSignature(params.getString("signature"));
 
             } else if (params.has("gender")) {
+                field = UserInfo.Field.gender;
+
                 if (params.getString("gender").equals("male")) {
                     myInfo.setGender(UserInfo.Gender.male);
                 } else if (params.getString("gender").equals("female")) {
@@ -272,13 +278,15 @@ public class JMessagePlugin extends CordovaPlugin {
                 }
 
             } else if (params.has("region")) {
+                field = UserInfo.Field.region;
                 myInfo.setRegion(params.getString("region"));
 
             } else if (params.has("address")) {
+                field = UserInfo.Field.address;
                 myInfo.setAddress(params.getString("address"));
 
             } else {
-                handleResult(ERR_CODE_PARAMETER, "field error", callback);
+                handleResult(0, "field error", callback);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -286,14 +294,13 @@ public class JMessagePlugin extends CordovaPlugin {
             return;
         }
 
-        JMessageClient.updateMyInfo(UserInfo.Field.all, myInfo, new BasicCallback() {
+        JMessageClient.updateMyInfo(field, myInfo, new BasicCallback() {
 
             @Override
             public void gotResult(int status, String desc) {
-                JSONObject json = toJson(myInfo);
-                handleResult(json, status, desc, callback);
+                handleResult(status, desc, callback);
             }
-        }); 
+        });   
     }
 
     void sendTextMessage(JSONArray data, final CallbackContext callback) {
