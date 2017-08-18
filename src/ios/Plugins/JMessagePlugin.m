@@ -416,12 +416,12 @@ JMessagePlugin *SharedJMessagePlugin;
     if (param[@"nickname"]) {
         info.nickname = param[@"nickname"];
     }
-    
+  
     if (param[@"birthday"]) {
-        NSNumber *birthday = param[@"birthday"] / 1000; // Millisecond to second.
-        info.birthday = birthday;
+      NSNumber *birthday = param[@"birthday"];
+      info.birthday = @([birthday integerValue] / 1000); // Millisecond to second.
     }
-    
+  
     if (param[@"signature"]) {
         info.signature = param[@"signature"];
     }
