@@ -300,7 +300,7 @@ public class JMessagePlugin extends CordovaPlugin {
             public void gotResult(int status, String desc) {
                 handleResult(status, desc, callback);
             }
-        });
+        });   
     }
 
     void sendTextMessage(JSONArray data, final CallbackContext callback) {
@@ -1201,7 +1201,7 @@ public class JMessagePlugin extends CordovaPlugin {
                 if (status == 0) {
                     JSONObject result = new JSONObject();
                     try {
-                        result.put("isNoDisturb", integer == ERR_CODE_PARAMETER);
+                        result.put("isNoDisturb", integer == 1);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
