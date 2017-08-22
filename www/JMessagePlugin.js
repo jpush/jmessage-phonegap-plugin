@@ -2,39 +2,6 @@ var exec = require('cordova/exec')
 
 var PLUGIN_NAME = 'JMessagePlugin'
 
-/**
- * 针对消息发送动作的控制选项，可附加在消息发送方法的参数中。
- */
-var MessageSendingOptions = {
-  /**
-   * 接收方是否针对此次消息发送展示通知栏通知。
-   * @type {boolean}
-   * @defaultvalue
-   */
-  isShowNotification: true,
-  /**
-   * 是否让后台在对方不在线时保存这条离线消息，等到对方上线后再推送给对方。
-   * @type {boolean}
-   * @defaultvalue
-   */
-  isRetainOffline: true,
-  /**
-   * 是否开启了自定义接收方通知栏功能。
-   * @type {?boolean}
-   */
-  isCustomNotificationEnabled: null,
-  /**
-   * 设置此条消息在接收方通知栏所展示通知的标题。
-   * @type {?string}
-   */
-  notificationTitle: null,
-  /**
-   * 设置此条消息在接收方通知栏所展示通知的内容。
-   * @type {?string}
-   */
-  notificationText: null
-}
-
 var EventHandlers = {
   'receiveMessage': [],
   'clickMessageNotification': [],
@@ -46,6 +13,38 @@ var EventHandlers = {
 }
 
 var JMessagePlugin = {
+  /**
+   * 针对消息发送动作的控制选项，可附加在消息发送方法的参数中。
+   */
+  messageSendingOptions : {
+    /**
+     * 接收方是否针对此次消息发送展示通知栏通知。
+     * @type {boolean}
+     * @defaultvalue
+     */
+    isShowNotification: true,
+    /**
+     * 是否让后台在对方不在线时保存这条离线消息，等到对方上线后再推送给对方。
+     * @type {boolean}
+     * @defaultvalue
+     */
+    isRetainOffline: true,
+    /**
+     * 是否开启了自定义接收方通知栏功能。
+     * @type {?boolean}
+     */
+    isCustomNotificationEnabled: null,
+    /**
+     * 设置此条消息在接收方通知栏所展示通知的标题。
+     * @type {?string}
+     */
+    notificationTitle: null,
+    /**
+     * 设置此条消息在接收方通知栏所展示通知的内容。
+     * @type {?string}
+     */
+    notificationText: null
+  },
   /**
    * @param {object} params = {
    *  'isOpenMessageRoaming': boolean  // 是否开启消息漫游，不传默认关闭。
@@ -99,7 +98,7 @@ var JMessagePlugin = {
     exec(null, null, PLUGIN_NAME, 'userLogout', [])
   },
   /**
-   * 登录成功则返回用户信息，已登出或未登录则对应用户信息为空对象。
+   * 登录成功则返回用户信息，未登录则对应用户信息为空对象。
    *
    * @param {function} success = function (myInfo) {}
    */
