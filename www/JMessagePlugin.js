@@ -268,7 +268,7 @@ var JMessagePlugin = {
   },
   /**
    * 从最新的消息开始获取历史消息。
-   * 当 from = 0 && limit = =1 时，返回所有历史消息。
+   * 当 from = 0 && limit = -1 时，返回所有历史消息。
    *
    * @param {object} params = {
    *  'type': string,            // 'single' / 'group'
