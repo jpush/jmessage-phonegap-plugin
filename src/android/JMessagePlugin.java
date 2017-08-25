@@ -1464,21 +1464,24 @@ public class JMessagePlugin extends CordovaPlugin {
 
             if (type.equals("single")) {
                 String username = params.getString("username");
-                String appKey = params.has("appKey") ? params.getString("appKey") : "";
-                JMessageClient.deleteSingleConversation(username, appKey);
+
+                if (params.has("appKey") && !TextUtils.isEmpty(params.getString("appKey"))) {
+                    JMessageClient.deleteSingleConversation(username, params.getString("appKey"));
+                } else {
+                    JMessageClient.deleteSingleConversation(username);
+                }
 
             } else if (type.equals("group")) {
                 long groupId = Long.parseLong(params.getString("groupId"));
                 JMessageClient.deleteGroupConversation(groupId);
 
             } else {
-                handleResult(ERR_CODE_PARAMETER, "Conversation type error", callback);
+                handleResult(ERR_CODE_PARAMETER, "Conversation type is error", callback);
                 return;
             }
 
             callback.success();
         } catch (JSONException e) {
-            e.printStackTrace();
             handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
         }
     }
@@ -1520,7 +1523,7 @@ public class JMessagePlugin extends CordovaPlugin {
             if (conversation != null) {
                 callback.success(toJson(conversation));
             } else {
-                handleResult(ERR_CODE_CONVERSATION, ERR_MSG_CONVERSATION, callback);
+                callback.success(new JSONObject());
             }
         } catch (JSONException e) {
             e.printStackTrace();
