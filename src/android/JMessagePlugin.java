@@ -1241,8 +1241,7 @@ public class JMessagePlugin extends CordovaPlugin {
                                     if (avatarBigFile.exists()) {
                                         bigImagePath = avatarBigFile.getAbsolutePath();
                                     } else {
-                                         bigImagePath = JMessageUtils.storeImage(bitmap, fileName,
-                                                pkgName);
+                                        bigImagePath = JMessageUtils.storeImage(bitmap, fileName, pkgName);
                                     }
                                     
                                     try {
@@ -1253,6 +1252,7 @@ public class JMessagePlugin extends CordovaPlugin {
                                         callback.success(result);
                                     } catch (JSONException e) {
                                         e.printStackTrace();
+                                        callback.error(PluginResult.Status.JSON_EXCEPTION.toString());
                                     }
 
                                 } else {
