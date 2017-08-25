@@ -3,8 +3,6 @@ package cn.jiguang.cordova.im;
 
 import android.graphics.Bitmap;
 import android.os.Environment;
-import android.text.Html;
-import android.util.Log;
 
 import org.apache.cordova.CallbackContext;
 import org.json.JSONArray;
@@ -74,17 +72,24 @@ class JMessageUtils {
 
     static MessageSendingOptions toMessageSendingOptions(JSONObject json) throws JSONException {
         MessageSendingOptions messageSendingOptions = new MessageSendingOptions();
-        messageSendingOptions.setShowNotification(json.getBoolean("isShowNotification"));
-        messageSendingOptions.setRetainOffline(json.getBoolean("isRetainOffline"));
 
-        if (json.has("isCustomNotificationEnabled")) {
-            messageSendingOptions.setCustomNotificationEnabled(
-                    json.getBoolean("isCustomNotificationEnabled"));
+        if (json.has("isShowNotification") && !json.isNull("isShowNotification")) {
+            messageSendingOptions.setShowNotification(json.getBoolean("isShowNotification"));
         }
-        if (json.has("notificationTitle")) {
+
+        if (json.has("isRetainOffline") && !json.isNull("isRetainOffline")) {
+            messageSendingOptions.setRetainOffline(json.getBoolean("isRetainOffline"));
+        }
+
+        if (json.has("isCustomNotificationEnabled") && !json.isNull("isCustomNotificationEnabled")) {
+            messageSendingOptions.setCustomNotificationEnabled(json.getBoolean("isCustomNotificationEnabled"));
+        }
+
+        if (json.has("notificationTitle") && !json.isNull("notificationTitle")) {
             messageSendingOptions.setNotificationText(json.getString("notificationTitle"));
         }
-        if (json.has("notificationText")) {
+
+        if (json.has("notificationText") && !json.isNull("notificationText")) {
             messageSendingOptions.setNotificationText(json.getString("notificationText"));
         }
 
@@ -101,18 +106,17 @@ class JMessageUtils {
     }
 
     static Conversation getConversation(JSONObject params) throws JSONException {
-        String type, groupId, username, appKey;
+        String type = params.getString("type");
         Conversation conversation = null;
 
-        type = params.getString("type");
         if (type.equals("single")) {
-            username = params.getString("username");
-            appKey = params.has("appKey") ? params.getString("appKey") : "";
-            conversation = Conversation.createSingleConversation(username, appKey);
+            String username = params.getString("username");
+            String appKey = params.has("appKey") ? params.getString("appKey") : "";
+            conversation = JMessageClient.getSingleConversation(username, appKey);
 
         } else if (type.equals("group")) {
-            groupId = params.getString("groupId");
-            conversation = Conversation.createGroupConversation(Long.parseLong(groupId));
+            String groupId = params.getString("groupId");
+            conversation = JMessageClient.getGroupConversation(Long.parseLong(groupId));
         }
         return conversation;
     }
