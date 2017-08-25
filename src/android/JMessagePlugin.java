@@ -1431,11 +1431,25 @@ public class JMessagePlugin extends CordovaPlugin {
     void createConversation(JSONArray data, CallbackContext callback) {
         try {
             JSONObject params = data.getJSONObject(0);
-            Conversation conversation = JMessageUtils.getConversation(params);
+
+            String type = params.getString("type");
+            Conversation conversation = null;
+
+            if (type.equals("single")) {
+                String username = params.getString("username");
+                String appKey = params.has("appKey") ? params.getString("appKey") : "";
+                conversation = Conversation.createSingleConversation(username, appKey);
+
+            } else if (type.equals("group")) {
+                String groupId = params.getString("groupId");
+                conversation = Conversation.createGroupConversation(Long.parseLong(groupId));
+            }
+
             if (conversation != null) {
                 callback.success(toJson(conversation));
             } else {
-                handleResult(ERR_CODE_CONVERSATION, ERR_MSG_CONVERSATION, callback);
+                handleResult(ERR_CODE_CONVERSATION,
+                        "Can't create the conversation, please check your parameters", callback);
             }
         } catch (JSONException e) {
             e.printStackTrace();

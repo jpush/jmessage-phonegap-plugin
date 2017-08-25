@@ -3,8 +3,6 @@ package cn.jiguang.cordova.im;
 
 import android.graphics.Bitmap;
 import android.os.Environment;
-import android.text.Html;
-import android.util.Log;
 
 import org.apache.cordova.CallbackContext;
 import org.json.JSONArray;
@@ -74,7 +72,7 @@ class JMessageUtils {
 
     static MessageSendingOptions toMessageSendingOptions(JSONObject json) throws JSONException {
         MessageSendingOptions messageSendingOptions = new MessageSendingOptions();
-        
+
         if (json.has("isShowNotification") && !json.isNull("isShowNotification")) {
             messageSendingOptions.setShowNotification(json.getBoolean("isShowNotification"));
         }
@@ -95,7 +93,7 @@ class JMessageUtils {
             messageSendingOptions.setNotificationText(json.getString("notificationText"));
         }
 
-        return messageSendingOptions;   
+        return messageSendingOptions;
     }
 
     static void getUserInfo(JSONObject params, GetUserInfoCallback callback) throws JSONException {
@@ -108,18 +106,17 @@ class JMessageUtils {
     }
 
     static Conversation getConversation(JSONObject params) throws JSONException {
-        String type, groupId, username, appKey;
+        String type = params.getString("type");
         Conversation conversation = null;
 
-        type = params.getString("type");
         if (type.equals("single")) {
-            username = params.getString("username");
-            appKey = params.has("appKey") ? params.getString("appKey") : "";
-            conversation = Conversation.createSingleConversation(username, appKey);
+            String username = params.getString("username");
+            String appKey = params.has("appKey") ? params.getString("appKey") : "";
+            conversation = JMessageClient.getSingleConversation(username, appKey);
 
         } else if (type.equals("group")) {
-            groupId = params.getString("groupId");
-            conversation = Conversation.createGroupConversation(Long.parseLong(groupId));
+            String groupId = params.getString("groupId");
+            conversation = JMessageClient.getGroupConversation(Long.parseLong(groupId));
         }
         return conversation;
     }
