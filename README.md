@@ -35,9 +35,6 @@
 
 ## FAQ
 
-若要使用 CLI 来编译项目，注意应使用 *cordova compile* 而不是 *cordova build* 命令，因为 *cordova build* 可能会清除对插件文件中 AndroidManifest.xml 文件的修改。
-具体的 Cordova CLI 用法可参考 [Cordova CLI 官方文档](https://cordova.apache.org/docs/en/latest/reference/cordova-cli/index.html)。
-
 ### Android
 
 - 发送图片、语音或文件消息，提示 'File not found'。
