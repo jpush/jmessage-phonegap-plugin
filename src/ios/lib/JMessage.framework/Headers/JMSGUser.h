@@ -167,6 +167,18 @@ JMSG_ASSUME_NONNULL_BEGIN
                completionHandler:(JMSGCompletionHandler)handler;
 
 /*!
+ * @abstract 更新头像（支持传图片格式）
+ *
+ * @param avatarData      头像数据
+ * @param avatarFormat    头像格式，可以为空，不包括"."
+ * @param handler         回调
+ *
+ * @discussion 头像格式参数直接填格式名称，不要带点。正确：@"png"，错误：@".png"
+ */
++ (void)updateMyAvatarWithData:(NSData *)avatarData
+                  avatarFormat:(NSString *)avatarFormat
+             completionHandler:(JMSGCompletionHandler)handler;
+/*!
  * @abstract 更新密码接口
  *
  * @param newPassword   用户新的密码

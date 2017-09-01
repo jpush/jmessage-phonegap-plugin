@@ -13,8 +13,9 @@
 #import <JMessage/JMSGAbstractContent.h>
 
 /*!
- * 提示性消息内容。
- * 此 MessageContent 类型仅由 SDK 主动创建，上层做展示用，不能当做发送的消息体。
+ * @abstract 提示性消息内容
+ *
+ * @discussion 此 MessageContent 类型仅由 SDK 主动创建，上层做展示用，不能当做发送的消息体。
  */
 @interface JMSGPromptContent : JMSGAbstractContent<NSCopying>
 JMSG_ASSUME_NONNULL_BEGIN
@@ -24,7 +25,7 @@ JMSG_ASSUME_NONNULL_BEGIN
  *
  * @discussion 消息提示文字
  */
-@property(nonatomic, readonly, copy) NSString *promptText;
+@property(nonatomic,strong, readonly) NSString *promptText;
 
 
 // 不支持使用的初始化方法

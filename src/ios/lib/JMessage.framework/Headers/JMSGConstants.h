@@ -198,6 +198,9 @@ typedef NS_ENUM(NSInteger, JMSGEventNotificationType) {
   /// 事件类型：当前登录用户信息变更通知事件(非客户端修改)
   kJMSGEventNotificationCurrentUserInfoChange = 40,
   
+  /// 群组消息屏蔽变更通知
+  kJMSGEventNotificationGroupShieldChange= 39,
+  
   // 好友相关事件
   /// 事件类型: 收到好友邀请
   kJMSGEventNotificationReceiveFriendInvitation   = 51,
@@ -455,14 +458,6 @@ static NSString *const KEY_REGION = @"region";      //区域
 static NSString *const KEY_SIGNATURE = @"signature";//签名
 static NSString *const KEY_ADDRESS = @"address";    //地址
 static NSString *const KEY_STAR = @"star";
-static NSString *const KEY_UID = @"uid";
-static NSString *const KEY_NO_DISTURB = @"no_disturb";
-static NSString *const KEY_BLACKLIST = @"blicklist";
-static NSString *const KEY_NOTE_NAME = @"memo_name";//note_name
-static NSString *const KEY_NOTE_TEXT = @"memo_others";//note_text
-static NSString *const KEY_SHIELD_GROUP = @"shield_group";
-static NSString *const KEY_USER_MTIME = @"mtime";
-static NSString *const KEY_USER_CTIME = @"ctime";
 
 
 

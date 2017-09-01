@@ -37,7 +37,7 @@ JMSG_ASSUME_NONNULL_BEGIN
  */
 @property(nonatomic, strong, readonly) NSString * JMSG_NULLABLE mediaID;
 
-/*! @abstract 媒体格式 */
+/*! @abstract 媒体格式*/
 @property(nonatomic, strong, readonly) NSString * JMSG_NULLABLE format;
 
 /*! @abstract 媒体文件大小 */
@@ -54,7 +54,7 @@ JMSG_ASSUME_NONNULL_BEGIN
  *
  * @discussion 此属性是通过懒加载的方式获取，必须在下载完成之后此属性值才有意义
  */
-@property(nonatomic, strong, readonly) NSString *originMediaLocalPath;
+@property(nonatomic, strong, readonly) NSString * JMSG_NULLABLE originMediaLocalPath;
 
 // 不支持使用的初始化方法
 - (nullable instancetype)init NS_UNAVAILABLE;

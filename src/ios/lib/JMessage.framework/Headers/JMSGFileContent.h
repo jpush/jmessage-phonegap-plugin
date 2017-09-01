@@ -39,6 +39,25 @@ JMSG_ASSUME_NONNULL_BEGIN
  */
 - (void)fileData:(JMSGAsyncDataHandler)handler;
 
+/*!
+ * @abstract 获取文件内容的数据
+ *
+ * @param progressHandler 下载进度。会持续回调更新进度, 直接下载完成。如果为 nil 则表示不关心进度。
+ * @param handler 结果回调。回调参数:
+ *
+ * - data 文件数据;
+ * - objectId 消息msgId;
+ * - error 不为nil表示出错;
+ *
+ * 如果 error 为 ni, data 也为 nil, 表示没有数据.
+ *
+ * @discussion
+ * 如果本地数据文件已经存在, 则直接返回;
+ * 如果本地还没有文件，会发起网络请求下载。下载完后再回调。
+ */
+- (void)fileDataWithProgress:(JMSGMediaProgressHandler JMSG_NULLABLE)progressHandler
+           completionHandler:(JMSGAsyncDataHandler JMSG_NULLABLE)handler;
+
 JMSG_ASSUME_NONNULL_END
 
 @end

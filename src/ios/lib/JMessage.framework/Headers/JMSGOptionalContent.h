@@ -14,7 +14,10 @@
 
 @class JMSGCustomNotification;
 
-/// 发送消息的可选功能
+/*!
+ * @abstract 发送消息的可选功能
+ *
+ */
 @interface JMSGOptionalContent : NSObject
 
 /*!
@@ -29,6 +32,8 @@
 
 /*!
  * @abstract 自定义消息通知栏的内容
+ *
+ * @discussion 这个属性可以具体参考 JMSGCustomNotification 类
  */
 @property(nonatomic, strong) JMSGCustomNotification *customNotification;
 
