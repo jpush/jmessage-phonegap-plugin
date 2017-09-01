@@ -1,7 +1,8 @@
 # JMessage PhoneGap / Cordova Plugin
 
 [![release](https://img.shields.io/badge/release-3.0.15-blue.svg)](https://github.com/jpush/jmessage-phonegap-plugin/releases)
-[![platforms](https://img.shields.io/badge/platforms-iOS%7CAndroid-lightgrey.svg)](https://github.com/jpush/jmessage-phonegap-plugin)
+[![platforms](https://img.shields.io/badge/platforms-iOS%7CAndroid-green.svg)](https://github.com/jpush/jmessage-phonegap-plugin)
+[![Code Triagers Badge](https://www.codetriage.com/jpush/jmessage-phonegap-plugin/badges/users.svg)](https://www.codetriage.com/jpush/jmessage-phonegap-plugin)
 [![weibo](https://img.shields.io/badge/weibo-JPush-blue.svg)](http://weibo.com/jpush?refer_flag=1001030101_&is_all=1)
 
 极光官方开发的[极光 IM](https://docs.jiguang.cn/jmessage/guideline/jmessage_guide/) cordova 插件，目前支持 iOS 和 Android 平台。
@@ -10,48 +11,15 @@
 
 **目前重构了 3.0.0+ 版本，Android, iOS 完全统一接口和对象字段，优化了 API 调用方式，不兼容老版本，升级时请注意。**
 
-## 集成步骤
+## Full Documentation
 
-- 在线安装
+完整文档请查阅 [wiki](https://github.com/jpush/jmessage-phonegap-plugin/wiki)，包括安装指南、API 说明等。
 
-  ```shell
-  cordova plugin add jmessage-phonegap-plugin --variable APP_KEY=your_app_key
-  ```
+## Contribute
 
-  或
+Please contribute! [Look at the issues](https://github.com/jpush/jmessage-phonegap-plugin/issues).
 
-  ```shell
-  cordova plugin add https://github.com/jpush/jmessage-phonegap-plugin.git --variable APP_KEY=your_app_key
-  ```
-- 本地安装
-
-  ```shell
-  cordova plugin add <Plugin Path> --variable APP_KEY=your_app_key
-  ```
-
-## API
-
-[API doc](./doc/api.md)
-
-## FAQ
-
-### Android
-
-- 发送图片、语音或文件消息，提示 'File not found'。
-
-  1. 请先确认文件路径格式是否正确，需要为绝对路径，类似于：/storage/emulated/0/DCIM/Camera/IMG_20160526_130223.jpg
-  2. 如果系统为 Android 6.0 以上，还需要在应用中动态请求存储（WRITE_EXTERNAL_STORAGE）权限。对于动态请求权限，可以使用这个[插件](https://github.com/dpa99c/cordova-diagnostic-plugin#requestruntimepermission)。
-
-### iOS
-
-- 收不到推送：请首先按照正确方式再次配置证书、描述文件，可参考 [iOS 证书设置指南](https://docs.jiguang.cn/jpush/client/iOS/ios_cer_guide/)。
-- 设置 PushConfig.plist:
-  - APP_KEY：应用标识
-  - CHANNEL：渠道标识
-  - IsProduction：是否为生产环境
-  - IsIDFA：是否使用 IDFA 启动 SDK
-
-## 更多
+## Support
 
 - QQ 群：413602425 / 524248013
 - [极光官网文档](http://docs.jiguang.cn/guideline/jmessage_guide/)
