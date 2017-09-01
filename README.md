@@ -13,7 +13,7 @@
 
 ## Full Documentation
 
-完整文档请查阅 [wiki](https://github.com/jpush/jmessage-phonegap-plugin/wiki)，包括安装指南、API 说明等。
+完整文档请查阅 [wiki](https://github.com/jpush/jmessage-phonegap-plugin/wiki)，包括[安装指南](https://github.com/jpush/jmessage-phonegap-plugin/wiki/Installation-Guide)、[API 说明](https://github.com/jpush/jmessage-phonegap-plugin/wiki/APIs)等。
 
 ## Contribute
 
