@@ -1,6 +1,6 @@
 # JMessage PhoneGap / Cordova Plugin
 
-[![release](https://img.shields.io/badge/release-3.0.13-blue.svg)](https://github.com/jpush/jmessage-phonegap-plugin/releases)
+[![release](https://img.shields.io/badge/release-3.0.14-blue.svg)](https://github.com/jpush/jmessage-phonegap-plugin/releases)
 [![platforms](https://img.shields.io/badge/platforms-iOS%7CAndroid-lightgrey.svg)](https://github.com/jpush/jmessage-phonegap-plugin)
 [![weibo](https://img.shields.io/badge/weibo-JPush-blue.svg)](http://weibo.com/jpush?refer_flag=1001030101_&is_all=1)
 
@@ -34,9 +34,6 @@
 [API doc](./doc/api.md)
 
 ## FAQ
-
-若要使用 CLI 来编译项目，注意应使用 *cordova compile* 而不是 *cordova build* 命令，因为 *cordova build* 可能会清除对插件文件中 AndroidManifest.xml 文件的修改。
-具体的 Cordova CLI 用法可参考 [Cordova CLI 官方文档](https://cordova.apache.org/docs/en/latest/reference/cordova-cli/index.html)。
 
 ### Android
 

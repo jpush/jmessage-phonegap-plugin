@@ -37,10 +37,10 @@
 - (void)onUnreadChanged:(NSUInteger)newCount;
 
 /*!
- * @abstract 同步离线消息通知
+ * @abstract 同步离线消息、离线事件通知
  *
  * @param conversation    同步离线消息的会话
- * @param offlineMessages 离线消息数组
+ * @param offlineMessages 离线消息、离线事件数组
  *
  * @discussion 注意：
  *
@@ -53,11 +53,12 @@
  *
  * 3.1.0 版本之后: SDK 会以会话为单位，不管该会话有多少离线消息，SDK同步完成后每个会话只上抛一次.
  *
- * 注意一个会话只会上抛一个会话,这样会大大减轻上层在收到消息事件需要刷新 UI 的应用场景下,UI 刷新的压力.
+ * 3.2.1 版本之后: SDK 会以会话为单位，不管该会话有多少离线事件，SDK同步完成后每个会话只上抛一次
+ *
+ * 注意：一个会话最多触发两次这个代理，即：离线消息和离线事件各一次,这样会大大减轻上层在收到消息刷新 UI 的压力.
  *
  * 上层通过此代理方法监听离线消息同步的会话,详见官方文档.
  *
- * @since 3.1.0
  */
 @optional
 - (void)onSyncOfflineMessageConversation:(JMSGConversation *)conversation

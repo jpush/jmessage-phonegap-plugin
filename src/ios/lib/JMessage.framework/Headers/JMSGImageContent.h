@@ -41,6 +41,13 @@
  */
 @property(nonatomic, strong, readonly) NSString * JMSG_NULLABLE imageLink;
 
+/*! 
+ * @abstract 图片格式
+ *
+ * 注意：格式后缀不需要带点，只需后缀名，如：png、jpg 等
+ */
+@property(nonatomic, strong) NSString * JMSG_NULLABLE format;
+
 /*!
  * @abstract 图片原始大小
  */
