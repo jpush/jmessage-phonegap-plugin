@@ -367,11 +367,7 @@ JMessagePlugin *SharedJMessagePlugin;
             if (!error) {
                 NSArray *users = resultObject;
                 JMSGUser *user = users[0];
-                // 为了和 android 行为一直，获取用户信息的时候自动下载缩略图
-                [user thumbAvatarData:^(NSData *data, NSString *objectId, NSError *error) {
-                  [self handleResultWithDictionary: [user userToDictionary] command:command error: nil];
-                }];
-              
+                [self handleResultWithDictionary: [user userToDictionary] command:command error: nil];
             } else {
                 [self handleResultWithDictionary:nil command:command error: error];
             }
