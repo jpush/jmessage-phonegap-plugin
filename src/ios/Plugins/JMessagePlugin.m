@@ -325,7 +325,11 @@ JMessagePlugin *SharedJMessagePlugin;
     if (user[@"username"] && user[@"password"]) {
         [JMSGUser loginWithUsername:user[@"username"] password:user[@"password"] completionHandler:^(id resultObject, NSError *error) {
             if (!error) {
+              JMSGUser *myInfo = [JMSGUser myInfo];
+              // 为了和 android 行为一致，在登录的时候自动下载缩略图
+              [myInfo thumbAvatarData:^(NSData *data, NSString *objectId, NSError *error) {
                 [self handleResultWithDictionary:@{} command:command error: nil];
+              }];
             } else {
                 [self handleResultWithDictionary:nil command:command error: error];
             }
@@ -363,7 +367,11 @@ JMessagePlugin *SharedJMessagePlugin;
             if (!error) {
                 NSArray *users = resultObject;
                 JMSGUser *user = users[0];
-                [self handleResultWithDictionary: [user userToDictionary] command:command error: nil];
+                // 为了和 android 行为一直，获取用户信息的时候自动下载缩略图
+                [user thumbAvatarData:^(NSData *data, NSString *objectId, NSError *error) {
+                  [self handleResultWithDictionary: [user userToDictionary] command:command error: nil];
+                }];
+              
             } else {
                 [self handleResultWithDictionary:nil command:command error: error];
             }

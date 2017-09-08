@@ -265,7 +265,6 @@
   dict[@"type"] = @"user";
   dict[@"username"] = self.username;
   dict[@"nickname"] = self.nickname;
-  dict[@"avatarThumbPath"] = [self thumbAvatarLocalPath];
   dict[@"birthday"] = self.birthday;
   dict[@"region"] = self.region;
   dict[@"signature"] = self.signature;
@@ -276,6 +275,12 @@
   dict[@"isNoDisturb"] = @(self.isNoDisturb);
   dict[@"isInBlackList"] = @(self.isInBlacklist);
   dict[@"isFriend"] = @(self.isFriend);
+  
+  if([[NSFileManager defaultManager] fileExistsAtPath: [self thumbAvatarLocalPath] ?: @""]){
+    dict[@"avatarThumbPath"] = [self thumbAvatarLocalPath];
+  } else {
+    dict[@"avatarThumbPath"] = @"";
+  }
   
   switch (self.gender) {
     case kJMSGUserGenderUnknown:
