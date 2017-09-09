@@ -204,8 +204,6 @@ class JsonUtils {
 
             if (conversation.getLatestMessage() != null) {
                 json.put("latestMessage", toJson(conversation.getLatestMessage()));
-            } else {
-                json.put("latestMessage", "");
             }
 
             if (conversation.getType() == ConversationType.single) {

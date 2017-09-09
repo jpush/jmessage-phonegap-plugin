@@ -300,7 +300,7 @@ public class JMessagePlugin extends CordovaPlugin {
             public void gotResult(int status, String desc) {
                 handleResult(status, desc, callback);
             }
-        });   
+        });
     }
 
     void sendTextMessage(JSONArray data, final CallbackContext callback) {
@@ -1272,13 +1272,13 @@ public class JMessagePlugin extends CordovaPlugin {
 
                                     File avatarBigFile = new File(avatarFilePath + fileName + ".png");
                                     String bigImagePath;
-                                    
+
                                     if (avatarBigFile.exists()) {
                                         bigImagePath = avatarBigFile.getAbsolutePath();
                                     } else {
                                         bigImagePath = JMessageUtils.storeImage(bitmap, fileName, pkgName);
                                     }
-                                    
+
                                     try {
                                         JSONObject result = new JSONObject();
                                         result.put("username", username);
@@ -1304,7 +1304,7 @@ public class JMessagePlugin extends CordovaPlugin {
         } catch (JSONException e) {
             e.printStackTrace();
             handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
-        } 
+        }
     }
 
     void downloadOriginalImage(JSONArray data, final CallbackContext callback) {
@@ -1558,13 +1558,14 @@ public class JMessagePlugin extends CordovaPlugin {
             if (conversation != null) {
                 callback.success(toJson(conversation));
             } else {
-                callback.success(new JSONObject());
+                handleResult(ERR_CODE_CONVERSATION, ERR_MSG_CONVERSATION, callback);
             }
         } catch (JSONException e) {
             e.printStackTrace();
             handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
         }
     }
+
     void getConversations(JSONArray data, CallbackContext callback) {
         List<Conversation> conversationList = JMessageClient.getConversationList();
         JSONArray jsonArr = new JSONArray();
