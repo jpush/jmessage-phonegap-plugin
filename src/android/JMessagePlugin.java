@@ -1214,6 +1214,41 @@ public class JMessagePlugin extends CordovaPlugin {
         });
     }
 
+    void downloadThumbUserAvatar(JSONArray data, final CallbackContext callback) {
+        String username, appKey;
+
+        try {
+            JSONObject params = data.getJSONObject(0);
+            username = params.getString("username");
+            appKey = params.has("appKey") ? params.getString("appKey") : "";
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callback.error(ERR_MSG_PARAMETER);
+            return;
+        }
+
+        JMessageClient.getUserInfo(username, appKey, new GetUserInfoCallback() {
+            @Override
+            public void gotResult(int status, String desc, UserInfo userInfo) {
+                if (status == 0) {
+                    File avatarFile = userInfo.getAvatarFile();
+                    JSONObject result = new JSONObject();
+                    try {
+                        result.put("username", userInfo.getUserName());
+                        result.put("appKey", userInfo.getAppKey());
+                        String avatarFilePath = (avatarFile == null ? "" : avatarFile.getAbsolutePath());
+                        result.put("filePath", avatarFilePath);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    callback.success(result);
+                } else {
+                    handleResult(status, desc, callback);
+                }
+            }
+        });
+    }
+
     void downloadOriginalUserAvatar(JSONArray data, final CallbackContext callback) {
         try {
             JSONObject params = data.getJSONObject(0);
@@ -1530,7 +1565,6 @@ public class JMessagePlugin extends CordovaPlugin {
             handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
         }
     }
-
     void getConversations(JSONArray data, CallbackContext callback) {
         List<Conversation> conversationList = JMessageClient.getConversationList();
         JSONArray jsonArr = new JSONArray();
