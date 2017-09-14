@@ -116,18 +116,21 @@ class JsonUtils {
         JSONObject result = new JSONObject();
         try {
             result.put("id", msg.getId());
-            result.put("from", toJson(msg.getFromUser()));
+            result.put("from", toJson(msg.getFromUser()));  // 消息发送者
 
-            if (msg.getDirect() == MessageDirect.send) {
-                if (msg.getTargetType() == ConversationType.single) {
+            if (msg.getDirect() == MessageDirect.send) {    // 消息发送
+                if (msg.getTargetType() == ConversationType.single) {   // 消息发送对象的类型
                     result.put("target", toJson((UserInfo) msg.getTargetInfo()));
                 } else if (msg.getTargetType() == ConversationType.group) {
                     result.put("target", toJson((GroupInfo) msg.getTargetInfo()));
                 }
 
-            } else {
-                UserInfo myInfo = JMessageClient.getMyInfo();
-                result.put("target", toJson(myInfo));
+            } else if (msg.getDirect() == MessageDirect.receive) {    // 消息接收
+                if (msg.getTargetType() == ConversationType.single) {
+                    result.put("target", toJson(JMessageClient.getMyInfo()));
+                } else if (msg.getTargetType() == ConversationType.group) {
+                    result.put("target", toJson((GroupInfo) msg.getTargetInfo()));
+                }
             }
 
             MessageContent content = msg.getContent();
