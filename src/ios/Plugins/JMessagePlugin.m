@@ -325,7 +325,11 @@ JMessagePlugin *SharedJMessagePlugin;
     if (user[@"username"] && user[@"password"]) {
         [JMSGUser loginWithUsername:user[@"username"] password:user[@"password"] completionHandler:^(id resultObject, NSError *error) {
             if (!error) {
+              JMSGUser *myInfo = [JMSGUser myInfo];
+              // 为了和 android 行为一致，在登录的时候自动下载缩略图
+              [myInfo thumbAvatarData:^(NSData *data, NSString *objectId, NSError *error) {
                 [self handleResultWithDictionary:@{} command:command error: nil];
+              }];
             } else {
                 [self handleResultWithDictionary:nil command:command error: error];
             }
@@ -1569,6 +1573,47 @@ JMessagePlugin *SharedJMessagePlugin;
     [self handleResultWithDictionary:@{@"isNoDisturb": @(isNodisturb)} command:command error:nil];
 }
 
+- (void)downloadThumbUserAvatar:(CDVInvokedUrlCommand *)command {
+  NSDictionary * param = [command argumentAtIndex:0];
+  if (param[@"username"] == nil) {
+    [self returnParamError:command];
+    return;
+  }
+  
+  NSString *appKey = nil;
+  if (param[@"appKey"]) {
+    appKey = param[@"appKey"];
+  } else {
+    appKey = [JMessageHelper shareInstance].JMessageAppKey;
+  }
+  
+  [JMSGUser userInfoArrayWithUsernameArray:@[param[@"username"]] appKey:appKey completionHandler:^(id resultObject, NSError *error) {
+    if (error) {
+      [self handleResultWithDictionary: nil command: command error:error];
+      return ;
+    }
+    
+    NSArray *userList = resultObject;
+    if (userList.count < 1) {
+      [self returnErrorWithLog:@"user not exit" command:command];
+      return;
+    }
+    
+    JMSGUser *user = userList[0];
+    [user thumbAvatarData:^(NSData *data, NSString *objectId, NSError *error) {
+      if (error) {
+        [self handleResultWithDictionary: nil command: command error:error];
+        return ;
+      }
+      
+      [self handleResultWithDictionary:@{@"username": user.username,
+                                           @"appKey": user.appKey,
+                                         @"filePath": [user thumbAvatarLocalPath] ?: @""}
+                               command:command error:error];
+    }];
+  }];
+}
+
 - (void)downloadOriginalUserAvatar:(CDVInvokedUrlCommand *)command {
     NSDictionary * param = [command argumentAtIndex:0];
     if (param[@"username"] == nil) {
@@ -1603,13 +1648,13 @@ JMessagePlugin *SharedJMessagePlugin;
             }
             
             [self handleResultWithDictionary:@{@"username": user.username,
-                                               @"appKey": user.appKey,
-                                               @"filePath": [user largeAvatarLocalPath]}
+                                                 @"appKey": user.appKey,
+                                               @"filePath": [user largeAvatarLocalPath] ?: @""}
                                      command:command error:error];
         }];
     }];
-    
 }
+
 - (void)downloadOriginalImage:(CDVInvokedUrlCommand *)command {
     NSDictionary * param = [command argumentAtIndex:0];
     if (param[@"messageId"] == nil ||

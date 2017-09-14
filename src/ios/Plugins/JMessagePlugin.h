@@ -49,6 +49,7 @@
 - (void)getNoDisturbList:(CDVInvokedUrlCommand *)command;
 - (void)setNoDisturbGlobal:(CDVInvokedUrlCommand *)command;
 - (void)isNoDisturbGlobal:(CDVInvokedUrlCommand *)command;
+- (void)downloadThumbUserAvatar:(CDVInvokedUrlCommand *)command;
 - (void)downloadOriginalUserAvatar:(CDVInvokedUrlCommand *)command;
 - (void)downloadOriginalImage:(CDVInvokedUrlCommand *)command;
 - (void)downloadVoiceFile:(CDVInvokedUrlCommand *)command;

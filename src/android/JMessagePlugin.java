@@ -300,7 +300,7 @@ public class JMessagePlugin extends CordovaPlugin {
             public void gotResult(int status, String desc) {
                 handleResult(status, desc, callback);
             }
-        });   
+        });
     }
 
     void sendTextMessage(JSONArray data, final CallbackContext callback) {
@@ -1214,6 +1214,41 @@ public class JMessagePlugin extends CordovaPlugin {
         });
     }
 
+    void downloadThumbUserAvatar(JSONArray data, final CallbackContext callback) {
+        String username, appKey;
+
+        try {
+            JSONObject params = data.getJSONObject(0);
+            username = params.getString("username");
+            appKey = params.has("appKey") ? params.getString("appKey") : "";
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callback.error(ERR_MSG_PARAMETER);
+            return;
+        }
+
+        JMessageClient.getUserInfo(username, appKey, new GetUserInfoCallback() {
+            @Override
+            public void gotResult(int status, String desc, UserInfo userInfo) {
+                if (status == 0) {
+                    File avatarFile = userInfo.getAvatarFile();
+                    JSONObject result = new JSONObject();
+                    try {
+                        result.put("username", userInfo.getUserName());
+                        result.put("appKey", userInfo.getAppKey());
+                        String avatarFilePath = (avatarFile == null ? "" : avatarFile.getAbsolutePath());
+                        result.put("filePath", avatarFilePath);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    callback.success(result);
+                } else {
+                    handleResult(status, desc, callback);
+                }
+            }
+        });
+    }
+
     void downloadOriginalUserAvatar(JSONArray data, final CallbackContext callback) {
         try {
             JSONObject params = data.getJSONObject(0);
@@ -1237,13 +1272,13 @@ public class JMessagePlugin extends CordovaPlugin {
 
                                     File avatarBigFile = new File(avatarFilePath + fileName + ".png");
                                     String bigImagePath;
-                                    
+
                                     if (avatarBigFile.exists()) {
                                         bigImagePath = avatarBigFile.getAbsolutePath();
                                     } else {
                                         bigImagePath = JMessageUtils.storeImage(bitmap, fileName, pkgName);
                                     }
-                                    
+
                                     try {
                                         JSONObject result = new JSONObject();
                                         result.put("username", username);
@@ -1269,7 +1304,7 @@ public class JMessagePlugin extends CordovaPlugin {
         } catch (JSONException e) {
             e.printStackTrace();
             handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
-        } 
+        }
     }
 
     void downloadOriginalImage(JSONArray data, final CallbackContext callback) {
@@ -1523,7 +1558,7 @@ public class JMessagePlugin extends CordovaPlugin {
             if (conversation != null) {
                 callback.success(toJson(conversation));
             } else {
-                callback.success(new JSONObject());
+                handleResult(ERR_CODE_CONVERSATION, ERR_MSG_CONVERSATION, callback);
             }
         } catch (JSONException e) {
             e.printStackTrace();

@@ -499,6 +499,16 @@ var JMessagePlugin = {
     exec(success, error, PLUGIN_NAME, 'isNoDisturbGlobal', [])
   },
   /**
+   * 下载用户头像缩略图，如果已经下载，不会重复下载。
+   *
+   * @param {object} params = {'username': string, 'appKey': string}
+   * @param {function} success = function ({'username': string, 'appKey': string, 'filePath': string}) {}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  downloadThumbUserAvatar: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'downloadThumbUserAvatar', [params])
+  },
+  /**
    * 下载用户头像原图，如果已经下载，不会重复下载。
    *
    * @param {object} params = {'username': string, 'appKey': string}
