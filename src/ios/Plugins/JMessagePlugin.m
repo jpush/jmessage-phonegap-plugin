@@ -519,7 +519,7 @@ JMessagePlugin *SharedJMessagePlugin;
         if (param[@"extras"] && [param[@"extras"] isKindOfClass: [NSDictionary class]]) {
             NSDictionary *extras = param[@"extras"];
             for (NSString *key in extras.allKeys) {
-                [message updateMessageExtraValue: extras[key] forKey: key];
+              [message.content addStringExtra:extras[key] forKey:key];
             }
         }
         
@@ -546,7 +546,7 @@ JMessagePlugin *SharedJMessagePlugin;
             if (param[@"extras"] && [param[@"extras"] isKindOfClass: [NSDictionary class]]) {
                 NSDictionary *extras = param[@"extras"];
                 for (NSString *key in extras.allKeys) {
-                    [message updateMessageExtraValue: extras[key] forKey: key];
+                    [message.content addStringExtra:extras[key] forKey:key];
                 }
             }
             
@@ -601,7 +601,7 @@ JMessagePlugin *SharedJMessagePlugin;
         if (param[@"extras"] && [param[@"extras"] isKindOfClass: [NSDictionary class]]) {
             NSDictionary *extras = param[@"extras"];
             for (NSString *key in extras.allKeys) {
-                [message updateMessageExtraValue: extras[key] forKey: key];
+                [message.content addStringExtra:extras[key] forKey:key];
             }
         }
         [JMSGConversation createSingleConversationWithUsername:param[@"username"]
@@ -626,7 +626,7 @@ JMessagePlugin *SharedJMessagePlugin;
             if (param[@"extras"] && [param[@"extras"] isKindOfClass: [NSDictionary class]]) {
                 NSDictionary *extras = param[@"extras"];
                 for (NSString *key in extras.allKeys) {
-                    [message updateMessageExtraValue: extras[key] forKey: key];
+                    [message.content addStringExtra:extras[key] forKey:key];
                 }
             }
             self.SendMsgCallbackDic[message.msgId] = command.callbackId;
@@ -691,7 +691,7 @@ JMessagePlugin *SharedJMessagePlugin;
         if (param[@"extras"] && [param[@"extras"] isKindOfClass: [NSDictionary class]]) {
             NSDictionary *extras = param[@"extras"];
             for (NSString *key in extras.allKeys) {
-                [message updateMessageExtraValue: extras[key] forKey: key];
+                [message.content addStringExtra:extras[key] forKey:key];
             }
         }
         [JMSGConversation createSingleConversationWithUsername:param[@"username"] appKey:appKey completionHandler:^(id resultObject, NSError *error) {
@@ -715,7 +715,7 @@ JMessagePlugin *SharedJMessagePlugin;
             if (param[@"extras"] && [param[@"extras"] isKindOfClass: [NSDictionary class]]) {
                 NSDictionary *extras = param[@"extras"];
                 for (NSString *key in extras.allKeys) {
-                    [message updateMessageExtraValue: extras[key] forKey: key];
+                    [message.content addStringExtra:extras[key] forKey:key];
                 }
             }
             self.SendMsgCallbackDic[message.msgId] = command.callbackId;
@@ -822,7 +822,7 @@ JMessagePlugin *SharedJMessagePlugin;
         if (param[@"extras"] && [param[@"extras"] isKindOfClass: [NSDictionary class]]) {
             NSDictionary *extras = param[@"extras"];
             for (NSString *key in extras.allKeys) {
-                [message updateMessageExtraValue: extras[key] forKey: key];
+                [message.content addStringExtra:extras[key] forKey:key];
             }
         }
         [JMSGConversation createSingleConversationWithUsername:param[@"username"] appKey:appKey completionHandler:^(id resultObject, NSError *error) {
@@ -849,7 +849,7 @@ JMessagePlugin *SharedJMessagePlugin;
             if (param[@"extras"] && [param[@"extras"] isKindOfClass: [NSDictionary class]]) {
                 NSDictionary *extras = param[@"extras"];
                 for (NSString *key in extras.allKeys) {
-                    [message updateMessageExtraValue: extras[key] forKey: key];
+                    [message.content addStringExtra:extras[key] forKey:key];
                 }
             }
             
@@ -904,7 +904,7 @@ JMessagePlugin *SharedJMessagePlugin;
         if (param[@"extras"] && [param[@"extras"] isKindOfClass: [NSDictionary class]]) {
             NSDictionary *extras = param[@"extras"];
             for (NSString *key in extras.allKeys) {
-                [message updateMessageExtraValue: extras[key] forKey: key];
+                [message.content addStringExtra:extras[key] forKey:key];
             }
         }
         [JMSGConversation createSingleConversationWithUsername:param[@"username"] appKey:appKey completionHandler:^(id resultObject, NSError *error) {
@@ -928,7 +928,7 @@ JMessagePlugin *SharedJMessagePlugin;
             if (param[@"extras"] && [param[@"extras"] isKindOfClass: [NSDictionary class]]) {
                 NSDictionary *extras = param[@"extras"];
                 for (NSString *key in extras.allKeys) {
-                    [message updateMessageExtraValue: extras[key] forKey: key];
+                    [message.content addStringExtra:extras[key] forKey:key];
                 }
             }
             
