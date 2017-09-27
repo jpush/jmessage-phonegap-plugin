@@ -86,7 +86,7 @@ class JMessageUtils {
         }
 
         if (json.has("notificationTitle") && !json.isNull("notificationTitle")) {
-            messageSendingOptions.setNotificationText(json.getString("notificationTitle"));
+            messageSendingOptions.setNotificationTitle(json.getString("notificationTitle"));
         }
 
         if (json.has("notificationText") && !json.isNull("notificationText")) {
