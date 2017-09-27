@@ -1102,7 +1102,7 @@ public class JMessagePlugin extends CordovaPlugin {
         try {
             JSONObject params = data.getJSONObject(0);
             String type = params.getString("type");
-            final int isNoDisturb = params.getBoolean("isNoDisturb") ? ERR_CODE_PARAMETER : 0;
+            final int isNoDisturb = params.getBoolean("isNoDisturb") ? 1 : 0;   // 1: 设置为免打扰；0: 取消设置。
 
             if (type.equals("single")) {
                 String username = params.getString("username");
@@ -1179,9 +1179,8 @@ public class JMessagePlugin extends CordovaPlugin {
     void setNoDisturbGlobal(JSONArray data, final CallbackContext callback) {
         try {
             JSONObject params = data.getJSONObject(0);
-            int isNoDisturbGlobal = params.getBoolean("isNoDisturb") ? ERR_CODE_PARAMETER : 0;
+            int isNoDisturbGlobal = params.getBoolean("isNoDisturb") ? 1 : 0;   // 1: 设置为免打扰；0: 取消设置。
             JMessageClient.setNoDisturbGlobal(isNoDisturbGlobal, new BasicCallback() {
-
                 @Override
                 public void gotResult(int status, String desc) {
                     handleResult(status, desc, callback);
