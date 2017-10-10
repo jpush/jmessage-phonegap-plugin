@@ -676,7 +676,7 @@ var JMessagePlugin = {
   },
   /**
    * 添加点击通知栏消息通知事件监听。
-   * Note: Android only, (如果想要 iOS 端 实现相同的功能，需要同时集成 jpush-phonegap-plugin)
+   * Note: Android only, (如果想要 iOS 端实现相同的功能，需要同时集成 jpush-phonegap-plugin)
    * @param {function} listener = function (message) {}  // 以参数形式返回消息对象。
    */
   addClickMessageNotificationListener: function (listener) {
