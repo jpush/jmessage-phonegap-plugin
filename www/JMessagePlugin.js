@@ -9,7 +9,8 @@ var EventHandlers = {
   'syncRoamingMessage': [],
   'loginStateChanged': [],
   'contactNotify': [],
-  'retractMessage': []
+  'retractMessage': [],
+  'receiveTransCommand': [] // 透传命令
 }
 
 var JMessagePlugin = {
@@ -74,7 +75,12 @@ var JMessagePlugin = {
     exec(null, null, PLUGIN_NAME, 'setDebugMode', [params])
   },
   /**
-   * @param {object} params = {'username': string, 'password': string}
+   * @param {object} params = {
+   *  username: string,
+   *  password: string,
+   *  avatar: string,   // 头像文件的 media id
+   *  ...
+   * }
    * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
@@ -82,7 +88,10 @@ var JMessagePlugin = {
     exec(success, error, PLUGIN_NAME, 'userRegister', [params])
   },
   /**
-   * @param {object} params = {'username': string, 'password': string}
+   * @param {object} params = {
+   *  username: 'yourUsername',
+   *  password: 'yourPassword',
+   * }
    * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
@@ -758,7 +767,7 @@ var JMessagePlugin = {
    *
    * @param {function} listener = function (event) {} // 以参数形式返回事件信息。
    * event = {
-   *  'conversation': object      // 会话对象。
+   *  'conversation': object,     // 会话对象。
    *  'retractedMessage': object  // 被撤回的消息对象。
    * }
    */
@@ -770,6 +779,25 @@ var JMessagePlugin = {
     if (handlerIndex >= 0) {
       EventHandlers.retractMessage.splice(handlerIndex, 1)
     }
+  },
+  /**
+   * 收到透传命令事件监听。
+   * 
+   * @param {function} listener = function (event) {} // 以参数形式返回事件信息。
+   * event = {
+   *  message: String,      // 透传命令消息内容
+   *  sender: Object,       // 发送方，类型为 UserInfo。
+   *  receiver: Object      // 接收方，类型可能为 UserInfo 或 GroupInfo。
+   *  receiverType: String, // 接收方的类型，可能值为 'single' 和 'group'。
+   * }
+   */
+  addReceiveTransCommandListener: function (listener) {
+    EventHandlers.receiveTransCommand.push(listener)
+  },
+  removeReceiveTransCommandListener: function (listener) {
+    var handlerIndex = EventHandlers.receiveTransCommand.indexOf(listener)
+    if (handlerIndex >= 0)
+      EventHandlers.receiveTransCommand.splice(handlerIndex, 0)
   }
 }
 
