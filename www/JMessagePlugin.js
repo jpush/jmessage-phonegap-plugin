@@ -75,6 +75,8 @@ var JMessagePlugin = {
     exec(null, null, PLUGIN_NAME, 'setDebugMode', [params])
   },
   /**
+   *  注册用户。
+   * 
    * @param {object} params = {
    *  username: string,
    *  password: string,
@@ -151,8 +153,8 @@ var JMessagePlugin = {
    *  field 包括：nickname（昵称）, birthday（生日）, signature（签名）, gender（性别）, region（地区）, address（具体地址）。
    *  如：{
    *    'birthday': Number,  // 生日日期的毫秒数
-   *    'gender': string,    // 'male' / 'female' / 'unknown'
-   *    ...                  // 其余皆为 string 类型
+   *    'gender': String,    // 'male' / 'female' / 'unknown'
+   *    ...                  // 其余皆为 String 类型
    *  }
    * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
@@ -162,12 +164,12 @@ var JMessagePlugin = {
   },
   /**
    * @param {object} params = {
-   *  'type': string,                                // 'single' / 'group'
-   *  'groupId': string,                             // 当 type = group 时，groupId 不能为空
-   *  'username': string,                            // 当 type = single 时，username 不能为空
-   *  'appKey': string,                              // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用
-   *  'text': string,                                // 消息内容
-   *  'extras': object,                              // Optional. 自定义键值对 = {'key1': 'value1'}
+   *  'type': String,                                // 'single' / 'group'
+   *  'groupId': String,                             // 当 type = group 时，groupId 不能为空
+   *  'username': String,                            // 当 type = single 时，username 不能为空
+   *  'appKey': String,                              // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用
+   *  'text': String,                                // 消息内容
+   *  'extras': Object,                              // Optional. 自定义键值对 = {'key1': 'value1'}
    *  'messageSendingOptions': MessageSendingOptions // Optional. MessageSendingOptions 对象
    * }
    * @param {function} success = function (msg) {}   // 以参数形式返回消息对象。
@@ -294,15 +296,41 @@ var JMessagePlugin = {
     exec(success, error, PLUGIN_NAME, 'getHistoryMessages', [params])
   },
   /**
+   * 发送透传命令给个人。
+   * 消息不会进入到后台的离线存储中去，仅当对方用户当前在线时，透传命令才会成功送达。
+   * 透传命令送达时，接收方会收到一个{@link receiveTransCommand}事件。
+   * SDK 不会将透传消息内容本地化。
+   * 
+   * @param {object} params = {
+   *  username: String, // 对方用户的用户名。
+   *  appKey: String,   // 对方用户所属应用的 AppKey，如果不传则默认为当前应用。
+   *  message: String   // 消息内容。
+   * }
+   */
+  sendSingleTransCommand: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'sendSingleTransCommand', [params])
+  },
+  /**
+   * 发送透传消息给群组。
+   * 
+   * @param {object} params = {
+   *  groupId: Number,  // 目标群组 Id。
+   *  message: String   // 消息内容。
+   * }
+   */
+  sendGroupTransCommand: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'sendGroupTransCommand', [params])
+  },
+  /**
    * 发送好友请求。
    *
    * @param {object} params = {
-   *  'username': string,   // 对方用户用户名。
-   *  'appKey': string,     // 对方用户所属应用的 AppKey。
-   *  'reason': string      // 申请原因。
+   *  username: String,   // 对方用户用户名。
+   *  appKey: String,     // 对方用户所属应用的 AppKey。
+   *  reason: String      // 申请原因。
    * }
    * @param {function} success = function () {}
-   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   * @param {function} error = function ({code: '错误码', description: '错误信息'}) {}
    */
   sendInvitationRequest: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'sendInvitationRequest', [params])
@@ -374,8 +402,9 @@ var JMessagePlugin = {
    * 创建群组，创建成功后，创建者默认会包含在群成员中。
    *
    * @param {object} params = {
-   *  'name': string          // 群组名称。
-   *  'desc': string          // 群组描述。
+   *  name: String,          // 群组名称。
+   *  desc: String,          // 群组描述。
+   *  avatarFilePath: String // 头像文件的本地绝对路径（可选）。
    * }
    * @param {function} success = function (groupId) {}  // 以参数形式返回 group id
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
@@ -384,16 +413,16 @@ var JMessagePlugin = {
     exec(success, error, PLUGIN_NAME, 'createGroup', [params])
   },
   /**
-   * 获取当前用户所有所在的群组 id。
+   * 获取当前用户所有所在的群组 Id。
    *
-   * @param {function} success = function (groupIdArray) {} // 以参数形式返回 group id 数组
+   * @param {function} success = function (groupIdArray) {} // 以参数形式返回 group Id 数组。
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   getGroupIds: function (success, error) {
     exec(success, error, PLUGIN_NAME, 'getGroupIds', [])
   },
   /**
-   * @param {object} params = {'id': '群组 id'}
+   * @param {object} params = {'id': '群组 Id'}
    * @param {function} success = function (groupInfo) {} // 以参数形式返回群组信息对象
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */

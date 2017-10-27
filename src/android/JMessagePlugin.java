@@ -182,7 +182,6 @@ public class JMessagePlugin extends CordovaPlugin {
         }
 
         JMessageClient.register(username, password, optionalUserInfo, new BasicCallback() {
-
             @Override
             public void gotResult(int status, String desc) {
                 handleResult(status, desc, callback);
@@ -243,7 +242,6 @@ public class JMessagePlugin extends CordovaPlugin {
         }
 
         JMessageClient.getUserInfo(username, appKey, new GetUserInfoCallback() {
-
             @Override
             public void gotResult(int status, String desc, UserInfo userInfo) {
                 if (status == 0) {
@@ -269,7 +267,6 @@ public class JMessagePlugin extends CordovaPlugin {
         }
 
         JMessageClient.updateUserPassword(oldPwd, newPwd, new BasicCallback() {
-
             @Override
             public void gotResult(int status, String desc) {
                 handleResult(status, desc, callback);
@@ -296,29 +293,23 @@ public class JMessagePlugin extends CordovaPlugin {
 
     void updateMyInfo(JSONArray data, final CallbackContext callback) {
         UserInfo myInfo = JMessageClient.getMyInfo();
-        UserInfo.Field field = null;
 
         try {
             JSONObject params = data.getJSONObject(0);
 
             if (params.has("nickname")) {
-                field = UserInfo.Field.nickname;
                 myInfo.setNickname(params.getString("nickname"));
             }
 
             if (params.has("birthday")) {
-                field = UserInfo.Field.birthday;
                 myInfo.setBirthday(params.getLong("birthday"));
             }
 
             if (params.has("signature")) {
-                field = UserInfo.Field.signature;
                 myInfo.setSignature(params.getString("signature"));
             }
 
             if (params.has("gender")) {
-                field = UserInfo.Field.gender;
-
                 if (params.getString("gender").equals("male")) {
                     myInfo.setGender(UserInfo.Gender.male);
                 } else if (params.getString("gender").equals("female")) {
@@ -329,13 +320,16 @@ public class JMessagePlugin extends CordovaPlugin {
             }
 
             if (params.has("region")) {
-                field = UserInfo.Field.region;
                 myInfo.setRegion(params.getString("region"));
             }
 
             if (params.has("address")) {
-                field = UserInfo.Field.address;
                 myInfo.setAddress(params.getString("address"));
+            }
+
+            if (params.has("extras")) {
+                Map<String, String> extras = fromJson(params.getJSONObject("extras"));
+                myInfo.setUserExtras(extras);
             }
 
         } catch (JSONException e) {
@@ -344,7 +338,7 @@ public class JMessagePlugin extends CordovaPlugin {
             return;
         }
 
-        JMessageClient.updateMyInfo(field, myInfo, new BasicCallback() {
+        JMessageClient.updateMyInfo(UserInfo.Field.all, myInfo, new BasicCallback() {
             @Override
             public void gotResult(int status, String desc) {
                 handleResult(status, desc, callback);
@@ -1171,7 +1165,6 @@ public class JMessagePlugin extends CordovaPlugin {
 
             } else {
                 JMessageClient.createGroup(name, desc, new CreateGroupCallback() {
-
                     @Override
                     public void gotResult(int status, String desc, long groupId) {
                         if (status == 0) {
