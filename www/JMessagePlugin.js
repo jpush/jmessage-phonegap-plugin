@@ -17,7 +17,7 @@ var JMessagePlugin = {
   /**
    * 针对消息发送动作的控制选项，可附加在消息发送方法的参数中。
    */
-  messageSendingOptions : {
+  messageSendingOptions: {
     /**
      * 接收方是否针对此次消息发送展示通知栏通知。
      * @type {boolean}
@@ -75,12 +75,11 @@ var JMessagePlugin = {
     exec(null, null, PLUGIN_NAME, 'setDebugMode', [params])
   },
   /**
-   *  注册用户。
-   * 
+   * 注册用户。
    * @param {object} params = {
-   *  username: string,
-   *  password: string,
-   *  avatar: string,   // 头像文件的 media id
+   *  username: String,
+   *  password: String,
+   *  nickname: String,
    *  ...
    * }
    * @param {function} success = function () {}
@@ -102,8 +101,6 @@ var JMessagePlugin = {
   },
   /**
    * 用户登出接口，调用后用户将无法收到消息。登出动作必定成功，开发者不需要关心结果回调。
-   *
-   * @param {function} success = function () {}
    */
   logout: function () {
     exec(null, null, PLUGIN_NAME, 'userLogout', [])
@@ -134,10 +131,9 @@ var JMessagePlugin = {
   },
   /**
    * 更新当前用户头像。
-   * 
    * @param {object} params = {
    *  imgPath: string // 本地图片绝对路径。
-   * }  
+   * }
    * 注意 Android 与 iOS 的文件路径是不同的：
    *   - Android 类似：/storage/emulated/0/DCIM/Camera/IMG_20160526_130223.jpg
    *   - iOS 类似：/var/mobile/Containers/Data/Application/7DC5CDFF-6581-4AD3-B165-B604EBAB1250/tmp/photo.jpg
@@ -300,11 +296,10 @@ var JMessagePlugin = {
    * 消息不会进入到后台的离线存储中去，仅当对方用户当前在线时，透传命令才会成功送达。
    * 透传命令送达时，接收方会收到一个{@link receiveTransCommand}事件。
    * SDK 不会将透传消息内容本地化。
-   * 
    * @param {object} params = {
    *  username: String, // 对方用户的用户名。
    *  appKey: String,   // 对方用户所属应用的 AppKey，如果不传则默认为当前应用。
-   *  message: String   // 消息内容。
+   *  content: String   // 消息内容。
    * }
    */
   sendSingleTransCommand: function (params, success, error) {
@@ -312,10 +307,9 @@ var JMessagePlugin = {
   },
   /**
    * 发送透传消息给群组。
-   * 
    * @param {object} params = {
    *  groupId: Number,  // 目标群组 Id。
-   *  message: String   // 消息内容。
+   *  content: String   // 消息内容。
    * }
    */
   sendGroupTransCommand: function (params, success, error) {
@@ -535,6 +529,31 @@ var JMessagePlugin = {
    */
   isNoDisturbGlobal: function (success, error) {
     exec(success, error, PLUGIN_NAME, 'isNoDisturbGlobal', [])
+  },
+  /**
+   * 设置是否屏蔽群消息。
+   *
+   * @param {Object} params = { id: String, isBlock: boolean }
+   */
+  blockGroupMessage: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'blockGroupMessage', [params])
+  },
+  /**
+   * 判断指定群组是否被屏蔽。
+   *
+   * @param {object} params = { id: String }
+   * @param {function} success = function ({ isBlocked: boolean }) {} // 以参数形式返回结果。
+   */
+  isGroupBlocked: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'isGroupBlocked', [params])
+  },
+  /**
+   * 获取当前用户的群屏蔽列表。
+   *
+   * @param {function} success = function (groupArr) {} // 以参数形式返回结果。
+   */
+  getBlockedGroupList: function (success, error) {
+    exec(success, error, PLUGIN_NAME, 'getBlockedGroupList', [])
   },
   /**
    * 下载用户头像缩略图，如果已经下载，不会重复下载。
@@ -811,7 +830,7 @@ var JMessagePlugin = {
   },
   /**
    * 收到透传命令事件监听。
-   * 
+   *
    * @param {function} listener = function (event) {} // 以参数形式返回事件信息。
    * event = {
    *  message: String,      // 透传命令消息内容
@@ -825,8 +844,9 @@ var JMessagePlugin = {
   },
   removeReceiveTransCommandListener: function (listener) {
     var handlerIndex = EventHandlers.receiveTransCommand.indexOf(listener)
-    if (handlerIndex >= 0)
-      EventHandlers.receiveTransCommand.splice(handlerIndex, 0)
+    if (handlerIndex >= 0) {
+      EventHandlers.receiveTransCommand.splice(handlerIndex, 1)
+    }
   }
 }
 

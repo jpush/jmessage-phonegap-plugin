@@ -32,6 +32,7 @@ import cn.jpush.im.android.api.callback.GetAvatarBitmapCallback;
 import cn.jpush.im.android.api.callback.GetBlacklistCallback;
 import cn.jpush.im.android.api.callback.GetGroupIDListCallback;
 import cn.jpush.im.android.api.callback.GetGroupInfoCallback;
+import cn.jpush.im.android.api.callback.GetGroupInfoListCallback;
 import cn.jpush.im.android.api.callback.GetGroupMembersCallback;
 import cn.jpush.im.android.api.callback.GetNoDisurbListCallback;
 import cn.jpush.im.android.api.callback.GetUserInfoCallback;
@@ -697,7 +698,7 @@ public class JMessagePlugin extends CordovaPlugin {
             JSONObject params = data.getJSONObject(0);
             username = params.getString("username");
             appKey = params.has("appKey") ? params.getString("appKey") : null;
-            msg = params.getString("message");
+            msg = params.getString("content");
         } catch (JSONException e) {
             e.printStackTrace();
             handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
@@ -719,7 +720,7 @@ public class JMessagePlugin extends CordovaPlugin {
         try {
             JSONObject params = data.getJSONObject(0);
             groupId = params.getLong("groupId");
-            msg = params.getString("message");
+            msg = params.getString("content");
         } catch (JSONException e) {
             e.printStackTrace();
             handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
@@ -1390,6 +1391,90 @@ public class JMessagePlugin extends CordovaPlugin {
         });
     }
 
+    void blockGroupMessage(JSONArray data, final CallbackContext callback) {
+        final long groupId;
+        final int isBlock;  // true: 屏蔽；false: 取消屏蔽。
+
+        try {
+            JSONObject params = data.getJSONObject(0);
+            groupId = Long.parseLong(params.getString("id"));
+            isBlock = params.getBoolean("isBlock") ? 1 : 0;
+        } catch (JSONException e) {
+            e.printStackTrace();
+            handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
+            return;
+        }
+
+        JMessageClient.getGroupInfo(groupId, new GetGroupInfoCallback() {
+            @Override
+            public void gotResult(int status, String desc, GroupInfo groupInfo) {
+                if (status != 0) {
+                    handleResult(status, desc, callback);
+                    return;
+                }
+
+                groupInfo.setBlockGroupMessage(isBlock, new BasicCallback() {
+                    @Override
+                    public void gotResult(int status, String desc) {
+                        handleResult(status, desc, callback);
+                    }
+                });
+            }
+        });
+    }
+
+    void isGroupBlocked(JSONArray data, final CallbackContext callback) {
+        long groupId;
+
+        try {
+            JSONObject params = data.getJSONObject(0);
+            groupId = Long.parseLong(params.getString("id"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+            handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
+            return;
+        }
+
+        JMessageClient.getGroupInfo(groupId, new GetGroupInfoCallback() {
+            @Override
+            public void gotResult(int status, String desc, GroupInfo groupInfo) {
+                if (status != 0) {
+                    handleResult(status, desc, callback);
+                    return;
+                }
+
+                boolean isBlocked = (groupInfo.isGroupBlocked() == 1);
+                JSONObject result = new JSONObject();
+                try {
+                    result.put("isBlocked", isBlocked);
+                    handleResult(result, status, desc, callback);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    void getBlockedGroupList(JSONArray data, final CallbackContext callback) {
+        JMessageClient.getBlockedGroupsList(new GetGroupInfoListCallback() {
+            @Override
+            public void gotResult(int status, String desc, List<GroupInfo> list) {
+                if (status != 0) {
+                    handleResult(status, desc, callback);
+                    return;
+                }
+
+                JSONArray result = new JSONArray();
+
+                for (GroupInfo groupInfo : list) {
+                    result.put(toJson(groupInfo));
+                }
+
+                handleResult(result, status, desc, callback);
+            }
+        });
+    }
+
     // 群组 - end
 
     // 黑名单 - start
@@ -1875,7 +1960,7 @@ public class JMessagePlugin extends CordovaPlugin {
      */
     public void onEvent(CommandNotificationEvent event) throws JSONException {
         final JSONObject result = new JSONObject();
-        result.put("message", event.getMsg());
+        result.put("content", event.getMsg());
 
         event.getSenderUserInfo(new GetUserInfoCallback() {
             @Override
