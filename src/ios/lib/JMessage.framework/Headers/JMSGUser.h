@@ -30,6 +30,8 @@ typedef NS_ENUM(NSUInteger, JMSGUserField) {
   kJMSGUserFieldsAvatar = 5,
   /// 用户信息字段: 地址
   kJMSGUserFieldsAddress = 6,
+  /// 用户信息字段: 扩展字段
+  kJMSGUserFieldsExtras = 7,
 
 };
 
@@ -46,7 +48,7 @@ typedef NS_ENUM(NSUInteger, JMSGUserGender) {
 };
 
 /*!
- * 用户信息类（仅可用于修改用户信息）
+ * 用户信息类（用于修改用户信息、注册新用户）
  */
 @interface JMSGUserInfo : NSObject
 JMSG_ASSUME_NONNULL_BEGIN
@@ -62,8 +64,12 @@ JMSG_ASSUME_NONNULL_BEGIN
 @property(nonatomic, strong) NSString * region;
 /** 地址 */
 @property(nonatomic, strong) NSString * address;
-/** 头像数据 */
+/** 头像数据，注意：注册新用户时不支持同时上传头像 */
 @property(nonatomic, strong) NSData   * avatarData;
+/** 信息扩展字段，value 仅支持 NSString 类型*/
+@property(nonatomic, strong) NSDictionary * extras;
+
+
 
 JMSG_ASSUME_NONNULL_END
 @end
@@ -91,6 +97,22 @@ JMSG_ASSUME_NONNULL_BEGIN
  */
 + (void)registerWithUsername:(NSString *)username
                     password:(NSString *)password
+           completionHandler:(JMSGCompletionHandler JMSG_NULLABLE)handler;
+
+/*!
+ * @abstract 新用户注册(支持携带用户信息字段)
+ *
+ * @param userInfo  用户名. 长度 4~128 位.
+ *                  支持的字符: 字母,数字,下划线,英文减号,英文点,@邮件符号. 首字母只允许是字母或者数字.
+ * @param password  用户密码. 长度 4~128 位.
+ * @param userInfo  用户信息类，注册时携带用户信息字段，除用户头像字段
+ * @param handler   结果回调. 返回正常时 resultObject 为 nil.
+ *
+ * @discussion 注意: 注册时不支持上传头像，其他信息全部支持
+ */
++ (void)registerWithUsername:(NSString *)username
+                    password:(NSString *)password
+                    userInfo:(JMSGUserInfo *JMSG_NULLABLE)userInfo
            completionHandler:(JMSGCompletionHandler JMSG_NULLABLE)handler;
 
 /*!
@@ -140,6 +162,8 @@ JMSG_ASSUME_NONNULL_BEGIN
  * @abstract 获取用户本身个人信息接口
  *
  * @return 当前登陆账号个人信息
+ *
+ * @discussion 注意：返回值有可能为空
  */
 + (JMSGUser *)myInfo;
 
@@ -147,9 +171,11 @@ JMSG_ASSUME_NONNULL_BEGIN
  * @abstract 更新用户信息接口
  *
  * @param parameter     新的属性值
- *        Birthday&&Gender 是NSNumber类型, Avatar NSData类型 其他 NSString
+ *        Birthday&&Gender 是NSNumber类型, Avatar NSData类型, extras是 NSDictionary 类型， 其他 NSString
  * @param type          更新属性类型
  * @param handler       更新用户信息回调接口函数
+ *
+ * @discussion 注意：建议使用 [+(void)updateMyInfoWithUserInfo:completionHandler:] 接口修改信息
  */
 + (void)updateMyInfoWithParameter:(id)parameter
                     userFieldType:(JMSGUserField)type
@@ -257,6 +283,7 @@ JMSG_ASSUME_NONNULL_BEGIN
                        appKey:(NSString *)userAppKey
             completionHandler:(JMSGCompletionHandler)handler;
 
+
 ///----------------------------------------------------
 /// @name Basic Fields 基本属性
 ///----------------------------------------------------
@@ -315,6 +342,11 @@ JMSG_ASSUME_NONNULL_BEGIN
  * @discussion 为主应用时, 此字段为空
  */
 @property(nonatomic, copy, readonly) NSString * JMSG_NULLABLE appKey;
+
+/*!
+ * @abstract 用户扩展字段
+ */
+@property(nonatomic, strong, readonly) NSDictionary * JMSG_NULLABLE extras;
 
 /*!
  * @abstract 该用户是否已被设置为免打扰
@@ -393,7 +425,7 @@ JMSG_ASSUME_NONNULL_BEGIN
  *
  * @return 返回本地路，返回值只有在下载完成之后才有意义
  */
-- (NSString *)thumbAvatarLocalPath;
+- (NSString *JMSG_NULLABLE)thumbAvatarLocalPath;
 
 /*!
  * @abstract 获取头像大图文件数据
@@ -416,7 +448,7 @@ JMSG_ASSUME_NONNULL_BEGIN
  *
  * @return 返回本地路，返回值只有在下载完成之后才有意义
  */
-- (NSString *)largeAvatarLocalPath;
+- (NSString *JMSG_NULLABLE)largeAvatarLocalPath;
 
 /*!
  * @abstract 用户展示名

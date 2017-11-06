@@ -46,7 +46,7 @@ JMessagePlugin *SharedJMessagePlugin;
 
 #else
 
-- (CDVPlugin*)initWithWebView:(UIWebView*)theWebView{
+- (CDVPlugin*)initWithWebView:(UIWebView*)theWebView {
     NSLog(@"### initWithWebView ");
     if (self=[super initWithWebView:theWebView]) {
         [self initNotifications];
@@ -61,23 +61,17 @@ JMessagePlugin *SharedJMessagePlugin;
     if (!SharedJMessagePlugin) {
         SharedJMessagePlugin = self;
         self.SendMsgCallbackDic = @{}.mutableCopy;
-        //    [JMessage addDelegate:self withConversation:nil];
-        //    [JMSGFriendManager getFriendList:^(id resultObject, NSError *error) {
-        //
-        //    }];
-        
     }
 }
 
 - (void)onAppTerminate {
     NSLog(@"### onAppTerminate ");
-    
 }
 
 - (void)onReset {
     NSLog(@"### onReset ");
-    
 }
+
 - (void)dispose {
     NSLog(@"### dispose ");
 }
@@ -88,10 +82,8 @@ JMessagePlugin *SharedJMessagePlugin;
     [(AppDelegate*)[UIApplication sharedApplication].delegate startJMessageSDK];
 }
 
-
 #pragma mark IM - Private
 
-//因为cordova 有lazy 特性，所以在不使用其他函数的情况下。这个函数作用在于激活插件
 - (void)init:(CDVInvokedUrlCommand *)command {
     self.callBack = command;
     NSDictionary * param = [command argumentAtIndex:0];
@@ -108,9 +100,8 @@ JMessagePlugin *SharedJMessagePlugin;
 }
 
 -(void)initNotifications {
-    
     NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
-    // have
+
     [defaultCenter addObserver:self
                       selector:@selector(didReceiveJMessageMessage:)
                           name:kJJMessageReceiveMessage
@@ -120,7 +111,7 @@ JMessagePlugin *SharedJMessagePlugin;
                       selector:@selector(conversationChanged:)
                           name:kJJMessageConversationChanged
                         object:nil];
-    // have
+
     [defaultCenter addObserver:self
                       selector:@selector(didSendMessage:)
                           name:kJJMessageSendMessageRespone
@@ -130,41 +121,42 @@ JMessagePlugin *SharedJMessagePlugin;
                       selector:@selector(unreadChanged:)
                           name:kJJMessageUnreadChanged
                         object:nil];
-    // have
+
     [defaultCenter addObserver:self
                       selector:@selector(loginStateChanged:)
                           name:kJJMessageLoginStateChanged
                         object:nil];
-    // have
+
     [defaultCenter addObserver:self
                       selector:@selector(onContactNotify:)
                           name:kJJMessageContactNotify
                         object:nil];
+  
     [defaultCenter addObserver:self
                       selector:@selector(didReceiveRetractMessage:)
                           name:kJJMessageRetractMessage
                         object:nil];
     
-    
     [defaultCenter addObserver:self
                       selector:@selector(groupInfoChanged:)
                           name:kJJMessageGroupInfoChanged
                         object:nil];
-    // have
+
     [defaultCenter addObserver:self
                       selector:@selector(onSyncOfflineMessage:)
                           name:kJJMessageSyncOfflineMessage
                         object:nil];
-    // have
+
     [defaultCenter addObserver:self
                       selector:@selector(onSyncRoamingMessage:)
                           name:kJJMessageSyncRoamingMessage
                         object:nil];
 }
 
-#pragma mark IM - Notifications
+#pragma mark IM - Events
 - (void)onSyncOfflineMessage: (NSNotification *) notification {
-    CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:@{@"eventName": @"syncOfflineMessage", @"value": notification.object}];
+    CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
+                                            messageAsDictionary:@{@"eventName": @"syncOfflineMessage", @"value": notification.object}];
     [result setKeepCallback:@(true)];
     [self.commandDelegate sendPluginResult:result callbackId:self.callBack.callbackId];
 }
@@ -193,8 +185,6 @@ JMessagePlugin *SharedJMessagePlugin;
     if (callBackID) {
         [self.commandDelegate sendPluginResult:result callbackId:callBackID];
         [self.SendMsgCallbackDic removeObjectForKey:msgDic[@"id"]];
-    } else {
-        return;
     }
 }
 
@@ -231,7 +221,6 @@ JMessagePlugin *SharedJMessagePlugin;
     [self.commandDelegate sendPluginResult:result callbackId:self.callBack.callbackId];
 }
 
-//didReceiveJMessageMessage change name
 - (void)didReceiveJMessageMessage:(NSNotification *)notification {
     CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:@{@"eventName": @"receiveMessage", @"value": notification.object}];
     [result setKeepCallback:@(true)];
@@ -254,7 +243,6 @@ JMessagePlugin *SharedJMessagePlugin;
 //#pragma mark IM - User
 
 -(void)handleResultWithDictionary:(NSDictionary *)value command:(CDVInvokedUrlCommand*)command error:(NSError*)error{
-    
     CDVPluginResult *result = nil;
     
     if (error == nil) {
@@ -264,13 +252,11 @@ JMessagePlugin *SharedJMessagePlugin;
         result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
                                messageAsDictionary:@{@"code": @(error.code), @"description": [error description]}];
     }
-    
-    //  WEAK_SELF(weakSelf);
+  
     [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
 }
 
 -(void)handleResultWithArray:(NSArray *)value command:(CDVInvokedUrlCommand*)command error:(NSError*)error{
-    
     CDVPluginResult *result = nil;
     
     if (error == nil) {
@@ -279,8 +265,7 @@ JMessagePlugin *SharedJMessagePlugin;
     } else {
         result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:@{@"code": @(error.code), @"description": [error description]}];
     }
-    
-    //  WEAK_SELF(weakSelf);
+
     [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
 }
 
@@ -300,23 +285,60 @@ JMessagePlugin *SharedJMessagePlugin;
 }
 
 - (void)userRegister:(CDVInvokedUrlCommand *)command {
+  NSDictionary * param = [command argumentAtIndex:0];
     
-    NSDictionary * user = [command argumentAtIndex:0];
-    NSLog(@"username %@",user);
-    if (user[@"username"] && user[@"password"]) {
-        
-        [JMSGUser registerWithUsername: user[@"username"] password: user[@"password"] completionHandler:^(id resultObject, NSError *error) {
-            if (!error) {
-                [self handleResultWithDictionary:@{} command:command error: nil];
-            } else {
-                [self handleResultWithDictionary:nil command:command error: error];
-            }
-        }];
-    } else {
-        [self returnParamError:command];
+  if (!param[@"username"] || !param[@"password"]) {
+    [self returnParamError:command];
+    return;
+  }
+    
+  JMSGUserInfo *info = [[JMSGUserInfo alloc] init];
+    
+  if (param[@"nickname"]) {
+    info.nickname = param[@"nickname"];
+  }
+  
+  if (param[@"birthday"]) {
+    NSNumber *birthday = param[@"birthday"];
+    info.birthday = @([birthday integerValue] / 1000); // Convert millisecond to second.
+  }
+    
+  if (param[@"signature"]) {
+    info.signature = param[@"signature"];
+  }
+    
+  if (param[@"gender"]) {
+    if ([param[@"gender"] isEqualToString:@"male"]) {
+      info.gender = kJMSGUserGenderMale;
+    } else if ([param[@"gender"] isEqualToString:@"female"]) {
+      info.gender = kJMSGUserGenderFemale;
+    } else if ([param[@"gender"] isEqualToString:@"unknow"]) {
+      info.gender = kJMSGUserGenderUnknown;
     }
+  }
     
-    
+  if (param[@"region"]) {
+    info.region = param[@"region"];
+  }
+  
+  if (param[@"address"]) {
+    info.address = param[@"address"];
+  }
+  
+  if (param[@"extras"] && [param[@"extras"] isKindOfClass: [NSDictionary class]]) {
+    info.extras = param[@"extras"];
+  }
+  
+  [JMSGUser registerWithUsername:param[@"username"]
+                        password:param[@"password"]
+                        userInfo:info
+               completionHandler:^(id resultObject, NSError *error) {
+                 if (!error) {
+                   [self handleResultWithDictionary:@{} command:command error:nil];
+                 } else {
+                   [self handleResultWithDictionary:nil command:command error:error];
+                 }
+               }];
 }
 
 - (void)userLogin:(CDVInvokedUrlCommand *)command {
@@ -326,7 +348,7 @@ JMessagePlugin *SharedJMessagePlugin;
         [JMSGUser loginWithUsername:user[@"username"] password:user[@"password"] completionHandler:^(id resultObject, NSError *error) {
             if (!error) {
               JMSGUser *myInfo = [JMSGUser myInfo];
-              // 为了和 android 行为一致，在登录的时候自动下载缩略图
+              // 为了和 Android 行为一致，在登录的时候自动下载缩略图。
               [myInfo thumbAvatarData:^(NSData *data, NSString *objectId, NSError *error) {
                 [self handleResultWithDictionary:@{} command:command error: nil];
               }];
@@ -433,13 +455,9 @@ JMessagePlugin *SharedJMessagePlugin;
     if (param[@"gender"]) {
         if ([param[@"gender"] isEqualToString:@"male"]) {
             info.gender = kJMSGUserGenderMale;
-        }
-        
-        if ([param[@"gender"] isEqualToString:@"female"]) {
+        } else if ([param[@"gender"] isEqualToString:@"female"]) {
             info.gender = kJMSGUserGenderFemale;
-        }
-        
-        if ([param[@"gender"] isEqualToString:@"unknow"]) {
+        } else {
             info.gender = kJMSGUserGenderUnknown;
         }
     }
@@ -494,7 +512,8 @@ JMessagePlugin *SharedJMessagePlugin;
     
     if (param[@"type"] == nil) {
         [self returnParamError:command];
-        return;}
+        return;
+    }
     
     if (param[@"text"] == nil) {
         [self returnParamError:command];
@@ -1000,7 +1019,59 @@ JMessagePlugin *SharedJMessagePlugin;
       return;
     }
   }
+}
+
+- (void)sendSingleTransCommand:(CDVInvokedUrlCommand *)command {
+  NSDictionary * param = [command argumentAtIndex:0];
   
+  if (!param[@"username"] || !param[@"content"]) {
+    [self returnParamError:command];
+    return;
+  }
+  
+  NSString * appKey = nil;
+  if (param[@"appKey"]) {
+    appKey = param[@"appKey"];
+  } else {
+    appKey = [JMessageHelper shareInstance].JMessageAppKey;
+  }
+  
+  NSString * message = param[@"content"];
+  
+  [JMSGConversation createSingleConversationWithUsername:param[@"username"] appKey:appKey completionHandler:^(id resultObject, NSError *error) {
+    if (error) {
+      [self handleResultWithDictionary:nil command:command error:error];
+      return;
+    }
+    
+    JMSGConversation *conversation = resultObject;
+    [conversation sendTransparentMessage:message completionHandler:^(id resultObject, NSError *error) {
+      [self handleResultWithDictionary:nil command:command error:error];
+    }];
+  }];
+}
+
+- (void)sendGroupTransCommand:(CDVInvokedUrlCommand *)command {
+  NSDictionary * param = [command argumentAtIndex:0];
+  
+  if (!param[@"groupId"] || !param[@"content"]) {
+    [self returnParamError:command];
+    return;
+  }
+  
+  NSString * message = param[@"content"];
+  
+  [JMSGConversation createGroupConversationWithGroupId:param[@"groupId"] completionHandler:^(id resultObject, NSError *error) {
+    if (error) {
+      [self handleResultWithDictionary:nil command:command error:error];
+      return;
+    }
+    
+    JMSGConversation * conversation = resultObject;
+    [conversation sendTransparentMessage:message completionHandler:^(id resultObject, NSError *error) {
+      [self handleResultWithDictionary:nil command:command error:error];
+    }];
+  }];
 }
 
 - (void)sendInvitationRequest:(CDVInvokedUrlCommand *)command {
@@ -1182,7 +1253,7 @@ JMessagePlugin *SharedJMessagePlugin;
     [JMSGFriendManager getFriendList:^(id resultObject, NSError *error) {
         if (error) {
             [self handleResultWithDictionary: nil command: command error:error];
-            return ;
+            return;
         }
         
         NSArray *userList = resultObject;
@@ -1196,27 +1267,35 @@ JMessagePlugin *SharedJMessagePlugin;
 }
 
 - (void)createGroup:(CDVInvokedUrlCommand *)command {
-    NSDictionary * param = [command argumentAtIndex:0];
-    NSString *groupName = @"";
-    NSString *descript = @"";
+  NSDictionary *param = [command argumentAtIndex:0];
+  JMSGGroupInfo* groupInfo = [[JMSGGroupInfo alloc] init];
     
-    if (param[@"name"] != nil) {
-        groupName = param[@"name"];
+  if (param[@"name"]) {
+    groupInfo.name = param[@"name"];
+  }
+    
+  if (param[@"desc"]) {
+    groupInfo.desc = param[@"desc"];
+  }
+  
+  if (param[@"avatarFilePath"]) {
+    NSString *mediaPath = param[@"avatarFilePath"];
+    
+    if([[NSFileManager defaultManager] fileExistsAtPath:mediaPath]) {
+      mediaPath = mediaPath;
+      groupInfo.avatarData = [NSData dataWithContentsOfFile: mediaPath];
+    }
+  }
+  
+  [JMSGGroup createGroupWithGroupInfo:groupInfo memberArray:nil completionHandler:^(id resultObject, NSError *error) {
+    if (error) {
+      [self handleResultWithDictionary:nil command:command error:error];
+      return;
     }
     
-    if (param[@"desc"] != nil) {
-        descript = param[@"desc"];
-    }
-    
-    [JMSGGroup createGroupWithName:groupName desc:descript memberArray:nil completionHandler:^(id resultObject, NSError *error) {
-        if (error) {
-            [self handleResultWithDictionary: nil command: command error:error];
-            return ;
-        }
-        
-        JMSGGroup *group = resultObject;
-        [self handleResultWithDictionary:[group groupToDictionary] command:command error:error];
-    }];
+    JMSGGroup *group = resultObject;
+    [self handleResultWithDictionary:[group groupToDictionary] command:command error:error];
+  }];
 }
 
 - (void)getGroupIds:(CDVInvokedUrlCommand *)command {
@@ -1374,7 +1453,6 @@ JMessagePlugin *SharedJMessagePlugin;
 }
 
 - (void)getGroupMembers:(CDVInvokedUrlCommand *)command {
-    
     NSDictionary * param = [command argumentAtIndex:0];
     if (param[@"id"] == nil) {
         [self returnParamError:command];
@@ -1382,26 +1460,88 @@ JMessagePlugin *SharedJMessagePlugin;
     
     [JMSGGroup groupInfoWithGroupId:param[@"id"] completionHandler:^(id resultObject, NSError *error) {
         if (error) {
-            [self handleResultWithDictionary: nil command: command error:error];
-            return ;
+            [self handleResultWithDictionary:nil command:command error:error];
+            return;
         }
         
         JMSGGroup *group = resultObject;
         
         [group memberArrayWithCompletionHandler:^(id resultObject, NSError *error) {
             if (error) {
-                [self handleResultWithDictionary: nil command: command error:error];
-                return ;
+                [self handleResultWithDictionary:nil command:command error:error];
+                return;
             }
+          
             NSArray *userList = resultObject;
-            NSMutableArray *usernameList = @[].mutableCopy;
-            for (JMSGUser *user in 	userList) {
-                [usernameList addObject:[user username]];
+            NSMutableArray *userInfoList = @[].mutableCopy;
+            for (JMSGUser *user in userList) {
+                [userInfoList addObject:[user userToDictionary]];
             }
-            [self handleResultWithArray:usernameList command:command error:error];
+            [self handleResultWithArray:userInfoList command:command error:error];
         }];
     }];
 }
+
+- (void)blockGroupMessage:(CDVInvokedUrlCommand *)command {
+  NSDictionary * param = [command argumentAtIndex:0];
+  
+  if (!param[@"id"] || !param[@"isBlock"]) {
+    [self returnParamError:command];
+    return;
+  }
+  
+  NSNumber *isBlock = param[@"isBlock"];
+  
+  [JMSGGroup groupInfoWithGroupId:param[@"id"] completionHandler:^(id resultObject, NSError *error) {
+    if (error) {
+      [self handleResultWithDictionary:nil command:command error:error];
+      return;
+    }
+    
+    JMSGGroup *group = resultObject;
+    [group setIsShield:[isBlock boolValue] handler:^(id resultObject, NSError *error) {
+      [self handleResultWithDictionary:nil command:command error:error];
+    }];
+  }];
+}
+
+- (void)isGroupBlocked:(CDVInvokedUrlCommand *)command {
+  NSDictionary * param = [command argumentAtIndex:0];
+  
+  if (!param[@"id"]) {
+    [self returnParamError:command];
+    return;
+  }
+  
+  [JMSGGroup groupInfoWithGroupId:param[@"id"] completionHandler:^(id resultObject, NSError *error) {
+    if (error) {
+      [self handleResultWithDictionary:nil command:command error:error];
+      return;
+    }
+    
+    JMSGGroup *group = resultObject;
+    [self handleResultWithDictionary:@{@"isBlocked": @(group.isShieldMessage)} command:command error:error];
+  }];
+}
+
+- (void)getBlockedGroupList:(CDVInvokedUrlCommand *)command {
+  [JMSGGroup shieldList:^(id resultObject, NSError *error) {
+    if (error) {
+      [self handleResultWithDictionary:nil command:command error:error];
+    }
+    
+    NSArray *groupArr = resultObject;
+    NSMutableArray *groupList = @[].mutableCopy;
+    
+    for (JMSGGroup *group in groupArr) {
+      [groupList addObject:group];
+    }
+    
+    [self handleResultWithArray:groupList command:command error:error];
+  }];
+}
+
+// Group API - end
 
 - (void)addUsersToBlacklist:(CDVInvokedUrlCommand *)command {
     NSDictionary * param = [command argumentAtIndex:0];

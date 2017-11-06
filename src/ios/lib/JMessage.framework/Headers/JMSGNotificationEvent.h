@@ -40,7 +40,7 @@
 /*!
  * @abstract 消息撤回事件
  *
- * @discussion 上层通过 JMSGEventDelegate 类中的 -(void)onReceiveNotificationEvent: 代理方法监听此事件,详见官方文档.
+ * @discussion 上层通过 JMSGEventDelegate 类中的 -(void)onReceiveMessageRetractEvent: 代理方法监听此事件,详见官方文档.
  */
 @interface JMSGMessageRetractEvent : JMSGNotificationEvent
 
@@ -53,5 +53,39 @@
  * @abstract 撤回之后的消息
  */
 @property(nonatomic, strong, readonly) JMSGMessage *retractMessage;
+
+@end
+
+
+/*!
+ * @abstract 消息已读回执状态变更事件
+ */
+@interface JMSGMessageReceiptStatusChangeEvent : JMSGNotificationEvent
+/**
+ * @abstract 消息所属会话
+ */
+@property(nonatomic, strong, readonly) JMSGConversation *conversation;
+
+/**
+ * @abstract 已读回执变更的消息列表
+ */
+@property(nonatomic, strong, readonly) NSArray <__kindof JMSGMessage *>*messages;
+
+@end
+
+/*!
+ * @abstract 消息透传事件
+ */
+@interface JMSGMessageTransparentEvent : JMSGNotificationEvent
+
+/*!
+ * @abstract 消息所属会话
+ */
+@property(nonatomic, strong, readonly) JMSGConversation *conversation;
+
+/*!
+ * @abstract 用户自定义透传内容
+ */
+@property(nonatomic, strong, readonly) NSString *transparentText;
 
 @end

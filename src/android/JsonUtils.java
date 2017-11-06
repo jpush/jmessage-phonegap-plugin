@@ -116,6 +116,7 @@ class JsonUtils {
         JSONObject result = new JSONObject();
         try {
             result.put("id", msg.getId());
+            result.put("serverMessageId", msg.getServerMessageId());
             result.put("from", toJson(msg.getFromUser()));  // 消息发送者
 
             if (msg.getDirect() == MessageDirect.send) {    // 消息发送

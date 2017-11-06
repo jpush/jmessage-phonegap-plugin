@@ -332,7 +332,8 @@
 - (NSMutableDictionary *)messageToDictionary {
   NSMutableDictionary *dict = [NSMutableDictionary new];
 
-  dict[@"id"] = self.msgId;
+  dict[@"id"] = self.msgId; // 本地数据库中的消息 Id。
+  dict[@"serverMessageId"] = self.serverMessageId;  // 服务器端对应的消息 Id。
   dict[@"from"] = [self.fromUser userToDictionary];
   
   if (self.content.extras != nil) {

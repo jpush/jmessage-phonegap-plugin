@@ -39,11 +39,34 @@
  *
  * @param retractEvent 下发的通知事件，事件类型请查看 JMSGMessageRetractEvent 类
  *
- * @discussion 收到此事件时，可以通过 event.conversation 判断是否属于某个会话
- *
  * @since 3.2.0
  */
 @optional
 - (void)onReceiveMessageRetractEvent:(JMSGMessageRetractEvent *)retractEvent;
+
+/*!
+ * @abstract 消息回执状态变更事件
+ *
+ * @param receiptEvent 下发的通知事件，事件类型请查看 JMSGMessageReceiptStatusChangeEvent 类
+ *
+ * @discussion 上层可以通过 receiptEvent 获取相应信息
+ *
+ * @since 3.3.0
+ */
+@optional
+- (void)onReceiveMessageReceiptStatusChangeEvent:(JMSGMessageReceiptStatusChangeEvent *)receiptEvent;
+
+/*!
+ * @abstract 消息透传事件
+ *
+ * @param transparentEvent 下发的通知事件，事件类型请查看 JMSGMessageTransparentEvent 类
+ *
+ * @discussion 上层可以通过 transparentEvent 获取相应信息，如果自定义的透传信息、会话
+ *
+ * @since 3.3.0
+ */
+@optional
+- (void)onReceiveMessageTransparentEvent:(JMSGMessageTransparentEvent *)transparentEvent;
+
 @end
 

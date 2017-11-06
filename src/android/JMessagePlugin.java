@@ -32,6 +32,7 @@ import cn.jpush.im.android.api.callback.GetAvatarBitmapCallback;
 import cn.jpush.im.android.api.callback.GetBlacklistCallback;
 import cn.jpush.im.android.api.callback.GetGroupIDListCallback;
 import cn.jpush.im.android.api.callback.GetGroupInfoCallback;
+import cn.jpush.im.android.api.callback.GetGroupInfoListCallback;
 import cn.jpush.im.android.api.callback.GetGroupMembersCallback;
 import cn.jpush.im.android.api.callback.GetNoDisurbListCallback;
 import cn.jpush.im.android.api.callback.GetUserInfoCallback;
@@ -44,6 +45,7 @@ import cn.jpush.im.android.api.content.LocationContent;
 import cn.jpush.im.android.api.content.TextContent;
 import cn.jpush.im.android.api.content.VoiceContent;
 import cn.jpush.im.android.api.enums.ContentType;
+import cn.jpush.im.android.api.event.CommandNotificationEvent;
 import cn.jpush.im.android.api.event.ContactNotifyEvent;
 import cn.jpush.im.android.api.event.ConversationRefreshEvent;
 import cn.jpush.im.android.api.event.LoginStateChangeEvent;
@@ -57,6 +59,7 @@ import cn.jpush.im.android.api.model.GroupInfo;
 import cn.jpush.im.android.api.model.Message;
 import cn.jpush.im.android.api.model.UserInfo;
 import cn.jpush.im.android.api.options.MessageSendingOptions;
+import cn.jpush.im.android.api.options.RegisterOptionalUserInfo;
 import cn.jpush.im.api.BasicCallback;
 
 import static cn.jiguang.cordova.im.JMessageUtils.handleResult;
@@ -77,6 +80,7 @@ public class JMessagePlugin extends CordovaPlugin {
     private static final String ERR_MSG_PARAMETER = "Parameters error";
     private static final String ERR_MSG_CONVERSATION = "Can't get the conversation";
     private static final String ERR_MSG_MESSAGE = "No such message";
+    private static final String ERR_MSG_FILE = "Not find this file";
 
     private Activity mCordovaActivity;
 
@@ -125,21 +129,60 @@ public class JMessagePlugin extends CordovaPlugin {
         JMessageClient.setDebugMode(enable);
     }
 
+    // 注册，登录 - start
     void userRegister(JSONArray data, final CallbackContext callback) {
         String username, password;
+        RegisterOptionalUserInfo optionalUserInfo = new RegisterOptionalUserInfo();
 
         try {
             JSONObject params = data.getJSONObject(0);
             username = params.getString("username");
             password = params.getString("password");
+
+            if (params.has("address"))
+                optionalUserInfo.setAddress(params.getString("address"));
+
+            if (params.has("avatar"))
+                optionalUserInfo.setAvatar(params.getString("avatar"));
+
+            if (params.has("birthday"))
+                optionalUserInfo.setBirthday(params.getLong("birthday"));
+
+            if (params.has("extras")) {
+                Map<String, String> extras = JsonUtils.fromJson(params.getJSONObject("extras"));
+                optionalUserInfo.setExtras(extras);
+            }
+
+            if (params.has("gender")) {
+                String gender = params.getString("gender");
+
+                if (gender.equals("male")) {
+                    optionalUserInfo.setGender(UserInfo.Gender.male);
+
+                } else if (gender.equals("female")) {
+                    optionalUserInfo.setGender(UserInfo.Gender.female);
+
+                } else {
+                    optionalUserInfo.setGender(UserInfo.Gender.unknown);
+                }
+            }
+
+            if (params.has("nickname"))
+                optionalUserInfo.setNickname(params.getString("nickname"));
+
+            if (params.has("region"))
+                optionalUserInfo.setRegion(params.getString("region"));
+
+            if (params.has("signature"))
+                optionalUserInfo.setSignature(params.getString("signature"));
+
         } catch (JSONException e) {
             e.printStackTrace();
             handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
             return;
         }
 
-        JMessageClient.register(username, password, new BasicCallback() {
-
+        JMessageClient.register(username, password, optionalUserInfo, new BasicCallback() {
             @Override
             public void gotResult(int status, String desc) {
                 handleResult(status, desc, callback);
@@ -154,6 +197,7 @@ public class JMessagePlugin extends CordovaPlugin {
             JSONObject params = data.getJSONObject(0);
             username = params.getString("username");
             password = params.getString("password");
+
         } catch (JSONException e) {
             e.printStackTrace();
             handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
@@ -161,7 +205,6 @@ public class JMessagePlugin extends CordovaPlugin {
         }
 
         JMessageClient.login(username, password, new BasicCallback() {
-
             @Override
             public void gotResult(int status, String desc) {
                 handleResult(status, desc, callback);
@@ -172,6 +215,10 @@ public class JMessagePlugin extends CordovaPlugin {
     void userLogout(JSONArray data, CallbackContext callback) {
         JMessageClient.logout();
     }
+
+    // 注册，登录 - end
+
+    // 用户信息相关 - start
 
     void getMyInfo(JSONArray data, final CallbackContext callback) {
         UserInfo myInfo = JMessageClient.getMyInfo();
@@ -196,7 +243,6 @@ public class JMessagePlugin extends CordovaPlugin {
         }
 
         JMessageClient.getUserInfo(username, appKey, new GetUserInfoCallback() {
-
             @Override
             public void gotResult(int status, String desc, UserInfo userInfo) {
                 if (status == 0) {
@@ -222,7 +268,6 @@ public class JMessagePlugin extends CordovaPlugin {
         }
 
         JMessageClient.updateUserPassword(oldPwd, newPwd, new BasicCallback() {
-
             @Override
             public void gotResult(int status, String desc) {
                 handleResult(status, desc, callback);
@@ -249,26 +294,23 @@ public class JMessagePlugin extends CordovaPlugin {
 
     void updateMyInfo(JSONArray data, final CallbackContext callback) {
         UserInfo myInfo = JMessageClient.getMyInfo();
-        UserInfo.Field field = null;
 
         try {
             JSONObject params = data.getJSONObject(0);
 
             if (params.has("nickname")) {
-                field = UserInfo.Field.nickname;
                 myInfo.setNickname(params.getString("nickname"));
+            }
 
-            } else if (params.has("birthday")) {
-                field = UserInfo.Field.birthday;
+            if (params.has("birthday")) {
                 myInfo.setBirthday(params.getLong("birthday"));
+            }
 
-            } else if (params.has("signature")) {
-                field = UserInfo.Field.signature;
+            if (params.has("signature")) {
                 myInfo.setSignature(params.getString("signature"));
+            }
 
-            } else if (params.has("gender")) {
-                field = UserInfo.Field.gender;
-
+            if (params.has("gender")) {
                 if (params.getString("gender").equals("male")) {
                     myInfo.setGender(UserInfo.Gender.male);
                 } else if (params.getString("gender").equals("female")) {
@@ -276,32 +318,131 @@ public class JMessagePlugin extends CordovaPlugin {
                 } else {
                     myInfo.setGender(UserInfo.Gender.unknown);
                 }
-
-            } else if (params.has("region")) {
-                field = UserInfo.Field.region;
-                myInfo.setRegion(params.getString("region"));
-
-            } else if (params.has("address")) {
-                field = UserInfo.Field.address;
-                myInfo.setAddress(params.getString("address"));
-
-            } else {
-                handleResult(0, "field error", callback);
             }
+
+            if (params.has("region")) {
+                myInfo.setRegion(params.getString("region"));
+            }
+
+            if (params.has("address")) {
+                myInfo.setAddress(params.getString("address"));
+            }
+
+            if (params.has("extras")) {
+                Map<String, String> extras = fromJson(params.getJSONObject("extras"));
+                myInfo.setUserExtras(extras);
+            }
+
         } catch (JSONException e) {
             e.printStackTrace();
             handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
             return;
         }
 
-        JMessageClient.updateMyInfo(field, myInfo, new BasicCallback() {
-
+        JMessageClient.updateMyInfo(UserInfo.Field.all, myInfo, new BasicCallback() {
             @Override
             public void gotResult(int status, String desc) {
                 handleResult(status, desc, callback);
             }
         });
     }
+
+    void downloadThumbUserAvatar(JSONArray data, final CallbackContext callback) {
+        String username, appKey;
+
+        try {
+            JSONObject params = data.getJSONObject(0);
+            username = params.getString("username");
+            appKey = params.has("appKey") ? params.getString("appKey") : "";
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callback.error(ERR_MSG_PARAMETER);
+            return;
+        }
+
+        JMessageClient.getUserInfo(username, appKey, new GetUserInfoCallback() {
+            @Override
+            public void gotResult(int status, String desc, UserInfo userInfo) {
+                if (status == 0) {
+                    File avatarFile = userInfo.getAvatarFile();
+                    JSONObject result = new JSONObject();
+                    try {
+                        result.put("username", userInfo.getUserName());
+                        result.put("appKey", userInfo.getAppKey());
+                        String avatarFilePath = (avatarFile == null ? "" : avatarFile.getAbsolutePath());
+                        result.put("filePath", avatarFilePath);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    callback.success(result);
+                } else {
+                    handleResult(status, desc, callback);
+                }
+            }
+        });
+    }
+
+    void downloadOriginalUserAvatar(JSONArray data, final CallbackContext callback) {
+        try {
+            JSONObject params = data.getJSONObject(0);
+
+            final String username = params.getString("username");
+            final String appKey = params.has("appKey") ? params.getString("appKey") : "";
+
+            JMessageUtils.getUserInfo(params, new GetUserInfoCallback() {
+
+                @Override
+                public void gotResult(int status, String desc, final UserInfo userInfo) {
+                    if (status == 0) {
+                        userInfo.getBigAvatarBitmap(new GetAvatarBitmapCallback() {
+
+                            @Override
+                            public void gotResult(int status, String desc, Bitmap bitmap) {
+                                if (status == 0) {
+                                    final String pkgName = mCordovaActivity.getPackageName();
+                                    final String fileName = username + appKey;
+                                    String avatarFilePath = JMessageUtils.getAvatarPath(pkgName);
+
+                                    File avatarBigFile = new File(avatarFilePath + fileName + ".png");
+                                    String bigImagePath;
+
+                                    if (avatarBigFile.exists()) {
+                                        bigImagePath = avatarBigFile.getAbsolutePath();
+                                    } else {
+                                        bigImagePath = JMessageUtils.storeImage(bitmap, fileName, pkgName);
+                                    }
+
+                                    try {
+                                        JSONObject result = new JSONObject();
+                                        result.put("username", username);
+                                        result.put("appKey", appKey);
+                                        result.put("filePath", bigImagePath);
+                                        callback.success(result);
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                        callback.error(PluginResult.Status.JSON_EXCEPTION.toString());
+                                    }
+
+                                } else {
+                                    handleResult(status, desc, callback);
+                                }
+                            }
+                        });
+
+                    } else {
+                        handleResult(status, desc, callback);
+                    }
+                }
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+            handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
+        }
+    }
+
+    // 用户信息相关 - end
+
+    // 消息相关 - start
 
     void sendTextMessage(JSONArray data, final CallbackContext callback) {
         String text;
@@ -550,6 +691,50 @@ public class JMessagePlugin extends CordovaPlugin {
         }
     }
 
+    void sendSingleTransCommand(JSONArray data, final CallbackContext callback) {
+        String username, appKey, msg;
+
+        try {
+            JSONObject params = data.getJSONObject(0);
+            username = params.getString("username");
+            appKey = params.has("appKey") ? params.getString("appKey") : null;
+            msg = params.getString("content");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
+            return;
+        }
+
+        JMessageClient.sendSingleTransCommand(username, appKey, msg, new BasicCallback() {
+            @Override
+            public void gotResult(int status, String desc) {
+                handleResult(status, desc, callback);
+            }
+        });
+    }
+
+    void sendGroupTransCommand(JSONArray data, final CallbackContext callback) {
+        long groupId;
+        String msg;
+
+        try {
+            JSONObject params = data.getJSONObject(0);
+            groupId = params.getLong("groupId");
+            msg = params.getString("content");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
+            return;
+        }
+
+        JMessageClient.sendGroupTransCommand(groupId, msg, new BasicCallback() {
+            @Override
+            public void gotResult(int status, String desc) {
+                handleResult(status, desc, callback);
+            }
+        });
+    }
+
     void retractMessage(JSONArray data, final CallbackContext callback) {
         Conversation conversation;
         String messageId;
@@ -606,6 +791,166 @@ public class JMessagePlugin extends CordovaPlugin {
         }
         callback.success(messageJSONArr);
     }
+
+    void downloadOriginalImage(JSONArray data, final CallbackContext callback) {
+        Conversation conversation;
+        final String messageId;
+
+        try {
+            JSONObject params = data.getJSONObject(0);
+            conversation = JMessageUtils.getConversation(params);
+            if (conversation == null) {
+                handleResult(ERR_CODE_CONVERSATION, "Can't get conversation", callback);
+                return;
+            }
+
+            messageId = params.getString("messageId");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
+            return;
+        }
+
+        Message msg = conversation.getMessage(Integer.parseInt(messageId));
+        if (msg == null) {
+            handleResult(ERR_CODE_MESSAGE, ERR_MSG_MESSAGE, callback);
+            return;
+        }
+
+        if (msg.getContentType() != ContentType.image) {
+            handleResult(ERR_CODE_MESSAGE, "Message type isn't image", callback);
+            return;
+        }
+
+        ImageContent content = (ImageContent) msg.getContent();
+        content.downloadOriginImage(msg, new DownloadCompletionCallback() {
+
+            @Override
+            public void onComplete(int status, String desc, File file) {
+                if (status == 0) {
+                    JSONObject result = new JSONObject();
+                    try {
+                        result.put("messageId", messageId);
+                        result.put("filePath", file.getAbsolutePath());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    handleResult(result, status, desc, callback);
+
+                } else {
+                    handleResult(status, desc, callback);
+                }
+            }
+        });
+    }
+
+    void downloadVoiceFile(JSONArray data, final CallbackContext callback) {
+        Conversation conversation;
+        final String messageId;
+
+        try {
+            JSONObject params = data.getJSONObject(0);
+            conversation = JMessageUtils.getConversation(params);
+            if (conversation == null) {
+                handleResult(ERR_CODE_CONVERSATION, "Can't get conversation", callback);
+                return;
+            }
+
+            messageId = params.getString("messageId");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
+            return;
+        }
+
+        Message msg = conversation.getMessage(Integer.parseInt(messageId));
+        if (msg == null) {
+            handleResult(ERR_CODE_MESSAGE, ERR_MSG_MESSAGE, callback);
+            return;
+        }
+
+        if (msg.getContentType() != ContentType.voice) {
+            handleResult(ERR_CODE_MESSAGE, "Message type isn't voice", callback);
+            return;
+        }
+
+        VoiceContent content = (VoiceContent) msg.getContent();
+        content.downloadVoiceFile(msg, new DownloadCompletionCallback() {
+
+            @Override
+            public void onComplete(int status, String desc, File file) {
+                if (status == 0) {
+                    JSONObject result = new JSONObject();
+                    try {
+                        result.put("messageId", messageId);
+                        result.put("filePath", file.getAbsolutePath());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    handleResult(result, status, desc, callback);
+
+                } else {
+                    handleResult(status, desc, callback);
+                }
+            }
+        });
+    }
+
+    void downloadFile(JSONArray data, final CallbackContext callback) {
+        Conversation conversation;
+        final String messageId;
+
+        try {
+            JSONObject params = data.getJSONObject(0);
+            conversation = JMessageUtils.getConversation(params);
+            if (conversation == null) {
+                handleResult(ERR_CODE_CONVERSATION, "Can't get conversation", callback);
+                return;
+            }
+
+            messageId = params.getString("messageId");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
+            return;
+        }
+
+        Message msg = conversation.getMessage(Integer.parseInt(messageId));
+        if (msg == null) {
+            handleResult(ERR_CODE_MESSAGE, ERR_MSG_MESSAGE, callback);
+            return;
+        }
+
+        if (msg.getContentType() != ContentType.file) {
+            handleResult(ERR_CODE_MESSAGE, "Message type isn't file", callback);
+            return;
+        }
+
+        FileContent content = (FileContent) msg.getContent();
+        content.downloadFile(msg, new DownloadCompletionCallback() {
+
+            @Override
+            public void onComplete(int status, String desc, File file) {
+                if (status == 0) {
+                    JSONObject result = new JSONObject();
+                    try {
+                        result.put("messageId", messageId);
+                        result.put("filePath", file.getAbsolutePath());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    handleResult(result, status, desc, callback);
+
+                } else {
+                    handleResult(status, desc, callback);
+                }
+            }
+        });
+    }
+
+    // 消息相关 - end
+
+    // 好友关系 - start
 
     void sendInvitationRequest(JSONArray data, final CallbackContext callback) {
         String username, appKey, reason;
@@ -791,31 +1136,51 @@ public class JMessagePlugin extends CordovaPlugin {
         });
     }
 
+    // 好友关系 - end
+
+    // 群组 - start
+
     void createGroup(JSONArray data, final CallbackContext callback) {
-        String name, desc;
+        String name, desc, avatarFilePath;
 
         try {
             JSONObject params = data.getJSONObject(0);
             name = params.getString("name");
             desc = params.getString("desc");
+
+            if (params.has("avatarFilePath")) {
+                avatarFilePath = params.getString("avatarFilePath");
+                File avatarFile = new File(avatarFilePath);
+                String extension = avatarFilePath.substring(avatarFilePath.lastIndexOf("."));
+
+                JMessageClient.createGroup(name, desc, avatarFile, extension, new CreateGroupCallback() {
+                    @Override
+                    public void gotResult(int status, String desc, long groupId) {
+                        if (status == 0) {
+                            callback.success(String.valueOf(groupId));
+                        } else {
+                            handleResult(status, desc, callback);
+                        }
+                    }
+                });
+
+            } else {
+                JMessageClient.createGroup(name, desc, new CreateGroupCallback() {
+                    @Override
+                    public void gotResult(int status, String desc, long groupId) {
+                        if (status == 0) {
+                            callback.success(String.valueOf(groupId));
+
+                        } else {
+                            handleResult(status, desc, callback);
+                        }
+                    }
+                });
+            }
         } catch (JSONException e) {
             e.printStackTrace();
             handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
-            return;
         }
-
-        JMessageClient.createGroup(name, desc, new CreateGroupCallback() {
-
-            @Override
-            public void gotResult(int status, String desc, long groupId) {
-                if (status == 0) {
-                    callback.success(String.valueOf(groupId));
-
-                } else {
-                    handleResult(status, desc, callback);
-                }
-            }
-        });
     }
 
     void getGroupIds(JSONArray data, final CallbackContext callback) {
@@ -878,48 +1243,45 @@ public class JMessagePlugin extends CordovaPlugin {
             return;
         }
 
-        if (!TextUtils.isEmpty(newName) && TextUtils.isEmpty(newDesc)) {
-            JMessageClient.updateGroupName(groupId, newName, new BasicCallback() {
+        JMessageClient.getGroupInfo(groupId, new GetGroupInfoCallback() {
+            @Override
+            public void gotResult(int status, String desc, final GroupInfo groupInfo) {
+                if (!TextUtils.isEmpty(newName) && TextUtils.isEmpty(newDesc)) {
+                    groupInfo.updateName(newName, new BasicCallback() {
+                        @Override
+                        public void gotResult(int status, String desc) {
+                            handleResult(status, desc, callback);
+                        }
+                    });
 
-                @Override
-                public void gotResult(int status, String desc) {
-                    handleResult(status, desc, callback);
-                }
-            });
-            return;
-        }
+                } else if (TextUtils.isEmpty(newName) && !TextUtils.isEmpty(newDesc)) {
+                    groupInfo.updateDescription(newDesc, new BasicCallback() {
+                        @Override
+                        public void gotResult(int status, String desc) {
+                            handleResult(status, desc, callback);
+                        }
+                    });
 
-        if (TextUtils.isEmpty(newName) && !TextUtils.isEmpty(newDesc)) {
-            JMessageClient.updateGroupDescription(groupId, newDesc, new BasicCallback() {
+                } else {
+                    groupInfo.updateName(newName, new BasicCallback() {
+                        @Override
+                        public void gotResult(int status, String desc) {
+                            if (status == 0) {
+                                groupInfo.updateDescription(newDesc, new BasicCallback() {
+                                    @Override
+                                    public void gotResult(int status, String desc) {
+                                        handleResult(status, desc, callback);
+                                    }
+                                });
 
-                @Override
-                public void gotResult(int status, String desc) {
-                    handleResult(status, desc, callback);
-                }
-            });
-            return;
-        }
-
-        if (!TextUtils.isEmpty(newName) && !TextUtils.isEmpty(newDesc)) {
-            JMessageClient.updateGroupName(groupId, newName, new BasicCallback() {
-
-                @Override
-                public void gotResult(int status, String desc) {
-                    if (status == 0) {
-                        JMessageClient.updateGroupDescription(groupId, newDesc, new BasicCallback() {
-
-                            @Override
-                            public void gotResult(int status, String desc) {
+                            } else {
                                 handleResult(status, desc, callback);
                             }
-                        });
-
-                    } else {
-                        handleResult(status, desc, callback);
-                    }
+                        }
+                    });
                 }
-            });
-        }
+            }
+        });
     }
 
     void addGroupMembers(JSONArray data, final CallbackContext callback) {
@@ -944,7 +1306,6 @@ public class JMessagePlugin extends CordovaPlugin {
         }
 
         JMessageClient.addGroupMembers(groupId, appKey, usernameList, new BasicCallback() {
-
             @Override
             public void gotResult(int status, String desc) {
                 handleResult(status, desc, callback);
@@ -974,7 +1335,6 @@ public class JMessagePlugin extends CordovaPlugin {
         }
 
         JMessageClient.removeGroupMembers(groupId, appKey, usernameList, new BasicCallback() {
-
             @Override
             public void gotResult(int status, String desc) {
                 handleResult(status, desc, callback);
@@ -995,7 +1355,6 @@ public class JMessagePlugin extends CordovaPlugin {
         }
 
         JMessageClient.exitGroup(groupId, new BasicCallback() {
-
             @Override
             public void gotResult(int status, String desc) {
                 handleResult(status, desc, callback);
@@ -1016,7 +1375,6 @@ public class JMessagePlugin extends CordovaPlugin {
         }
 
         JMessageClient.getGroupMembers(groupId, new GetGroupMembersCallback() {
-
             @Override
             public void gotResult(int status, String desc, List list) {
                 if (status == 0) {
@@ -1028,6 +1386,94 @@ public class JMessagePlugin extends CordovaPlugin {
             }
         });
     }
+
+    void blockGroupMessage(JSONArray data, final CallbackContext callback) {
+        final long groupId;
+        final int isBlock;  // true: 屏蔽；false: 取消屏蔽。
+
+        try {
+            JSONObject params = data.getJSONObject(0);
+            groupId = Long.parseLong(params.getString("id"));
+            isBlock = params.getBoolean("isBlock") ? 1 : 0;
+        } catch (JSONException e) {
+            e.printStackTrace();
+            handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
+            return;
+        }
+
+        JMessageClient.getGroupInfo(groupId, new GetGroupInfoCallback() {
+            @Override
+            public void gotResult(int status, String desc, GroupInfo groupInfo) {
+                if (status != 0) {
+                    handleResult(status, desc, callback);
+                    return;
+                }
+
+                groupInfo.setBlockGroupMessage(isBlock, new BasicCallback() {
+                    @Override
+                    public void gotResult(int status, String desc) {
+                        handleResult(status, desc, callback);
+                    }
+                });
+            }
+        });
+    }
+
+    void isGroupBlocked(JSONArray data, final CallbackContext callback) {
+        long groupId;
+
+        try {
+            JSONObject params = data.getJSONObject(0);
+            groupId = Long.parseLong(params.getString("id"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+            handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
+            return;
+        }
+
+        JMessageClient.getGroupInfo(groupId, new GetGroupInfoCallback() {
+            @Override
+            public void gotResult(int status, String desc, GroupInfo groupInfo) {
+                if (status != 0) {
+                    handleResult(status, desc, callback);
+                    return;
+                }
+
+                boolean isBlocked = (groupInfo.isGroupBlocked() == 1);
+                JSONObject result = new JSONObject();
+                try {
+                    result.put("isBlocked", isBlocked);
+                    handleResult(result, status, desc, callback);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    void getBlockedGroupList(JSONArray data, final CallbackContext callback) {
+        JMessageClient.getBlockedGroupsList(new GetGroupInfoListCallback() {
+            @Override
+            public void gotResult(int status, String desc, List<GroupInfo> list) {
+                if (status != 0) {
+                    handleResult(status, desc, callback);
+                    return;
+                }
+
+                JSONArray result = new JSONArray();
+
+                for (GroupInfo groupInfo : list) {
+                    result.put(toJson(groupInfo));
+                }
+
+                handleResult(result, status, desc, callback);
+            }
+        });
+    }
+
+    // 群组 - end
+
+    // 黑名单 - start
 
     void addUsersToBlacklist(JSONArray data, final CallbackContext callback) {
         List<String> usernameList;
@@ -1098,11 +1544,15 @@ public class JMessagePlugin extends CordovaPlugin {
         });
     }
 
+    // 黑名单 - end
+
+    // 免打扰 - start
+
     void setNoDisturb(JSONArray data, final CallbackContext callback) {
         try {
             JSONObject params = data.getJSONObject(0);
             String type = params.getString("type");
-            final int isNoDisturb = params.getBoolean("isNoDisturb") ? 1 : 0;   // 1: 设置为免打扰；0: 取消设置。
+            final int isNoDisturb = params.getBoolean("isNoDisturb") ? ERR_CODE_PARAMETER : 0;
 
             if (type.equals("single")) {
                 String username = params.getString("username");
@@ -1179,8 +1629,9 @@ public class JMessagePlugin extends CordovaPlugin {
     void setNoDisturbGlobal(JSONArray data, final CallbackContext callback) {
         try {
             JSONObject params = data.getJSONObject(0);
-            int isNoDisturbGlobal = params.getBoolean("isNoDisturb") ? 1 : 0;   // 1: 设置为免打扰；0: 取消设置。
+            int isNoDisturbGlobal = params.getBoolean("isNoDisturb") ? ERR_CODE_PARAMETER : 0;
             JMessageClient.setNoDisturbGlobal(isNoDisturbGlobal, new BasicCallback() {
+
                 @Override
                 public void gotResult(int status, String desc) {
                     handleResult(status, desc, callback);
@@ -1213,259 +1664,13 @@ public class JMessagePlugin extends CordovaPlugin {
         });
     }
 
-    void downloadThumbUserAvatar(JSONArray data, final CallbackContext callback) {
-        String username, appKey;
+    // 免打扰 - end
 
-        try {
-            JSONObject params = data.getJSONObject(0);
-            username = params.getString("username");
-            appKey = params.has("appKey") ? params.getString("appKey") : "";
-        } catch (JSONException e) {
-            e.printStackTrace();
-            callback.error(ERR_MSG_PARAMETER);
-            return;
-        }
-
-        JMessageClient.getUserInfo(username, appKey, new GetUserInfoCallback() {
-            @Override
-            public void gotResult(int status, String desc, UserInfo userInfo) {
-                if (status == 0) {
-                    File avatarFile = userInfo.getAvatarFile();
-                    JSONObject result = new JSONObject();
-                    try {
-                        result.put("username", userInfo.getUserName());
-                        result.put("appKey", userInfo.getAppKey());
-                        String avatarFilePath = (avatarFile == null ? "" : avatarFile.getAbsolutePath());
-                        result.put("filePath", avatarFilePath);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    callback.success(result);
-                } else {
-                    handleResult(status, desc, callback);
-                }
-            }
-        });
-    }
-
-    void downloadOriginalUserAvatar(JSONArray data, final CallbackContext callback) {
-        try {
-            JSONObject params = data.getJSONObject(0);
-
-            final String username = params.getString("username");
-            final String appKey = params.has("appKey") ? params.getString("appKey") : "";
-
-            JMessageUtils.getUserInfo(params, new GetUserInfoCallback() {
-
-                @Override
-                public void gotResult(int status, String desc, final UserInfo userInfo) {
-                    if (status == 0) {
-                        userInfo.getBigAvatarBitmap(new GetAvatarBitmapCallback() {
-
-                            @Override
-                            public void gotResult(int status, String desc, Bitmap bitmap) {
-                                if (status == 0) {
-                                    final String pkgName = mCordovaActivity.getPackageName();
-                                    final String fileName = username + appKey;
-                                    String avatarFilePath = JMessageUtils.getAvatarPath(pkgName);
-
-                                    File avatarBigFile = new File(avatarFilePath + fileName + ".png");
-                                    String bigImagePath;
-
-                                    if (avatarBigFile.exists()) {
-                                        bigImagePath = avatarBigFile.getAbsolutePath();
-                                    } else {
-                                        bigImagePath = JMessageUtils.storeImage(bitmap, fileName, pkgName);
-                                    }
-
-                                    try {
-                                        JSONObject result = new JSONObject();
-                                        result.put("username", username);
-                                        result.put("appKey", appKey);
-                                        result.put("filePath", bigImagePath);
-                                        callback.success(result);
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                        callback.error(PluginResult.Status.JSON_EXCEPTION.toString());
-                                    }
-
-                                } else {
-                                    handleResult(status, desc, callback);
-                                }
-                            }
-                        });
-
-                    } else {
-                        handleResult(status, desc, callback);
-                    }
-                }
-            });
-        } catch (JSONException e) {
-            e.printStackTrace();
-            handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
-        }
-    }
-
-    void downloadOriginalImage(JSONArray data, final CallbackContext callback) {
-        Conversation conversation;
-        final String messageId;
-
-        try {
-            JSONObject params = data.getJSONObject(0);
-            conversation = JMessageUtils.getConversation(params);
-            if (conversation == null) {
-                handleResult(ERR_CODE_CONVERSATION, "Can't get conversation", callback);
-                return;
-            }
-
-            messageId = params.getString("messageId");
-        } catch (JSONException e) {
-            e.printStackTrace();
-            handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
-            return;
-        }
-
-        Message msg = conversation.getMessage(Integer.parseInt(messageId));
-        if (msg == null) {
-            handleResult(ERR_CODE_MESSAGE, ERR_MSG_MESSAGE, callback);
-            return;
-        }
-
-        if (msg.getContentType() != ContentType.image) {
-            handleResult(ERR_CODE_MESSAGE, "Message type isn't image", callback);
-            return;
-        }
-
-        ImageContent content = (ImageContent) msg.getContent();
-        content.downloadOriginImage(msg, new DownloadCompletionCallback() {
-
-            @Override
-            public void onComplete(int status, String desc, File file) {
-                if (status == 0) {
-                    JSONObject result = new JSONObject();
-                    try {
-                        result.put("messageId", messageId);
-                        result.put("filePath", file.getAbsolutePath());
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    handleResult(result, status, desc, callback);
-
-                } else {
-                    handleResult(status, desc, callback);
-                }
-            }
-        });
-    }
-
-    void downloadVoiceFile(JSONArray data, final CallbackContext callback) {
-        Conversation conversation;
-        final String messageId;
-
-        try {
-            JSONObject params = data.getJSONObject(0);
-            conversation = JMessageUtils.getConversation(params);
-            if (conversation == null) {
-                handleResult(ERR_CODE_CONVERSATION, "Can't get conversation", callback);
-                return;
-            }
-
-            messageId = params.getString("messageId");
-        } catch (JSONException e) {
-            e.printStackTrace();
-            handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
-            return;
-        }
-
-        Message msg = conversation.getMessage(Integer.parseInt(messageId));
-        if (msg == null) {
-            handleResult(ERR_CODE_MESSAGE, ERR_MSG_MESSAGE, callback);
-            return;
-        }
-
-        if (msg.getContentType() != ContentType.voice) {
-            handleResult(ERR_CODE_MESSAGE, "Message type isn't voice", callback);
-            return;
-        }
-
-        VoiceContent content = (VoiceContent) msg.getContent();
-        content.downloadVoiceFile(msg, new DownloadCompletionCallback() {
-
-            @Override
-            public void onComplete(int status, String desc, File file) {
-                if (status == 0) {
-                    JSONObject result = new JSONObject();
-                    try {
-                        result.put("messageId", messageId);
-                        result.put("filePath", file.getAbsolutePath());
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    handleResult(result, status, desc, callback);
-
-                } else {
-                    handleResult(status, desc, callback);
-                }
-            }
-        });
-    }
-
-    void downloadFile(JSONArray data, final CallbackContext callback) {
-        Conversation conversation;
-        final String messageId;
-
-        try {
-            JSONObject params = data.getJSONObject(0);
-            conversation = JMessageUtils.getConversation(params);
-            if (conversation == null) {
-                handleResult(ERR_CODE_CONVERSATION, "Can't get conversation", callback);
-                return;
-            }
-
-            messageId = params.getString("messageId");
-        } catch (JSONException e) {
-            e.printStackTrace();
-            handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
-            return;
-        }
-
-        Message msg = conversation.getMessage(Integer.parseInt(messageId));
-        if (msg == null) {
-            handleResult(ERR_CODE_MESSAGE, ERR_MSG_MESSAGE, callback);
-            return;
-        }
-
-        if (msg.getContentType() != ContentType.file) {
-            handleResult(ERR_CODE_MESSAGE, "Message type isn't file", callback);
-            return;
-        }
-
-        FileContent content = (FileContent) msg.getContent();
-        content.downloadFile(msg, new DownloadCompletionCallback() {
-
-            @Override
-            public void onComplete(int status, String desc, File file) {
-                if (status == 0) {
-                    JSONObject result = new JSONObject();
-                    try {
-                        result.put("messageId", messageId);
-                        result.put("filePath", file.getAbsolutePath());
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    handleResult(result, status, desc, callback);
-
-                } else {
-                    handleResult(status, desc, callback);
-                }
-            }
-        });
-    }
+    // 聊天会话 - start
 
     void createConversation(JSONArray data, CallbackContext callback) {
         try {
             JSONObject params = data.getJSONObject(0);
-
             String type = params.getString("type");
             Conversation conversation = null;
 
@@ -1585,6 +1790,10 @@ public class JMessagePlugin extends CordovaPlugin {
             handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
         }
     }
+
+    // 聊天会话 - end
+
+    // 事件处理 - start
 
     /**
      * 收到消息事件。
@@ -1740,9 +1949,62 @@ public class JMessagePlugin extends CordovaPlugin {
         eventSuccess(toJson("retractMessage", json));
     }
 
+    /**
+     * 透传消息接收事件。
+     *
+     * @param event 透传消息事件。
+     */
+    public void onEvent(CommandNotificationEvent event) throws JSONException {
+        final JSONObject result = new JSONObject();
+        result.put("content", event.getMsg());
+
+        event.getSenderUserInfo(new GetUserInfoCallback() {
+            @Override
+            public void gotResult(int status, String desc, UserInfo userInfo) {
+                if (status == 0) {
+                    try {
+                        result.put("sender", toJson(userInfo));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+
+        event.getTargetInfo(new CommandNotificationEvent.GetTargetInfoCallback() {
+            @Override
+            public void gotResult(int status, String desc, Object obj, CommandNotificationEvent.Type type) {
+                if (status == 0) {
+                    if (type == CommandNotificationEvent.Type.single) {
+                        try {
+                            UserInfo receiver = (UserInfo) obj;
+                            result.put("receiver", toJson(receiver));
+                            result.put("receiverType", "single");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    } else {
+                        try {
+                            GroupInfo receiver = (GroupInfo) obj;
+                            result.put("receiver", toJson(receiver));
+                            result.put("receiverType", "group");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    eventSuccess(toJson("", result));
+                }
+            }
+        });
+    }
+
     private void eventSuccess(JSONObject value) {
         PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, value);
         pluginResult.setKeepCallback(true);
         mCallback.sendPluginResult(pluginResult);
     }
+
+    // 事件处理 - end
 }

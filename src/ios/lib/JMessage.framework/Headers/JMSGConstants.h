@@ -198,9 +198,6 @@ typedef NS_ENUM(NSInteger, JMSGEventNotificationType) {
   /// 事件类型：当前登录用户信息变更通知事件(非客户端修改)
   kJMSGEventNotificationCurrentUserInfoChange = 40,
   
-  /// 群组消息屏蔽变更通知
-  kJMSGEventNotificationGroupShieldChange= 39,
-  
   // 好友相关事件
   /// 事件类型: 收到好友邀请
   kJMSGEventNotificationReceiveFriendInvitation   = 51,
@@ -215,6 +212,10 @@ typedef NS_ENUM(NSInteger, JMSGEventNotificationType) {
   
   /// 事件类型: 消息撤回
   kJMSGEventNotificationMessageRetract = 55,
+  /// 事件类型: 消息透传
+  kJMSGEventNotificationMessageTransparent = 58,
+  /// 事件类型: 消息回执变更
+  kJMSGEventNotificationMessageReceiptStatusChange = 68,
 
   // 消息事件
   /// 事件类型: 群组被创建
@@ -317,6 +318,8 @@ typedef NS_ENUM(NSInteger, JMSGSDKErrorCode) {
   kJMSGErrorSDKMediaHashCodeIllegal = 864006,
   /// 媒体HASH校验失败
   kJMSGErrorSDKMediaHashVerifyFailed = 864007,
+  /// 这条消息不支持转发
+  kJMSGErrorSDKMessageNotSupportForward = 864008,
   
   // ------------------------ Message (865xxx)
 
@@ -416,6 +419,8 @@ typedef NS_ENUM(NSUInteger, JMSGTcpErrorCode) {
   kJMSGErrorTcpUserNotRegistered = 801003,
   /// 用户密码错误
   kJMSGErrorTcpUserPasswordError = 801004,
+  /// 多通道同时登录错误，登录失败
+  kJMSGErrorTcpLoginMultiChannelError = 801007,
   /// 目标用户不存在
   kJMSGErrorTcpTargetUserNotExist = 803003,
   /// 目标群组不存在

@@ -9,14 +9,15 @@ var EventHandlers = {
   'syncRoamingMessage': [],
   'loginStateChanged': [],
   'contactNotify': [],
-  'retractMessage': []
+  'retractMessage': [],
+  'receiveTransCommand': [] // 透传命令
 }
 
 var JMessagePlugin = {
   /**
    * 针对消息发送动作的控制选项，可附加在消息发送方法的参数中。
    */
-  messageSendingOptions : {
+  messageSendingOptions: {
     /**
      * 接收方是否针对此次消息发送展示通知栏通知。
      * @type {boolean}
@@ -74,7 +75,13 @@ var JMessagePlugin = {
     exec(null, null, PLUGIN_NAME, 'setDebugMode', [params])
   },
   /**
-   * @param {object} params = {'username': string, 'password': string}
+   * 注册用户。
+   * @param {object} params = {
+   *  username: String,
+   *  password: String,
+   *  nickname: String,
+   *  ...
+   * }
    * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
@@ -82,7 +89,10 @@ var JMessagePlugin = {
     exec(success, error, PLUGIN_NAME, 'userRegister', [params])
   },
   /**
-   * @param {object} params = {'username': string, 'password': string}
+   * @param {object} params = {
+   *  username: 'yourUsername',
+   *  password: 'yourPassword',
+   * }
    * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
@@ -91,8 +101,6 @@ var JMessagePlugin = {
   },
   /**
    * 用户登出接口，调用后用户将无法收到消息。登出动作必定成功，开发者不需要关心结果回调。
-   *
-   * @param {function} success = function () {}
    */
   logout: function () {
     exec(null, null, PLUGIN_NAME, 'userLogout', [])
@@ -123,10 +131,9 @@ var JMessagePlugin = {
   },
   /**
    * 更新当前用户头像。
-   * 
    * @param {object} params = {
    *  imgPath: string // 本地图片绝对路径。
-   * }  
+   * }
    * 注意 Android 与 iOS 的文件路径是不同的：
    *   - Android 类似：/storage/emulated/0/DCIM/Camera/IMG_20160526_130223.jpg
    *   - iOS 类似：/var/mobile/Containers/Data/Application/7DC5CDFF-6581-4AD3-B165-B604EBAB1250/tmp/photo.jpg
@@ -142,8 +149,8 @@ var JMessagePlugin = {
    *  field 包括：nickname（昵称）, birthday（生日）, signature（签名）, gender（性别）, region（地区）, address（具体地址）。
    *  如：{
    *    'birthday': Number,  // 生日日期的毫秒数
-   *    'gender': string,    // 'male' / 'female' / 'unknown'
-   *    ...                  // 其余皆为 string 类型
+   *    'gender': String,    // 'male' / 'female' / 'unknown'
+   *    ...                  // 其余皆为 String 类型
    *  }
    * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
@@ -153,12 +160,12 @@ var JMessagePlugin = {
   },
   /**
    * @param {object} params = {
-   *  'type': string,                                // 'single' / 'group'
-   *  'groupId': string,                             // 当 type = group 时，groupId 不能为空
-   *  'username': string,                            // 当 type = single 时，username 不能为空
-   *  'appKey': string,                              // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用
-   *  'text': string,                                // 消息内容
-   *  'extras': object,                              // Optional. 自定义键值对 = {'key1': 'value1'}
+   *  'type': String,                                // 'single' / 'group'
+   *  'groupId': String,                             // 当 type = group 时，groupId 不能为空
+   *  'username': String,                            // 当 type = single 时，username 不能为空
+   *  'appKey': String,                              // 当 type = single 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用
+   *  'text': String,                                // 消息内容
+   *  'extras': Object,                              // Optional. 自定义键值对 = {'key1': 'value1'}
    *  'messageSendingOptions': MessageSendingOptions // Optional. MessageSendingOptions 对象
    * }
    * @param {function} success = function (msg) {}   // 以参数形式返回消息对象。
@@ -288,12 +295,12 @@ var JMessagePlugin = {
    * 发送好友请求。
    *
    * @param {object} params = {
-   *  'username': string,   // 对方用户用户名。
-   *  'appKey': string,     // 对方用户所属应用的 AppKey。
-   *  'reason': string      // 申请原因。
+   *  username: String,   // 对方用户用户名。
+   *  appKey: String,     // 对方用户所属应用的 AppKey。
+   *  reason: String      // 申请原因。
    * }
    * @param {function} success = function () {}
-   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   * @param {function} error = function ({code: '错误码', description: '错误信息'}) {}
    */
   sendInvitationRequest: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'sendInvitationRequest', [params])
@@ -365,8 +372,8 @@ var JMessagePlugin = {
    * 创建群组，创建成功后，创建者默认会包含在群成员中。
    *
    * @param {object} params = {
-   *  'name': string          // 群组名称。
-   *  'desc': string          // 群组描述。
+   *  name: String,          // 群组名称。
+   *  desc: String,          // 群组描述。
    * }
    * @param {function} success = function (groupId) {}  // 以参数形式返回 group id
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
@@ -375,16 +382,16 @@ var JMessagePlugin = {
     exec(success, error, PLUGIN_NAME, 'createGroup', [params])
   },
   /**
-   * 获取当前用户所有所在的群组 id。
+   * 获取当前用户所有所在的群组 Id。
    *
-   * @param {function} success = function (groupIdArray) {} // 以参数形式返回 group id 数组
+   * @param {function} success = function (groupIdArray) {} // 以参数形式返回 group Id 数组。
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   getGroupIds: function (success, error) {
     exec(success, error, PLUGIN_NAME, 'getGroupIds', [])
   },
   /**
-   * @param {object} params = {'id': '群组 id'}
+   * @param {object} params = {'id': '群组 Id'}
    * @param {function} success = function (groupInfo) {} // 以参数形式返回群组信息对象
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
@@ -497,6 +504,31 @@ var JMessagePlugin = {
    */
   isNoDisturbGlobal: function (success, error) {
     exec(success, error, PLUGIN_NAME, 'isNoDisturbGlobal', [])
+  },
+  /**
+   * 设置是否屏蔽群消息。
+   *
+   * @param {Object} params = { id: String, isBlock: boolean }
+   */
+  blockGroupMessage: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'blockGroupMessage', [params])
+  },
+  /**
+   * 判断指定群组是否被屏蔽。
+   *
+   * @param {object} params = { id: String }
+   * @param {function} success = function ({ isBlocked: boolean }) {} // 以参数形式返回结果。
+   */
+  isGroupBlocked: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'isGroupBlocked', [params])
+  },
+  /**
+   * 获取当前用户的群屏蔽列表。
+   *
+   * @param {function} success = function (groupArr) {} // 以参数形式返回结果。
+   */
+  getBlockedGroupList: function (success, error) {
+    exec(success, error, PLUGIN_NAME, 'getBlockedGroupList', [])
   },
   /**
    * 下载用户头像缩略图，如果已经下载，不会重复下载。
@@ -758,7 +790,7 @@ var JMessagePlugin = {
    *
    * @param {function} listener = function (event) {} // 以参数形式返回事件信息。
    * event = {
-   *  'conversation': object      // 会话对象。
+   *  'conversation': object,     // 会话对象。
    *  'retractedMessage': object  // 被撤回的消息对象。
    * }
    */
@@ -769,6 +801,26 @@ var JMessagePlugin = {
     var handlerIndex = EventHandlers.retractMessage.indexOf(listener)
     if (handlerIndex >= 0) {
       EventHandlers.retractMessage.splice(handlerIndex, 1)
+    }
+  },
+  /**
+   * 收到透传命令事件监听。
+   *
+   * @param {function} listener = function (event) {} // 以参数形式返回事件信息。
+   * event = {
+   *  message: String,      // 透传命令消息内容
+   *  sender: Object,       // 发送方，类型为 UserInfo。
+   *  receiver: Object      // 接收方，类型可能为 UserInfo 或 GroupInfo。
+   *  receiverType: String, // 接收方的类型，可能值为 'single' 和 'group'。
+   * }
+   */
+  addReceiveTransCommandListener: function (listener) {
+    EventHandlers.receiveTransCommand.push(listener)
+  },
+  removeReceiveTransCommandListener: function (listener) {
+    var handlerIndex = EventHandlers.receiveTransCommand.indexOf(listener)
+    if (handlerIndex >= 0) {
+      EventHandlers.receiveTransCommand.splice(handlerIndex, 1)
     }
   }
 }

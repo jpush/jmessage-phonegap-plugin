@@ -17,6 +17,7 @@
 @class JMSGAbstractContent;
 @class JMSGImageContent;
 @class JMSGOptionalContent;
+@class JMSGMediaAbstractContent;
 
 
 /*!
@@ -218,6 +219,7 @@ JMSG_ASSUME_NONNULL_BEGIN
 @property(nonatomic, strong, readonly) NSString *targetAppKey;
 
 
+
 ///----------------------------------------------------
 /// @name Message Operations 消息相关操作
 ///----------------------------------------------------
@@ -311,16 +313,24 @@ JMSG_ASSUME_NONNULL_BEGIN
  */
 - (JMSGMessage * JMSG_NULLABLE)createMessageWithContent:(JMSGAbstractContent *)content;
 
+
 /*!
  * @abstract 创建消息对象（图片，异步）
  *
- * @param content 准备好的图片内容
- * @param handler 结果回调. 正常返回时 resultObject 类型为 JMSGMessage.
- *
- * @discussion 对于图片消息，因为 SDK 要做缩图有一定的性能损耗，图片文件很大时存储落地也会较慢。
- * 所以创建图片消息，建议使用这个异步接口。
+ * 注意：此方法已过期，请使用 createMessageAsyncWithMediaContent: 方法
  */
 - (void)createMessageAsyncWithImageContent:(JMSGImageContent *)content
+                         completionHandler:(JMSGCompletionHandler JMSG_NULLABLE)handler __attribute__((deprecated("first deprecated in JMessage 3.3.0 - Use -createMessageAsyncWithMediaContent:")));
+/*!
+ * @abstract 创建消息对象（多媒体消息，异步）
+ *
+ * @param content 准备好的多媒体内容，如：图片、语音、文件等
+ * @param handler 结果回调. 正常返回时 resultObject 类型为 JMSGMessage.
+ *
+ * @discussion 注意：对于多媒体消息，因为 SDK 要做缩图有一定的性能损耗，图片文件很大时存储落地也会较慢。
+ * 所以创建图片消息，建议使用这个异步接口。
+ */
+- (void)createMessageAsyncWithMediaContent:(JMSGMediaAbstractContent *)content
                          completionHandler:(JMSGCompletionHandler JMSG_NULLABLE)handler;
 
 /*!
@@ -333,12 +343,12 @@ JMSG_ASSUME_NONNULL_BEGIN
 - (void)sendMessage:(JMSGMessage *)message;
 
 /*!
- * @abstract 发送消息（附带可选功能，如：控制离线消息存储、自定义通知栏内容等）
+ * @abstract 发送消息（附带可选功能，如：控制离线消息存储、自定义通知栏内容、消息已读回执等）
  *
  * @param message           通过消息创建类接口，创建好的消息对象
  * @param optionalContent   可选功能，具体请查看 JMSGOptionalContent 类
  *
- * @discussion 可选功能里可以设置离线消息存储、自定义通知栏内容等，具体请查看 JMSGOptionalContent 类。
+ * @discussion 可选功能里可以设置离线消息存储、自定义通知栏内容、消息已读回执等，具体请查看 JMSGOptionalContent 类。
  *
  */
 - (void)sendMessage:(JMSGMessage *)message optionalContent:(JMSGOptionalContent *)optionalContent;
@@ -421,7 +431,23 @@ JMSG_ASSUME_NONNULL_BEGIN
 - (void)retractMessage:(JMSGMessage *)message completionHandler:(JMSGCompletionHandler)handler;
 
 /*!
- * @abstract 异步获取会话头像(仅限单聊)
+ * @abstract 消息透传
+ *
+ * @param transparentText 用户自定义透传内容，仅限 NSString 类型
+ * @param handler 回调，error=nil 表示成功
+ *
+ * @discussion 注意：
+ *
+ *  1. 消息透传功能，消息不会进入到后台的离线存储中去，仅当对方用户当前在线时才会成功送达，可以快速响应，方便开发者拓展自定义行为；
+ *
+ *  2. 可用来快速实现一些在线场景下的辅助功能 ：输入状态提示、位置信息提示、开发者自定义等。
+ *
+ */
+- (void)sendTransparentMessage:(NSString *JMSG_NONNULL)transparentText
+             completionHandler:(JMSGCompletionHandler JMSG_NULLABLE)handler;
+
+/*!
+ * @abstract 异步获取会话头像
  *
  * @param handler 结果回调。回调参数:
  *
@@ -443,7 +469,7 @@ JMSG_ASSUME_NONNULL_BEGIN
  *
  * @return 返回本地路，返回值只有在下载完成之后才有意义
  */
-- (NSString *)avatarLocalPath;
+- (NSString *JMSG_NULLABLE)avatarLocalPath;
 
 ///----------------------------------------------------
 /// @name Conversation State Maintenance 会话状态维护
@@ -462,6 +488,34 @@ JMSG_ASSUME_NONNULL_BEGIN
  * @discussion 通常用来展示在会话列表的第 2 行. 如果是图片消息,通常是文本 [图片] 之类. CustomContent 可以定制这个文本.
  */
 - (NSString *)latestMessageContentText;
+
+/*!
+ * @abstract 获取会话所有扩展字段
+ *
+ * @return 返回所有值，NSDictionary 类型
+ *
+ * @discussion 与 [- (void)setExtraValue:forKey:] 配套使用，可用于对会话属性的扩展
+ */
+- (NSDictionary *JMSG_NULLABLE)getConversationExtras;
+
+/*!
+ * @abstract 获取单个扩展字段
+ *
+ * @return 返回 key 对应值，NSString 类型
+ *
+ * @discussion 与 [- (void)setExtraValue:forKey:] 配套使用，可用于对会话属性的扩展
+ */
+- (NSString *JMSG_NULLABLE)getExtraValueForKey:(NSString *JMSG_NONNULL)key;
+
+/*!
+ * @abstract 增加或更新扩展字段,可扩展会话属性，比如：会话置顶、标识特殊会话等
+ *
+ * @param value 新增键值对的值. String 类型.
+ * @param key   新增键值对的键
+ *
+ * @discussion 如果 value = nil，则删除 extras 中 key 对应的值
+ */
+- (void)setExtraValue:(NSString *JMSG_NULLABLE)value forKey:(NSString *JMSG_NONNULL)key;
 
 /*!
  * @abstract 判断消息是否属于这个 Conversation

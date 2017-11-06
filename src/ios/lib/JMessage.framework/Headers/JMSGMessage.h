@@ -64,7 +64,11 @@ JMSG_ASSUME_NONNULL_BEGIN
  * @param content 消息内容对象
  * @param username 单聊用户 username
  *
- * @discussion 不关心会话时的直接创建聊天消息的接口。一般建议使用 JMSGConversation -> createMessageWithContent:
+ * #### 注意：
+ *
+ * 1、单独调用此接口创建消息，SDK 不会本地保存消息，再调用发送接口时才会保存；
+ *
+ * 2、如果上层希望创建消息时就本地化保存，请使用 [JMSGConversation createMessageWithContent:]
  */
 + (JMSGMessage *)createSingleMessageWithContent:(JMSGAbstractContent *)content
                                        username:(NSString *)username;
@@ -75,7 +79,11 @@ JMSG_ASSUME_NONNULL_BEGIN
  * @param content 消息内容对象
  * @param groupId 群聊ID
  *
- * @discussion 不关心会话时的直接创建聊天消息的接口。一般建议使用 JMSGConversation -> createMessageWithContent:
+ * #### 注意：
+ *
+ * 1、单独调用此接口创建消息，SDK 不会本地保存消息，再调用发送接口时才会保存；
+ *
+ * 2、如果上层希望创建消息时就本地化保存，请使用 [JMSGConversation createMessageWithContent:]
  */
 + (JMSGMessage *)createGroupMessageWithContent:(JMSGAbstractContent *)content
                                        groupId:(NSString *)groupId;
@@ -87,7 +95,11 @@ JMSG_ASSUME_NONNULL_BEGIN
  * @param groupId 群聊ID
  * @param at_list @对象的数组
  *
- * @discussion 不关心会话时的直接创建聊天消息的接口。一般建议使用 JMSGConversation -> createMessageWithContent:
+ * #### 注意：
+ *
+ * 1、单独调用此接口创建消息，SDK 不会本地保存消息，再调用发送接口时才会保存；
+ *
+ * 2、如果上层希望创建消息时就本地化保存，请使用 [JMSGConversation createMessageWithContent:]
  */
 + (JMSGMessage *)createGroupMessageWithContent:(JMSGAbstractContent *)content
                                        groupId:(NSString *)groupId
@@ -99,10 +111,14 @@ JMSG_ASSUME_NONNULL_BEGIN
  * @param content 消息内容对象
  * @param groupId 群聊ID
  *
- * @discussion 不关心会话时的直接创建聊天消息的接口。一般建议使用 JMSGConversation -> createMessageWithContent:
+ * #### 注意：
+ *
+ * 1、单独调用此接口创建消息，SDK 不会本地保存消息，再调用发送接口时才会保存；
+ *
+ * 2、如果上层希望创建消息时就本地化保存，请使用 [JMSGConversation createMessageWithContent:]
  */
 + (JMSGMessage *)createGroupAtAllMessageWithContent:(JMSGAbstractContent *)content
-                                       groupId:(NSString *)groupId;
+                                            groupId:(NSString *)groupId;
 
 /*!
  * @abstract 发送消息（已经创建好的）
@@ -114,12 +130,12 @@ JMSG_ASSUME_NONNULL_BEGIN
 + (void)sendMessage:(JMSGMessage *)message;
 
 /*!
- * @abstract 发送消息（附带可选功能，如：控制离线消息存储、自定义通知栏内容等）
+ * @abstract 发送消息（附带可选功能，如：控制离线消息存储、自定义通知栏内容、消息已读回执等）
  *
  * @param message           通过消息创建类接口，创建好的消息对象
  * @param optionalContent   可选功能，具体请查看 JMSGOptionalContent 类
  *
- * @discussion 可选功能里可以设置离线消息存储、自定义通知栏内容等，具体请查看 JMSGOptionalContent 类。
+ * @discussion 可选功能里可以设置离线消息存储、自定义通知栏内容、消息已读回执等，具体请查看 JMSGOptionalContent 类。
  *
  */
 + (void)sendMessage:(JMSGMessage *)message optionalContent:(JMSGOptionalContent *)optionalContent;
@@ -331,30 +347,17 @@ JMSG_ASSUME_NONNULL_BEGIN
 + (void)retractMessage:(JMSGMessage *)message completionHandler:(JMSGCompletionHandler)handler;
 
 /*!
- * @abstract 是否是@自己的消息（只针对群消息，单聊消息无@功能）
+ * @abstract 消息转发
+ *
+ * @param message         需要转发的消息
+ * @param target          目标 target，只能为 JMSGUser 或 JMSGGroup
+ * @param optionalContent 可选功能，具体请查看 JMSGOptionalContent 类
+ *
+ * @discussion 注意：只能转发消息状态为 SendSucceed 和 ReceiveSucceed 的消息。
  */
-- (BOOL)isAtMe;
-
-/*!
- * @abstract 是否是@所有人的消息（只针对群消息，单聊消息无@功能）
- */
-- (BOOL)isAtAll;
-
-/*!
- * @abstract 获取消息体中所有@对象（只针对群消息，单聊消息无@功能）
- *
- * @param handler 结果回调。回调参数：
- *
- * - resultObject 类型为 NSArray，数组里成员的类型为 JMSGUser
- * 注意：如果该消息为@所有人消息时，resultObject 返回nil，可以通过 isAtAll 接口来判断是否是@所有人的消息
- * - error 错误信息
- *
- * 如果 error 为 nil, 表示获取成功
- * 如果 error 不为 nil,表示获取失败
- *
- * @discussion 从服务器获取，返回消息的所有@对象。
- */
-- (void)getAt_List:(JMSGCompletionHandler)handler;
++ (void)forwardMessage:(JMSGMessage *)message
+                target:(id)target
+       optionalContent:(JMSGOptionalContent *JMSG_NULLABLE)optionalContent;
 
 
 ///----------------------------------------------------
@@ -489,6 +492,14 @@ JMSG_ASSUME_NONNULL_BEGIN
  */
 @property(nonatomic, strong, readonly) NSNumber *flag;
 
+/*!
+ * @abstract 是否已读(只针对接收的消息)
+ *
+ * @discussion 该属性与实例方法 [-(void)setMessageHaveRead:] 是对应的。
+ *
+ * 注意：只有发送方调用 [+sendMessage:optionalContent:] 方法设置 message 需要已读回执，此属性才有意义。
+ */
+@property(nonatomic, assign, readonly) BOOL isHaveRead;
 
 ///----------------------------------------------------
 /// @name Instance APIs 实例方法
@@ -513,6 +524,76 @@ JMSG_ASSUME_NONNULL_BEGIN
  * 或者直接也可以调用 JMSGMessage 类方法发消息而不必创建 JMSGMessage 对象.
  */
 - (instancetype)init NS_UNAVAILABLE;
+
+/*!
+ * @abstract 是否是@自己的消息（只针对群消息，单聊消息无@功能）
+ */
+- (BOOL)isAtMe;
+
+/*!
+ * @abstract 是否是@所有人的消息（只针对群消息，单聊消息无@功能）
+ */
+- (BOOL)isAtAll;
+
+/*!
+ * @abstract 获取消息体中所有@对象（只针对群消息，单聊消息无@功能）
+ *
+ * @param handler 结果回调。回调参数：
+ *
+ * - resultObject 类型为 NSArray，数组里成员的类型为 JMSGUser
+ * 注意：如果该消息为@所有人消息时，resultObject 返回nil，可以通过 isAtAll 接口来判断是否是@所有人的消息
+ * - error 错误信息
+ *
+ * 如果 error 为 nil, 表示获取成功
+ * 如果 error 不为 nil,表示获取失败
+ *
+ * @discussion 从服务器获取，返回消息的所有@对象。
+ */
+- (void)getAt_List:(JMSGCompletionHandler)handler;
+
+/*!
+ * @abstract 设置为已读
+ *
+ * @param handler 回调
+ *
+ * - resultObject 返回对应的 message，不过成功失败都会返回 message 对象
+ * - error        不为 nil 表示操作失败
+ *
+ * @discussion 注意: 只针对消息接收方有效
+ * 
+ * 这是一个异步接口;
+ *
+ * 1、接收方：设置消息为已读状态后，isHaveRead 属性也会被设置为 YES，
+ *
+ * 2、发送方：会收到消息已读状态变更事件，SDK 会更新消息的未读人数。
+ *
+ * 注意：只有发送方调用 [+sendMessage:optionalContent:] 方法设置 message 需要已读回执，此方法才有效。
+ */
+- (void)setMessageHaveRead:(JMSGCompletionHandler)handler;
+
+/*!
+ * @abstract 消息未读人数
+ *
+ * @discussion 只针对消息发送方有效
+ *
+ * 注意：只有发送方调用 [+sendMessage:optionalContent:] 方法设置 message 需要已读回执，此方法才有意义。
+ */
+- (NSInteger)getMessageUnreadCount;
+
+/*!
+ * @abstract 已读未读用户列表
+ *
+ * @param handler 结果回调。回调参数:
+ *
+ * - unreadUsers  未读用户列表
+ * - readsUsers   读用户列表
+ * - error        不为nil表示出错
+ *
+ * @discussion 只针对消息发送方有效
+ *
+ * 注意：只有发送方调用 [+sendMessage:optionalContent:] 方法设置 message 需要已读回执，此方法才有意义。
+ */
+- (void)messageReadDetailHandler:(void(^)(NSArray *JMSG_NULLABLE readUsers, NSArray *JMSG_NULLABLE unreadUsers, NSError *JMSG_NULLABLE error))handler;
 
 /*!
  * @abstract 设置消息的 fromName(即:通知栏的展示名称)
