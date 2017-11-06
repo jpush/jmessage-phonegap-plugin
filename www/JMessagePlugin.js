@@ -374,7 +374,6 @@ var JMessagePlugin = {
    * @param {object} params = {
    *  name: String,          // 群组名称。
    *  desc: String,          // 群组描述。
-   *  avatarFilePath: String // 头像文件的本地绝对路径（可选）。
    * }
    * @param {function} success = function (groupId) {}  // 以参数形式返回 group id
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
