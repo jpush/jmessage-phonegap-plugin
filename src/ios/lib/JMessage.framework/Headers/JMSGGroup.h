@@ -14,6 +14,20 @@
 
 @class JMSGUser;
 
+/*!
+ * 群信息类（用于修改群信息、创建群）
+ */
+@interface JMSGGroupInfo : NSObject
+
+/** 群名称 */
+@property(nonatomic, strong) NSString *JMSG_NONNULL name;
+/** 群描述 */
+@property(nonatomic, strong) NSString *JMSG_NONNULL desc;
+/** 群头像数据 */
+@property(nonatomic, strong) NSData   *JMSG_NONNULL avatarData;
+
+@end
+
 
 /*!
  * 群组
@@ -48,17 +62,59 @@ JMSG_ASSUME_NONNULL_BEGIN
           completionHandler:(JMSGCompletionHandler JMSG_NULLABLE)handler;
 
 /*!
+ * @abstract 创建群组
+ *
+ * @param groupInfo     群信息类，详细请查看 JMSGGroupInfo 类
+ * @param usernameArray 初始成员列表。NSArray 里的类型是 NSString
+ * @param handler       结果回调。正常返回 resultObject 的类型是 JMSGGroup。
+ *
+ * @discussion 向服务器端提交创建群组请求，返回生成后的群组对象.
+ * 返回群组对象, 群组ID是App 需要关注的, 是后续各种群组维护的基础.
+ */
++ (void)createGroupWithGroupInfo:(JMSGGroupInfo *)groupInfo
+                     memberArray:(NSArray JMSG_GENERIC(__kindof NSString *) *JMSG_NULLABLE)usernameArray
+               completionHandler:(JMSGCompletionHandler JMSG_NULLABLE)handler;
+/*!
  * @abstract 更新群组信息
  *
  * @param groupId 待更新的群组ID
  * @param groupName 新名称
  * @param groupDesc 新描述
  * @param handler 结果回调. 正常返回时, resultObject 为 nil.
+ *
+ * @discussion 注意：name 和 desc 不允许传空字符串
  */
 + (void)updateGroupInfoWithGroupId:(NSString *)groupId
-                              name:(NSString *)groupName
-                              desc:(NSString *)groupDesc
+                              name:(NSString *JMSG_NULLABLE)groupName
+                              desc:(NSString *JMSG_NULLABLE)groupDesc
                  completionHandler:(JMSGCompletionHandler JMSG_NULLABLE)handler;
+
+/*!
+ * @abstract 更新群头像（支持传图片格式）
+ *
+ * @param groupId         待更新的群组ID
+ * @param avatarData      头像数据
+ * @param avatarFormat    头像格式，可以为空，不包括"."
+ * @param handler         回调
+ *
+ * @discussion 头像格式参数直接填格式名称，不要带点。正确：@"png"，错误：@".png"
+ */
++ (void)updateGroupAvatarWithGroupId:(NSString *JMSG_NONNULL)groupId
+                          avatarData:(NSData *JMSG_NONNULL)avatarData
+                        avatarFormat:(NSString *JMSG_NULLABLE)avatarFormat
+                   completionHandler:(JMSGCompletionHandler JMSG_NULLABLE)handler;
+/*!
+ * @abstract 更新群信息
+ *
+ * @param gid         群组 id
+ * @param groupInfo   群信息类，详细请查看 JMSGGroupInfo 类
+ * @param handler     结果回调. 正常返回时, resultObject 为 nil.
+ *
+ * @discussion 注意：修改群名称和群描述时参数不允许传空字符串
+ */
++ (void)updateGroupInfoWithGid:(NSString *)gid
+                     groupInfo:(JMSGGroupInfo *)groupInfo
+             completionHandler:(JMSGCompletionHandler JMSG_NULLABLE)handler;
 
 /*!
  * @abstract 获取群组信息
@@ -126,6 +182,13 @@ JMSG_ASSUME_NONNULL_BEGIN
  * @discussion 不同等级的群组，人数上限不同。当前默认等级 4，人数上限 200。客户端不可更改。
  */
 @property(nonatomic, strong, readonly) NSNumber *level;
+
+/*!
+ * @abstract 群组头像（媒体文件ID）
+ *
+ * @discussion 此文件ID仅用于内部更新，不支持外部URL。
+ */
+@property(nonatomic, strong, readonly) NSString * JMSG_NULLABLE avatar;
 
 /*!
  * @abstract 群组设置标志位
@@ -272,6 +335,52 @@ JMSG_ASSUME_NONNULL_BEGIN
  * @param handler 结果回调。正常返回时 resultObject 为 nil。
  */
 - (void)exit:(JMSGCompletionHandler JMSG_NULLABLE)handler;
+
+/*!
+ * @abstract 获取头像缩略图文件数据
+ *
+ * @param handler 结果回调。回调参数:
+ *
+ * - data     头像数据;
+ * - objectId 群组 gid;
+ * - error    不为nil表示出错;
+ *
+ * 如果 error 为 nil, data 也为 nil, 表示没有头像数据.
+ *
+ * @discussion 需要展示缩略图时使用。
+ * 如果本地已经有文件，则会返回本地，否则会从服务器上下载。
+ */
+- (void)thumbAvatarData:(JMSGAsyncDataHandler)handler;
+
+/*!
+ * @abstract 获取头像缩略文件的本地路径
+ *
+ * @return 返回本地路，返回值只有在下载完成之后才有意义
+ */
+- (NSString *JMSG_NULLABLE)thumbAvatarLocalPath;
+
+/*!
+ * @abstract 获取头像大图文件数据
+ *
+ * @param handler 结果回调。回调参数:
+ *
+ * - data     头像数据;
+ * - objectId 群组 gid;
+ * - error    不为nil表示出错;
+ *
+ * 如果 error 为 nil, data 也为 nil, 表示没有头像数据.
+ *
+ * @discussion 需要展示大图图时使用
+ * 如果本地已经有文件，则会返回本地，否则会从服务器上下载。
+ */
+- (void)largeAvatarData:(JMSGAsyncDataHandler)handler;
+
+/*!
+ * @abstract 获取头像大图文件的本地路径
+ *
+ * @return 返回本地路，返回值只有在下载完成之后才有意义
+ */
+- (NSString *JMSG_NULLABLE)largeAvatarLocalPath;
 
 /*!
  * @abstract 获取群组的展示名
