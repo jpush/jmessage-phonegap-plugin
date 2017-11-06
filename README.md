@@ -15,6 +15,14 @@
 
 完整文档请查阅 [wiki](https://github.com/jpush/jmessage-phonegap-plugin/wiki)，包括[安装指南](https://github.com/jpush/jmessage-phonegap-plugin/wiki/Installation-Guide)、[API 说明](https://github.com/jpush/jmessage-phonegap-plugin/wiki/APIs)等。
 
+## Todo
+
+- [ ] 消息已读回执;
+- [ ] 透传命令；
+- [ ] 群组头像；
+- [ ] 消息转发。
+- [ ] TS 版本。
+
 ## Contribute
 
 Please contribute! [Look at the issues](https://github.com/jpush/jmessage-phonegap-plugin/issues).
