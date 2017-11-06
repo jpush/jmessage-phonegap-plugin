@@ -1306,7 +1306,6 @@ public class JMessagePlugin extends CordovaPlugin {
         }
 
         JMessageClient.addGroupMembers(groupId, appKey, usernameList, new BasicCallback() {
-
             @Override
             public void gotResult(int status, String desc) {
                 handleResult(status, desc, callback);
@@ -1336,7 +1335,6 @@ public class JMessagePlugin extends CordovaPlugin {
         }
 
         JMessageClient.removeGroupMembers(groupId, appKey, usernameList, new BasicCallback() {
-
             @Override
             public void gotResult(int status, String desc) {
                 handleResult(status, desc, callback);
@@ -1357,7 +1355,6 @@ public class JMessagePlugin extends CordovaPlugin {
         }
 
         JMessageClient.exitGroup(groupId, new BasicCallback() {
-
             @Override
             public void gotResult(int status, String desc) {
                 handleResult(status, desc, callback);
@@ -1378,7 +1375,6 @@ public class JMessagePlugin extends CordovaPlugin {
         }
 
         JMessageClient.getGroupMembers(groupId, new GetGroupMembersCallback() {
-
             @Override
             public void gotResult(int status, String desc, List list) {
                 if (status == 0) {

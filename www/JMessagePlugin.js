@@ -292,30 +292,6 @@ var JMessagePlugin = {
     exec(success, error, PLUGIN_NAME, 'getHistoryMessages', [params])
   },
   /**
-   * 发送透传命令给个人。
-   * 消息不会进入到后台的离线存储中去，仅当对方用户当前在线时，透传命令才会成功送达。
-   * 透传命令送达时，接收方会收到一个{@link receiveTransCommand}事件。
-   * SDK 不会将透传消息内容本地化。
-   * @param {object} params = {
-   *  username: String, // 对方用户的用户名。
-   *  appKey: String,   // 对方用户所属应用的 AppKey，如果不传则默认为当前应用。
-   *  content: String   // 消息内容。
-   * }
-   */
-  sendSingleTransCommand: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'sendSingleTransCommand', [params])
-  },
-  /**
-   * 发送透传消息给群组。
-   * @param {object} params = {
-   *  groupId: Number,  // 目标群组 Id。
-   *  content: String   // 消息内容。
-   * }
-   */
-  sendGroupTransCommand: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'sendGroupTransCommand', [params])
-  },
-  /**
    * 发送好友请求。
    *
    * @param {object} params = {
