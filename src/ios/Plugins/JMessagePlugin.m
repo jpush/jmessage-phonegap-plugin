@@ -1238,13 +1238,13 @@ JMessagePlugin *SharedJMessagePlugin;
         } else {
             JMSGUser *user = resultObject[0];
             
-            [user updateNoteName:param[@"noteText"] completionHandler:^(id resultObject, NSError *error) {
-                if (error) {
-                    [self handleResultWithDictionary: nil command: command error:error];
-                    return ;
-                }
-                [self handleResultWithArray:nil command: command error:nil];
-            }];
+            [user updateNoteText:param[@"noteText"] completionHandler:^(id resultObject, NSError *error) {
+              if (error) {
+                  [self handleResultWithDictionary: nil command: command error:error];
+                  return ;
+              }
+              [self handleResultWithArray:nil command: command error:nil];
+          }];
         }
     }];
 }
