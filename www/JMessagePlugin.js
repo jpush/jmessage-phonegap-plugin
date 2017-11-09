@@ -354,7 +354,7 @@ var JMessagePlugin = {
    * @param {object} params = {
    *  'username': string,   // 好友用户名。
    *  'appKey': string,     // 好友所属应用的 AppKey。
-   *  'noteName': string    // 备注信息。
+   *  'noteText': string    // 备注信息。
    * }
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
