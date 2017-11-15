@@ -469,6 +469,10 @@ JMessagePlugin *SharedJMessagePlugin;
     if (param[@"address"]) {
         info.address = param[@"address"];
     }
+  
+    if (param[@"extras"]) {
+      info.extras = param[@"extras"];
+    }
     
     [JMSGUser updateMyInfoWithUserInfo:info completionHandler:^(id resultObject, NSError *error) {
         [self handleResultWithDictionary:nil command:command error:error];
@@ -2367,6 +2371,86 @@ JMessagePlugin *SharedJMessagePlugin;
             [self returnParamError:command];
         }
     }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+- (void)updateGroupAvatar:(CDVInvokedUrlCommand *)command {
+  NSDictionary * param = [command argumentAtIndex:0];
+  
+  if (!param[@"id"]) {
+    [self returnParamError:command];
+    return;
+  }
+  
+  NSString *mediaPath = param[@"imgPath"];
+  
+  if([[NSFileManager defaultManager] fileExistsAtPath: mediaPath]){
+    mediaPath = mediaPath;
+    NSData *img = [NSData dataWithContentsOfFile: mediaPath];
+    
+    [JMSGGroup updateGroupAvatarWithGroupId:param[@"id"] avatarData:img avatarFormat:[mediaPath pathExtension] completionHandler:^(id resultObject, NSError *error) {
+        [self handleResultWithDictionary: nil command:command error: error];
+    }];
+  } else {
+    [self returnParamError:command];
+  }
+}
+- (void)downloadThumbGroupAvatar:(CDVInvokedUrlCommand *)command {
+  NSDictionary * param = [command argumentAtIndex:0];
+  
+  if (!param[@"id"]) {
+    [self returnParamError:command];
+    return;
+  }
+  
+  [JMSGGroup groupInfoWithGroupId:param[@"id"] completionHandler:^(id resultObject, NSError *error) {
+    if (error) {
+      [self handleResultWithDictionary: nil command: command error: error];
+      return ;
+    }
+    
+    JMSGGroup *group = resultObject;
+    [group thumbAvatarData:^(NSData *data, NSString *objectId, NSError *error) {
+
+    [self handleResultWithDictionary: @{@"id": objectId, @"filePath": group.thumbAvatarLocalPath}
+                             command: command
+                               error: error];
+    }];
+  }];
+}
+- (void)downloadOriginalGroupAvatar:(CDVInvokedUrlCommand *)command {
+  NSDictionary * param = [command argumentAtIndex:0];
+  if (!param[@"id"]) {
+    [self returnParamError: command];
+    return;
+  }
+  
+  [JMSGGroup groupInfoWithGroupId:param[@"id"] completionHandler:^(id resultObject, NSError *error) {
+    if (error) {
+      [self handleResultWithDictionary: nil command:command error: error];
+      return ;
+    }
+    
+    JMSGGroup *group = resultObject;
+    [group largeAvatarData:^(NSData *data, NSString *objectId, NSError *error) {
+      [self handleResultWithDictionary: @{@"id": objectId, @"filePath": group.largeAvatarLocalPath}
+                               command: command
+                                 error: error];
+    }];
+  }];
 }
 
 @end
