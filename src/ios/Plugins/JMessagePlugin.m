@@ -2453,4 +2453,65 @@ JMessagePlugin *SharedJMessagePlugin;
   }];
 }
 
+- (void)setConversationExtras:(CDVInvokedUrlCommand *)command {
+  NSDictionary * param = [command argumentAtIndex:0];
+  if (!param[@"type"]) {
+    [self returnParamError:command];
+    return;
+  }
+  
+  if (!param[@"extras"]) {
+    [self returnParamError:command];
+    return;
+  }
+  
+  if ([param[@"type"] isEqual: @"single"] && param[@"username"] != nil) {
+    
+  } else {
+    if ([param[@"type"] isEqual: @"group"] && param[@"groupId"] != nil) {
+      
+    } else {
+      [self returnParamError:command];
+      return;
+    }
+  }
+  
+  NSString *appKey = nil;
+  if (param[@"appKey"]) {
+    appKey = param[@"appKey"];
+  } else {
+    appKey = [JMessageHelper shareInstance].JMessageAppKey;
+  }
+  
+  if ([param[@"type"] isEqualToString:@"single"]) {
+    [JMSGConversation createSingleConversationWithUsername:param[@"username"]
+                                                    appKey:appKey
+                                         completionHandler:^(id resultObject, NSError *error) {
+                                           if (error) {
+                                             [self handleResultWithDictionary: nil command: command error: error];
+                                             return;
+                                           }
+                                           JMSGConversation *conversation = resultObject;
+                                           NSDictionary *extras = param[@"extras"];
+                                           for (NSString *key in extras) {
+                                             [conversation setExtraValue:extras[key] forKey:key];
+                                           }
+                                           [self handleResultWithDictionary:[conversation conversationToDictionary] command:command error:error];
+                                         }];
+  } else {
+    [JMSGConversation createGroupConversationWithGroupId:param[@"groupId"] completionHandler:^(id resultObject, NSError *error) {
+      if (error) {
+        [self handleResultWithDictionary: nil command: command error: error];
+        return;
+      }
+      JMSGConversation *conversation = resultObject;
+      NSDictionary *extras = param[@"extras"];
+      for (NSString *key in extras) {
+        [conversation setExtraValue:extras[key] forKey:key];
+      }
+      [self handleResultWithDictionary:[conversation conversationToDictionary] command:command error:error];
+    }];
+  }
+}
+
 @end

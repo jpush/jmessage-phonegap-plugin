@@ -66,5 +66,5 @@
 - (void)updateGroupAvatar:(CDVInvokedUrlCommand *)command;
 - (void)downloadThumbGroupAvatar:(CDVInvokedUrlCommand *)command;
 - (void)downloadOriginalGroupAvatar:(CDVInvokedUrlCommand *)command;
-
+- (void)setConversationExtras:(CDVInvokedUrlCommand *)command;
 @end

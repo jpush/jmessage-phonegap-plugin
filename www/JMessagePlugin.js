@@ -159,7 +159,7 @@ var JMessagePlugin = {
   updateMyInfo: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'updateMyInfo', [params])
   },
-  
+
   /**
    * 更新当前用户头像。
    * 
@@ -201,13 +201,13 @@ var JMessagePlugin = {
    * 增加或更新扩展字段,可扩展会话属性，比如：会话置顶、标识特殊会话等
    *
    * @param {object} params = {
-   *  'extra': Object            // 附加字段对象
+   *  'extra': Object            // 附加字段对象, value 必须为 String
    *  'type': String,            // 'single' / 'group'
    *  'groupId': String,         // 目标群组 id。
    *  'username': String,        // 目标用户名。
    *  'appKey': String,          // 目标用户所属 AppKey。
    * }
-   * @param {function} success = function ({'id': String, 'filePath': String}) {}
+   * @param {function} success = function (conversation) {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   setConversationExtras: function (params, success, error) {
