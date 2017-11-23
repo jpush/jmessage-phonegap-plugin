@@ -61,4 +61,10 @@
 - (void)resetUnreadMessageCount:(CDVInvokedUrlCommand *)command;
 - (void)retractMessage:(CDVInvokedUrlCommand *)command;
 
+- (void)isGroupBlocked:(CDVInvokedUrlCommand *)command;
+- (void)getBlockedGroupList:(CDVInvokedUrlCommand *)command;
+- (void)updateGroupAvatar:(CDVInvokedUrlCommand *)command;
+- (void)downloadThumbGroupAvatar:(CDVInvokedUrlCommand *)command;
+- (void)downloadOriginalGroupAvatar:(CDVInvokedUrlCommand *)command;
+- (void)setConversationExtras:(CDVInvokedUrlCommand *)command;
 @end

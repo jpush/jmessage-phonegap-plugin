@@ -253,6 +253,7 @@
   dict[@"latestMessage"] = [self.latestMessage messageToDictionary];
   dict[@"unreadCount"] = self.unreadCount;
   dict[@"title"] = [self title];
+  dict[@"extras"] = [self getConversationExtras];
   return dict;
 }
 
@@ -275,6 +276,7 @@
   dict[@"isNoDisturb"] = @(self.isNoDisturb);
   dict[@"isInBlackList"] = @(self.isInBlacklist);
   dict[@"isFriend"] = @(self.isFriend);
+  dict[@"extras"] = self.extras;
   
   if([[NSFileManager defaultManager] fileExistsAtPath: [self thumbAvatarLocalPath] ?: @""]){
     dict[@"avatarThumbPath"] = [self thumbAvatarLocalPath];
