@@ -269,6 +269,20 @@ JMessagePlugin *SharedJMessagePlugin;
     [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
 }
 
+-(void)handleResultWithString:(NSString *)value command:(CDVInvokedUrlCommand*)command error:(NSError*)error{
+  CDVPluginResult *result = nil;
+  
+  if (error == nil) {
+    CDVCommandStatus status = CDVCommandStatus_OK;
+    result = [CDVPluginResult resultWithStatus:status messageAsString:value];
+  } else {
+    result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
+                           messageAsDictionary:@{@"code": @(error.code), @"description": [error description]}];
+  }
+  
+  [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+}
+
 - (void)returnParamError:(CDVInvokedUrlCommand *)command {
     NSError *error = [NSError errorWithDomain:@"param error" code: 1 userInfo: nil];
     [self handleResultWithDictionary:nil command:command error: error];
@@ -1298,7 +1312,7 @@ JMessagePlugin *SharedJMessagePlugin;
     }
     
     JMSGGroup *group = resultObject;
-    [self handleResultWithDictionary:[group groupToDictionary] command:command error:error];
+    [self handleResultWithString:group.gid command:command error:error];
   }];
 }
 
