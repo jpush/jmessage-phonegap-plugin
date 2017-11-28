@@ -383,61 +383,65 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     void downloadOriginalUserAvatar(JSONArray data, final CallbackContext callback) {
-        try {
-            JSONObject params = data.getJSONObject(0);
+      try {
+        JSONObject params = data.getJSONObject(0);
 
-            final String username = params.getString("username");
-            final String appKey = params.has("appKey") ? params.getString("appKey") : "";
+        final String username = params.getString("username");
+        final String appKey = params.has("appKey") ? params.getString("appKey") : "";
 
-            JMessageUtils.getUserInfo(params, new GetUserInfoCallback() {
+        JMessageUtils.getUserInfo(params, new GetUserInfoCallback() {
+            @Override
+            public void gotResult(int status, String desc, final UserInfo userInfo) {
+                if (status != 0) {
+                    handleResult(status, desc, callback);
+                    return;
+                }
 
-                @Override
-                public void gotResult(int status, String desc, final UserInfo userInfo) {
-                    if (status == 0) {
-                        userInfo.getBigAvatarBitmap(new GetAvatarBitmapCallback() {
-
-                            @Override
-                            public void gotResult(int status, String desc, Bitmap bitmap) {
-                                if (status == 0) {
-                                    final String pkgName = mCordovaActivity.getPackageName();
-                                    final String fileName = username + appKey;
-                                    String avatarFilePath = JMessageUtils.getAvatarPath(pkgName);
-
-                                    File avatarBigFile = new File(avatarFilePath + fileName + ".png");
-                                    String bigImagePath;
-
-                                    if (avatarBigFile.exists()) {
-                                        bigImagePath = avatarBigFile.getAbsolutePath();
-                                    } else {
-                                        bigImagePath = JMessageUtils.storeImage(bitmap, fileName, pkgName);
-                                    }
-
-                                    try {
-                                        JSONObject result = new JSONObject();
-                                        result.put("username", username);
-                                        result.put("appKey", appKey);
-                                        result.put("filePath", bigImagePath);
-                                        callback.success(result);
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                        callback.error(PluginResult.Status.JSON_EXCEPTION.toString());
-                                    }
-
-                                } else {
-                                    handleResult(status, desc, callback);
-                                }
+                if (userInfo.getBigAvatarFile() == null) {  // 本地不存在头像原图，进行下载。
+                    userInfo.getBigAvatarBitmap(new GetAvatarBitmapCallback() {
+                        @Override
+                        public void gotResult(int status, String desc, Bitmap bitmap) {
+                            if (status != 0) {  // 下载失败
+                                handleResult(status, desc, callback);
+                                return;
                             }
-                        });
 
-                    } else {
-                        handleResult(status, desc, callback);
+                            String filePath = "";
+
+                            if (bitmap != null) {
+                                filePath = userInfo.getBigAvatarFile().getAbsolutePath();
+                            }
+
+                            try {
+                                JSONObject result = new JSONObject();
+                                result.put("username", username);
+                                result.put("appKey", appKey);
+                                result.put("filePath", filePath);
+                                callback.success(result);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                                callback.error(PluginResult.Status.JSON_EXCEPTION.toString());
+                            }
+                        }
+                    });
+
+                } else {
+                    JSONObject result = new JSONObject();
+                    try {
+                        result.put("username", username);
+                        result.put("appKey", appKey);
+                        result.put("filePath", userInfo.getBigAvatarFile().getAbsolutePath());
+                        callback.success(result);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
                 }
-            });
-        } catch (JSONException e) {
-            e.printStackTrace();
-            handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
-        }
+            }
+        });
+      } catch (JSONException e) {
+          e.printStackTrace();
+          handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
+      }
     }
 
     // 用户信息相关 - end
