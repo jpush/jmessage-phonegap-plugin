@@ -616,6 +616,7 @@ var JMessagePlugin = {
   },
   /**
    * 下载用户头像原图，如果已经下载，不会重复下载。
+   * 如果用户未设置头像，则返回的 filePath 为空字符串。
    *
    * @param {object} params = {'username': string, 'appKey': string}
    * @param {function} success = function ({'username': string, 'appKey': string, 'filePath': string}) {}
