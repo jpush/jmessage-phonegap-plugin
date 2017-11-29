@@ -2,7 +2,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="jmessage-phonegap-plugin"
-        version="3.0.22">
+        version="3.0.23">
 
     <name>JMessage</name>
     <description>集成极光 IM 和推送功能</description>

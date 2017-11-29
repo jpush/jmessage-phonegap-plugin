@@ -331,7 +331,8 @@ var JMessagePlugin = {
   },
   /**
    * 从最新的消息开始获取历史消息。
-   * 当 from = 0 && limit = -1 时，返回所有历史消息。
+   * 当 limit = -1 而 from >= 0 时，返回从 from 开始余下的所有历史消息。如果 from 大于历史消息总数，则返回空数组。
+   * 例如：当 from = 0 && limit = -1 时，返回所有历史消息。
    *
    * @param {object} params = {
    *  'type': string,            // 'single' / 'group'
