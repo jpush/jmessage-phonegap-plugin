@@ -787,7 +787,14 @@ public class JMessagePlugin extends CordovaPlugin {
             return;
         }
 
-        List<Message> messageList = conversation.getMessagesFromNewest(from, limit);
+        List<Message> messageList;
+        
+        if (from == 0 && limit == -1) {
+            messageList = conversation.getAllMessage();
+        } else {
+            messageList = conversation.getMessagesFromNewest(from, limit);
+        }
+
         JSONArray messageJSONArr = new JSONArray();
 
         for (Message msg : messageList) {
