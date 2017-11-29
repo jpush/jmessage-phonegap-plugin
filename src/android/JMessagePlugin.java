@@ -768,39 +768,45 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     void getHistoryMessages(JSONArray data, CallbackContext callback) {
-        Conversation conversation;
-        int from, limit;
+      Conversation conversation;
+      int from, limit;
 
-        try {
-            JSONObject params = data.getJSONObject(0);
-            conversation = JMessageUtils.getConversation(params);
-            if (conversation == null) {
-                handleResult(ERR_CODE_CONVERSATION, ERR_MSG_CONVERSATION, callback);
-                return;
-            }
+      try {
+          JSONObject params = data.getJSONObject(0);
+          conversation = JMessageUtils.getConversation(params);
+          if (conversation == null) {
+              handleResult(ERR_CODE_CONVERSATION, ERR_MSG_CONVERSATION, callback);
+              return;
+          }
 
-            from = params.getInt("from");
-            limit = params.getInt("limit");
-        } catch (JSONException e) {
-            e.printStackTrace();
-            handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
-            return;
-        }
+          from = params.getInt("from");
+          limit = params.getInt("limit");
 
-        List<Message> messageList;
-        
-        if (from == 0 && limit == -1) {
-            messageList = conversation.getAllMessage();
-        } else {
-            messageList = conversation.getMessagesFromNewest(from, limit);
-        }
+          if (from < 0 || limit < -1) {
+              handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
+              return;
+          }
+      } catch (JSONException e) {
+          e.printStackTrace();
+          handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
+          return;
+      }
 
-        JSONArray messageJSONArr = new JSONArray();
+      List<Message> messageList;
 
-        for (Message msg : messageList) {
-            messageJSONArr.put(toJson(msg));
-        }
-        callback.success(messageJSONArr);
+      if (from >= 0 && limit == -1) {
+          int messageCount = conversation.getAllMessage().size() - from;
+          messageList = conversation.getMessagesFromNewest(from, messageCount);
+      } else {
+          messageList = conversation.getMessagesFromNewest(from, limit);
+      }
+
+      JSONArray messageJSONArr = new JSONArray();
+
+      for (Message msg : messageList) {
+          messageJSONArr.put(toJson(msg));
+      }
+      callback.success(messageJSONArr);    
     }
 
     void downloadOriginalImage(JSONArray data, final CallbackContext callback) {
