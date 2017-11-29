@@ -794,7 +794,7 @@ public class JMessagePlugin extends CordovaPlugin {
 
       List<Message> messageList;
 
-      if (from >= 0 && limit == -1) {
+      if (limit == -1) {
           int messageCount = conversation.getAllMessage().size() - from;
           messageList = conversation.getMessagesFromNewest(from, messageCount);
       } else {
