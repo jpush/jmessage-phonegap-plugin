@@ -66,6 +66,8 @@ import cn.jpush.im.android.api.options.MessageSendingOptions;
 import cn.jpush.im.android.api.options.RegisterOptionalUserInfo;
 import cn.jpush.im.api.BasicCallback;
 
+import static cn.jiguang.cordova.im.JMessageUtils.getFile;
+import static cn.jiguang.cordova.im.JMessageUtils.getFileExtension;
 import static cn.jiguang.cordova.im.JMessageUtils.handleResult;
 import static cn.jiguang.cordova.im.JMessageUtils.sendMessage;
 import static cn.jiguang.cordova.im.JMessageUtils.toMessageSendingOptions;
@@ -529,19 +531,13 @@ public class JMessagePlugin extends CordovaPlugin {
             return;
         }
 
-        File file = new File(path); // if it is a absolute path.
-
-        if (!file.isFile()) {
-            URI uri = URI.create(path); // if it is a uri.
-            file = new File(uri);
-        }
-
         ImageContent content;
         try {
+            File file = getFile(path);
             content = new ImageContent(file);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            handleResult(ERR_CODE_FILE, "No such file", callback);
+            handleResult(ERR_CODE_FILE, ERR_MSG_FILE, callback);
             return;
         }
 
@@ -589,17 +585,13 @@ public class JMessagePlugin extends CordovaPlugin {
             return;
         }
 
-        File file = new File(path); // if it is a absolute path.
-
-        if (!file.isFile()) {
-            URI uri = URI.create(path); // if it is a uri.
-            file = new File(uri);
-        }
-
         try {
             MediaPlayer mediaPlayer = MediaPlayer.create(mCordovaActivity, Uri.parse(path));
             int duration = mediaPlayer.getDuration() / 1000;    // Millisecond to second.
+
+            File file = getFile(path);
             VoiceContent content = new VoiceContent(file, duration);
+
             mediaPlayer.release();
 
             if (extras != null) {
@@ -609,7 +601,7 @@ public class JMessagePlugin extends CordovaPlugin {
             sendMessage(conversation, content, messageSendingOptions, callback);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            handleResult(ERR_CODE_FILE, "No such file", callback);
+            handleResult(ERR_CODE_FILE, ERR_MSG_FILE, callback);
         }
     }
 
@@ -723,14 +715,8 @@ public class JMessagePlugin extends CordovaPlugin {
             return;
         }
 
-        File file = new File(path); // if it is a absolute path.
-
-        if (!file.isFile()) {
-            URI uri = URI.create(path); // if it is a uri.
-            file = new File(uri);
-        }
-
         try {
+            File file = getFile(path);
             FileContent content = new FileContent(file, fileName);
             if (extras != null) {
                 content.setExtras(extras);
@@ -1415,6 +1401,49 @@ public class JMessagePlugin extends CordovaPlugin {
         });
     }
 
+    void updateGroupAvatar(JSONArray data, final CallbackContext callback) {
+        long groupId;
+        final String imgPath;
+
+        try {
+            JSONObject params = data.getJSONObject(0);
+            groupId = Long.parseLong(params.getString("id"));
+            imgPath = params.getString("imgPath");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
+            return;
+        }
+
+        JMessageClient.getGroupInfo(groupId, new GetGroupInfoCallback() {
+            @Override
+            public void gotResult(int status, String desc, GroupInfo groupInfo) {
+                if (status != 0) {  // error
+                    handleResult(status, desc, callback);
+                    return;
+                }
+
+                File file;
+                try {
+                    file = getFile(imgPath);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                    handleResult(ERR_CODE_FILE, ERR_MSG_FILE, callback);
+                    return;
+                }
+
+                String extension = getFileExtension(imgPath);
+
+                groupInfo.updateAvatar(file, extension, new BasicCallback() {
+                    @Override
+                    public void gotResult(int status, String desc) {
+                        handleResult(status, desc, callback);
+                    }
+                });
+            }
+        });
+    }
+
     void addGroupMembers(JSONArray data, final CallbackContext callback) {
         long groupId;
         JSONArray usernameJsonArr;
@@ -1920,6 +1949,32 @@ public class JMessagePlugin extends CordovaPlugin {
             e.printStackTrace();
             handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
         }
+    }
+
+    void setConversationExtras(JSONArray data, CallbackContext callback) {
+        Conversation conversation;
+        JSONObject extra = null;
+
+        try {
+            JSONObject params = data.getJSONObject(0);
+            conversation = JMessageUtils.getConversation(params);
+
+            if (conversation == null) {
+                handleResult(ERR_CODE_CONVERSATION, ERR_MSG_CONVERSATION, callback);
+                return;
+            }
+
+            if (params.has("extra")) {
+                extra = params.getJSONObject("extra");
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
+            return;
+        }
+
+        String extraStr = extra == null ? "" : extra.toString();
+        boolean isSuccess = conversation.updateConversationExtra(extraStr);
     }
 
     // 聊天会话 - end

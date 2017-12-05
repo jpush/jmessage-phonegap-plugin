@@ -1,5 +1,6 @@
 package cn.jiguang.cordova.im;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -85,6 +86,10 @@ class JsonUtils {
             result.put("isNoDisturb", userInfo.getNoDisturb() == 1);
             result.put("isInBlackList", userInfo.getNoDisturb() == 1);
             result.put("isFriend", userInfo.isFriend());
+
+            Map<String, String> extras = userInfo.getExtras();
+            JSONObject extrasJson = toJson(extras);
+            result.put("extras", extrasJson.toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -116,7 +121,6 @@ class JsonUtils {
         JSONObject result = new JSONObject();
         try {
             result.put("id", msg.getId());
-            result.put("serverMessageId", msg.getServerMessageId());
             result.put("from", toJson(msg.getFromUser()));  // 消息发送者
 
             if (msg.getDirect() == MessageDirect.send) {    // 消息发送
@@ -219,6 +223,9 @@ class JsonUtils {
                 json.put("target", toJson(targetInfo));
             }
 
+            String extraStr = conversation.getExtra();
+            JSONObject extra = TextUtils.isEmpty(extraStr) ? new JSONObject() : new JSONObject(extraStr);
+            json.put("extra", extra);
         } catch (JSONException e) {
             e.printStackTrace();
         }
