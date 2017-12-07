@@ -283,6 +283,21 @@ JMessagePlugin *SharedJMessagePlugin;
   [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
 }
 
+-(void)handleResultNilWithCommand:(CDVInvokedUrlCommand*)command error:(NSError*)error{
+  CDVPluginResult *result = nil;
+  
+  if (error == nil) {
+    CDVCommandStatus status = CDVCommandStatus_OK;
+    result = [CDVPluginResult resultWithStatus: status];
+    
+  } else {
+    result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
+                           messageAsDictionary:@{@"code": @(error.code), @"description": [error description]}];
+  }
+  
+  [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+}
+
 - (void)returnParamError:(CDVInvokedUrlCommand *)command {
     NSError *error = [NSError errorWithDomain:@"param error" code: 1 userInfo: nil];
     [self handleResultWithDictionary:nil command:command error: error];
@@ -2539,5 +2554,137 @@ JMessagePlugin *SharedJMessagePlugin;
     }];
   }
 }
+
+
+- (void)getMessageById:(CDVInvokedUrlCommand *)command {
+  NSDictionary * param = [command argumentAtIndex:0];
+  if (!param[@"type"]) {
+    [self returnParamError:command];
+    return;
+  }
+  if (!param[@"messageId"]) {
+    [self returnParamError:command];
+    return;
+  }
+  
+  if ([param[@"type"] isEqual: @"single"] && param[@"username"] != nil) {
+    
+  } else {
+    if ([param[@"type"] isEqual: @"group"] && param[@"groupId"] != nil) {
+      
+    } else {
+      [self returnParamError:command];
+      return;
+    }
+  }
+  
+  NSString *appKey = nil;
+  if (param[@"appKey"]) {
+    appKey = param[@"appKey"];
+  } else {
+    appKey = [JMessageHelper shareInstance].JMessageAppKey;
+  }
+  
+  if ([param[@"type"] isEqualToString:@"single"]) {
+    [JMSGConversation createSingleConversationWithUsername:param[@"username"]
+                                                    appKey:appKey
+                                         completionHandler:^(id resultObject, NSError *error) {
+                                           if (error) {
+                                             [self handleResultWithDictionary: nil command: command error: error];
+                                             return;
+                                           }
+                                           
+                                           JMSGConversation *conversation = resultObject;
+                                           JMSGMessage *msg = [conversation messageWithMessageId:param[@"messageId"]];
+                                           if (msg != nil) {
+                                             [self handleResultWithDictionary:[msg messageToDictionary] command:command error:error];
+                                           } else {
+                                             [self handleResultNilWithCommand:command error:error];
+                                           }
+                                           
+                                         }];
+  } else {
+    [JMSGConversation createGroupConversationWithGroupId:param[@"groupId"] completionHandler:^(id resultObject, NSError *error) {
+      if (error) {
+        [self handleResultWithDictionary: nil command: command error: error];
+        return;
+      }
+      
+      JMSGConversation *conversation = resultObject;
+      JMSGMessage *msg = [conversation messageWithMessageId:param[@"messageId"]];
+      if (msg != nil) {
+        [self handleResultWithDictionary:[msg messageToDictionary] command:command error:error];
+      } else {
+        [self handleResultNilWithCommand:command error:error];
+      }
+    }];
+  }
+}
+
+- (void)deleteMessageById:(CDVInvokedUrlCommand *)command {
+  NSDictionary * param = [command argumentAtIndex:0];
+  if (!param[@"type"]) {
+    [self returnParamError:command];
+    return;
+  }
+  if (!param[@"messageId"]) {
+    [self returnParamError:command];
+    return;
+  }
+  
+  if ([param[@"type"] isEqual: @"single"] && param[@"username"] != nil) {
+    
+  } else {
+    if ([param[@"type"] isEqual: @"group"] && param[@"groupId"] != nil) {
+      
+    } else {
+      [self returnParamError:command];
+      return;
+    }
+  }
+  
+  NSString *appKey = nil;
+  if (param[@"appKey"]) {
+    appKey = param[@"appKey"];
+  } else {
+    appKey = [JMessageHelper shareInstance].JMessageAppKey;
+  }
+  
+  if ([param[@"type"] isEqualToString:@"single"]) {
+    [JMSGConversation createSingleConversationWithUsername:param[@"username"]
+                                                    appKey:appKey
+                                         completionHandler:^(id resultObject, NSError *error) {
+                                           if (error) {
+                                             [self handleResultWithDictionary: nil command: command error: error];
+                                             return;
+                                           }
+                                           
+                                           JMSGConversation *conversation = resultObject;
+                                           BOOL result = [conversation deleteMessageWithMessageId:param[@"messageId"]];
+                                           
+                                           if (result) {
+                                             [self handleResultNilWithCommand:command error:nil];
+                                           } else {
+                                             [self handleResultNilWithCommand:command error:[NSError errorWithDomain:@"message message fail" code: 3 userInfo: nil]];
+                                           }
+                                         }];
+  } else {
+    [JMSGConversation createGroupConversationWithGroupId:param[@"groupId"] completionHandler:^(id resultObject, NSError *error) {
+      if (error) {
+        [self handleResultWithDictionary: nil command: command error: error];
+        return;
+      }
+      
+      JMSGConversation *conversation = resultObject;
+      BOOL result = [conversation deleteMessageWithMessageId:param[@"messageId"]];
+      if (result) {
+        [self handleResultNilWithCommand:command error:nil];
+      } else {
+        [self handleResultNilWithCommand:command error:[NSError errorWithDomain:@"message message fail" code: 3 userInfo: nil]];
+      }
+    }];
+  }
+}
+
 
 @end
