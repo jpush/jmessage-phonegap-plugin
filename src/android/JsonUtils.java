@@ -101,7 +101,7 @@ class JsonUtils {
 
         try {
             result.put("type", "group");
-            result.put("id", groupInfo.getGroupID());
+            result.put("id", String.valueOf(groupInfo.getGroupID()));
             result.put("name", groupInfo.getGroupName());
             result.put("desc", groupInfo.getGroupDescription());
             result.put("level", groupInfo.getGroupLevel());
@@ -120,7 +120,8 @@ class JsonUtils {
     static JSONObject toJson(Message msg) {
         JSONObject result = new JSONObject();
         try {
-            result.put("id", msg.getId());
+            result.put("id", String.valueOf(msg.getId()));  // 本地数据库 id
+            result.put("serverMessageId", String.valueOf(msg.getServerMessageId()));    // 服务器端 id
             result.put("from", toJson(msg.getFromUser()));  // 消息发送者
 
             if (msg.getDirect() == MessageDirect.send) {    // 消息发送
