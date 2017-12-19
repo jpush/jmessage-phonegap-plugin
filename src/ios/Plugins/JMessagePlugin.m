@@ -1313,26 +1313,8 @@ JMessagePlugin *SharedJMessagePlugin;
 
 - (void)createGroup:(CDVInvokedUrlCommand *)command {
   NSDictionary *param = [command argumentAtIndex:0];
-  JMSGGroupInfo* groupInfo = [[JMSGGroupInfo alloc] init];
-    
-  if (param[@"name"]) {
-    groupInfo.name = param[@"name"];
-  }
-    
-  if (param[@"desc"]) {
-    groupInfo.desc = param[@"desc"];
-  }
   
-  if (param[@"avatarFilePath"]) {
-    NSString *mediaPath = param[@"avatarFilePath"];
-    
-    if([[NSFileManager defaultManager] fileExistsAtPath:mediaPath]) {
-      mediaPath = mediaPath;
-      groupInfo.avatarData = [NSData dataWithContentsOfFile: mediaPath];
-    }
-  }
-  
-  [JMSGGroup createGroupWithGroupInfo:groupInfo memberArray:nil completionHandler:^(id resultObject, NSError *error) {
+  [JMSGGroup createGroupWithName:param[@"name"] desc:param[@"desc"] memberArray:nil completionHandler:^(id resultObject, NSError *error) {
     if (error) {
       [self handleResultWithDictionary:nil command:command error:error];
       return;
@@ -2413,20 +2395,6 @@ JMessagePlugin *SharedJMessagePlugin;
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 - (void)updateGroupAvatar:(CDVInvokedUrlCommand *)command {
   NSDictionary * param = [command argumentAtIndex:0];
