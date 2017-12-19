@@ -201,7 +201,6 @@ var JMessagePlugin = {
    * 增加或更新扩展字段,可扩展会话属性，比如：会话置顶、标识特殊会话等
    *
    * @param {object} params = {
-   *  'extra': Object            // 附加字段对象, value 必须为 String
    *  'type': String,            // 'single' / 'group'
    *  'groupId': String,         // 目标群组 id。
    *  'username': String,        // 目标用户名。
@@ -211,7 +210,7 @@ var JMessagePlugin = {
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   setConversationExtras: function (params, success, error) {
-      exec(success, error, PLUGIN_NAME, 'setConversationExtras', [params])
+    exec(success, error, PLUGIN_NAME, 'setConversationExtras', [params])
   },
 
   /**
@@ -347,6 +346,28 @@ var JMessagePlugin = {
    */
   getHistoryMessages: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'getHistoryMessages', [params])
+  },
+  /**
+   * 根据消息 id 获取消息对象。
+   * 
+   * @param {object} params = {
+   *   type: string,      // 'single' / 'group'
+   *   groupId: string,   // 当 type = 'group' 时，groupId 必填。
+   *   username: string,  // 当 type = 'single' 时，username 必填。
+   *   appKey: string,    // 当 type = 'single' 时，用于指定对象所属应用的 appKey。如果未空，则默认为当前应用。
+   *   messageId: string  // 消息 Id。
+   * }
+   */
+  getMessageById: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'getMessageById', [params])
+  },
+  /**
+   * 根据消息 id 删除指定消息。
+   * 
+   * @param {object} params 同上。
+   */
+  deleteMessageById: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'deleteMessageById', [params])
   },
   /**
    * 发送好友请求。

@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URI;
 
 import cn.jpush.im.android.api.JMessageClient;
 import cn.jpush.im.android.api.callback.GetUserInfoCallback;
@@ -105,6 +106,21 @@ class JMessageUtils {
         JMessageClient.getUserInfo(username, appKey, callback);
     }
 
+    static void updateMyInfo(UserInfo.Field field, UserInfo myInfo, final int count, final CallbackContext callback) {
+        JMessageClient.updateMyInfo(field, myInfo, new BasicCallback() {
+          @Override
+          public void gotResult(int status, String desc) {
+              if (count != 0) {  // 还有参数要更新，只执行错误回调。
+                  if (status != 0) {
+                      handleResult(status, desc, callback);
+                  }
+              } else {   // 最后一个要修改的参数，可以响应成功回调。
+                  handleResult(status, desc, callback);
+              }
+          }
+        });
+    }
+
     static Conversation getConversation(JSONObject params) throws JSONException {
         String type = params.getString("type");
         Conversation conversation = null;
@@ -172,5 +188,29 @@ class JMessageUtils {
 
     static String getAvatarPath(String pkgName) {
         return getFilePath(pkgName) + "/images/avatar/";
+    }
+
+    static String getFileExtension(String path) {
+        return path.substring(path.lastIndexOf("."));
+    }
+
+    /**
+     * 根据绝对路径或 URI 获得本地图片。
+     * @param path 文件路径或者 URI。
+     * @return 文件对象。
+     */
+    static File getFile(String path) throws FileNotFoundException {
+        File file = new File(path); // if it is a absolute path
+
+        if (!file.isFile()) {
+            URI uri = URI.create(path); // if it is a uri.
+            file = new File(uri);
+        }
+
+        if (!file.exists() || !file.isFile()) {
+            throw new FileNotFoundException();
+        }
+
+        return file;
     }
 }

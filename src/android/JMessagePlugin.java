@@ -1,10 +1,13 @@
 package cn.jiguang.cordova.im;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -20,6 +23,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.lang.reflect.Method;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -62,6 +66,8 @@ import cn.jpush.im.android.api.options.MessageSendingOptions;
 import cn.jpush.im.android.api.options.RegisterOptionalUserInfo;
 import cn.jpush.im.api.BasicCallback;
 
+import static cn.jiguang.cordova.im.JMessageUtils.getFile;
+import static cn.jiguang.cordova.im.JMessageUtils.getFileExtension;
 import static cn.jiguang.cordova.im.JMessageUtils.handleResult;
 import static cn.jiguang.cordova.im.JMessageUtils.sendMessage;
 import static cn.jiguang.cordova.im.JMessageUtils.toMessageSendingOptions;
@@ -76,11 +82,13 @@ public class JMessagePlugin extends CordovaPlugin {
     private static final int ERR_CODE_CONVERSATION = 2;
     private static final int ERR_CODE_MESSAGE = 3;
     private static final int ERR_CODE_FILE = 4;
+    private static final int ERR_CODE_PERMISSION = 5;
 
     private static final String ERR_MSG_PARAMETER = "Parameters error";
     private static final String ERR_MSG_CONVERSATION = "Can't get the conversation";
     private static final String ERR_MSG_MESSAGE = "No such message";
-    private static final String ERR_MSG_FILE = "Not find this file";
+    private static final String ERR_MSG_FILE = "Not find the file";
+    private static final String ERR_MSG_PERMISSION_WRITE_EXTERNAL_STORAGE = "Do not have 'WRITE_EXTERNAL_STORAGE' permission";
 
     private Activity mCordovaActivity;
 
@@ -297,17 +305,26 @@ public class JMessagePlugin extends CordovaPlugin {
 
         try {
             JSONObject params = data.getJSONObject(0);
-
-            if (params.has("nickname")) {
-                myInfo.setNickname(params.getString("nickname"));
-            }
+            int count = params.length();
 
             if (params.has("birthday")) {
                 myInfo.setBirthday(params.getLong("birthday"));
             }
 
+            if (params.has("nickname")) {
+                myInfo.setNickname(params.getString("nickname"));
+                if (myInfo.getBirthday() == 0) {    // 防止注册用户时 birthday 默认为 0，导致最后更新用户所有信息时出错。
+                    count--;
+                    JMessageUtils.updateMyInfo(UserInfo.Field.nickname, myInfo, count, callback);
+                }
+            }
+
             if (params.has("signature")) {
                 myInfo.setSignature(params.getString("signature"));
+                if (myInfo.getBirthday() == 0) {
+                    count--;
+                    JMessageUtils.updateMyInfo(UserInfo.Field.signature, myInfo, count, callback);
+                }
             }
 
             if (params.has("gender")) {
@@ -318,33 +335,51 @@ public class JMessagePlugin extends CordovaPlugin {
                 } else {
                     myInfo.setGender(UserInfo.Gender.unknown);
                 }
+
+                if (myInfo.getBirthday() == 0) {
+                    count--;
+                    JMessageUtils.updateMyInfo(UserInfo.Field.gender, myInfo, count, callback);
+                }
             }
 
             if (params.has("region")) {
                 myInfo.setRegion(params.getString("region"));
+                if (myInfo.getBirthday() == 0) {
+                    count--;
+                    JMessageUtils.updateMyInfo(UserInfo.Field.region, myInfo, count, callback);
+                }
             }
 
             if (params.has("address")) {
                 myInfo.setAddress(params.getString("address"));
+                if (myInfo.getBirthday() == 0) {
+                    count--;
+                    JMessageUtils.updateMyInfo(UserInfo.Field.address, myInfo, count, callback);
+                }
             }
 
             if (params.has("extras")) {
                 Map<String, String> extras = fromJson(params.getJSONObject("extras"));
                 myInfo.setUserExtras(extras);
+                if (myInfo.getBirthday() == 0) {
+                    count--;
+                    JMessageUtils.updateMyInfo(UserInfo.Field.extras, myInfo, count, callback);
+                }
             }
-
         } catch (JSONException e) {
             e.printStackTrace();
             handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
             return;
         }
 
-        JMessageClient.updateMyInfo(UserInfo.Field.all, myInfo, new BasicCallback() {
-            @Override
-            public void gotResult(int status, String desc) {
-                handleResult(status, desc, callback);
-            }
-        });
+        if (myInfo.getBirthday() != 0) {
+            JMessageClient.updateMyInfo(UserInfo.Field.all, myInfo, new BasicCallback() {
+                @Override
+                public void gotResult(int status, String desc) {
+                    handleResult(status, desc, callback);
+                }
+            });
+        }
     }
 
     void downloadThumbUserAvatar(JSONArray data, final CallbackContext callback) {
@@ -383,65 +418,65 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     void downloadOriginalUserAvatar(JSONArray data, final CallbackContext callback) {
-      try {
-        JSONObject params = data.getJSONObject(0);
+        try {
+            JSONObject params = data.getJSONObject(0);
 
-        final String username = params.getString("username");
-        final String appKey = params.has("appKey") ? params.getString("appKey") : "";
+            final String username = params.getString("username");
+            final String appKey = params.has("appKey") ? params.getString("appKey") : "";
 
-        JMessageUtils.getUserInfo(params, new GetUserInfoCallback() {
-            @Override
-            public void gotResult(int status, String desc, final UserInfo userInfo) {
-                if (status != 0) {
-                    handleResult(status, desc, callback);
-                    return;
-                }
+            JMessageUtils.getUserInfo(params, new GetUserInfoCallback() {
+                @Override
+                public void gotResult(int status, String desc, final UserInfo userInfo) {
+                    if (status != 0) {
+                        handleResult(status, desc, callback);
+                        return;
+                    }
 
-                if (userInfo.getBigAvatarFile() == null) {  // 本地不存在头像原图，进行下载。
-                    userInfo.getBigAvatarBitmap(new GetAvatarBitmapCallback() {
-                        @Override
-                        public void gotResult(int status, String desc, Bitmap bitmap) {
-                            if (status != 0) {  // 下载失败
-                                handleResult(status, desc, callback);
-                                return;
+                    if (userInfo.getBigAvatarFile() == null) {  // 本地不存在头像原图，进行下载。
+                        userInfo.getBigAvatarBitmap(new GetAvatarBitmapCallback() {
+                            @Override
+                            public void gotResult(int status, String desc, Bitmap bitmap) {
+                                if (status != 0) {  // 下载失败
+                                    handleResult(status, desc, callback);
+                                    return;
+                                }
+
+                                String filePath = "";
+
+                                if (bitmap != null) {
+                                    filePath = userInfo.getBigAvatarFile().getAbsolutePath();
+                                }
+
+                                try {
+                                    JSONObject result = new JSONObject();
+                                    result.put("username", username);
+                                    result.put("appKey", appKey);
+                                    result.put("filePath", filePath);
+                                    callback.success(result);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                    callback.error(PluginResult.Status.JSON_EXCEPTION.toString());
+                                }
                             }
+                        });
 
-                            String filePath = "";
-
-                            if (bitmap != null) {
-                                filePath = userInfo.getBigAvatarFile().getAbsolutePath();
-                            }
-
-                            try {
-                                JSONObject result = new JSONObject();
-                                result.put("username", username);
-                                result.put("appKey", appKey);
-                                result.put("filePath", filePath);
-                                callback.success(result);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                                callback.error(PluginResult.Status.JSON_EXCEPTION.toString());
-                            }
+                    } else {
+                        JSONObject result = new JSONObject();
+                        try {
+                            result.put("username", username);
+                            result.put("appKey", appKey);
+                            result.put("filePath", userInfo.getBigAvatarFile().getAbsolutePath());
+                            callback.success(result);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
-                    });
-
-                } else {
-                    JSONObject result = new JSONObject();
-                    try {
-                        result.put("username", username);
-                        result.put("appKey", appKey);
-                        result.put("filePath", userInfo.getBigAvatarFile().getAbsolutePath());
-                        callback.success(result);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
                     }
                 }
-            }
-        });
-      } catch (JSONException e) {
-          e.printStackTrace();
-          handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
-      }
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+            handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
+        }
     }
 
     // 用户信息相关 - end
@@ -487,6 +522,13 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     void sendImageMessage(JSONArray data, CallbackContext callback) {
+        int permissionCheck = ContextCompat.checkSelfPermission(mCordovaActivity,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (permissionCheck == PackageManager.PERMISSION_DENIED) {
+            handleResult(ERR_CODE_PERMISSION, ERR_MSG_PERMISSION_WRITE_EXTERNAL_STORAGE, callback);
+            return;
+        }
+
         String path;
         Map<String, String> extras = null;
         MessageSendingOptions messageSendingOptions = null;
@@ -518,10 +560,11 @@ public class JMessagePlugin extends CordovaPlugin {
 
         ImageContent content;
         try {
-            content = new ImageContent(new File(path));
+            File file = getFile(path);
+            content = new ImageContent(file);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            handleResult(ERR_CODE_FILE, "No such file", callback);
+            handleResult(ERR_CODE_FILE, ERR_MSG_FILE, callback);
             return;
         }
 
@@ -533,6 +576,13 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     void sendVoiceMessage(JSONArray data, CallbackContext callback) {
+        int permissionCheck = ContextCompat.checkSelfPermission(mCordovaActivity,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (permissionCheck == PackageManager.PERMISSION_DENIED) {
+            handleResult(ERR_CODE_PERMISSION, ERR_MSG_PERMISSION_WRITE_EXTERNAL_STORAGE, callback);
+            return;
+        }
+
         String path;
         Map<String, String> extras = null;
         MessageSendingOptions messageSendingOptions = null;
@@ -563,10 +613,12 @@ public class JMessagePlugin extends CordovaPlugin {
         }
 
         try {
-            File file = new File(path);
             MediaPlayer mediaPlayer = MediaPlayer.create(mCordovaActivity, Uri.parse(path));
             int duration = mediaPlayer.getDuration() / 1000;    // Millisecond to second.
+
+            File file = getFile(path);
             VoiceContent content = new VoiceContent(file, duration);
+
             mediaPlayer.release();
 
             if (extras != null) {
@@ -576,7 +628,7 @@ public class JMessagePlugin extends CordovaPlugin {
             sendMessage(conversation, content, messageSendingOptions, callback);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            handleResult(ERR_CODE_FILE, "No such file", callback);
+            handleResult(ERR_CODE_FILE, ERR_MSG_FILE, callback);
         }
     }
 
@@ -650,7 +702,14 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     void sendFileMessage(JSONArray data, CallbackContext callback) {
-        String path, fileName;
+        int permissionCheck = ContextCompat.checkSelfPermission(mCordovaActivity,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (permissionCheck == PackageManager.PERMISSION_DENIED) {
+            handleResult(ERR_CODE_PERMISSION, ERR_MSG_PERMISSION_WRITE_EXTERNAL_STORAGE, callback);
+            return;
+        }
+
+        String path, fileName = "";
         Map<String, String> extras = null;
         MessageSendingOptions options = null;
         Conversation conversation;
@@ -665,7 +724,10 @@ public class JMessagePlugin extends CordovaPlugin {
             }
 
             path = params.getString("path");
-            fileName = params.getString("fileName");
+
+            if (params.has("fileName")) {
+                fileName = params.getString("fileName");
+            }
 
             if (params.has("extras")) {
                 extras = fromJson(params.getJSONObject("extras"));
@@ -681,14 +743,15 @@ public class JMessagePlugin extends CordovaPlugin {
         }
 
         try {
-            FileContent content = new FileContent(new File(path), fileName);
+            File file = getFile(path);
+            FileContent content = new FileContent(file, fileName);
             if (extras != null) {
                 content.setExtras(extras);
             }
             sendMessage(conversation, content, options, callback);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            handleResult(ERR_CODE_FILE, "No such file", callback);
+            handleResult(ERR_CODE_FILE, ERR_MSG_FILE, callback);
         } catch (JMFileSizeExceedException e) {
             e.printStackTrace();
             handleResult(ERR_CODE_FILE, "File size is too large", callback);
@@ -768,45 +831,110 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     void getHistoryMessages(JSONArray data, CallbackContext callback) {
-      Conversation conversation;
-      int from, limit;
+        Conversation conversation;
+        int from, limit;
 
-      try {
-          JSONObject params = data.getJSONObject(0);
-          conversation = JMessageUtils.getConversation(params);
-          if (conversation == null) {
-              handleResult(ERR_CODE_CONVERSATION, ERR_MSG_CONVERSATION, callback);
-              return;
-          }
+        try {
+            JSONObject params = data.getJSONObject(0);
+            conversation = JMessageUtils.getConversation(params);
+            if (conversation == null) {
+                handleResult(ERR_CODE_CONVERSATION, ERR_MSG_CONVERSATION, callback);
+                return;
+            }
 
-          from = params.getInt("from");
-          limit = params.getInt("limit");
+            from = params.getInt("from");
+            limit = params.getInt("limit");
 
-          if (from < 0 || limit < -1) {
-              handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
-              return;
-          }
-      } catch (JSONException e) {
-          e.printStackTrace();
-          handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
-          return;
-      }
+            if (from < 0 || limit < -1) {
+                handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
+                return;
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
+            return;
+        }
 
-      List<Message> messageList;
+        List<Message> messageList;
 
-      if (limit == -1) {
-          int messageCount = conversation.getAllMessage().size() - from;
-          messageList = conversation.getMessagesFromNewest(from, messageCount);
-      } else {
-          messageList = conversation.getMessagesFromNewest(from, limit);
-      }
+        if (limit == -1) {
+            int messageCount = conversation.getAllMessage().size() - from;
+            messageList = conversation.getMessagesFromNewest(from, messageCount);
+        } else {
+            messageList = conversation.getMessagesFromNewest(from, limit);
+        }
 
-      JSONArray messageJSONArr = new JSONArray();
+        JSONArray messageJSONArr = new JSONArray();
 
-      for (Message msg : messageList) {
-          messageJSONArr.put(toJson(msg));
-      }
-      callback.success(messageJSONArr);    
+        for (Message msg : messageList) {
+            messageJSONArr.put(toJson(msg));
+        }
+        callback.success(messageJSONArr);
+    }
+
+    void getMessageById(JSONArray data, CallbackContext callback) {
+        Conversation conversation;
+        String messageId;
+
+        try {
+            JSONObject params = data.getJSONObject(0);
+            conversation = JMessageUtils.getConversation(params);
+
+            if (conversation == null) {
+                handleResult(ERR_CODE_CONVERSATION, "Can't get conversation", callback);
+                return;
+            }
+
+            messageId = params.getString("messageId");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
+            return;
+        }
+
+        Message msg = conversation.getMessage(Integer.parseInt(messageId));
+
+        if (msg == null) {
+            callback.success();
+        } else {
+            callback.success(toJson(msg));
+        }
+    }
+
+    void deleteMessageById(JSONArray data, CallbackContext callback) {
+        Conversation conversation;
+        String messageId;
+
+        try {
+            JSONObject params = data.getJSONObject(0);
+            conversation = JMessageUtils.getConversation(params);
+
+            if (conversation == null) {
+                handleResult(ERR_CODE_CONVERSATION, "Can't get conversation", callback);
+                return;
+            }
+
+            messageId = params.getString("messageId");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
+            return;
+        }
+
+        boolean success = conversation.deleteMessage(Integer.parseInt(messageId));
+
+        if (success) {
+            callback.success();
+        } else {
+            JSONObject error = new JSONObject();
+            try {
+                error.put("code", ERR_CODE_MESSAGE);
+                error.put("description", ERR_MSG_MESSAGE);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            callback.error(error);
+        }
     }
 
     void downloadOriginalImage(JSONArray data, final CallbackContext callback) {
@@ -945,7 +1073,6 @@ public class JMessagePlugin extends CordovaPlugin {
 
         FileContent content = (FileContent) msg.getContent();
         content.downloadFile(msg, new DownloadCompletionCallback() {
-
             @Override
             public void onComplete(int status, String desc, File file) {
                 if (status == 0) {
@@ -1165,35 +1292,16 @@ public class JMessagePlugin extends CordovaPlugin {
             name = params.getString("name");
             desc = params.getString("desc");
 
-            if (params.has("avatarFilePath")) {
-                avatarFilePath = params.getString("avatarFilePath");
-                File avatarFile = new File(avatarFilePath);
-                String extension = avatarFilePath.substring(avatarFilePath.lastIndexOf("."));
-
-                JMessageClient.createGroup(name, desc, avatarFile, extension, new CreateGroupCallback() {
-                    @Override
-                    public void gotResult(int status, String desc, long groupId) {
-                        if (status == 0) {
-                            callback.success(String.valueOf(groupId));
-                        } else {
-                            handleResult(status, desc, callback);
-                        }
+            JMessageClient.createGroup(name, desc, new CreateGroupCallback() {
+                @Override
+                public void gotResult(int status, String desc, long groupId) {
+                    if (status == 0) {
+                        callback.success(String.valueOf(groupId));
+                    } else {
+                        handleResult(status, desc, callback);
                     }
-                });
-
-            } else {
-                JMessageClient.createGroup(name, desc, new CreateGroupCallback() {
-                    @Override
-                    public void gotResult(int status, String desc, long groupId) {
-                        if (status == 0) {
-                            callback.success(String.valueOf(groupId));
-
-                        } else {
-                            handleResult(status, desc, callback);
-                        }
-                    }
-                });
-            }
+                }
+            });
         } catch (JSONException e) {
             e.printStackTrace();
             handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
@@ -1297,6 +1405,49 @@ public class JMessagePlugin extends CordovaPlugin {
                         }
                     });
                 }
+            }
+        });
+    }
+
+    void updateGroupAvatar(JSONArray data, final CallbackContext callback) {
+        long groupId;
+        final String imgPath;
+
+        try {
+            JSONObject params = data.getJSONObject(0);
+            groupId = Long.parseLong(params.getString("id"));
+            imgPath = params.getString("imgPath");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
+            return;
+        }
+
+        JMessageClient.getGroupInfo(groupId, new GetGroupInfoCallback() {
+            @Override
+            public void gotResult(int status, String desc, GroupInfo groupInfo) {
+                if (status != 0) {  // error
+                    handleResult(status, desc, callback);
+                    return;
+                }
+
+                File file;
+                try {
+                    file = getFile(imgPath);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                    handleResult(ERR_CODE_FILE, ERR_MSG_FILE, callback);
+                    return;
+                }
+
+                String extension = getFileExtension(imgPath);
+
+                groupInfo.updateAvatar(file, extension, new BasicCallback() {
+                    @Override
+                    public void gotResult(int status, String desc) {
+                        handleResult(status, desc, callback);
+                    }
+                });
             }
         });
     }
@@ -1806,6 +1957,32 @@ public class JMessagePlugin extends CordovaPlugin {
             e.printStackTrace();
             handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
         }
+    }
+
+    void setConversationExtras(JSONArray data, CallbackContext callback) {
+        Conversation conversation;
+        JSONObject extra = null;
+
+        try {
+            JSONObject params = data.getJSONObject(0);
+            conversation = JMessageUtils.getConversation(params);
+
+            if (conversation == null) {
+                handleResult(ERR_CODE_CONVERSATION, ERR_MSG_CONVERSATION, callback);
+                return;
+            }
+
+            if (params.has("extra")) {
+                extra = params.getJSONObject("extra");
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
+            return;
+        }
+
+        String extraStr = extra == null ? "" : extra.toString();
+        boolean isSuccess = conversation.updateConversationExtra(extraStr);
     }
 
     // 聊天会话 - end
