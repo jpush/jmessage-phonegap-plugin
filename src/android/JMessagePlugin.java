@@ -305,17 +305,26 @@ public class JMessagePlugin extends CordovaPlugin {
 
         try {
             JSONObject params = data.getJSONObject(0);
-
-            if (params.has("nickname")) {
-                myInfo.setNickname(params.getString("nickname"));
-            }
+            int count = params.length();
 
             if (params.has("birthday")) {
                 myInfo.setBirthday(params.getLong("birthday"));
             }
 
+            if (params.has("nickname")) {
+                myInfo.setNickname(params.getString("nickname"));
+                if (myInfo.getBirthday() == 0) {    // 防止注册用户时 birthday 默认为 0，导致最后更新用户所有信息时出错。
+                    count--;
+                    JMessageUtils.updateMyInfo(UserInfo.Field.nickname, myInfo, count, callback);
+                }
+            }
+
             if (params.has("signature")) {
                 myInfo.setSignature(params.getString("signature"));
+                if (myInfo.getBirthday() == 0) {
+                    count--;
+                    JMessageUtils.updateMyInfo(UserInfo.Field.signature, myInfo, count, callback);
+                }
             }
 
             if (params.has("gender")) {
@@ -326,33 +335,51 @@ public class JMessagePlugin extends CordovaPlugin {
                 } else {
                     myInfo.setGender(UserInfo.Gender.unknown);
                 }
+
+                if (myInfo.getBirthday() == 0) {
+                    count--;
+                    JMessageUtils.updateMyInfo(UserInfo.Field.gender, myInfo, count, callback);
+                }
             }
 
             if (params.has("region")) {
                 myInfo.setRegion(params.getString("region"));
+                if (myInfo.getBirthday() == 0) {
+                    count--;
+                    JMessageUtils.updateMyInfo(UserInfo.Field.region, myInfo, count, callback);
+                }
             }
 
             if (params.has("address")) {
                 myInfo.setAddress(params.getString("address"));
+                if (myInfo.getBirthday() == 0) {
+                    count--;
+                    JMessageUtils.updateMyInfo(UserInfo.Field.address, myInfo, count, callback);
+                }
             }
 
             if (params.has("extras")) {
                 Map<String, String> extras = fromJson(params.getJSONObject("extras"));
                 myInfo.setUserExtras(extras);
+                if (myInfo.getBirthday() == 0) {
+                    count--;
+                    JMessageUtils.updateMyInfo(UserInfo.Field.extras, myInfo, count, callback);
+                }
             }
-
         } catch (JSONException e) {
             e.printStackTrace();
             handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
             return;
         }
 
-        JMessageClient.updateMyInfo(UserInfo.Field.all, myInfo, new BasicCallback() {
-            @Override
-            public void gotResult(int status, String desc) {
-                handleResult(status, desc, callback);
-            }
-        });
+        if (myInfo.getBirthday() != 0) {
+            JMessageClient.updateMyInfo(UserInfo.Field.all, myInfo, new BasicCallback() {
+                @Override
+                public void gotResult(int status, String desc) {
+                    handleResult(status, desc, callback);
+                }
+            });
+        }
     }
 
     void downloadThumbUserAvatar(JSONArray data, final CallbackContext callback) {
@@ -1265,35 +1292,16 @@ public class JMessagePlugin extends CordovaPlugin {
             name = params.getString("name");
             desc = params.getString("desc");
 
-            if (params.has("avatarFilePath")) {
-                avatarFilePath = params.getString("avatarFilePath");
-                File avatarFile = new File(avatarFilePath);
-                String extension = avatarFilePath.substring(avatarFilePath.lastIndexOf("."));
-
-                JMessageClient.createGroup(name, desc, avatarFile, extension, new CreateGroupCallback() {
-                    @Override
-                    public void gotResult(int status, String desc, long groupId) {
-                        if (status == 0) {
-                            callback.success(String.valueOf(groupId));
-                        } else {
-                            handleResult(status, desc, callback);
-                        }
+            JMessageClient.createGroup(name, desc, new CreateGroupCallback() {
+                @Override
+                public void gotResult(int status, String desc, long groupId) {
+                    if (status == 0) {
+                        callback.success(String.valueOf(groupId));
+                    } else {
+                        handleResult(status, desc, callback);
                     }
-                });
-
-            } else {
-                JMessageClient.createGroup(name, desc, new CreateGroupCallback() {
-                    @Override
-                    public void gotResult(int status, String desc, long groupId) {
-                        if (status == 0) {
-                            callback.success(String.valueOf(groupId));
-
-                        } else {
-                            handleResult(status, desc, callback);
-                        }
-                    }
-                });
-            }
+                }
+            });
         } catch (JSONException e) {
             e.printStackTrace();
             handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
