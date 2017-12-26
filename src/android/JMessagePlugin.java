@@ -3,11 +3,9 @@ package cn.jiguang.cordova.im;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -15,6 +13,7 @@ import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CordovaWebView;
+import org.apache.cordova.PermissionHelper;
 import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -23,7 +22,6 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.lang.reflect.Method;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -522,9 +520,8 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     void sendImageMessage(JSONArray data, CallbackContext callback) {
-        int permissionCheck = ContextCompat.checkSelfPermission(mCordovaActivity,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        if (permissionCheck == PackageManager.PERMISSION_DENIED) {
+        boolean hasPermission = PermissionHelper.hasPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (!hasPermission) {
             handleResult(ERR_CODE_PERMISSION, ERR_MSG_PERMISSION_WRITE_EXTERNAL_STORAGE, callback);
             return;
         }
@@ -576,9 +573,8 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     void sendVoiceMessage(JSONArray data, CallbackContext callback) {
-        int permissionCheck = ContextCompat.checkSelfPermission(mCordovaActivity,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        if (permissionCheck == PackageManager.PERMISSION_DENIED) {
+        boolean hasPermission = PermissionHelper.hasPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (!hasPermission) {
             handleResult(ERR_CODE_PERMISSION, ERR_MSG_PERMISSION_WRITE_EXTERNAL_STORAGE, callback);
             return;
         }
@@ -702,9 +698,8 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     void sendFileMessage(JSONArray data, CallbackContext callback) {
-        int permissionCheck = ContextCompat.checkSelfPermission(mCordovaActivity,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        if (permissionCheck == PackageManager.PERMISSION_DENIED) {
+        boolean hasPermission = PermissionHelper.hasPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (!hasPermission) {
             handleResult(ERR_CODE_PERMISSION, ERR_MSG_PERMISSION_WRITE_EXTERNAL_STORAGE, callback);
             return;
         }
