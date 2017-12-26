@@ -21,6 +21,7 @@ import cn.jpush.im.android.api.callback.GetUserInfoCallback;
 import cn.jpush.im.android.api.content.MessageContent;
 import cn.jpush.im.android.api.model.Conversation;
 import cn.jpush.im.android.api.model.Message;
+import cn.jpush.im.android.api.model.UserInfo;
 import cn.jpush.im.android.api.options.MessageSendingOptions;
 import cn.jpush.im.api.BasicCallback;
 

@@ -2,7 +2,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="jmessage-phonegap-plugin"
-        version="3.1.1">
+        version="3.1.2">
 
     <name>JMessage</name>
     <description>集成极光 IM 和推送功能</description>
@@ -13,7 +13,7 @@
     <preference name="APP_KEY" />
 
     <engines>
-        <engine name="cordova" version=">=3.0"/>
+        <engine name="cordova" version=">=7.1.0"/>
     </engines>
 
     <!-- dependencies -->
@@ -66,7 +66,7 @@
             </feature>
         </config-file>
 
-        <config-file target="AndroidManifest.xml" parent="/manifest">
+        <config-file target="app/src/main/AndroidManifest.xml" parent="/manifest">
             <!-- Required  一些系统要求的权限，如访问网络等-->
             <uses-permission android:name="android.permission.RECEIVE_USER_PRESENT"/>
             <uses-permission android:name="android.permission.INTERNET"/>
