@@ -2,6 +2,7 @@
 #import <JMessage/JMessage.h>
 
 @interface JMessagePlugin : CDVPlugin
++ (void)fireDocumentEvent:(NSString*)eventName jsString:(NSString*)jsString;
 
 - (void)startJMessageSDK:(CDVInvokedUrlCommand *)command;
 
