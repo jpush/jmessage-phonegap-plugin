@@ -10,7 +10,8 @@ var EventHandlers = {
   'loginStateChanged': [],
   'contactNotify': [],
   'retractMessage': [],
-  'receiveTransCommand': [] // 透传命令
+  'receiveTransCommand': [], // 透传命令
+  'receiveChatroomMessage': []  // 聊天室消息
 }
 
 var JMessagePlugin = {
@@ -782,6 +783,85 @@ var JMessagePlugin = {
   resetUnreadMessageCount: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'resetUnreadMessageCount', [params])
   },
+
+  // 聊天室 API - start
+
+  /**
+   * 获取当前应用所属聊天室的信息。
+   * @param {object} params = {
+   *  start: number,  // 索引起始位置，从 0 开始。
+   *  count: number   // 查询个数。
+   * }
+   * @param {function} success = function (chatroomInfoList) {}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  getChatroomInfoOfApp(params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'getChatroomInfoOfApp', [params])
+  },
+  /**
+   * 获取当前用户加入的聊天室列表。
+   *
+   * @param {function} success = function (chatroomInfoList) {}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  getChatroomInfoOfUser(success, error) {
+    exec(success, error, PLUGIN_NAME, 'getChatroomInfoOfUser', [params])
+  },
+  /**
+   * 根据聊天室 id 查询聊天室信息
+   * 
+   * @param {object} params = {
+   *  roomIds: [number] // 聊天室 id 数组
+   * }
+   * @param {function} success = function (chatroomInfoList) {}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  getChatroomInfoById(params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'getChatroomInfoById', [params])
+  },
+  /**
+   * 进入聊天室。
+   * 
+   * @param {object} params = { roomId: number }
+   * @param {function} success = function (chatroomInfoList) {}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  enterChatroom(params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'enterChatroom', [params])
+  },
+  /**
+   * 离开聊天室。
+   * 
+   * @param {object} params = { roomId: number }
+   * @param {function} success = function () {}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  exitChatroom(params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'exitChatroom', [params])
+  },
+  /**
+   * 获取聊天室会话信息。
+   * 
+   * @param {*} params = { roomId: number }
+   * @param {*} success = function (conversation) {}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  getChatroomConversation(params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'getChatroomConversation', [params])
+  },
+  /**
+   * 
+   * @param {*} success = function (conversationArr) {} // 以参数形式返回会话对象数组。
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  getChatroomConversationList(success, error) {
+    exec(success, error, PLUGIN_NAME, 'getChatroomConversationList', [])
+  },
+
+  // 聊天室 - end
+
+  // 事件监听 - start
+
   /**
    * 添加收到消息事件监听。
    *
@@ -818,7 +898,7 @@ var JMessagePlugin = {
     }
   },
   /**
-   * 添加同步离线消息事件监听。
+   * 添加同步离线消息事件监听。事件会在用户登录后触发。
    *
    * @param {function} listener = function ({'conversation': {}, 'messageArray': []}) {}  // 以参数形式返回消息对象数组。
    */
@@ -838,6 +918,9 @@ var JMessagePlugin = {
    */
   addSyncRoamingMessageListener: function (listener) {
     EventHandlers.syncRoamingMessage.push(listener)
+    if (device.platform === 'Android') {
+      exec(null, null, PLUGIN_NAME, 'addSyncRoamingMessageListener', [])
+    }
   },
   removeSyncRoamingMessageListener: function (listener) {
     var handlerIndex = EventHandlers.syncRoamingMessage.indexOf(listener)
@@ -919,7 +1002,14 @@ var JMessagePlugin = {
     if (handlerIndex >= 0) {
       EventHandlers.receiveTransCommand.splice(handlerIndex, 1)
     }
+  },
+  dispatchEvent: function (event) {
+    event = JSON.stringify(event)
+    event = JSON.parse(event)
+    cordova.fireDocumentEvent(event.name, event.content)
   }
+
+  // 事件监听 - end
 }
 
 module.exports = JMessagePlugin
