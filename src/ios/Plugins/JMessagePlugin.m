@@ -32,6 +32,7 @@
 @end
 
 JMessagePlugin *SharedJMessagePlugin;
+NSMutableDictionary *_jmessageEventCache;
 
 @implementation JMessagePlugin
 
@@ -88,6 +89,7 @@ JMessagePlugin *SharedJMessagePlugin;
     self.callBack = command;
     NSDictionary * param = [command argumentAtIndex:0];
     [[JMessageHelper shareInstance] initJMessage:param];
+    [self dispatchJMessageCacheEvent];
 }
 
 - (void)setDebugMode:(CDVInvokedUrlCommand *)command {
@@ -159,12 +161,14 @@ JMessagePlugin *SharedJMessagePlugin;
                                             messageAsDictionary:@{@"eventName": @"syncOfflineMessage", @"value": notification.object}];
     [result setKeepCallback:@(true)];
     [self.commandDelegate sendPluginResult:result callbackId:self.callBack.callbackId];
+    [JMessagePlugin fireDocumentEvent:@"syncOfflineMessage" jsString:[result argumentsAsJSON]];
 }
 
 - (void)onSyncRoamingMessage: (NSNotification *) notification {
     CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:@{@"eventName": @"syncRoamingMessage", @"value": notification.object}];
     [result setKeepCallback:@(true)];
     [self.commandDelegate sendPluginResult:result callbackId:self.callBack.callbackId];
+    [JMessagePlugin fireDocumentEvent:@"syncRoamingMessage" jsString:[result argumentsAsJSON]];
 }
 
 -(void)didSendMessage:(NSNotification *)notification {
@@ -205,6 +209,7 @@ JMessagePlugin *SharedJMessagePlugin;
     
     [result setKeepCallback:@(true)];
     [self.commandDelegate sendPluginResult:result callbackId:self.callBack.callbackId];
+    [JMessagePlugin fireDocumentEvent:@"loginStateChanged" jsString:[result argumentsAsJSON]];
 }
 
 - (void)onContactNotify:(NSNotification *)notification{
@@ -212,6 +217,7 @@ JMessagePlugin *SharedJMessagePlugin;
     
     [result setKeepCallback:@(true)];
     [self.commandDelegate sendPluginResult:result callbackId:self.callBack.callbackId];
+    [JMessagePlugin fireDocumentEvent:@"contactNotify" jsString:[result argumentsAsJSON]];
 }
 
 - (void)didReceiveRetractMessage:(NSNotification *)notification{
@@ -219,6 +225,7 @@ JMessagePlugin *SharedJMessagePlugin;
     
     [result setKeepCallback:@(true)];
     [self.commandDelegate sendPluginResult:result callbackId:self.callBack.callbackId];
+    [JMessagePlugin fireDocumentEvent:@"retractMessage" jsString:[result argumentsAsJSON]];
 }
 
 - (void)didReceiveJMessageMessage:(NSNotification *)notification {
@@ -226,6 +233,7 @@ JMessagePlugin *SharedJMessagePlugin;
     [result setKeepCallback:@(true)];
     
     [self.commandDelegate sendPluginResult:result callbackId:self.callBack.callbackId];
+    [JMessagePlugin fireDocumentEvent:@"receiveMessage" jsString:[result argumentsAsJSON]];
 }
 
 +(void)evalFuntionName:(NSString*)functionName jsonParm:(NSString*)jsonString{
@@ -234,10 +242,37 @@ JMessagePlugin *SharedJMessagePlugin;
     });
 }
 
+- (void)dispatchJMessageCacheEvent {
+  if (!_jmessageEventCache) {
+    return;
+  }
+  
+  for (NSString* key in _jmessageEventCache) {
+    NSArray *evenList = _jmessageEventCache[key];
+    for (NSString *event in evenList) {
+      [JMessagePlugin fireDocumentEvent:key jsString:event];
+    }
+  }
+}
+
 +(void)fireDocumentEvent:(NSString*)eventName jsString:(NSString*)jsString{
+  
+  if (SharedJMessagePlugin) {
     dispatch_async(dispatch_get_main_queue(), ^{
-        [SharedJMessagePlugin.commandDelegate evalJs:[NSString stringWithFormat:@"cordova.fireDocumentEvent('jmessage.%@',%@)", eventName, jsString]];
+      [SharedJMessagePlugin.commandDelegate evalJs:[NSString stringWithFormat:@"cordova.fireDocumentEvent('jmessage.%@',%@)", eventName, jsString]];
     });
+    return;
+  }
+  
+  if (!_jmessageEventCache) {
+    _jmessageEventCache = @{}.mutableCopy;
+  }
+  
+  if (!_jmessageEventCache[eventName]) {
+    _jmessageEventCache[eventName] = @[].mutableCopy;
+  }
+  
+  [_jmessageEventCache[eventName] addObject: jsString];
 }
 
 //#pragma mark IM - User
