@@ -2,7 +2,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="jmessage-phonegap-plugin"
-        version="3.1.3">
+        version="3.1.4">
 
     <name>JMessage</name>
     <description>集成极光 IM 和推送功能</description>
@@ -11,10 +11,6 @@
     <license>Apache 2.0 License</license>
 
     <preference name="APP_KEY" />
-
-    <engines>
-        <engine name="cordova" version=">=7.1.0"/>
-    </engines>
 
     <!-- dependencies -->
     <dependency id="cordova-plugin-device" />
@@ -161,9 +157,10 @@
             <meta-data android:name="JPUSH_CHANNEL" android:value="developer-default"/>
         </config-file>
 
-        <source-file src="src/android/libs/jmessage-android_v2.4.0.jar" target-dir="libs"/>
+        <source-file src="src/android/libs/jmessage-android_v2.4.1.jar" target-dir="libs"/>
         <source-file src="src/android/JMessagePlugin.java" target-dir="src/cn/jiguang/cordova/im"/>
         <source-file src="src/android/JMessageUtils.java" target-dir="src/cn/jiguang/cordova/im"/>
         <source-file src="src/android/JsonUtils.java" target-dir="src/cn/jiguang/cordova/im"/>
+        <source-file src="src/android/ChatroomHandler.java" target-dir="src/cn/jiguang/cordova/im"/>
     </platform>
 </plugin>
