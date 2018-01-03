@@ -161,14 +161,12 @@ NSMutableDictionary *_jmessageEventCache;
                                             messageAsDictionary:@{@"eventName": @"syncOfflineMessage", @"value": notification.object}];
     [result setKeepCallback:@(true)];
     [self.commandDelegate sendPluginResult:result callbackId:self.callBack.callbackId];
-    [JMessagePlugin fireDocumentEvent:@"syncOfflineMessage" jsString:[result argumentsAsJSON]];
 }
 
 - (void)onSyncRoamingMessage: (NSNotification *) notification {
     CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:@{@"eventName": @"syncRoamingMessage", @"value": notification.object}];
     [result setKeepCallback:@(true)];
     [self.commandDelegate sendPluginResult:result callbackId:self.callBack.callbackId];
-    [JMessagePlugin fireDocumentEvent:@"syncRoamingMessage" jsString:[result argumentsAsJSON]];
 }
 
 -(void)didSendMessage:(NSNotification *)notification {
@@ -193,15 +191,15 @@ NSMutableDictionary *_jmessageEventCache;
 }
 
 - (void)conversationChanged:(NSNotification *)notification {
-    [JMessagePlugin evalFuntionName:@"onConversationChanged" jsonParm:[notification.object toJsonString]];
+    [self evalFuntionName:@"onConversationChanged" jsonParm:[notification.object toJsonString]];
 }
 
 - (void)unreadChanged:(NSNotification *)notification{
-    [JMessagePlugin evalFuntionName:@"onUnreadChanged" jsonParm:[notification.object toJsonString]];
+    [self evalFuntionName:@"onUnreadChanged" jsonParm:[notification.object toJsonString]];
 }
 
 - (void)groupInfoChanged:(NSNotification *)notification{
-    [JMessagePlugin evalFuntionName:@"onGroupInfoChanged" jsonParm:[notification.object toJsonString]];
+    [self evalFuntionName:@"onGroupInfoChanged" jsonParm:[notification.object toJsonString]];
 }
 
 - (void)loginStateChanged:(NSNotification *)notification{
@@ -209,7 +207,6 @@ NSMutableDictionary *_jmessageEventCache;
     
     [result setKeepCallback:@(true)];
     [self.commandDelegate sendPluginResult:result callbackId:self.callBack.callbackId];
-    [JMessagePlugin fireDocumentEvent:@"loginStateChanged" jsString:[result argumentsAsJSON]];
 }
 
 - (void)onContactNotify:(NSNotification *)notification{
@@ -217,7 +214,6 @@ NSMutableDictionary *_jmessageEventCache;
     
     [result setKeepCallback:@(true)];
     [self.commandDelegate sendPluginResult:result callbackId:self.callBack.callbackId];
-    [JMessagePlugin fireDocumentEvent:@"contactNotify" jsString:[result argumentsAsJSON]];
 }
 
 - (void)didReceiveRetractMessage:(NSNotification *)notification{
@@ -225,7 +221,6 @@ NSMutableDictionary *_jmessageEventCache;
     
     [result setKeepCallback:@(true)];
     [self.commandDelegate sendPluginResult:result callbackId:self.callBack.callbackId];
-    [JMessagePlugin fireDocumentEvent:@"retractMessage" jsString:[result argumentsAsJSON]];
 }
 
 - (void)didReceiveJMessageMessage:(NSNotification *)notification {
@@ -233,12 +228,11 @@ NSMutableDictionary *_jmessageEventCache;
     [result setKeepCallback:@(true)];
     
     [self.commandDelegate sendPluginResult:result callbackId:self.callBack.callbackId];
-    [JMessagePlugin fireDocumentEvent:@"receiveMessage" jsString:[result argumentsAsJSON]];
 }
 
-+(void)evalFuntionName:(NSString*)functionName jsonParm:(NSString*)jsonString{
+- (void)evalFuntionName:(NSString*)functionName jsonParm:(NSString*)jsonString{
     dispatch_async(dispatch_get_main_queue(), ^{
-        [SharedJMessagePlugin.commandDelegate evalJs:[NSString stringWithFormat:@"%@.%@('%@')",JMessagePluginName,functionName,jsonString]];
+        [self.commandDelegate evalJs:[NSString stringWithFormat:@"%@.%@('%@')",JMessagePluginName,functionName,jsonString]];
     });
 }
 
