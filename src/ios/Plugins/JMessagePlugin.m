@@ -61,8 +61,8 @@ NSMutableDictionary *_jmessageEventCache;
 -(void)initPlugin{
     if (!SharedJMessagePlugin) {
         SharedJMessagePlugin = self;
-        self.SendMsgCallbackDic = @{}.mutableCopy;
     }
+    self.SendMsgCallbackDic = @{}.mutableCopy;
 }
 
 - (void)onAppTerminate {
