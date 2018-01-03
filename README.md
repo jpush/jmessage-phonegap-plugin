@@ -1,6 +1,6 @@
 # JMessage PhoneGap / Cordova Plugin
 
-[![release](https://img.shields.io/badge/release-3.1.3-blue.svg)](https://github.com/jpush/jmessage-phonegap-plugin/releases)
+[![release](https://img.shields.io/badge/release-3.1.4-blue.svg)](https://github.com/jpush/jmessage-phonegap-plugin/releases)
 [![platforms](https://img.shields.io/badge/platforms-iOS%7CAndroid-green.svg)](https://github.com/jpush/jmessage-phonegap-plugin)
 [![Code Triagers Badge](https://www.codetriage.com/jpush/jmessage-phonegap-plugin/badges/users.svg)](https://www.codetriage.com/jpush/jmessage-phonegap-plugin)
 [![weibo](https://img.shields.io/badge/weibo-JPush-blue.svg)](http://weibo.com/jpush?refer_flag=1001030101_&is_all=1)
