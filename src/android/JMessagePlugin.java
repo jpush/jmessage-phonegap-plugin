@@ -13,7 +13,6 @@ import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CordovaWebView;
-import org.apache.cordova.PermissionHelper;
 import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import cn.jpush.im.android.api.ChatRoomManager;
 import cn.jpush.im.android.api.ContactManager;
 import cn.jpush.im.android.api.JMessageClient;
 import cn.jpush.im.android.api.callback.CreateGroupCallback;
@@ -41,7 +39,6 @@ import cn.jpush.im.android.api.callback.GetNoDisurbListCallback;
 import cn.jpush.im.android.api.callback.GetUserInfoCallback;
 import cn.jpush.im.android.api.callback.GetUserInfoListCallback;
 import cn.jpush.im.android.api.callback.IntegerCallback;
-import cn.jpush.im.android.api.callback.RequestCallback;
 import cn.jpush.im.android.api.content.CustomContent;
 import cn.jpush.im.android.api.content.FileContent;
 import cn.jpush.im.android.api.content.ImageContent;
@@ -59,7 +56,6 @@ import cn.jpush.im.android.api.event.MessageRetractEvent;
 import cn.jpush.im.android.api.event.NotificationClickEvent;
 import cn.jpush.im.android.api.event.OfflineMessageEvent;
 import cn.jpush.im.android.api.exceptions.JMFileSizeExceedException;
-import cn.jpush.im.android.api.model.ChatRoomInfo;
 import cn.jpush.im.android.api.model.Conversation;
 import cn.jpush.im.android.api.model.GroupInfo;
 import cn.jpush.im.android.api.model.Message;
@@ -524,7 +520,7 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     void sendImageMessage(JSONArray data, CallbackContext callback) {
-        boolean hasPermission = PermissionHelper.hasPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        boolean hasPermission = cordova.hasPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (!hasPermission) {
             handleResult(ERR_CODE_PERMISSION, ERR_MSG_PERMISSION_WRITE_EXTERNAL_STORAGE, callback);
             return;
@@ -577,7 +573,7 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     void sendVoiceMessage(JSONArray data, CallbackContext callback) {
-        boolean hasPermission = PermissionHelper.hasPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        boolean hasPermission = cordova.hasPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (!hasPermission) {
             handleResult(ERR_CODE_PERMISSION, ERR_MSG_PERMISSION_WRITE_EXTERNAL_STORAGE, callback);
             return;
@@ -702,7 +698,7 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     void sendFileMessage(JSONArray data, CallbackContext callback) {
-        boolean hasPermission = PermissionHelper.hasPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        boolean hasPermission = cordova.hasPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (!hasPermission) {
             handleResult(ERR_CODE_PERMISSION, ERR_MSG_PERMISSION_WRITE_EXTERNAL_STORAGE, callback);
             return;
@@ -2146,7 +2142,7 @@ public class JMessagePlugin extends CordovaPlugin {
 
     /**
      * 漫游消息同步事件。
-     *
+     * <p>
      * 因为漫游消息同步事件在调用 init 方法后即会触发，因此添加缓存。
      *
      * @param event 漫游消息同步事件。
@@ -2177,7 +2173,7 @@ public class JMessagePlugin extends CordovaPlugin {
         mHasRoamingMsgListener = true;
 
         if (mRoamingMessageCache != null) { // 触发缓存
-            for (JSONObject json: mRoamingMessageCache) {
+            for (JSONObject json : mRoamingMessageCache) {
                 eventSuccess(json);
             }
             mRoamingMessageCache = null;
