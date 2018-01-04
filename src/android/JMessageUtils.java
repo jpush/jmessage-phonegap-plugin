@@ -16,6 +16,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 
+import cn.jpush.im.android.api.ChatRoomManager;
 import cn.jpush.im.android.api.JMessageClient;
 import cn.jpush.im.android.api.callback.GetUserInfoCallback;
 import cn.jpush.im.android.api.content.MessageContent;
@@ -137,7 +138,12 @@ class JMessageUtils {
         } else if (type.equals("group")) {
             String groupId = params.getString("groupId");
             conversation = Conversation.createGroupConversation(Long.parseLong(groupId));
+
+        } else if (type.equals("chatroom")) {
+            long roomId = params.getLong("roomId");
+            conversation = Conversation.createChatRoomConversation(roomId);
         }
+
         return conversation;
     }
 
@@ -153,7 +159,11 @@ class JMessageUtils {
         } else if (type.equals("group")) {
             String groupId = params.getString("groupId");
             conversation = JMessageClient.getGroupConversation(Long.parseLong(groupId));
+        } else if (type.equals("chatroom")) {
+            long roomId = params.getLong("roomId");
+            conversation = JMessageClient.getChatRoomConversation(roomId);
         }
+
         return conversation;
     }
 
