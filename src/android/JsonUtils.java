@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import cn.jpush.im.android.api.JMessageClient;
+import cn.jpush.im.android.api.callback.GetUserInfoCallback;
 import cn.jpush.im.android.api.content.CustomContent;
 import cn.jpush.im.android.api.content.EventNotificationContent;
 import cn.jpush.im.android.api.content.FileContent;
@@ -23,6 +24,7 @@ import cn.jpush.im.android.api.content.TextContent;
 import cn.jpush.im.android.api.content.VoiceContent;
 import cn.jpush.im.android.api.enums.ConversationType;
 import cn.jpush.im.android.api.enums.MessageDirect;
+import cn.jpush.im.android.api.model.ChatRoomInfo;
 import cn.jpush.im.android.api.model.Conversation;
 import cn.jpush.im.android.api.model.GroupInfo;
 import cn.jpush.im.android.api.model.Message;
@@ -261,5 +263,41 @@ class JsonUtils {
             e.printStackTrace();
         }
         return result;
+    }
+
+    static JSONObject toJson(String eventName, JSONArray value) {
+        JSONObject result = new JSONObject();
+        try {
+            result.put("eventName", eventName);
+            result.put("value", value);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    static JSONObject toJson(ChatRoomInfo chatRoomInfo) throws JSONException {
+        final JSONObject json = new JSONObject();
+
+        chatRoomInfo.getOwnerInfo(new GetUserInfoCallback() {
+            @Override
+            public void gotResult(int status, String desc, UserInfo userInfo) {
+                if (status == 0) {
+                    try {
+                        json.put("owner", toJson(userInfo));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+        json.put("id", String.valueOf(chatRoomInfo.getRoomID()));
+        json.put("name", chatRoomInfo.getName());
+        json.put("appKey", chatRoomInfo.getAppkey());
+        json.put("description", chatRoomInfo.getDescription());
+        json.put("createTime", chatRoomInfo.getCreateTime());
+        json.put("maxMemberCount", chatRoomInfo.getMaxMemberCount());
+        json.put("currentMemberCount", chatRoomInfo.getTotalMemberCount());
+        return json;
     }
 }

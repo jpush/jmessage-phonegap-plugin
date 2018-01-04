@@ -122,6 +122,25 @@ class JMessageUtils {
         });
     }
 
+    /**
+     * 创建会话对象，如果本地以及存在，则直接返回而不会重新创建。
+     */
+    static Conversation createConversation(JSONObject params) throws JSONException {
+        String type = params.getString("type");
+        Conversation conversation = null;
+
+        if (type.equals("single")) {
+            String username = params.getString("username");
+            String appKey = params.has("appKey") ? params.getString("appKey") : "";
+            conversation = Conversation.createSingleConversation(username, appKey);
+
+        } else if (type.equals("group")) {
+            String groupId = params.getString("groupId");
+            conversation = Conversation.createGroupConversation(Long.parseLong(groupId));
+        }
+        return conversation;
+    }
+
     static Conversation getConversation(JSONObject params) throws JSONException {
         String type = params.getString("type");
         Conversation conversation = null;

@@ -13,7 +13,6 @@ import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CordovaWebView;
-import org.apache.cordova.PermissionHelper;
 import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -47,6 +46,7 @@ import cn.jpush.im.android.api.content.LocationContent;
 import cn.jpush.im.android.api.content.TextContent;
 import cn.jpush.im.android.api.content.VoiceContent;
 import cn.jpush.im.android.api.enums.ContentType;
+import cn.jpush.im.android.api.event.ChatRoomMessageEvent;
 import cn.jpush.im.android.api.event.CommandNotificationEvent;
 import cn.jpush.im.android.api.event.ContactNotifyEvent;
 import cn.jpush.im.android.api.event.ConversationRefreshEvent;
@@ -76,17 +76,17 @@ public class JMessagePlugin extends CordovaPlugin {
 
     private static String TAG = JMessagePlugin.class.getSimpleName();
 
-    private static final int ERR_CODE_PARAMETER = 1;
-    private static final int ERR_CODE_CONVERSATION = 2;
-    private static final int ERR_CODE_MESSAGE = 3;
-    private static final int ERR_CODE_FILE = 4;
-    private static final int ERR_CODE_PERMISSION = 5;
+    static final int ERR_CODE_PARAMETER = 1;
+    static final int ERR_CODE_CONVERSATION = 2;
+    static final int ERR_CODE_MESSAGE = 3;
+    static final int ERR_CODE_FILE = 4;
+    static final int ERR_CODE_PERMISSION = 5;
 
-    private static final String ERR_MSG_PARAMETER = "Parameters error";
-    private static final String ERR_MSG_CONVERSATION = "Can't get the conversation";
-    private static final String ERR_MSG_MESSAGE = "No such message";
-    private static final String ERR_MSG_FILE = "Not find the file";
-    private static final String ERR_MSG_PERMISSION_WRITE_EXTERNAL_STORAGE = "Do not have 'WRITE_EXTERNAL_STORAGE' permission";
+    static final String ERR_MSG_PARAMETER = "Parameters error";
+    static final String ERR_MSG_CONVERSATION = "Can't get the conversation";
+    static final String ERR_MSG_MESSAGE = "No such message";
+    static final String ERR_MSG_FILE = "Not find the file";
+    static final String ERR_MSG_PERMISSION_WRITE_EXTERNAL_STORAGE = "Do not have 'WRITE_EXTERNAL_STORAGE' permission";
 
     private Activity mCordovaActivity;
 
@@ -490,7 +490,7 @@ public class JMessagePlugin extends CordovaPlugin {
         try {
             JSONObject params = data.getJSONObject(0);
 
-            conversation = JMessageUtils.getConversation(params);
+            conversation = JMessageUtils.createConversation(params);
             if (conversation == null) {
                 handleResult(ERR_CODE_CONVERSATION, ERR_MSG_CONVERSATION, callback);
                 return;
@@ -520,7 +520,7 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     void sendImageMessage(JSONArray data, CallbackContext callback) {
-        boolean hasPermission = PermissionHelper.hasPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        boolean hasPermission = cordova.hasPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (!hasPermission) {
             handleResult(ERR_CODE_PERMISSION, ERR_MSG_PERMISSION_WRITE_EXTERNAL_STORAGE, callback);
             return;
@@ -534,7 +534,7 @@ public class JMessagePlugin extends CordovaPlugin {
         try {
             JSONObject params = data.getJSONObject(0);
 
-            conversation = JMessageUtils.getConversation(params);
+            conversation = JMessageUtils.createConversation(params);
             if (conversation == null) {
                 handleResult(ERR_CODE_CONVERSATION, ERR_MSG_CONVERSATION, callback);
                 return;
@@ -573,7 +573,7 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     void sendVoiceMessage(JSONArray data, CallbackContext callback) {
-        boolean hasPermission = PermissionHelper.hasPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        boolean hasPermission = cordova.hasPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (!hasPermission) {
             handleResult(ERR_CODE_PERMISSION, ERR_MSG_PERMISSION_WRITE_EXTERNAL_STORAGE, callback);
             return;
@@ -587,7 +587,7 @@ public class JMessagePlugin extends CordovaPlugin {
         try {
             JSONObject params = data.getJSONObject(0);
 
-            conversation = JMessageUtils.getConversation(params);
+            conversation = JMessageUtils.createConversation(params);
             if (conversation == null) {
                 handleResult(ERR_CODE_CONVERSATION, ERR_MSG_CONVERSATION, callback);
                 return;
@@ -632,7 +632,7 @@ public class JMessagePlugin extends CordovaPlugin {
         try {
             JSONObject params = data.getJSONObject(0);
 
-            Conversation conversation = JMessageUtils.getConversation(params);
+            Conversation conversation = JMessageUtils.createConversation(params);
             if (conversation == null) {
                 handleResult(ERR_CODE_CONVERSATION, ERR_MSG_CONVERSATION, callback);
                 return;
@@ -665,7 +665,7 @@ public class JMessagePlugin extends CordovaPlugin {
         try {
             JSONObject params = data.getJSONObject(0);
 
-            conversation = JMessageUtils.getConversation(params);
+            conversation = JMessageUtils.createConversation(params);
             if (conversation == null) {
                 handleResult(ERR_CODE_CONVERSATION, ERR_MSG_CONVERSATION, callback);
                 return;
@@ -698,7 +698,7 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     void sendFileMessage(JSONArray data, CallbackContext callback) {
-        boolean hasPermission = PermissionHelper.hasPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        boolean hasPermission = cordova.hasPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (!hasPermission) {
             handleResult(ERR_CODE_PERMISSION, ERR_MSG_PERMISSION_WRITE_EXTERNAL_STORAGE, callback);
             return;
@@ -712,7 +712,7 @@ public class JMessagePlugin extends CordovaPlugin {
         try {
             JSONObject params = data.getJSONObject(0);
 
-            conversation = JMessageUtils.getConversation(params);
+            conversation = JMessageUtils.createConversation(params);
             if (conversation == null) {
                 handleResult(ERR_CODE_CONVERSATION, ERR_MSG_CONVERSATION, callback);
                 return;
@@ -852,9 +852,13 @@ public class JMessagePlugin extends CordovaPlugin {
 
         List<Message> messageList;
 
-        if (limit == -1) {
-            int messageCount = conversation.getAllMessage().size() - from;
-            messageList = conversation.getMessagesFromNewest(from, messageCount);
+        if (limit == -1) {  // 意味着要获得从 from 开始的所有消息。
+            if (from == 0) {
+                messageList = conversation.getAllMessage();
+            } else {
+                int messageCount = conversation.getAllMessage().size() - from;
+                messageList = conversation.getMessagesFromNewest(from, messageCount);
+            }
         } else {
             messageList = conversation.getMessagesFromNewest(from, limit);
         }
@@ -1727,7 +1731,6 @@ public class JMessagePlugin extends CordovaPlugin {
                     public void gotResult(int status, String desc, UserInfo userInfo) {
                         if (status == 0) {
                             userInfo.setNoDisturb(isNoDisturb, new BasicCallback() {
-
                                 @Override
                                 public void gotResult(int status, String desc) {
                                     handleResult(status, desc, callback);
@@ -1982,6 +1985,46 @@ public class JMessagePlugin extends CordovaPlugin {
 
     // 聊天会话 - end
 
+    // 聊天室 - start
+
+    void getChatroomInfoOfApp(JSONArray data, CallbackContext callback) {
+        ChatroomHandler.getChatroomInfoOfApp(data, callback);
+    }
+
+    void getChatroomInfoOfUser(JSONArray data, CallbackContext callback) {
+        ChatroomHandler.getChatroomInfoOfUser(data, callback);
+    }
+
+    void getChatroomInfoById(JSONArray data, CallbackContext callback) {
+        ChatroomHandler.getChatroomInfoById(data, callback);
+    }
+
+    void enterChatroom(JSONArray data, CallbackContext callback) {
+        ChatroomHandler.enterChatroom(data, callback);
+    }
+
+    void exitChatroom(JSONArray data, CallbackContext callback) {
+        ChatroomHandler.exitChatroom(data, callback);
+    }
+
+    void getChatroomConversation(JSONArray data, CallbackContext callback) {
+        ChatroomHandler.getChatroomConversation(data, callback);
+    }
+
+    void getChatroomConversationList(JSONArray data, CallbackContext callback) {
+        ChatroomHandler.getChatroomConversationList(data, callback);
+    }
+
+    void createChatroomConversation(JSONArray data, CallbackContext callback) {
+        ChatroomHandler.createChatroomConversation(data, callback);
+    }
+
+    void deleteChatroomConversation(JSONArray data, CallbackContext callback) {
+        ChatroomHandler.deleteChatroomConversation(data, callback);
+    }
+
+    // 聊天室 - end
+
     // 事件处理 - start
 
     /**
@@ -1990,7 +2033,9 @@ public class JMessagePlugin extends CordovaPlugin {
      * @param event 消息事件。
      */
     public void onEvent(MessageEvent event) {
-        eventSuccess(toJson("receiveMessage", toJson(event.getMessage())));
+        JSONObject msgJson = toJson(event.getMessage());
+        JSONObject eventJson = toJson("receiveMessage", msgJson);
+        eventSuccess(eventJson);
     }
 
     /**
@@ -1999,14 +2044,14 @@ public class JMessagePlugin extends CordovaPlugin {
      * @param event 通知栏点击事件。
      */
     public void onEvent(NotificationClickEvent event) {
-        eventSuccess(toJson("clickMessageNotification", toJson(event.getMessage())));
-
         // 点击通知启动应用。
         Intent launch = mCordovaActivity.getApplicationContext().getPackageManager()
                 .getLaunchIntentForPackage(mCordovaActivity.getApplicationContext().getPackageName());
         launch.addCategory(Intent.CATEGORY_LAUNCHER);
         launch.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         mCordovaActivity.getApplicationContext().startActivity(launch);
+
+        eventSuccess(toJson("clickMessageNotification", toJson(event.getMessage())));
     }
 
     /**
@@ -2060,7 +2105,9 @@ public class JMessagePlugin extends CordovaPlugin {
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }
-                                    eventSuccess(toJson("syncOfflineMessage", json));
+
+                                    JSONObject eventJson = toJson("syncOfflineMessage", json);
+                                    eventSuccess(eventJson);
                                 }
                             }
                         });
@@ -2078,7 +2125,9 @@ public class JMessagePlugin extends CordovaPlugin {
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }
-                                    eventSuccess(toJson("syncOfflineMessage", json));
+
+                                    JSONObject eventJson = toJson("syncOfflineMessage", json);
+                                    eventSuccess(eventJson);
                                 }
                             }
                         });
@@ -2088,8 +2137,13 @@ public class JMessagePlugin extends CordovaPlugin {
         }
     }
 
+    private boolean mHasRoamingMsgListener;
+    private List<JSONObject> mRoamingMessageCache;
+
     /**
      * 漫游消息同步事件。
+     * <p>
+     * 因为漫游消息同步事件在调用 init 方法后即会触发，因此添加缓存。
      *
      * @param event 漫游消息同步事件。
      */
@@ -2097,7 +2151,32 @@ public class JMessagePlugin extends CordovaPlugin {
         if (event.getReason() == ConversationRefreshEvent.Reason.MSG_ROAMING_COMPLETE) {
             JSONObject json = new JSONObject();
             json.put("conversation", toJson(event.getConversation()));
-            eventSuccess(toJson("syncRoamingMessage", json));
+
+            JSONObject eventJson = toJson("syncRoamingMessage", json);
+
+            if (!mHasRoamingMsgListener) {
+                if (mRoamingMessageCache == null) {
+                    mRoamingMessageCache = new ArrayList<JSONObject>();
+                }
+                mRoamingMessageCache.add(eventJson);
+
+            } else if (mRoamingMessageCache == null) {    // JS 已添加监听事件，没有缓存，直接触发事件。
+                eventSuccess(eventJson);
+            }
+        }
+    }
+
+    /**
+     * JS 层传入漫游消息同步事件监听。
+     */
+    void addSyncRoamingMessageListener(JSONArray data, CallbackContext callback) {
+        mHasRoamingMsgListener = true;
+
+        if (mRoamingMessageCache != null) { // 触发缓存
+            for (JSONObject json : mRoamingMessageCache) {
+                eventSuccess(json);
+            }
+            mRoamingMessageCache = null;
         }
     }
 
@@ -2109,7 +2188,9 @@ public class JMessagePlugin extends CordovaPlugin {
     public void onEvent(LoginStateChangeEvent event) throws JSONException {
         JSONObject json = new JSONObject();
         json.put("type", event.getReason());
-        eventSuccess(toJson("loginStateChanged", json));
+
+        JSONObject eventJson = toJson("loginStateChanged", json);
+        eventSuccess(eventJson);
     }
 
     /**
@@ -2123,7 +2204,9 @@ public class JMessagePlugin extends CordovaPlugin {
         json.put("reason", event.getReason());
         json.put("fromUsername", event.getFromUsername());
         json.put("fromUserAppKey", event.getfromUserAppKey());
-        eventSuccess(toJson("contactNotify", json));
+
+        JSONObject eventJson = toJson("contactNotify", json);
+        eventSuccess(eventJson);
     }
 
     /**
@@ -2135,7 +2218,9 @@ public class JMessagePlugin extends CordovaPlugin {
         JSONObject json = new JSONObject();
         json.put("conversation", toJson(event.getConversation()));
         json.put("retractedMessage", toJson(event.getRetractedMessage()));
-        eventSuccess(toJson("retractMessage", json));
+
+        JSONObject eventJson = toJson("retractMessage", json);
+        eventSuccess(eventJson);
     }
 
     /**
@@ -2183,10 +2268,25 @@ public class JMessagePlugin extends CordovaPlugin {
                         }
                     }
 
-                    eventSuccess(toJson("", result));
+                    JSONObject eventJson = toJson("receiveTransCommand", result);
+                    eventSuccess(eventJson);
                 }
             }
         });
+    }
+
+    /**
+     * 处理聊天室消息事件。
+     */
+    public void onEvent(ChatRoomMessageEvent event) {
+        JSONArray jsonArr = new JSONArray();
+
+        for (Message msg : event.getMessages()) {
+            jsonArr.put(toJson(msg));
+        }
+
+        JSONObject eventJson = toJson("receiveChatroomMessage", jsonArr);
+        mCallback.success(eventJson);
     }
 
     private void eventSuccess(JSONObject value) {
