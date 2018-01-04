@@ -1002,11 +1002,6 @@ var JMessagePlugin = {
     if (handlerIndex >= 0) {
       EventHandlers.receiveTransCommand.splice(handlerIndex, 1)
     }
-  },
-  dispatchEvent: function (event) {
-    event = JSON.stringify(event)
-    event = JSON.parse(event)
-    cordova.fireDocumentEvent(event.name, event.content)
   }
 
   // 事件监听 - end

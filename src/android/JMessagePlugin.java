@@ -494,7 +494,7 @@ public class JMessagePlugin extends CordovaPlugin {
         try {
             JSONObject params = data.getJSONObject(0);
 
-            conversation = JMessageUtils.getConversation(params);
+            conversation = JMessageUtils.createConversation(params);
             if (conversation == null) {
                 handleResult(ERR_CODE_CONVERSATION, ERR_MSG_CONVERSATION, callback);
                 return;
@@ -538,7 +538,7 @@ public class JMessagePlugin extends CordovaPlugin {
         try {
             JSONObject params = data.getJSONObject(0);
 
-            conversation = JMessageUtils.getConversation(params);
+            conversation = JMessageUtils.createConversation(params);
             if (conversation == null) {
                 handleResult(ERR_CODE_CONVERSATION, ERR_MSG_CONVERSATION, callback);
                 return;
@@ -591,7 +591,7 @@ public class JMessagePlugin extends CordovaPlugin {
         try {
             JSONObject params = data.getJSONObject(0);
 
-            conversation = JMessageUtils.getConversation(params);
+            conversation = JMessageUtils.createConversation(params);
             if (conversation == null) {
                 handleResult(ERR_CODE_CONVERSATION, ERR_MSG_CONVERSATION, callback);
                 return;
@@ -636,7 +636,7 @@ public class JMessagePlugin extends CordovaPlugin {
         try {
             JSONObject params = data.getJSONObject(0);
 
-            Conversation conversation = JMessageUtils.getConversation(params);
+            Conversation conversation = JMessageUtils.createConversation(params);
             if (conversation == null) {
                 handleResult(ERR_CODE_CONVERSATION, ERR_MSG_CONVERSATION, callback);
                 return;
@@ -669,7 +669,7 @@ public class JMessagePlugin extends CordovaPlugin {
         try {
             JSONObject params = data.getJSONObject(0);
 
-            conversation = JMessageUtils.getConversation(params);
+            conversation = JMessageUtils.createConversation(params);
             if (conversation == null) {
                 handleResult(ERR_CODE_CONVERSATION, ERR_MSG_CONVERSATION, callback);
                 return;
@@ -716,7 +716,7 @@ public class JMessagePlugin extends CordovaPlugin {
         try {
             JSONObject params = data.getJSONObject(0);
 
-            conversation = JMessageUtils.getConversation(params);
+            conversation = JMessageUtils.createConversation(params);
             if (conversation == null) {
                 handleResult(ERR_CODE_CONVERSATION, ERR_MSG_CONVERSATION, callback);
                 return;
@@ -856,9 +856,13 @@ public class JMessagePlugin extends CordovaPlugin {
 
         List<Message> messageList;
 
-        if (limit == -1) {
-            int messageCount = conversation.getAllMessage().size() - from;
-            messageList = conversation.getMessagesFromNewest(from, messageCount);
+        if (limit == -1) {  // 意味着要获得从 from 开始的所有消息。
+            if (from == 0) {
+                messageList = conversation.getAllMessage();
+            } else {
+                int messageCount = conversation.getAllMessage().size() - from;
+                messageList = conversation.getMessagesFromNewest(from, messageCount);
+            }
         } else {
             messageList = conversation.getMessagesFromNewest(from, limit);
         }
@@ -2036,9 +2040,6 @@ public class JMessagePlugin extends CordovaPlugin {
         JSONObject msgJson = toJson(event.getMessage());
         JSONObject eventJson = toJson("receiveMessage", msgJson);
         eventSuccess(eventJson);
-
-        // 触发 document 事件。
-        fireDocumentEvent("jmessage.receiveMessage", eventJson);
     }
 
     /**
@@ -2054,9 +2055,7 @@ public class JMessagePlugin extends CordovaPlugin {
         launch.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         mCordovaActivity.getApplicationContext().startActivity(launch);
 
-        JSONObject eventJson = toJson("clickMessageNotification", toJson(event.getMessage()));
-        eventSuccess(eventJson);
-        fireDocumentEvent("jmessage.clickMessageNotification", eventJson);
+        eventSuccess(toJson("clickMessageNotification", toJson(event.getMessage())));
     }
 
     /**
@@ -2086,10 +2085,7 @@ public class JMessagePlugin extends CordovaPlugin {
                 msgJsonArr.put(toJson(msg));
             }
             json.put("messageArray", msgJsonArr);
-
-            JSONObject eventJson = toJson("syncOfflineMessage", json);
-            eventSuccess(eventJson);
-            fireDocumentEvent("jmessage.syncOfflineMessage", eventJson);
+            eventSuccess(toJson("syncOfflineMessage", json));
 
         } else {
             final int fLatestMediaMessageIndex = latestMediaMessageIndex;
@@ -2116,7 +2112,6 @@ public class JMessagePlugin extends CordovaPlugin {
 
                                     JSONObject eventJson = toJson("syncOfflineMessage", json);
                                     eventSuccess(eventJson);
-                                    fireDocumentEvent("jmessage.syncOfflineMessage", eventJson);
                                 }
                             }
                         });
@@ -2137,7 +2132,6 @@ public class JMessagePlugin extends CordovaPlugin {
 
                                     JSONObject eventJson = toJson("syncOfflineMessage", json);
                                     eventSuccess(eventJson);
-                                    fireDocumentEvent("jmessage.syncOfflineMessage", eventJson);
                                 }
                             }
                         });
@@ -2163,8 +2157,6 @@ public class JMessagePlugin extends CordovaPlugin {
             json.put("conversation", toJson(event.getConversation()));
 
             JSONObject eventJson = toJson("syncRoamingMessage", json);
-            // document 事件无法处理缓存，所以直接触发。
-            fireDocumentEvent("jmessage.syncRoamingMessage", eventJson);
 
             if (!mHasRoamingMsgListener) {
                 if (mRoamingMessageCache == null) {
@@ -2203,7 +2195,6 @@ public class JMessagePlugin extends CordovaPlugin {
 
         JSONObject eventJson = toJson("loginStateChanged", json);
         eventSuccess(eventJson);
-        fireDocumentEvent("jmessage.loginStateChanged", eventJson);
     }
 
     /**
@@ -2220,7 +2211,6 @@ public class JMessagePlugin extends CordovaPlugin {
 
         JSONObject eventJson = toJson("contactNotify", json);
         eventSuccess(eventJson);
-        fireDocumentEvent("jmessage.contactNotify", eventJson);
     }
 
     /**
@@ -2235,7 +2225,6 @@ public class JMessagePlugin extends CordovaPlugin {
 
         JSONObject eventJson = toJson("retractMessage", json);
         eventSuccess(eventJson);
-        fireDocumentEvent("jmessage.retractMessage", eventJson);
     }
 
     /**
@@ -2285,7 +2274,6 @@ public class JMessagePlugin extends CordovaPlugin {
 
                     JSONObject eventJson = toJson("receiveTransCommand", result);
                     eventSuccess(eventJson);
-                    fireDocumentEvent("jmessage.receiveTransCommand", eventJson);
                 }
             }
         });
@@ -2303,37 +2291,12 @@ public class JMessagePlugin extends CordovaPlugin {
 
         JSONObject eventJson = toJson("receiveChatroomMessage", jsonArr);
         mCallback.success(eventJson);
-
-        fireDocumentEvent("jmessage.receiveTransCommand", eventJson);
     }
 
     private void eventSuccess(JSONObject value) {
         PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, value);
         pluginResult.setKeepCallback(true);
         mCallback.sendPluginResult(pluginResult);
-    }
-
-    /**
-     * 触发 JS 层的 document 事件分发函数。
-     * @param eventJson 事件的 json 对象。
-     */
-    private void fireDocumentEvent(String eventName, JSONObject eventJson) {
-        JSONObject documentEventJson = new JSONObject();
-        try {
-            documentEventJson.put("name", eventName);
-            documentEventJson.put("content", eventJson);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        String format = "window.JMessage.dispatchEvent(%s);";
-        final String js = String.format(format, documentEventJson.toString());
-        cordova.getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                webView.loadUrl("javascript:" + js);
-            }
-        });
     }
 
     // 事件处理 - end
