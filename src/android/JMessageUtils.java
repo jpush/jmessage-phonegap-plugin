@@ -107,21 +107,6 @@ class JMessageUtils {
         JMessageClient.getUserInfo(username, appKey, callback);
     }
 
-    static void updateMyInfo(UserInfo.Field field, UserInfo myInfo, final int count, final CallbackContext callback) {
-        JMessageClient.updateMyInfo(field, myInfo, new BasicCallback() {
-          @Override
-          public void gotResult(int status, String desc) {
-              if (count != 0) {  // 还有参数要更新，只执行错误回调。
-                  if (status != 0) {
-                      handleResult(status, desc, callback);
-                  }
-              } else {   // 最后一个要修改的参数，可以响应成功回调。
-                  handleResult(status, desc, callback);
-              }
-          }
-        });
-    }
-
     /**
      * 创建会话对象，如果本地以及存在，则直接返回而不会重新创建。
      */
@@ -137,7 +122,12 @@ class JMessageUtils {
         } else if (type.equals("group")) {
             String groupId = params.getString("groupId");
             conversation = Conversation.createGroupConversation(Long.parseLong(groupId));
+
+        } else if (type.equals("chatroom")) {
+            long roomId = params.getLong("roomId");
+            conversation = Conversation.createChatRoomConversation(roomId);
         }
+
         return conversation;
     }
 
@@ -153,7 +143,11 @@ class JMessageUtils {
         } else if (type.equals("group")) {
             String groupId = params.getString("groupId");
             conversation = JMessageClient.getGroupConversation(Long.parseLong(groupId));
+        } else if (type.equals("chatroom")) {
+            long roomId = params.getLong("roomId");
+            conversation = JMessageClient.getChatRoomConversation(roomId);
         }
+
         return conversation;
     }
 
@@ -216,6 +210,7 @@ class JMessageUtils {
 
     /**
      * 根据绝对路径或 URI 获得本地图片。
+     *
      * @param path 文件路径或者 URI。
      * @return 文件对象。
      */

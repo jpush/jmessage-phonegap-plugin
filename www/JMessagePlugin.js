@@ -842,20 +842,41 @@ var JMessagePlugin = {
   /**
    * 获取聊天室会话信息。
    * 
-   * @param {*} params = { roomId: number }
-   * @param {*} success = function (conversation) {}
+   * @param {object} params = { roomId: number }
+   * @param {function} success = function (conversation) {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   getChatroomConversation(params, success, error) {
     exec(success, error, PLUGIN_NAME, 'getChatroomConversation', [params])
   },
   /**
+   * 获得当前用户的所有聊天室会话列表。
    * 
-   * @param {*} success = function (conversationArr) {} // 以参数形式返回会话对象数组。
+   * @param {function} success = function (conversationArr) {} // 以参数形式返回会话对象数组。
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   getChatroomConversationList(success, error) {
     exec(success, error, PLUGIN_NAME, 'getChatroomConversationList', [])
+  },
+  /**
+   * 创建聊天室会话。
+   * 
+   * @param {object} params = { roomId: number }
+   * @param {function} success = function (conversation) {}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  createChatroomConversation(params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'createChatroomConversation', [])
+  },
+  /**
+   * 删除聊天室会话，同时删除掉本地相关缓存。
+   * 
+   * @param {object} params = { roomId: number }
+   * @param {function} success = function (conversation) {}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  deleteChatroomConversation(params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'deleteChatroomConversation', [])
   },
 
   // 聊天室 - end

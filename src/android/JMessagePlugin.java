@@ -13,6 +13,7 @@ import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CordovaWebView;
+import org.apache.cordova.PermissionHelper;
 import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -22,6 +23,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -303,26 +305,18 @@ public class JMessagePlugin extends CordovaPlugin {
 
         try {
             JSONObject params = data.getJSONObject(0);
-            int count = params.length();
 
             if (params.has("birthday")) {
-                myInfo.setBirthday(params.getLong("birthday"));
+                long birthday = params.getLong("birthday");
+                myInfo.setBirthday(birthday);
             }
 
             if (params.has("nickname")) {
                 myInfo.setNickname(params.getString("nickname"));
-                if (myInfo.getBirthday() == 0) {    // 防止注册用户时 birthday 默认为 0，导致最后更新用户所有信息时出错。
-                    count--;
-                    JMessageUtils.updateMyInfo(UserInfo.Field.nickname, myInfo, count, callback);
-                }
             }
 
             if (params.has("signature")) {
                 myInfo.setSignature(params.getString("signature"));
-                if (myInfo.getBirthday() == 0) {
-                    count--;
-                    JMessageUtils.updateMyInfo(UserInfo.Field.signature, myInfo, count, callback);
-                }
             }
 
             if (params.has("gender")) {
@@ -333,36 +327,19 @@ public class JMessagePlugin extends CordovaPlugin {
                 } else {
                     myInfo.setGender(UserInfo.Gender.unknown);
                 }
-
-                if (myInfo.getBirthday() == 0) {
-                    count--;
-                    JMessageUtils.updateMyInfo(UserInfo.Field.gender, myInfo, count, callback);
-                }
             }
 
             if (params.has("region")) {
                 myInfo.setRegion(params.getString("region"));
-                if (myInfo.getBirthday() == 0) {
-                    count--;
-                    JMessageUtils.updateMyInfo(UserInfo.Field.region, myInfo, count, callback);
-                }
             }
 
             if (params.has("address")) {
                 myInfo.setAddress(params.getString("address"));
-                if (myInfo.getBirthday() == 0) {
-                    count--;
-                    JMessageUtils.updateMyInfo(UserInfo.Field.address, myInfo, count, callback);
-                }
             }
 
             if (params.has("extras")) {
                 Map<String, String> extras = fromJson(params.getJSONObject("extras"));
                 myInfo.setUserExtras(extras);
-                if (myInfo.getBirthday() == 0) {
-                    count--;
-                    JMessageUtils.updateMyInfo(UserInfo.Field.extras, myInfo, count, callback);
-                }
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -370,14 +347,16 @@ public class JMessagePlugin extends CordovaPlugin {
             return;
         }
 
-        if (myInfo.getBirthday() != 0) {
-            JMessageClient.updateMyInfo(UserInfo.Field.all, myInfo, new BasicCallback() {
-                @Override
-                public void gotResult(int status, String desc) {
-                    handleResult(status, desc, callback);
-                }
-            });
-        }
+        // 这里是为了规避 SDK 中的一个 bug，在 SDK bug 修复后会删除。
+        if (myInfo.getBirthday() == 0)
+            myInfo.setBirthday(0);
+
+        JMessageClient.updateMyInfo(UserInfo.Field.all, myInfo, new BasicCallback() {
+            @Override
+            public void gotResult(int status, String desc) {
+                handleResult(status, desc, callback);
+            }
+        });
     }
 
     void downloadThumbUserAvatar(JSONArray data, final CallbackContext callback) {
@@ -520,7 +499,7 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     void sendImageMessage(JSONArray data, CallbackContext callback) {
-        boolean hasPermission = cordova.hasPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        boolean hasPermission = PermissionHelper.hasPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (!hasPermission) {
             handleResult(ERR_CODE_PERMISSION, ERR_MSG_PERMISSION_WRITE_EXTERNAL_STORAGE, callback);
             return;
@@ -573,7 +552,7 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     void sendVoiceMessage(JSONArray data, CallbackContext callback) {
-        boolean hasPermission = cordova.hasPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        boolean hasPermission = PermissionHelper.hasPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (!hasPermission) {
             handleResult(ERR_CODE_PERMISSION, ERR_MSG_PERMISSION_WRITE_EXTERNAL_STORAGE, callback);
             return;
@@ -698,7 +677,7 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     void sendFileMessage(JSONArray data, CallbackContext callback) {
-        boolean hasPermission = cordova.hasPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        boolean hasPermission = PermissionHelper.hasPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (!hasPermission) {
             handleResult(ERR_CODE_PERMISSION, ERR_MSG_PERMISSION_WRITE_EXTERNAL_STORAGE, callback);
             return;
