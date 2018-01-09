@@ -21,6 +21,13 @@ JMSG_ASSUME_NONNULL_BEGIN
  */
 @property(nonatomic, copy, readonly) NSString *fileName;
 
+/*!
+ * @abstract 文件格式
+ *
+ * 注意：格式后缀不需要带点，只需后缀名，如：pdf、doc 等
+ */
+@property(nonatomic, strong) NSString * JMSG_NULLABLE format;
+
 // 不支持使用的初始化方法
 - (nullable instancetype)init NS_UNAVAILABLE;
 

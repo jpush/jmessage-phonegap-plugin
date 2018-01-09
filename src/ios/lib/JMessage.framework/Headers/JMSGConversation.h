@@ -73,6 +73,15 @@ JMSG_ASSUME_NONNULL_BEGIN
 + (JMSGConversation * JMSG_NULLABLE)groupConversationWithGroupId:(NSString *)groupId;
 
 /*!
+ * @abstract 获取聊天室会话
+ *
+ * @param roomId 聊天室 ID
+ *
+ * @discussion 如果会话还不存在，则返回 nil
+ */
++ (JMSGConversation * JMSG_NULLABLE)chatRoomConversationWithRoomId:(NSString *)roomId;
+
+/*!
  * @abstract 创建单聊会话
  *
  * @param username 单聊对象 username
@@ -106,6 +115,19 @@ JMSG_ASSUME_NONNULL_BEGIN
                          completionHandler:(JMSGCompletionHandler JMSG_NULLABLE)handler;
 
 /*!
+ * @abstract 创建聊天室会话
+ *
+ * @param roomId  聊天室 ID。
+ * @param handler 结果回调。正常返回时 resultObject 类型为 JMSGConversation。
+ *
+ * @discussion 如果会话已经存在，则直接返回。如果不存在则创建。
+ * 创建会话时如果发现该 roomId 的信息本地还没有，则需要从服务器端上拉取。
+ * 如果从服务器上获取 roomId 的信息不存在或者失败，则创建会话失败。
+ */
++ (void)createChatRoomConversationWithRoomId:(NSString *)roomId
+                           completionHandler:(JMSGCompletionHandler JMSG_NULLABLE)handler;
+
+/*!
  * @abstract 删除单聊会话
  *
  * @param username 单聊用户名
@@ -130,13 +152,20 @@ JMSG_ASSUME_NONNULL_BEGIN
 + (BOOL)deleteGroupConversationWithGroupId:(NSString *)groupId;
 
 /*!
+ * @abstract 删除聊天室会话
+ *
+ * @param roomId  聊天室 ID
+ *
+ * @discussion 除了删除会话本身，还会删除该会话下所有的聊天消息。
+ */
++ (BOOL)deleteChatRoomConversationWithRoomId:(NSString *)roomId;
+
+/*!
  * @abstract 返回 conversation 列表（异步,已排序）
  *
  * @param handler 结果回调。正常返回时 resultObject 的类型为 NSArray，数组里成员的类型为 JMSGConversation
  *
- * @discussion 当前是返回所有的 conversation 列表，默认是已经排序。
- * 我们设计上充分考虑到性能问题，数据库无关联表查询，性能应该不会差。
- * 但考虑到潜在的性能问题可能，此接口还是异步返回
+ * @discussion 当前是返回所有的 conversation 列表，不包括聊天室会话，默认是已经排序。
  */
 + (void)allConversations:(JMSGCompletionHandler)handler;
 
@@ -145,9 +174,18 @@ JMSG_ASSUME_NONNULL_BEGIN
  *
  * @param handler 结果回调。正常返回时 resultObject 的类型为 NSArray，数组里成员的类型为 JMSGConversation
  *
- * @discussion 返回所有的 conversation 列表，返回是没有排序的列表。
+ * @discussion 返回所有的 conversation 列表，不包括聊天室会话，返回是没有排序的列表。
  */
 + (void)allUnsortedConversations:(JMSGCompletionHandler)handler;
+
+/*!
+ * @abstract 返回聊天室 conversation 列表（异步,已排序）
+ *
+ * @param handler 结果回调。正常返回时 resultObject 的类型为 NSArray，数组里成员的类型为 JMSGConversation
+ *
+ * @discussion 当前是返回所有的chatroom conversation 列表，不包括单聊和群聊会话，默认是已经排序。
+ */
++ (void)allChatRoomConversation:(JMSGCompletionHandler)handler;
 
 /*!
  * @abstract 获取当前所有会话的未读消息的总数
@@ -190,7 +228,7 @@ JMSG_ASSUME_NONNULL_BEGIN
 ///--------------------------------------------------------
 
 /*!
- * @abstract 会话类型 - 单聊，群聊
+ * @abstract 会话类型 - 单聊，群聊，聊天室
  * @discussion 详细定义见 JMSGConversationType
  */
 @property(nonatomic, assign, readonly) JMSGConversationType conversationType;
@@ -198,12 +236,12 @@ JMSG_ASSUME_NONNULL_BEGIN
 /*!
  * @abstract 聊天对象
  *
- * @discussion 需要根据会话类型转型。单聊时转型为 JMSGUser，群聊时转型为 JMSGGroup
+ * @discussion 需要根据会话类型转型。单聊时转型为 JMSGUser，群聊时转型为 JMSGGroup，聊天时转型为 JMSGChatRoom
  *
  *    注意: 在会话列表上, 请不要使用此属性, 否则有性能问题. 只在进入聊天界面(单个会话) 时使用此属性.
  *
  * 进入会话(聊天界面)后, 访问会话对象的各种信息, 包括群聊的群组成员, 都应使用此属性,
- * 而没有必要再通过接口查询 UserInfo / GroupInfo.
+ * 而没有必要再通过接口查询 UserInfo / GroupInfo / ChatRoomInfo.
  */
 @property(nonatomic, strong, readonly) id target;
 

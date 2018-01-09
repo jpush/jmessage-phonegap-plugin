@@ -2683,5 +2683,41 @@ NSMutableDictionary *_jmessageEventCache;
   }
 }
 
+// 聊天室 API
+- (void)getChatroomInfoOfApp:(CDVInvokedUrlCommand *)command {
+  
+}
+
+- (void)getChatroomInfoOfUser:(CDVInvokedUrlCommand *)command {
+  
+}
+
+- (void)getChatroomInfoById:(CDVInvokedUrlCommand *)command {
+  
+}
+
+- (void)enterChatroom:(CDVInvokedUrlCommand *)command {
+  
+}
+
+- (void)exitChatroom:(CDVInvokedUrlCommand *)command {
+  
+}
+
+- (void)getChatroomConversation:(CDVInvokedUrlCommand *)command {
+  
+}
+
+- (void)getChatroomConversationList:(CDVInvokedUrlCommand *)command {
+  
+}
+
+- (void)createChatroomConversation:(CDVInvokedUrlCommand *)command {
+  
+}
+
+- (void)deleteChatroomConversation:(CDVInvokedUrlCommand *)command {
+  
+}
 
 @end

@@ -27,6 +27,12 @@ JMSG_ASSUME_NONNULL_BEGIN
  */
 @property(nonatomic,strong, readonly) NSString *promptText;
 
+/*!
+ * @abstract 提示性消息的类型
+ *
+ * @discussion 比如：消息撤回提示、后台自定义消息提示等
+ */
+@property(nonatomic,assign, readonly) JMSGPromptContentType promptType;
 
 // 不支持使用的初始化方法
 - (instancetype)init NS_UNAVAILABLE;

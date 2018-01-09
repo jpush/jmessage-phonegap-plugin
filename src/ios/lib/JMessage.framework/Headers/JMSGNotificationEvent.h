@@ -73,6 +73,7 @@
 
 @end
 
+
 /*!
  * @abstract 消息透传事件
  */
@@ -89,3 +90,39 @@
 @property(nonatomic, strong, readonly) NSString *transparentText;
 
 @end
+
+
+/*!
+ * @abstract 申请入群事件
+ */
+@interface JMSGApplyJoinGroupEvent : JMSGNotificationEvent
+
+/// 事件的 id
+@property(nonatomic, strong, readonly) NSString *eventID;
+/// 群 gid
+@property(nonatomic, strong, readonly) NSString *groupID;
+/// 是否是用户主动申请入群，YES：主动申请加入，NO：被邀请加入
+@property(nonatomic, assign, readonly) BOOL isInitiativeApply;
+/// 发起申请的 user
+@property(nonatomic, strong, readonly) JMSGUser *sendApplyUser;
+/// 被邀请入群的 user 数组
+@property(nonatomic, strong, readonly) NSArray JMSG_GENERIC(__kindof JMSGUser *)*joinGroupUsers;
+/// 原因
+@property(nonatomic, strong, readonly) NSString *reason;
+
+@end
+
+/*!
+ * @abstract 管理员拒绝入群申请事件
+ */
+@interface JMSGGroupAdminRejectApplicationEvent : JMSGNotificationEvent
+
+/// 群 gid
+@property(nonatomic, strong, readonly) NSString *groupID;
+/// 拒绝原因
+@property(nonatomic, strong, readonly) NSString *rejectReason;
+/// 操作的管理员
+@property(nonatomic, strong, readonly) JMSGUser *groupManager;
+
+@end
+
