@@ -494,3 +494,33 @@
   return [NSString stringWithFormat:@"%@/Documents/%@", homeDir,path];
 }
 @end
+
+@implementation JMSGChatRoom (JMessage)
+- (NSMutableDictionary *)chatRoomToDictionary {
+  NSMutableDictionary *dict = @{}.mutableCopy;
+  dict[@"type"] = @"chatroom";
+  dict[@"roomId"] = self.roomID;
+  dict[@"name"] = self.name;
+  dict[@"appKey"] = self.appkey;
+  dict[@"description"] = self.description;
+  dict[@"createTime"] = self.ctime;
+  dict[@"maxMemberCount"] = @([self.maxMemberCount integerValue]);
+  dict[@"currentMemberCount"] = @(self.totalMemberCount);
+  
+  return dict;
+}
+@end
+
+
+
+@implementation NSArray (JMessage)
+
+- (NSArray *)mapObjectsUsingBlock:(id (^)(id obj, NSUInteger idx))block {
+  NSMutableArray *result = [NSMutableArray arrayWithCapacity:[self count]];
+  [self enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+    [result addObject:block(obj, idx)];
+  }];
+  return result;
+}
+
+@end
