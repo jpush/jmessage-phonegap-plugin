@@ -3,15 +3,15 @@ var exec = require('cordova/exec')
 var PLUGIN_NAME = 'JMessagePlugin'
 
 var EventHandlers = {
-  'receiveMessage': [],
-  'clickMessageNotification': [],
-  'syncOfflineMessage': [],
-  'syncRoamingMessage': [],
-  'loginStateChanged': [],
-  'contactNotify': [],
-  'retractMessage': [],
-  'receiveTransCommand': [], // 透传命令
-  'receiveChatroomMessage': []  // 聊天室消息
+  receiveMessage: [],
+  clickMessageNotification: [],
+  syncOfflineMessage: [],
+  syncRoamingMessage: [],
+  loginStateChanged: [],
+  contactNotify: [],
+  retractMessage: [],
+  receiveTransCommand: [], // 透传命令
+  receiveChatroomMessage: [] // 聊天室消息
 }
 
 var JMessagePlugin = {
@@ -163,16 +163,16 @@ var JMessagePlugin = {
 
   /**
    * 更新当前用户头像。
-   * 
+   *
    * @param {object} params = {
    *  id: string // 目标群组的 id。
    *  imgPath: string // 本地图片绝对路径。
-   * }  
+   * }
    * 注意 Android 与 iOS 的文件路径是不同的：
    *   - Android 类似：/storage/emulated/0/DCIM/Camera/IMG_20160526_130223.jpg
    *   - iOS 类似：/var/mobile/Containers/Data/Application/7DC5CDFF-6581-4AD3-B165-B604EBAB1250/tmp/photo.jpg
    */
-  updateGroupAvatar: function(params, success, error) {
+  updateGroupAvatar: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'updateGroupAvatar', [params])
   },
 
@@ -184,7 +184,7 @@ var JMessagePlugin = {
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   downloadThumbGroupAvatar: function (params, success, error) {
-      exec(success, error, PLUGIN_NAME, 'downloadThumbGroupAvatar', [params])
+    exec(success, error, PLUGIN_NAME, 'downloadThumbGroupAvatar', [params])
   },
 
   /**
@@ -195,7 +195,7 @@ var JMessagePlugin = {
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
   downloadOriginalGroupAvatar: function (params, success, error) {
-      exec(success, error, PLUGIN_NAME, 'downloadOriginalGroupAvatar', [params])
+    exec(success, error, PLUGIN_NAME, 'downloadOriginalGroupAvatar', [params])
   },
 
   /**
@@ -350,7 +350,7 @@ var JMessagePlugin = {
   },
   /**
    * 根据消息 id 获取消息对象。
-   * 
+   *
    * @param {object} params = {
    *   type: string,      // 'single' / 'group'
    *   groupId: string,   // 当 type = 'group' 时，groupId 必填。
@@ -364,7 +364,7 @@ var JMessagePlugin = {
   },
   /**
    * 根据消息 id 删除指定消息。
-   * 
+   *
    * @param {object} params 同上。
    */
   deleteMessageById: function (params, success, error) {
@@ -598,8 +598,8 @@ var JMessagePlugin = {
    * @param {object} params = { id: String }
    * @param {function} success = function ({ isBlocked: boolean }) {} // 以参数形式返回结果。
    */
-  isGroupBlocked: function(params, success, error) {
-      exec(success, error, PLUGIN_NAME, 'isGroupBlocked', [params])
+  isGroupBlocked: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'isGroupBlocked', [params])
   },
 
   /**
@@ -608,7 +608,7 @@ var JMessagePlugin = {
    * @param {function} success = function (groupArr) {} // 以参数形式返回结果。
    */
   getBlockedGroupList: function (success, error) {
-      exec(success, error, PLUGIN_NAME, 'getBlockedGroupList', [])
+    exec(success, error, PLUGIN_NAME, 'getBlockedGroupList', [])
   },
   /**
    * 判断指定群组是否被屏蔽。
@@ -647,6 +647,22 @@ var JMessagePlugin = {
    */
   downloadOriginalUserAvatar: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'downloadOriginalUserAvatar', [params])
+  },
+  /**
+   * 下载图片消息的缩略图，如果已下载，会直接返回本地文件路径，不会重复下载。
+   *
+   * @param {object} params = {
+   *  'type': string,            // 'single' / 'group'
+   *  'groupId': string,         // 目标群组 id。
+   *  'username': string,        // 目标用户名。
+   *  'appKey': string,          // 目标用户所属 AppKey。
+   *  'messageId': string        // 指定消息 id。
+   * }
+   * @param {function} success = function ({'messageId': string, 'filePath': string}) {}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  downloadThumbImage: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'downloadThumbImage', [params])
   },
   /**
    * 下载指定图片消息的原图，如果已经下载，会直接返回本地文件路径，不会重复下载。
@@ -785,100 +801,110 @@ var JMessagePlugin = {
   },
 
   // 聊天室 API - start
-
-  /**
-   * 获取当前应用所属聊天室的信息。
-   * @param {object} params = {
-   *  start: number,  // 索引起始位置，从 0 开始。
-   *  count: number   // 查询个数。
-   * }
-   * @param {function} success = function (chatroomInfoList) {}
-   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
-   */
-  getChatroomInfoOfApp(params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'getChatroomInfoOfApp', [params])
+  Chatroom: {
+    /**
+     * 获取当前应用所属聊天室的信息。
+     * @param {object} params = {
+     *  start: number,  // 索引起始位置，从 0 开始。
+     *  count: number   // 查询个数。
+     * }
+     * @param {function} success = function (chatroomInfoList) {}
+     * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+     */
+    getChatroomInfoListOfApp: function (params, success, error) {
+      exec(success, error, PLUGIN_NAME, 'getChatroomInfoListOfApp', [params])
+    },
+    /**
+     * 获取当前登录用户加入的聊天室列表。
+     *
+     * @param {function} success = function (chatroomInfoList) {}
+     * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+     */
+    getChatroomInfoListOfUser (success, error) {
+      exec(success, error, PLUGIN_NAME, 'getChatroomInfoListOfUser', [params])
+    },
+    /**
+     * 根据聊天室 id 获取聊天室信息。
+     *
+     * @param {object} params = {
+     *  roomIds: [String] // 聊天室 id 字符串数组。
+     * }
+     * @param {function} success = function (chatroomInfoList) {}
+     * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+     */
+    getChatroomInfoListById (params, success, error) {
+      exec(success, error, PLUGIN_NAME, 'getChatroomInfoListById', [params])
+    },
+    /**
+     * 获取聊天室拥有者的信息。
+     * 
+     * @param {*} params = { roomId: String } // 聊天室 id
+     * @param {function} success = function (userInfo) {}
+     * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+     */
+    getChatroomOwner (params, success, error) {
+      exec(success, error, PLUGIN_NAME, 'getChatroomOwner', [params])
+    },
+    /**
+     * 进入聊天室。
+     *
+     * @param {object} params = { roomId: String }
+     * @param {function} success = function (conversation) {}
+     * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+     */
+    enterChatroom (params, success, error) {
+      exec(success, error, PLUGIN_NAME, 'enterChatroom', [params])
+    },
+    /**
+     * 离开聊天室。
+     *
+     * @param {object} params = { roomId: String }
+     * @param {function} success = function () {}
+     * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+     */
+    exitChatroom (params, success, error) {
+      exec(success, error, PLUGIN_NAME, 'exitChatroom', [params])
+    },
+    /**
+     * 获取聊天室会话信息。如果无法返回
+     *
+     * @param {object} params = { roomId: String }
+     * @param {function} success = function (conversation) {}
+     * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+     */
+    getChatroomConversation (params, success, error) {
+      exec(success, error, PLUGIN_NAME, 'getChatroomConversation', [params])
+    },
+    /**
+     *
+     * @param {*} params
+     * @param {*} success
+     * @param {*} error
+     */
+    getChatroomConversationList (params, success, error) {
+      exec(success, error, PLUGIN_NAME, 'getChatroomConversationList', [params])
+    },
+    /**
+     * 创建聊天室会话。
+     *
+     * @param {object} params = { roomId: String }
+     * @param {function} success = function (conversation) {}
+     * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+     */
+    createChatroomConversation (params, success, error) {
+      exec(success, error, PLUGIN_NAME, 'createChatroomConversation', [params])
+    },
+    /**
+     * 删除聊天室会话，同时删除掉本地相关缓存。
+     *
+     * @param {object} params = { roomId: String }
+     * @param {function} success = function (conversation) {}
+     * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+     */
+    deleteChatroomConversation (params, success, error) {
+      exec(success, error, PLUGIN_NAME, 'deleteChatroomConversation', [params])
+    }
   },
-  /**
-   * 获取当前用户加入的聊天室列表。
-   *
-   * @param {function} success = function (chatroomInfoList) {}
-   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
-   */
-  getChatroomInfoOfUser(success, error) {
-    exec(success, error, PLUGIN_NAME, 'getChatroomInfoOfUser', [params])
-  },
-  /**
-   * 根据聊天室 id 查询聊天室信息
-   * 
-   * @param {object} params = {
-   *  roomIds: [number] // 聊天室 id 数组
-   * }
-   * @param {function} success = function (chatroomInfoList) {}
-   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
-   */
-  getChatroomInfoById(params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'getChatroomInfoById', [params])
-  },
-  /**
-   * 进入聊天室。
-   * 
-   * @param {object} params = { roomId: number }
-   * @param {function} success = function (chatroomInfoList) {}
-   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
-   */
-  enterChatroom(params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'enterChatroom', [params])
-  },
-  /**
-   * 离开聊天室。
-   * 
-   * @param {object} params = { roomId: number }
-   * @param {function} success = function () {}
-   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
-   */
-  exitChatroom(params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'exitChatroom', [params])
-  },
-  /**
-   * 获取聊天室会话信息。
-   * 
-   * @param {object} params = { roomId: number }
-   * @param {function} success = function (conversation) {}
-   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
-   */
-  getChatroomConversation(params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'getChatroomConversation', [params])
-  },
-  /**
-   * 获得当前用户的所有聊天室会话列表。
-   * 
-   * @param {function} success = function (conversationArr) {} // 以参数形式返回会话对象数组。
-   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
-   */
-  getChatroomConversationList(success, error) {
-    exec(success, error, PLUGIN_NAME, 'getChatroomConversationList', [])
-  },
-  /**
-   * 创建聊天室会话。
-   * 
-   * @param {object} params = { roomId: number }
-   * @param {function} success = function (conversation) {}
-   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
-   */
-  createChatroomConversation(params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'createChatroomConversation', [])
-  },
-  /**
-   * 删除聊天室会话，同时删除掉本地相关缓存。
-   * 
-   * @param {object} params = { roomId: number }
-   * @param {function} success = function (conversation) {}
-   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
-   */
-  deleteChatroomConversation(params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'deleteChatroomConversation', [])
-  },
-
   // 聊天室 - end
 
   // 事件监听 - start
