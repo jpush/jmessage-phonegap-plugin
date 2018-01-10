@@ -70,7 +70,6 @@ JMSG_ASSUME_NONNULL_BEGIN
 @property(nonatomic, strong) NSDictionary * extras;
 
 
-
 JMSG_ASSUME_NONNULL_END
 @end
 
@@ -218,13 +217,7 @@ JMSG_ASSUME_NONNULL_BEGIN
 /*!
  * @abstract 添加黑名单
  * @param usernameArray 作用对象的username数组
- * @param handler 结果回调。回调参数：
- *
- * - resultObject 相应对象
- * - error 错误信息
- *
- * 如果 error 为 nil, 表示设置成功
- * 如果 error 不为 nil,表示设置失败
+ * @param handler 结果回调。回调参数： error 为 nil, 表示设置成功
  *
  * @discussion 可以一次添加多个用户
  */
@@ -234,13 +227,7 @@ JMSG_ASSUME_NONNULL_BEGIN
 /*!
  * @abstract 删除黑名单
  * @param usernameArray 作用对象的username数组
- * @param handler 结果回调。回调参数：
- *
- * - resultObject 相应对象
- * - error 错误信息
- *
- * 如果 error 为 nil, 表示设置成功
- * 如果 error 不为 nil,表示设置失败
+ * @param handler 结果回调。回调参数：error 为 nil, 表示设置成功
  *
  * @discussion 可以一次删除多个黑名单用户
  */
@@ -251,13 +238,7 @@ JMSG_ASSUME_NONNULL_BEGIN
  * @abstract 跨应用添加黑名单
  * @param usernameArray 作用对象的username数组
  * @param appKey 应用的appKey
- * @param handler 结果回调。回调参数：
- *
- * - resultObject 相应对象
- * - error 错误信息
- *
- * 如果 error 为 nil, 表示设置成功
- * 如果 error 不为 nil,表示设置失败
+ * @param handler 结果回调。回调参数：error 为 nil, 表示设置成功
  *
  * @discussion 可以一次添加多个用户
  */
@@ -269,13 +250,7 @@ JMSG_ASSUME_NONNULL_BEGIN
  * @abstract 跨应用删除黑名单
  * @param usernameArray 作用对象的username数组
  * @param appKey 应用的appKey
- * @param handler 结果回调。回调参数：
- *
- * - resultObject 相应对象
- * - error 错误信息
- *
- * 如果 error 为 nil, 表示设置成功
- * 如果 error 不为 nil,表示设置失败
+ * @param handler 结果回调。回调参数：error 为 nil, 表示设置成功
  *
  * @discussion 可以一次删除多个黑名单用户
  */
@@ -373,16 +348,9 @@ JMSG_ASSUME_NONNULL_BEGIN
  * @abstract 设置用户免打扰（支持跨应用设置）
  *
  * @param isNoDisturb 是否全局免打扰 YES:是 NO: 否
- * @param handler 结果回调。回调参数：
+ * @param handler 结果回调。回调参数： error 为 nil, 表示设置成功
  *
- * - resultObject 相应对象
- * - error 错误信息
- *
- * 如果 error 为 nil, 表示设置成功
- * 如果 error 不为 nil,表示设置失败
- *
- * @discussion 针对单个用户设置免打扰
- * 这个接口支持跨应用设置免打扰
+ * @discussion 针对单个用户设置免打扰，这个接口支持跨应用设置免打扰
  */
 - (void)setIsNoDisturb:(BOOL)isNoDisturb handler:(JMSGCompletionHandler)handler;
 

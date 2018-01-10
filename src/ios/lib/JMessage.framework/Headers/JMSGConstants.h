@@ -105,6 +105,18 @@ typedef NS_ENUM(NSInteger, JMSGConversationType) {
   kJMSGConversationTypeSingle = 1,
   /// 群聊
   kJMSGConversationTypeGroup = 2,
+  /// 聊天室
+  kJMSGConversationTypeChatRoom = 3,
+};
+
+/*!
+ * 群组类型 - 私有、公开
+ */
+typedef NS_ENUM(NSInteger, JMSGGroupType) {
+  /// 私有群
+  kJMSGGroupTypePrivate = 1,
+  /// 公开群
+  kJMSGGroupTypePublic = 2,
 };
 
 /*!
@@ -131,7 +143,15 @@ typedef NS_ENUM(NSInteger, JMSGContentType) {
   kJMSGContentTypePrompt = 8,
 };
 
-
+/*!
+ * 提示性消息的类型 - 消息撤回提示、后台自定义消息提示等
+ */
+typedef NS_ENUM(NSInteger, JMSGPromptContentType) {
+  /// 消息撤回提示
+  kJMSGPromptContentTypeRetractMessage = 0,
+  /// 自定义提示
+  kJMSGPromptContentTypeAPPRbag   = 1 << 0,
+};
 
 /*!
  * 消息状态
@@ -228,6 +248,8 @@ typedef NS_ENUM(NSInteger, JMSGEventNotificationType) {
   kJMSGEventNotificationRemoveGroupMembers = 11,
   /// 事件类型: 群信息更新
   kJMSGEventNotificationUpdateGroupInfo = 12,
+  /// 事件类型: 群禁言通知事件
+  kJMSGEventNotificationGroupMemberSilence = 65,
 };
 
 ///----------------------------------------------------
@@ -363,6 +385,13 @@ typedef NS_ENUM(NSInteger, JMSGSDKErrorCode) {
   /// group 相关字段无效
   kJMSGErrorSDKParamGroupGroupInfoInvalid = 867002,
 
+  // ------------------------ ChatRoom (868xxx)
+  
+  /// ChatRoom 不支持
+  kJMSGErrorSDKChatRoomNotSupport = 868001,
+  /// ChatRoom 不存在
+  kJMSGErrorSDKChatRoomNotExist   = 868002,
+  
   /// unknown
   kJMSGErrorSDKUnknownError = 869999,
 };
@@ -431,6 +460,8 @@ typedef NS_ENUM(NSUInteger, JMSGTcpErrorCode) {
   kJMSGErrorTcpUserInBlacklist = 803008,
   /// 内容不合法
   kJMSGErrorTcpContentIsIllegal = 803009,
+  /// 发送消息失败，请求用户被禁言
+  kJMSGErrorTcpUserBannedSendMessage = 803012,
   /// 群组成员列表为空
   kJMSGErrorTcpGroupMembersEmpty = 810002,
   /// 群组成员重复

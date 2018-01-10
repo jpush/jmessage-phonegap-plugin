@@ -61,12 +61,36 @@
  *
  * @param transparentEvent 下发的通知事件，事件类型请查看 JMSGMessageTransparentEvent 类
  *
- * @discussion 上层可以通过 transparentEvent 获取相应信息，如果自定义的透传信息、会话
+ * @discussion 上层可以通过 transparentEvent 获取相应信息，如自定义的透传信息、会话
  *
  * @since 3.3.0
  */
 @optional
 - (void)onReceiveMessageTransparentEvent:(JMSGMessageTransparentEvent *)transparentEvent;
+
+/*!
+ * @abstract 申请入群事件
+ *
+ * @param event 申请入群事件
+ *
+ * @discussion 只有群主和管理员能收到此事件；申请入群事件相关参数请查看 JMSGApplyJoinGroupEvent 类，在群主审批此事件时需要传递事件的相关参数
+ *
+ * @since 3.4.0
+ */
+@optional
+- (void)onReceiveApplyJoinGroupApprovalEvent:(JMSGApplyJoinGroupEvent *)event;
+
+/*!
+ * @abstract 管理员拒绝入群申请通知
+ *
+ * @param event 拒绝入群申请事件
+ *
+ * @discussion 只有申请方和被申请方会收到此事件；拒绝的相关描述和原因请查看 JMSGGroupAdminRejectApplicationEvent 类
+ *
+ * @since 3.4.0
+ */
+@optional
+- (void)onReceiveGroupAdminRejectApplicationEvent:(JMSGGroupAdminRejectApplicationEvent *)event;
 
 @end
 

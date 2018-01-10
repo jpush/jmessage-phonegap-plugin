@@ -32,8 +32,7 @@
  * @discussion 应检查 error 是否为空来判断是否出错. 如果未出错, 则成功.
  */
 @optional
-- (void)onSendMessageResponse:(JMSGMessage *)message
-                        error:(NSError *)error;
+- (void)onSendMessageResponse:(JMSGMessage *)message error:(NSError *)error;
 
 /*!
  * @abstract 接收消息(服务器端下发的)回调
@@ -50,8 +49,7 @@
  * contentType = kJMSGContentTypeEventNotification.
  */
 @optional
-- (void)onReceiveMessage:(JMSGMessage *)message
-                   error:(NSError *)error;
+- (void)onReceiveMessage:(JMSGMessage *)message error:(NSError *)error;
 
 /*!
  * @abstract 接收消息媒体文件下载失败的回调
@@ -65,5 +63,4 @@
  */
 @optional
 - (void)onReceiveMessageDownloadFailed:(JMSGMessage *)message;
-
 @end
