@@ -248,8 +248,6 @@
 -(NSMutableDictionary*)conversationToDictionary{
   NSMutableDictionary *dict = [NSMutableDictionary dictionary];
   
-
-  
   switch (self.conversationType) {
     case kJMSGConversationTypeSingle:{
       JMSGUser *user = self.target;
@@ -363,15 +361,25 @@
   if (self.content.extras != nil) {
     dict[@"extras"] = self.content.extras;
   }
-  
-  if (self.targetType == kJMSGConversationTypeSingle) {
-    JMSGUser *user = self.target;
-    dict[@"target"] = [user userToDictionary];
-  } else {
-    JMSGGroup *group = self.target;
-    dict[@"target"] = [group groupToDictionary];
+
+  switch (self.targetType) {
+    case kJMSGConversationTypeSingle:{
+      JMSGUser *user = self.target;
+      dict[@"target"] = [user userToDictionary];
+      break;
+    }
+    case kJMSGConversationTypeGroup:{
+      JMSGGroup *group = self.target;
+      dict[@"target"] = [group groupToDictionary];
+      break;
+    }
+    case kJMSGConversationTypeChatRoom:{
+      JMSGChatRoom *chatroom = self.target;
+      dict[@"target"] = [chatroom chatRoomToDictionary];
+      break;
+    }
   }
-    
+  
   dict[@"createTime"] = self.timestamp;
   
   switch (self.contentType) {

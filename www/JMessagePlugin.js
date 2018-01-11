@@ -821,7 +821,7 @@ var JMessagePlugin = {
      * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
      */
     getChatroomInfoListOfUser (success, error) {
-      exec(success, error, PLUGIN_NAME, 'getChatroomInfoListOfUser', [params])
+      exec(success, error, PLUGIN_NAME, 'getChatroomInfoListOfUser', [])
     },
     /**
      * 根据聊天室 id 获取聊天室信息。
