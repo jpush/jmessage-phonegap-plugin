@@ -362,7 +362,7 @@
     dict[@"extras"] = self.content.extras;
   }
 
-  dict[@"isSend"] = @(self.isReceived);
+  dict[@"isSend"] = @(!self.isReceived);
   switch (self.targetType) {
     case kJMSGConversationTypeSingle:{
       JMSGUser *user = self.target;
