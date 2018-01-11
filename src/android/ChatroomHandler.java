@@ -16,7 +16,9 @@ import cn.jpush.im.android.api.model.ChatRoomInfo;
 import cn.jpush.im.android.api.model.Conversation;
 import cn.jpush.im.api.BasicCallback;
 
+import static cn.jiguang.cordova.im.JMessagePlugin.ERR_CODE_CONVERSATION;
 import static cn.jiguang.cordova.im.JMessagePlugin.ERR_CODE_PARAMETER;
+import static cn.jiguang.cordova.im.JMessagePlugin.ERR_MSG_CONVERSATION;
 import static cn.jiguang.cordova.im.JMessagePlugin.ERR_MSG_PARAMETER;
 import static cn.jiguang.cordova.im.JMessageUtils.handleResult;
 import static cn.jiguang.cordova.im.JsonUtils.toJson;
@@ -27,7 +29,7 @@ import static cn.jiguang.cordova.im.JsonUtils.toJson;
 
 class ChatroomHandler {
 
-    static void getChatroomInfoOfApp(JSONArray data, final CallbackContext callback) {
+    static void getChatroomInfoListOfApp(JSONArray data, final CallbackContext callback) {
         int start, count;
         try {
             JSONObject params = data.getJSONObject(0);
@@ -60,10 +62,10 @@ class ChatroomHandler {
         });
     }
 
-    static void getChatroomInfoOfUser(JSONArray data, final CallbackContext callback) {
+    static void getChatroomInfoListOfUser(JSONArray data, final CallbackContext callback) {
         ChatRoomManager.getChatRoomListByUser(new RequestCallback<List<ChatRoomInfo>>() {
             @Override
-            public void gotResult(int status, String desc, List<ChatRoomInfo> chatRoomInfos) {
+            public void gotResult(int status, String desc, List<ChatRoomInfo> chatRoomInfoList) {
                 if (status != 0) {
                     handleResult(status, desc, callback);
                     return;
@@ -71,7 +73,7 @@ class ChatroomHandler {
 
                 JSONArray jsonArr = new JSONArray();
                 try {
-                    for (ChatRoomInfo chatroomInfo : chatRoomInfos) {
+                    for (ChatRoomInfo chatroomInfo : chatRoomInfoList) {
                         jsonArr.put(toJson(chatroomInfo));
                     }
                 } catch (JSONException e) { // 因为转 json 的操作一定没有问题，所以这里不做多余处理。
@@ -82,15 +84,15 @@ class ChatroomHandler {
         });
     }
 
-    static void getChatroomInfoById(JSONArray data, final CallbackContext callback) {
-        Set<Long> roomIds = new HashSet<Long>();
+    static void getChatroomInfoListById(JSONArray data, final CallbackContext callback) {
+        Set<Long> roomIds = new HashSet<Long>();    // JS 层为了和 iOS 统一，因此 roomId 类型为 String，在原生做转换。
 
         try {
             JSONObject params = data.getJSONObject(0);
             JSONArray roomIdArr = params.getJSONArray("roomIds");
 
             for (int i = 0; i < roomIdArr.length(); i++) {
-                roomIds.add(roomIdArr.getLong(i));
+                roomIds.add(Long.valueOf(roomIdArr.getString(i)));
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -119,12 +121,45 @@ class ChatroomHandler {
         });
     }
 
+    static void getChatroomOwner(JSONArray data, final CallbackContext callback) {
+        final long roomId;
+
+        try {
+            JSONObject params = data.getJSONObject(0);
+            roomId = Long.parseLong(params.getString("roomId"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+            handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
+            return;
+        }
+
+        Set<Long> roomIds = new HashSet<Long>();
+        roomIds.add(roomId);
+
+        ChatRoomManager.getChatRoomInfos(roomIds, new RequestCallback<List<ChatRoomInfo>>() {
+            @Override
+            public void gotResult(int status, String desc, List<ChatRoomInfo> chatRoomInfoList) {
+                if (status != 0) {
+                    handleResult(status, desc, callback);
+                    return;
+                }
+
+                try {
+                    JSONObject chatroomInfoJson = toJson(chatRoomInfoList.get(0));
+                    callback.success(chatroomInfoJson);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
     static void enterChatroom(JSONArray data, final CallbackContext callback) {
         final long roomId;
 
         try {
             JSONObject params = data.getJSONObject(0);
-            roomId = params.getLong("roomId");
+            roomId = Long.parseLong(params.getString("roomId"));
         } catch (JSONException e) {
             e.printStackTrace();
             handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
@@ -156,7 +191,7 @@ class ChatroomHandler {
 
         try {
             JSONObject params = data.getJSONObject(0);
-            roomId = params.getLong("roomId");
+            roomId = Long.parseLong(params.getString("roomId"));
         } catch (JSONException e) {
             e.printStackTrace();
             handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
@@ -180,7 +215,7 @@ class ChatroomHandler {
 
         try {
             JSONObject params = data.getJSONObject(0);
-            roomId = params.getLong("roomId");
+            roomId = Long.parseLong(params.getString("roomId"));
         } catch (JSONException e) {
             e.printStackTrace();
             handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
@@ -188,7 +223,11 @@ class ChatroomHandler {
         }
 
         Conversation conversation = JMessageClient.getChatRoomConversation(roomId);
-        callback.success(toJson(conversation));
+        if (conversation != null) {
+            callback.success(toJson(conversation));
+        } else {
+            handleResult(ERR_CODE_CONVERSATION, ERR_MSG_CONVERSATION, callback);
+        }
     }
 
     static void getChatroomConversationList(JSONArray data, final CallbackContext callback) {
@@ -206,7 +245,7 @@ class ChatroomHandler {
 
         try {
             JSONObject params = data.getJSONObject(0);
-            roomId = params.getLong("roomId");
+            roomId = Long.parseLong(params.getString("roomId"));
         } catch (JSONException e) {
             e.printStackTrace();
             handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
@@ -214,7 +253,11 @@ class ChatroomHandler {
         }
 
         Conversation conversation = Conversation.createChatRoomConversation(roomId);
-        callback.success(toJson(conversation));
+        if (conversation != null) {
+            callback.success(toJson(conversation));
+        } else {
+            handleResult(ERR_CODE_CONVERSATION, ERR_MSG_CONVERSATION, callback);
+        }
     }
 
     static void deleteChatroomConversation(JSONArray data, CallbackContext callback) {
@@ -222,7 +265,7 @@ class ChatroomHandler {
 
         try {
             JSONObject params = data.getJSONObject(0);
-            roomId = params.getLong("roomId");
+            roomId = Long.parseLong(params.getString("roomId"));
         } catch (JSONException e) {
             e.printStackTrace();
             handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
@@ -236,7 +279,7 @@ class ChatroomHandler {
             JSONObject error = new JSONObject();
             try {
                 error.put("code", 10);
-                error.put("description", "Delete failed.");
+                error.put("description", "Conversation delete failed.");
             } catch (JSONException e) {
                 e.printStackTrace();
             }

@@ -108,6 +108,10 @@ NSMutableDictionary *_jmessageEventCache;
                       selector:@selector(didReceiveJMessageMessage:)
                           name:kJJMessageReceiveMessage
                         object:nil];
+  [defaultCenter addObserver:self
+                    selector:@selector(didReceiveJMessageChatroomMessage:)
+                        name:kJJMessageReceiveChatroomMessage
+                      object:nil];
     
     [defaultCenter addObserver:self
                       selector:@selector(conversationChanged:)
@@ -228,6 +232,13 @@ NSMutableDictionary *_jmessageEventCache;
     [result setKeepCallback:@(true)];
     
     [self.commandDelegate sendPluginResult:result callbackId:self.callBack.callbackId];
+}
+
+- (void)didReceiveJMessageChatroomMessage:(NSNotification *)notification {
+  CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:@{@"eventName": @"receiveChatroomMessage", @"value": notification.object}];
+  [result setKeepCallback:@(true)];
+  
+  [self.commandDelegate sendPluginResult:result callbackId:self.callBack.callbackId];
 }
 
 - (void)evalFuntionName:(NSString*)functionName jsonParm:(NSString*)jsonString{
@@ -1851,6 +1862,101 @@ NSMutableDictionary *_jmessageEventCache;
     }];
 }
 
+- (void)downloadThumbImage:(CDVInvokedUrlCommand *)command {
+  NSDictionary * param = [command argumentAtIndex:0];
+  if (param[@"messageId"] == nil ||
+      param[@"type"] == nil) {
+    [self returnParamError:command];
+    return;
+  }
+  
+  NSString *appKey = nil;
+  if (param[@"appKey"]) {
+    appKey = param[@"appKey"];
+  } else {
+    appKey = [JMessageHelper shareInstance].JMessageAppKey;
+  }
+  
+  if ([param[@"type"] isEqual: @"single"] && param[@"username"] != nil) {
+    
+  } else {
+    if ([param[@"type"] isEqual: @"group"] && param[@"groupId"] != nil) {
+      
+    } else {
+      [self returnParamError:command];
+      return;
+    }
+  }
+  
+  if ([param[@"type"] isEqual: @"single"]) {
+    [JMSGConversation createSingleConversationWithUsername:param[@"username"] appKey:appKey completionHandler:^(id resultObject, NSError *error) {
+      if (error) {
+        [self handleResultWithDictionary: nil command: command error: error];
+        return;
+      }
+      JMSGConversation *conversation = resultObject;
+      JMSGMessage *message = [conversation messageWithMessageId:param[@"messageId"]];
+      if (message == nil) {
+        [self returnErrorWithLog:@"cann't find this message" command: command];
+        return;
+      }
+      
+      if (message.contentType != kJMSGContentTypeImage) {
+        [self returnErrorWithLog:@"It is not voice message" command:command];
+        return;
+      } else {
+        JMSGImageContent *content = (JMSGImageContent *) message.content;
+
+        [content thumbImageData:^(NSData *data, NSString *objectId, NSError *error) {
+            if (error) {
+              [self handleResultWithDictionary: nil command: command error: error];
+              return;
+            }
+  
+            JMSGMediaAbstractContent *mediaContent = (JMSGMediaAbstractContent *) message.content;
+            [self handleResultWithDictionary:@{@"messageId": message.msgId,
+                                               @"filePath": content.thumbImageLocalPath}
+                                     command:command error:error];
+        }];
+      }
+    }];
+  } else {
+    [JMSGGroup groupInfoWithGroupId:param[@"groupId"] completionHandler:^(id resultObject, NSError *error) {
+      if (error) {
+        [self handleResultWithDictionary: nil command: command error: error];
+        return;
+      }
+      
+      JMSGGroup *group = resultObject;
+      [JMSGConversation createGroupConversationWithGroupId:group.gid completionHandler:^(id resultObject, NSError *error) {
+        JMSGConversation *conversation = resultObject;
+        JMSGMessage *message = [conversation messageWithMessageId:param[@"messageId"]];
+        
+        if (message == nil) {
+          [self returnErrorWithLog:@"cann't find this message" command: command];
+          return;
+        }
+        
+        if (message.contentType != kJMSGContentTypeVoice) {
+          [self returnErrorWithLog:@"It is not image message" command:command];
+          return;
+        } else {
+          JMSGImageContent *content = (JMSGImageContent *) message.content;
+          [content thumbImageData:^(NSData *data, NSString *objectId, NSError *error) {
+            if (error) {
+              [self handleResultWithDictionary: nil command: command error: error];
+              return;
+            }
+            JMSGMediaAbstractContent *mediaContent = (JMSGMediaAbstractContent *) message.content;
+            [self handleResultWithDictionary:@{@"messageId": message.msgId,
+                                               @"filePath": content.thumbImageLocalPath}
+                                     command:command error:error];
+          }];
+        }
+      }];
+    }];
+  }
+}
 - (void)downloadOriginalImage:(CDVInvokedUrlCommand *)command {
     NSDictionary * param = [command argumentAtIndex:0];
     if (param[@"messageId"] == nil ||
@@ -2683,5 +2789,225 @@ NSMutableDictionary *_jmessageEventCache;
   }
 }
 
+- (void)getChatroomInfoListOfApp:(CDVInvokedUrlCommand *)command {
+  NSDictionary * param = [command argumentAtIndex:0];
+  NSNumber *start = nil;
+  NSNumber *count = nil;
+  if (!param[@"start"]) {
+    [self returnParamError:command];
+    start = param[@"start"];
+    return;
+  }
+  
+  if (!param[@"count"]) {
+    [self returnParamError:command];
+    count = param[@"count"];
+    return;
+  }
+  
+  NSString *appKey = nil;
+  if (param[@"appKey"]) {
+    appKey = param[@"appKey"];
+  } else {
+    appKey = [JMessageHelper shareInstance].JMessageAppKey;
+  }
+  
+  [JMSGChatRoom getChatRoomListWithAppKey:appKey start:[start integerValue] count:[count integerValue] completionHandler:^(id resultObject, NSError *error) {
+    if (error) {
+      [self handleResultWithDictionary: nil command: command error: error];
+      return;
+    }
+    NSArray *chatRoomArr = resultObject;
+    NSArray *chatRoomDicArr = [chatRoomArr mapObjectsUsingBlock:^id(id obj, NSUInteger idx) {
+      JMSGChatRoom *chatRoom = obj;
+      return [chatRoom chatRoomToDictionary];
+    }];
+
+    [self handleResultWithArray:chatRoomDicArr command:command error:error];
+  }];
+}
+
+- (void)getChatroomInfoListOfUser:(CDVInvokedUrlCommand *)command {
+  [JMSGChatRoom getMyChatRoomListCompletionHandler:^(id resultObject, NSError *error) {
+    if (error) {
+      [self handleResultWithDictionary: nil command: command error: error];
+      return;
+    }
+    
+    NSArray *chatRoomArr = resultObject;
+    NSArray *chatRoomDicArr = [chatRoomArr mapObjectsUsingBlock:^id(id obj, NSUInteger idx) {
+      JMSGChatRoom *chatRoom = obj;
+      return [chatRoom chatRoomToDictionary];
+    }];
+    
+    [self handleResultWithArray:chatRoomDicArr command:command error:error];
+  }];
+}
+
+- (void)getChatroomInfoListById:(CDVInvokedUrlCommand *)command {
+  NSDictionary * param = [command argumentAtIndex:0];
+  
+  if (!param[@"roomIds"]) {
+    [self returnParamError:command];
+    return;
+  }
+  
+  [JMSGChatRoom getChatRoomInfosWithRoomIds:param[@"roomIds"] completionHandler:^(id resultObject, NSError *error) {
+    if (error) {
+      [self handleResultWithDictionary: nil command: command error: error];
+      return;
+    }
+    
+    NSArray *chatRoomArr = resultObject;
+    NSArray *chatRoomDicArr = [chatRoomArr mapObjectsUsingBlock:^id(id obj, NSUInteger idx) {
+      JMSGChatRoom *chatRoom = obj;
+      return [chatRoom chatRoomToDictionary];
+    }];
+    
+    [self handleResultWithArray:chatRoomDicArr command:command error:error];
+  }];
+}
+
+- (void)enterChatroom:(CDVInvokedUrlCommand *)command {
+  NSDictionary * param = [command argumentAtIndex:0];
+  
+  if (!param[@"roomId"]) {
+    [self returnParamError:command];
+    return;
+  }
+  
+  [JMSGChatRoom enterChatRoomWithRoomId:param[@"roomId"] completionHandler:^(id resultObject, NSError *error) {
+    if (error) {
+      [self handleResultWithDictionary: nil command: command error: error];
+      return;
+    }
+    
+    JMSGConversation *conversation = resultObject;
+    [self handleResultWithDictionary:[conversation conversationToDictionary] command:command error:error];
+    
+  }];
+}
+
+- (void)exitChatroom:(CDVInvokedUrlCommand *)command {
+  NSDictionary * param = [command argumentAtIndex:0];
+  
+  if (!param[@"roomId"]) {
+    [self returnParamError:command];
+    return;
+  }
+  
+  [JMSGChatRoom leaveChatRoomWithRoomId:param[@"roomId"] completionHandler:^(id resultObject, NSError *error) {
+    if (error) {
+      [self handleResultWithDictionary: nil command: command error: error];
+      return;
+    }
+    [self handleResultNilWithCommand:command error:error];
+  }];
+}
+
+- (void)getChatroomConversation:(CDVInvokedUrlCommand *)command {
+  NSDictionary * param = [command argumentAtIndex:0];
+  
+  if (!param[@"roomId"]) {
+    [self returnParamError:command];
+    return;
+  }
+  
+  JMSGConversation *chatRoomConversation = [JMSGConversation chatRoomConversationWithRoomId:param[@"roomId"]];
+  NSError *error = nil;
+  if (!chatRoomConversation) {
+    error = [NSError errorWithDomain:@"cannot found chat room convsersation from this roomId" code: 1 userInfo: nil];
+    [self handleResultNilWithCommand:command error:error];
+    return;
+  }
+  
+  [self handleResultWithDictionary:[chatRoomConversation conversationToDictionary] command:command error: error];
+}
+
+- (void)getChatroomConversationList:(CDVInvokedUrlCommand *)command {
+  
+  [JMSGConversation allChatRoomConversation:^(id resultObject, NSError *error) {
+    if (error) {
+      [self handleResultWithDictionary: nil command: command error: error];
+      return;
+    }
+    
+    NSArray *conversationArr = resultObject;
+    NSArray *conversationDicArr = [conversationArr mapObjectsUsingBlock:^id(id obj, NSUInteger idx) {
+      JMSGConversation *conversation = obj;
+      return [conversation conversationToDictionary];
+    }];
+    
+    [self handleResultWithArray:conversationDicArr command:command error:error];
+  }];
+}
+
+- (void)createChatroomConversation:(CDVInvokedUrlCommand *)command {
+  NSDictionary * param = [command argumentAtIndex:0];
+  
+  if (!param[@"roomId"]) {
+    [self returnParamError:command];
+    return;
+  }
+  
+  [JMSGConversation createChatRoomConversationWithRoomId:param[@"roomId"] completionHandler:^(id resultObject, NSError *error) {
+    if (error) {
+      [self handleResultWithDictionary: nil command: command error: error];
+      return;
+    }
+    
+    JMSGConversation *conversation = resultObject;
+    [self handleResultWithDictionary:[conversation conversationToDictionary] command:command error:error];
+  }];
+}
+
+- (void)deleteChatroomConversation:(CDVInvokedUrlCommand *)command {
+  NSDictionary * param = [command argumentAtIndex:0];
+  
+  if (!param[@"roomId"]) {
+    [self returnParamError:command];
+    return;
+  }
+  JMSGConversation *chatRoomConversation = [JMSGConversation chatRoomConversationWithRoomId:param[@"roomId"]];
+  NSError *error = nil;
+  if (!chatRoomConversation) {
+    error = [NSError errorWithDomain:@"cannot found chat room convsersation from this roomId" code: 1 userInfo: nil];
+    [self handleResultNilWithCommand:command error:error];
+    return;
+  }
+  
+  [JMSGConversation deleteChatRoomConversationWithRoomId:param[@"roomId"]];
+  [self handleResultWithDictionary:[chatRoomConversation conversationToDictionary] command:command error:error];
+}
+
+- (void)getChatroomOwner:(CDVInvokedUrlCommand *)command {
+  NSDictionary * param = [command argumentAtIndex:0];
+  
+  if (!param[@"roomId"]) {
+    [self returnParamError:command];
+    return;
+  }
+  
+  [JMSGChatRoom getChatRoomInfosWithRoomIds:@[param[@"roomId"]] completionHandler:^(id resultObject, NSError *error) {
+    if (error) {
+      [self handleResultWithDictionary: nil command: command error: error];
+      return;
+    }
+    NSArray *chatRoomArr = resultObject;
+    if (chatRoomArr == nil || chatRoomArr.count == 0) {
+      [self returnErrorWithLog:@"cann't found chat room from this roomId!" command:command];
+      return;
+    }
+    JMSGChatRoom *chatRoom = chatRoomArr[0];
+    [chatRoom getChatRoomOwnerInfo:^(id resultObject, NSError *error) {
+      if (error) {
+        [self handleResultWithDictionary: nil command: command error: error];
+        return;
+      }
+      JMSGUser *user = resultObject;
+      [self handleResultWithDictionary:[user userToDictionary] command:command error:error];
+    }];
+  }];
+}
 
 @end

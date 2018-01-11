@@ -12,22 +12,35 @@
 #import <Foundation/Foundation.h>
 #import <JMessage/JMSGConstants.h>
 
-@class JMSGUser;
+@class JMSGUser,JMSGApplyJoinGroupEvent;
 
 /*!
- * 群信息类（用于修改群信息、创建群）
+ * @abstract 群信息类（此类仅用于修改群信息、创建群、群信息展示）
+ *
+ * #### 注意：
+ *
+ * 如果想要获取群的相关属性值、调用相关接口，需要通过 gid 获取到 JMSGGroup 对象再使用；
+ *
+ * 本类中可读可写属性表示可以用于群信息修改、创建群传值，只读属性说明是不允许客户端修改的，只做展示；
  */
 @interface JMSGGroupInfo : NSObject
 
+/** 群 id */
+@property(nonatomic, strong, readonly) NSString *JMSG_NONNULL gid;
 /** 群名称 */
-@property(nonatomic, strong) NSString *JMSG_NONNULL name;
+@property(nonatomic, strong, readwrite) NSString *JMSG_NONNULL name;
 /** 群描述 */
-@property(nonatomic, strong) NSString *JMSG_NONNULL desc;
-/** 群头像数据 */
-@property(nonatomic, strong) NSData   *JMSG_NONNULL avatarData;
+@property(nonatomic, strong, readwrite) NSString *JMSG_NONNULL desc;
+/** 群头像数据，此属性只用户修改群信息，切勿从此类拿来此属性来展示 */
+@property(nonatomic, strong, readwrite) NSData   *JMSG_NONNULL avatarData;
+/** 群头像的媒体文件ID */
+@property(nonatomic, strong, readonly) NSString *JMSG_NONNULL avatar;
+/** 群组类型，私有、公开，注意：仅限于创建群组时设置，创建成功之后不允许修改群类型*/
+@property(nonatomic, assign, readwrite) JMSGGroupType groupType;
+/** 群组人数上限*/
+@property(nonatomic, strong, readonly) NSString *JMSG_NONNULL maxMemberCount;
 
 @end
-
 
 /*!
  * 群组
@@ -46,7 +59,7 @@ JMSG_ASSUME_NONNULL_BEGIN
 ///----------------------------------------------------
 
 /*!
- * @abstract 创建群组
+ * @abstract 创建群组(只能创建私有群)
  *
  * @param groupName 群组名称
  * @param groupDesc 群组描述信息
@@ -62,9 +75,9 @@ JMSG_ASSUME_NONNULL_BEGIN
           completionHandler:(JMSGCompletionHandler JMSG_NULLABLE)handler;
 
 /*!
- * @abstract 创建群组
+ * @abstract 创建群组（可创建私有群、公开群）
  *
- * @param groupInfo     群信息类，详细请查看 JMSGGroupInfo 类
+ * @param groupInfo     群信息类，如：群名、群类型等，详细请查看 JMSGGroupInfo 类
  * @param usernameArray 初始成员列表。NSArray 里的类型是 NSString
  * @param handler       结果回调。正常返回 resultObject 的类型是 JMSGGroup。
  *
@@ -90,6 +103,19 @@ JMSG_ASSUME_NONNULL_BEGIN
                  completionHandler:(JMSGCompletionHandler JMSG_NULLABLE)handler;
 
 /*!
+ * @abstract 更新群信息（统一字段上传）
+ *
+ * @param gid         群组 id
+ * @param groupInfo   群信息类，详细请查看 JMSGGroupInfo 类
+ * @param handler     结果回调. 正常返回时, resultObject 为 nil.
+ *
+ * @discussion 注意：修改群名称和群描述时参数不允许传空字符串，群类型不允许修改
+ */
++ (void)updateGroupInfoWithGid:(NSString *)gid
+                     groupInfo:(JMSGGroupInfo *)groupInfo
+             completionHandler:(JMSGCompletionHandler JMSG_NULLABLE)handler;
+
+/*!
  * @abstract 更新群头像（支持传图片格式）
  *
  * @param groupId         待更新的群组ID
@@ -103,18 +129,6 @@ JMSG_ASSUME_NONNULL_BEGIN
                           avatarData:(NSData *JMSG_NONNULL)avatarData
                         avatarFormat:(NSString *JMSG_NULLABLE)avatarFormat
                    completionHandler:(JMSGCompletionHandler JMSG_NULLABLE)handler;
-/*!
- * @abstract 更新群信息
- *
- * @param gid         群组 id
- * @param groupInfo   群信息类，详细请查看 JMSGGroupInfo 类
- * @param handler     结果回调. 正常返回时, resultObject 为 nil.
- *
- * @discussion 注意：修改群名称和群描述时参数不允许传空字符串
- */
-+ (void)updateGroupInfoWithGid:(NSString *)gid
-                     groupInfo:(JMSGGroupInfo *)groupInfo
-             completionHandler:(JMSGCompletionHandler JMSG_NULLABLE)handler;
 
 /*!
  * @abstract 获取群组信息
@@ -151,6 +165,55 @@ JMSG_ASSUME_NONNULL_BEGIN
  * @discussion 从服务器获取，返回所有设置群消息屏蔽的群组。
  */
 + (void)shieldList:(JMSGCompletionHandler)handler;
+
+/*!
+ * @abstract 分页获取 appkey 下所有公开群信息
+ *
+ * @param appkey    群组所在的 AppKey，不填则默认为当前应用 AppKey
+ * @param start     分页获取的下标，第一页从  index = 0 开始
+ * @param count     每一页的数量，最大值为500
+ * @param handler   结果回调，NSArray<JMSGGroupInfo>
+ *
+ * #### 注意：返回数据中不是 JMSGGroup 类型，而是 JMSGGroupInfo 类型，只能用于展示信息，如果想要调用相关群组 API 接口则需要通过 gid 获取到 JMSGGroup 对象才可以调用
+ */
++ (void)getPublicGroupInfoWithAppKey:(NSString *JMSG_NULLABLE)appkey
+                               start:(NSInteger)start
+                               count:(NSInteger)count
+                   completionHandler:(JMSGCompletionHandler)handler;
+
+/*!
+ * @abstract 申请加入群组
+ *
+ * @param gid     群组 gid
+ * @param reason   申请原因
+ * @param handler 结果回调
+ *
+ * @discussion 只有公开群需要申请才能加入，私有群不需要申请。
+ */
++ (void)applyJoinGroupWithGid:(NSString *JMSG_NONNULL)gid
+                       reason:(NSString *JMSG_NULLABLE)reason
+            completionHandler:(JMSGCompletionHandler)handler;
+
+/*!
+ * @abstract 管理员审批入群申请
+ *
+ * @patam eventId     入取申请事件的 id，详情请查看 JMSGApplyJoinGroupEvent 类
+ * @param gid         群组 gid
+ * @param joinUser    入群的用户
+ * @param applyUser   发起申请的的用户，如果是主动申请入群则和 member 是相同的
+ * @param isAgree     是否同意申请，YES : 同意， NO: 不同意
+ * @param reason      拒绝申请的理由，选填
+ * @param handler     结果回调
+ *
+ * @discussion 只有管理员才有权限审批入群申请，SDK 不会保存申请入群事件(JMSGApplyJoinGroupEvent)，上层可以自己封装再保存，或则归档直接保存，以便此接口取值调用。
+ */
++ (void)processApplyJoinGroupEventID:(NSString *JMSG_NONNULL)eventId
+                                 gid:(NSString *JMSG_NONNULL)gid
+                            joinUser:(JMSGUser *JMSG_NONNULL)joinUser
+                           applyUser:(JMSGUser *JMSG_NONNULL)applyUser
+                             isAgree:(BOOL)isAgree
+                              reason:(NSString *JMSG_NULLABLE)reason
+                             handler:(JMSGCompletionHandler)handler;
 
 ///----------------------------------------------------
 /// @name Group basic fields 群组基本属性
@@ -196,6 +259,13 @@ JMSG_ASSUME_NONNULL_BEGIN
  * @discussion 这是一个内部状态标志，对外展示仅用于调试目的。客户端不可更改。
  */
 @property(nonatomic, strong, readonly) NSNumber *flag;
+
+/*!
+ * @abstract 群组类型
+ *
+ * @discussion 目前群组类型有：公开群、私有群。公开群是有权限设置，入群需要群主审核同意方可入群。
+ */
+@property(nonatomic, assign, readonly) JMSGGroupType groupType;
 
 /*!
  * @abstract 群主（用户的 username）
@@ -253,18 +323,42 @@ JMSG_ASSUME_NONNULL_BEGIN
  * @abstract 设置群组消息屏蔽
  *
  * @param isShield 是否群消息屏蔽 YES:是 NO: 否
- * @param handler 结果回调。回调参数：
- *
- * - resultObject 相应对象
- * - error 错误信息
- *
- * 如果 error 为 nil, 表示设置成功
- * 如果 error 不为 nil,表示设置失败
+ * @param handler 结果回调。回调参数： error 为 nil, 表示设置成功
  *
  * @discussion 针对单个群组设置群消息屏蔽
  */
 - (void)setIsShield:(BOOL)isShield handler:(JMSGCompletionHandler)handler;
 
+/*!
+ * @abstract 群成员禁言设置
+ *
+ * @param isSilence 是否禁言， YES:是 NO: 否
+ * @param username  带设置的用户的 username
+ * @param username  带设置的用户的 appKey,若传入空则默认使用本应用appKey
+ * @param handler   结果回调
+ *
+ * @discussion 注意: 目前 SDK 只支持群主设置群里某个用户禁言
+ */
+- (void)setGroupMemberSilence:(BOOL)isSilence
+                     username:(NSString *JMSG_NONNULL)username
+                       appKey:(NSString *JMSG_NULLABLE)appKey
+                      handler:(JMSGCompletionHandler JMSG_NULLABLE)handler;
+
+/*!
+ * @abstract 判断用户在该群内是否被禁言
+ *
+ * @param username  待判断用户的用户名
+ * @param appKey    待判断用户的appKey，若传入空则默认使用本应用appKey
+ */
+- (BOOL)isSilenceMemberWithUsername:(NSString *JMSG_NONNULL)username
+                             appKey:(NSString *JMSG_NULLABLE)appKey;
+
+/*!
+ * @abstract 禁言列表
+ *
+ * @return 禁言的成员列表. NSArray 里成员类型是 JMSGUser
+ */
+- (NSArray JMSG_GENERIC(__kindof JMSGUser *)*)groupSilenceMembers;
 
 ///----------------------------------------------------
 /// @name Group members maintenance 群组成员维护
@@ -396,5 +490,3 @@ JMSG_ASSUME_NONNULL_BEGIN
 JMSG_ASSUME_NONNULL_END
 
 @end
-
-

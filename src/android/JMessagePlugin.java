@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -915,28 +914,61 @@ public class JMessagePlugin extends CordovaPlugin {
         }
     }
 
-    void downloadOriginalImage(JSONArray data, final CallbackContext callback) {
-        Conversation conversation;
-        final String messageId;
+    void downloadThumbImage(JSONArray data, final CallbackContext callback) {
+        final Message msg;
 
         try {
             JSONObject params = data.getJSONObject(0);
-            conversation = JMessageUtils.getConversation(params);
-            if (conversation == null) {
-                handleResult(ERR_CODE_CONVERSATION, "Can't get conversation", callback);
+            msg = JMessageUtils.getMessage(params);
+            if (msg == null) {
+                handleResult(ERR_CODE_MESSAGE, ERR_MSG_MESSAGE, callback);
                 return;
             }
-
-            messageId = params.getString("messageId");
         } catch (JSONException e) {
             e.printStackTrace();
             handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
             return;
         }
 
-        Message msg = conversation.getMessage(Integer.parseInt(messageId));
-        if (msg == null) {
-            handleResult(ERR_CODE_MESSAGE, ERR_MSG_MESSAGE, callback);
+        if (msg.getContentType() != ContentType.image) {
+            handleResult(ERR_CODE_MESSAGE, "Message type isn't image", callback);
+            return;
+        }
+
+        ImageContent content = (ImageContent) msg.getContent();
+        content.downloadThumbnailImage(msg, new DownloadCompletionCallback() {
+            @Override
+            public void onComplete(int status, String desc, File file) {
+                if (status == 0) {
+                    JSONObject result = new JSONObject();
+                    try {
+                        result.put("messageId", msg.getId());
+                        result.put("filePath", file.getAbsolutePath());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    handleResult(result, status, desc, callback);
+
+                } else {
+                    handleResult(status, desc, callback);
+                }
+            }
+        });
+    }
+
+    void downloadOriginalImage(JSONArray data, final CallbackContext callback) {
+        final Message msg;
+
+        try {
+            JSONObject params = data.getJSONObject(0);
+            msg = JMessageUtils.getMessage(params);
+            if (msg == null) {
+                handleResult(ERR_CODE_MESSAGE, ERR_MSG_MESSAGE, callback);
+                return;
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
             return;
         }
 
@@ -947,13 +979,12 @@ public class JMessagePlugin extends CordovaPlugin {
 
         ImageContent content = (ImageContent) msg.getContent();
         content.downloadOriginImage(msg, new DownloadCompletionCallback() {
-
             @Override
             public void onComplete(int status, String desc, File file) {
                 if (status == 0) {
                     JSONObject result = new JSONObject();
                     try {
-                        result.put("messageId", messageId);
+                        result.put("messageId", msg.getId());
                         result.put("filePath", file.getAbsolutePath());
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -968,27 +999,18 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     void downloadVoiceFile(JSONArray data, final CallbackContext callback) {
-        Conversation conversation;
-        final String messageId;
+        final Message msg;
 
         try {
             JSONObject params = data.getJSONObject(0);
-            conversation = JMessageUtils.getConversation(params);
-            if (conversation == null) {
-                handleResult(ERR_CODE_CONVERSATION, "Can't get conversation", callback);
+            msg = JMessageUtils.getMessage(params);
+            if (msg == null) {
+                handleResult(ERR_CODE_MESSAGE, ERR_MSG_MESSAGE, callback);
                 return;
             }
-
-            messageId = params.getString("messageId");
         } catch (JSONException e) {
             e.printStackTrace();
             handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
-            return;
-        }
-
-        Message msg = conversation.getMessage(Integer.parseInt(messageId));
-        if (msg == null) {
-            handleResult(ERR_CODE_MESSAGE, ERR_MSG_MESSAGE, callback);
             return;
         }
 
@@ -1005,7 +1027,7 @@ public class JMessagePlugin extends CordovaPlugin {
                 if (status == 0) {
                     JSONObject result = new JSONObject();
                     try {
-                        result.put("messageId", messageId);
+                        result.put("messageId", msg.getId());
                         result.put("filePath", file.getAbsolutePath());
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -1020,27 +1042,18 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     void downloadFile(JSONArray data, final CallbackContext callback) {
-        Conversation conversation;
-        final String messageId;
+        final Message msg;
 
         try {
             JSONObject params = data.getJSONObject(0);
-            conversation = JMessageUtils.getConversation(params);
-            if (conversation == null) {
-                handleResult(ERR_CODE_CONVERSATION, "Can't get conversation", callback);
+            msg = JMessageUtils.getMessage(params);
+            if (msg == null) {
+                handleResult(ERR_CODE_MESSAGE, ERR_MSG_MESSAGE, callback);
                 return;
             }
-
-            messageId = params.getString("messageId");
         } catch (JSONException e) {
             e.printStackTrace();
             handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
-            return;
-        }
-
-        Message msg = conversation.getMessage(Integer.parseInt(messageId));
-        if (msg == null) {
-            handleResult(ERR_CODE_MESSAGE, ERR_MSG_MESSAGE, callback);
             return;
         }
 
@@ -1056,7 +1069,7 @@ public class JMessagePlugin extends CordovaPlugin {
                 if (status == 0) {
                     JSONObject result = new JSONObject();
                     try {
-                        result.put("messageId", messageId);
+                        result.put("messageId", msg.getId());
                         result.put("filePath", file.getAbsolutePath());
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -1966,16 +1979,20 @@ public class JMessagePlugin extends CordovaPlugin {
 
     // 聊天室 - start
 
-    void getChatroomInfoOfApp(JSONArray data, CallbackContext callback) {
-        ChatroomHandler.getChatroomInfoOfApp(data, callback);
+    void getChatroomInfoListOfApp(JSONArray data, CallbackContext callback) {
+        ChatroomHandler.getChatroomInfoListOfApp(data, callback);
     }
 
-    void getChatroomInfoOfUser(JSONArray data, CallbackContext callback) {
-        ChatroomHandler.getChatroomInfoOfUser(data, callback);
+    void getChatroomInfoListOfUser(JSONArray data, CallbackContext callback) {
+        ChatroomHandler.getChatroomInfoListOfUser(data, callback);
     }
 
-    void getChatroomInfoById(JSONArray data, CallbackContext callback) {
-        ChatroomHandler.getChatroomInfoById(data, callback);
+    void getChatroomInfoListById(JSONArray data, CallbackContext callback) {
+        ChatroomHandler.getChatroomInfoListById(data, callback);
+    }
+
+    void getChatroomOwner(JSONArray data, CallbackContext callback) {
+        ChatroomHandler.getChatroomOwner(data, callback);
     }
 
     void enterChatroom(JSONArray data, CallbackContext callback) {
@@ -2258,14 +2275,21 @@ public class JMessagePlugin extends CordovaPlugin {
      * 处理聊天室消息事件。
      */
     public void onEvent(ChatRoomMessageEvent event) {
+        JSONObject result = new JSONObject();
         JSONArray jsonArr = new JSONArray();
 
         for (Message msg : event.getMessages()) {
             jsonArr.put(toJson(msg));
         }
 
-        JSONObject eventJson = toJson("receiveChatroomMessage", jsonArr);
-        mCallback.success(eventJson);
+        try {
+            result.put("messageArray", jsonArr);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JSONObject eventJson = toJson("receiveChatroomMessage", result);
+        eventSuccess(eventJson);
     }
 
     private void eventSuccess(JSONObject value) {

@@ -75,6 +75,15 @@
   [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageReceiveMessage object:dict];
 }
 
+- (void)onReceiveChatRoomConversation:(JMSGConversation *)conversation messages:(NSArray<__kindof JMSGMessage *> *)messages {
+  NSArray *messageDicArr = [messages mapObjectsUsingBlock:^id(id obj, NSUInteger idx) {
+    JMSGMessage *message = obj;
+    return [message messageToDictionary];
+  }];
+  
+  [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageReceiveChatroomMessage object:messageDicArr];
+}
+
 - (void)onReceiveNotificationEvent:(JMSGNotificationEvent *)event {
   switch (event.eventType) {
     case kJMSGEventNotificationLoginKicked:
@@ -239,15 +248,26 @@
 -(NSMutableDictionary*)conversationToDictionary{
   NSMutableDictionary *dict = [NSMutableDictionary dictionary];
   
-  if (self.conversationType == kJMSGConversationTypeSingle) {
-    JMSGUser *user = self.target;
-    dict[@"target"] = [user userToDictionary];
-    dict[@"conversationType"] = @"single";
-    
-  } else {
-    JMSGGroup *group = self.target;
-    dict[@"target"] = [group groupToDictionary];
-    dict[@"conversationType"] = @"group";
+  switch (self.conversationType) {
+    case kJMSGConversationTypeSingle:{
+      JMSGUser *user = self.target;
+      dict[@"target"] = [user userToDictionary];
+      dict[@"conversationType"] = @"single";
+      break;
+    }
+      
+    case kJMSGConversationTypeGroup:{
+      JMSGGroup *group = self.target;
+      dict[@"target"] = [group groupToDictionary];
+      dict[@"conversationType"] = @"group";
+      break;
+    }
+    case kJMSGConversationTypeChatRoom:{
+      JMSGChatRoom *chatroom = self.target;
+      dict[@"target"] = [chatroom chatRoomToDictionary];
+      dict[@"conversationType"] = @"chatroom";
+      break;
+    }
   }
   
   dict[@"latestMessage"] = [self.latestMessage messageToDictionary];
@@ -341,15 +361,26 @@
   if (self.content.extras != nil) {
     dict[@"extras"] = self.content.extras;
   }
-  
-  if (self.targetType == kJMSGConversationTypeSingle) {
-    JMSGUser *user = self.target;
-    dict[@"target"] = [user userToDictionary];
-  } else {
-    JMSGGroup *group = self.target;
-    dict[@"target"] = [group groupToDictionary];
+
+  dict[@"isSend"] = @(self.isReceived);
+  switch (self.targetType) {
+    case kJMSGConversationTypeSingle:{
+      JMSGUser *user = self.target;
+      dict[@"target"] = [user userToDictionary];
+      break;
+    }
+    case kJMSGConversationTypeGroup:{
+      JMSGGroup *group = self.target;
+      dict[@"target"] = [group groupToDictionary];
+      break;
+    }
+    case kJMSGConversationTypeChatRoom:{
+      JMSGChatRoom *chatroom = self.target;
+      dict[@"target"] = [chatroom chatRoomToDictionary];
+      break;
+    }
   }
-    
+  
   dict[@"createTime"] = self.timestamp;
   
   switch (self.contentType) {
@@ -493,4 +524,34 @@
   NSString * homeDir = NSHomeDirectory();
   return [NSString stringWithFormat:@"%@/Documents/%@", homeDir,path];
 }
+@end
+
+@implementation JMSGChatRoom (JMessage)
+- (NSMutableDictionary *)chatRoomToDictionary {
+  NSMutableDictionary *dict = @{}.mutableCopy;
+  dict[@"type"] = @"chatroom";
+  dict[@"roomId"] = self.roomID;
+  dict[@"name"] = self.name;
+  dict[@"appKey"] = self.appkey;
+  dict[@"description"] = self.description;
+  dict[@"createTime"] = self.ctime;
+  dict[@"maxMemberCount"] = @([self.maxMemberCount integerValue]);
+  dict[@"currentMemberCount"] = @(self.totalMemberCount);
+  
+  return dict;
+}
+@end
+
+
+
+@implementation NSArray (JMessage)
+
+- (NSArray *)mapObjectsUsingBlock:(id (^)(id obj, NSUInteger idx))block {
+  NSMutableArray *result = [NSMutableArray arrayWithCapacity:[self count]];
+  [self enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+    [result addObject:block(obj, idx)];
+  }];
+  return result;
+}
+
 @end

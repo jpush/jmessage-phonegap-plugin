@@ -27,6 +27,9 @@
 @end
 
 
+@interface NSArray (JMessage)
+- (NSArray *)mapObjectsUsingBlock:(id (^)(id obj, NSUInteger idx))block;
+@end
 
 @interface NSDictionary (JMessage)
 -(NSString*)toJsonString;
@@ -51,3 +54,8 @@
 @interface JMSGMessage (JMessage)
 - (NSMutableDictionary *)messageToDictionary;
 @end
+
+@interface JMSGChatRoom (JMessage)
+- (NSMutableDictionary *)chatRoomToDictionary;
+@end
+

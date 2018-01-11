@@ -22,8 +22,9 @@ static NSString *const JMessageConfig_IsProduction = @"IsProduction";
 static NSString *const JMessageConfig_IsIDFA       = @"IsIDFA";
 static NSString *const JMessageConfig_Delay        = @"Delay";
 
-
+// 在线消息
 #define kJJMessageReceiveMessage     @"kJJMessageReceiveMessage"
+#define kJJMessageReceiveChatroomMessage     @"kJJMessageReceiveChatroomMessage"
 #define kJJMessageSendMessageRespone @"kJJMessageSendMessageRespone"
 
 //Conversation 回调

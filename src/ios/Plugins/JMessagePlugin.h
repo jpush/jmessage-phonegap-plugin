@@ -52,6 +52,7 @@
 - (void)isNoDisturbGlobal:(CDVInvokedUrlCommand *)command;
 - (void)downloadThumbUserAvatar:(CDVInvokedUrlCommand *)command;
 - (void)downloadOriginalUserAvatar:(CDVInvokedUrlCommand *)command;
+- (void)downloadThumbImage:(CDVInvokedUrlCommand *)command;
 - (void)downloadOriginalImage:(CDVInvokedUrlCommand *)command;
 - (void)downloadVoiceFile:(CDVInvokedUrlCommand *)command;
 - (void)downloadFile:(CDVInvokedUrlCommand *)command;
@@ -68,4 +69,17 @@
 - (void)downloadThumbGroupAvatar:(CDVInvokedUrlCommand *)command;
 - (void)downloadOriginalGroupAvatar:(CDVInvokedUrlCommand *)command;
 - (void)setConversationExtras:(CDVInvokedUrlCommand *)command;
+
+// 聊天室 API
+- (void)getChatroomInfoListOfApp:(CDVInvokedUrlCommand *)command;
+- (void)getChatroomInfoListOfUser:(CDVInvokedUrlCommand *)command;
+- (void)getChatroomInfoListById:(CDVInvokedUrlCommand *)command;
+- (void)enterChatroom:(CDVInvokedUrlCommand *)command;
+- (void)exitChatroom:(CDVInvokedUrlCommand *)command;
+- (void)getChatroomConversation:(CDVInvokedUrlCommand *)command;
+- (void)getChatroomConversationList:(CDVInvokedUrlCommand *)command;
+- (void)createChatroomConversation:(CDVInvokedUrlCommand *)command;
+- (void)deleteChatroomConversation:(CDVInvokedUrlCommand *)command;
+- (void)getChatroomOwner:(CDVInvokedUrlCommand *)command;
+
 @end
