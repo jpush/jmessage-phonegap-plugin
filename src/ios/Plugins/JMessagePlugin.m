@@ -2916,7 +2916,9 @@ NSMutableDictionary *_jmessageEventCache;
   JMSGConversation *chatRoomConversation = [JMSGConversation chatRoomConversationWithRoomId:param[@"roomId"]];
   NSError *error = nil;
   if (!chatRoomConversation) {
-    [NSError errorWithDomain:@"cannot found chat room convsersation from this roomId" code: 1 userInfo: nil];
+    error = [NSError errorWithDomain:@"cannot found chat room convsersation from this roomId" code: 1 userInfo: nil];
+    [self handleResultNilWithCommand:command error:error];
+    return;
   }
   
   [self handleResultWithDictionary:[chatRoomConversation conversationToDictionary] command:command error: error];
@@ -2969,7 +2971,7 @@ NSMutableDictionary *_jmessageEventCache;
   JMSGConversation *chatRoomConversation = [JMSGConversation chatRoomConversationWithRoomId:param[@"roomId"]];
   NSError *error = nil;
   if (!chatRoomConversation) {
-    [NSError errorWithDomain:@"cannot found chat room convsersation from this roomId" code: 1 userInfo: nil];
+    error = [NSError errorWithDomain:@"cannot found chat room convsersation from this roomId" code: 1 userInfo: nil];
     [self handleResultNilWithCommand:command error:error];
     return;
   }
