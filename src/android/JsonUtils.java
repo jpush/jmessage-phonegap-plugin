@@ -208,10 +208,10 @@ class JsonUtils {
 
     static Message JsonToMessage(JSONObject json) {
         Conversation conversation = null;
-        long msgId = 0;
+        int msgId = 0;
 
         try {
-            msgId = Long.parseLong(json.getString("serverMessageId"));
+            msgId = Integer.parseInt(json.getString("id"));
             boolean isSend = json.getBoolean("isSend");
 
             JSONObject target = json.getJSONObject("target");
