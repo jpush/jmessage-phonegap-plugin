@@ -820,7 +820,7 @@ var JMessagePlugin = {
      * @param {function} success = function (chatroomInfoList) {}
      * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
      */
-    getChatroomInfoListOfUser (success, error) {
+    getChatroomInfoListOfUser: function (success, error) {
       exec(success, error, PLUGIN_NAME, 'getChatroomInfoListOfUser', [])
     },
     /**
@@ -832,7 +832,7 @@ var JMessagePlugin = {
      * @param {function} success = function (chatroomInfoList) {}
      * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
      */
-    getChatroomInfoListById (params, success, error) {
+    getChatroomInfoListById: function (params, success, error) {
       exec(success, error, PLUGIN_NAME, 'getChatroomInfoListById', [params])
     },
     /**
@@ -842,7 +842,7 @@ var JMessagePlugin = {
      * @param {function} success = function (userInfo) {}
      * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
      */
-    getChatroomOwner (params, success, error) {
+    getChatroomOwner: function (params, success, error) {
       exec(success, error, PLUGIN_NAME, 'getChatroomOwner', [params])
     },
     /**
@@ -852,7 +852,7 @@ var JMessagePlugin = {
      * @param {function} success = function (conversation) {}
      * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
      */
-    enterChatroom (params, success, error) {
+    enterChatroom: function (params, success, error) {
       exec(success, error, PLUGIN_NAME, 'enterChatroom', [params])
     },
     /**
@@ -862,7 +862,7 @@ var JMessagePlugin = {
      * @param {function} success = function () {}
      * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
      */
-    exitChatroom (params, success, error) {
+    exitChatroom: function (params, success, error) {
       exec(success, error, PLUGIN_NAME, 'exitChatroom', [params])
     },
     /**
@@ -872,7 +872,7 @@ var JMessagePlugin = {
      * @param {function} success = function (conversation) {}
      * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
      */
-    getChatroomConversation (params, success, error) {
+    getChatroomConversation: function (params, success, error) {
       exec(success, error, PLUGIN_NAME, 'getChatroomConversation', [params])
     },
     /**
@@ -881,7 +881,7 @@ var JMessagePlugin = {
      * @param {function} success = function (conversationList) {}
      * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
      */
-    getChatroomConversationList (params, success, error) {
+    getChatroomConversationList: function (params, success, error) {
       exec(success, error, PLUGIN_NAME, 'getChatroomConversationList', [params])
     },
     /**
@@ -891,7 +891,7 @@ var JMessagePlugin = {
      * @param {function} success = function (conversation) {}
      * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
      */
-    createChatroomConversation (params, success, error) {
+    createChatroomConversation: function (params, success, error) {
       exec(success, error, PLUGIN_NAME, 'createChatroomConversation', [params])
     },
     /**
@@ -901,7 +901,7 @@ var JMessagePlugin = {
      * @param {function} success = function (conversation) {}
      * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
      */
-    deleteChatroomConversation (params, success, error) {
+    deleteChatroomConversation: function (params, success, error) {
       exec(success, error, PLUGIN_NAME, 'deleteChatroomConversation', [params])
     }
   },
