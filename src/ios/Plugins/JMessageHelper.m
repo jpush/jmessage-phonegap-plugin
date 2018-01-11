@@ -75,6 +75,15 @@
   [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageReceiveMessage object:dict];
 }
 
+- (void)onReceiveChatRoomConversation:(JMSGConversation *)conversation messages:(NSArray<__kindof JMSGMessage *> *)messages {
+  NSArray *messageDicArr = [messages mapObjectsUsingBlock:^id(id obj, NSUInteger idx) {
+    JMSGMessage *message = obj;
+    return [message messageToDictionary];
+  }];
+  
+  [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageReceiveChatroomMessage object:messageDicArr];
+}
+
 - (void)onReceiveNotificationEvent:(JMSGNotificationEvent *)event {
   switch (event.eventType) {
     case kJMSGEventNotificationLoginKicked:
@@ -239,15 +248,28 @@
 -(NSMutableDictionary*)conversationToDictionary{
   NSMutableDictionary *dict = [NSMutableDictionary dictionary];
   
-  if (self.conversationType == kJMSGConversationTypeSingle) {
-    JMSGUser *user = self.target;
-    dict[@"target"] = [user userToDictionary];
-    dict[@"conversationType"] = @"single";
-    
-  } else {
-    JMSGGroup *group = self.target;
-    dict[@"target"] = [group groupToDictionary];
-    dict[@"conversationType"] = @"group";
+
+  
+  switch (self.conversationType) {
+    case kJMSGConversationTypeSingle:{
+      JMSGUser *user = self.target;
+      dict[@"target"] = [user userToDictionary];
+      dict[@"conversationType"] = @"single";
+      break;
+    }
+      
+    case kJMSGConversationTypeGroup:{
+      JMSGGroup *group = self.target;
+      dict[@"target"] = [group groupToDictionary];
+      dict[@"conversationType"] = @"group";
+      break;
+    }
+    case kJMSGConversationTypeChatRoom:{
+      JMSGChatRoom *chatroom = self.target;
+      dict[@"target"] = [chatroom chatRoomToDictionary];
+      dict[@"conversationType"] = @"chatroom";
+      break;
+    }
   }
   
   dict[@"latestMessage"] = [self.latestMessage messageToDictionary];

@@ -108,6 +108,10 @@ NSMutableDictionary *_jmessageEventCache;
                       selector:@selector(didReceiveJMessageMessage:)
                           name:kJJMessageReceiveMessage
                         object:nil];
+  [defaultCenter addObserver:self
+                    selector:@selector(didReceiveJMessageChatroomMessage:)
+                        name:kJJMessageReceiveChatroomMessage
+                      object:nil];
     
     [defaultCenter addObserver:self
                       selector:@selector(conversationChanged:)
@@ -228,6 +232,13 @@ NSMutableDictionary *_jmessageEventCache;
     [result setKeepCallback:@(true)];
     
     [self.commandDelegate sendPluginResult:result callbackId:self.callBack.callbackId];
+}
+
+- (void)didReceiveJMessageChatroomMessage:(NSNotification *)notification {
+  CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:@{@"eventName": @"receiveChatroomMessage", @"value": notification.object}];
+  [result setKeepCallback:@(true)];
+  
+  [self.commandDelegate sendPluginResult:result callbackId:self.callBack.callbackId];
 }
 
 - (void)evalFuntionName:(NSString*)functionName jsonParm:(NSString*)jsonString{
@@ -2912,12 +2923,6 @@ NSMutableDictionary *_jmessageEventCache;
 }
 
 - (void)getChatroomConversationList:(CDVInvokedUrlCommand *)command {
-  NSDictionary * param = [command argumentAtIndex:0];
-  
-  if (!param[@"roomId"]) {
-    [self returnParamError:command];
-    return;
-  }
   
   [JMSGConversation allChatRoomConversation:^(id resultObject, NSError *error) {
     if (error) {
@@ -2971,6 +2976,36 @@ NSMutableDictionary *_jmessageEventCache;
   
   [JMSGConversation deleteChatRoomConversationWithRoomId:param[@"roomId"]];
   [self handleResultWithDictionary:[chatRoomConversation conversationToDictionary] command:command error:error];
+}
+
+- (void)getChatroomOwner:(CDVInvokedUrlCommand *)command {
+  NSDictionary * param = [command argumentAtIndex:0];
+  
+  if (!param[@"roomId"]) {
+    [self returnParamError:command];
+    return;
+  }
+  
+  [JMSGChatRoom getChatRoomInfosWithRoomIds:@[param[@"roomId"]] completionHandler:^(id resultObject, NSError *error) {
+    if (error) {
+      [self handleResultWithDictionary: nil command: command error: error];
+      return;
+    }
+    NSArray *chatRoomArr = resultObject;
+    if (chatRoomArr == nil || chatRoomArr.count == 0) {
+      [self returnErrorWithLog:@"cann't found chat room from this roomId!" command:command];
+      return;
+    }
+    JMSGChatRoom *chatRoom = chatRoomArr[0];
+    [chatRoom getChatRoomOwnerInfo:^(id resultObject, NSError *error) {
+      if (error) {
+        [self handleResultWithDictionary: nil command: command error: error];
+        return;
+      }
+      JMSGUser *user = resultObject;
+      [self handleResultWithDictionary:[user userToDictionary] command:command error:error];
+    }];
+  }];
 }
 
 @end

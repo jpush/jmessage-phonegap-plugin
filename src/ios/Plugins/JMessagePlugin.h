@@ -80,4 +80,6 @@
 - (void)getChatroomConversationList:(CDVInvokedUrlCommand *)command;
 - (void)createChatroomConversation:(CDVInvokedUrlCommand *)command;
 - (void)deleteChatroomConversation:(CDVInvokedUrlCommand *)command;
+- (void)getChatroomOwner:(CDVInvokedUrlCommand *)command;
+
 @end
