@@ -1049,6 +1049,23 @@ var JMessagePlugin = {
     if (handlerIndex >= 0) {
       EventHandlers.receiveTransCommand.splice(handlerIndex, 1)
     }
+  },
+  /**
+   * 添加收到聊天室消息的事件监听。
+   * 
+   * @param {function} listener = function (event) {} // 以参数形式返回事件信息。
+   * event = {
+   *  messageArray: Array   // 消息对象数组。
+   * }
+   */
+  addReceiveChatroomMessageListener: function (listener) {
+    EventHandlers.receiveChatroomMessage.push(listener)
+  },
+  removeReceiveChatroomMessageListener: function (listener) {
+    var handlerIndex = EventHandlers.receiveChatroomMessage.indexOf(listener)
+    if (handlerIndex >= 0) {
+      EventHandlers.receiveChatroomMessage.splice(handlerIndex, 1)
+    }
   }
 
   // 事件监听 - end

@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -2276,13 +2275,20 @@ public class JMessagePlugin extends CordovaPlugin {
      * 处理聊天室消息事件。
      */
     public void onEvent(ChatRoomMessageEvent event) {
+        JSONObject result = new JSONObject();
         JSONArray jsonArr = new JSONArray();
 
         for (Message msg : event.getMessages()) {
             jsonArr.put(toJson(msg));
         }
 
-        JSONObject eventJson = toJson("receiveChatroomMessage", jsonArr);
+        try {
+            result.put("messageArray", jsonArr);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JSONObject eventJson = toJson("receiveChatroomMessage", result);
         eventSuccess(eventJson);
     }
 
