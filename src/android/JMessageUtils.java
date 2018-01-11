@@ -21,9 +21,10 @@ import cn.jpush.im.android.api.callback.GetUserInfoCallback;
 import cn.jpush.im.android.api.content.MessageContent;
 import cn.jpush.im.android.api.model.Conversation;
 import cn.jpush.im.android.api.model.Message;
-import cn.jpush.im.android.api.model.UserInfo;
 import cn.jpush.im.android.api.options.MessageSendingOptions;
 import cn.jpush.im.api.BasicCallback;
+
+import static cn.jiguang.cordova.im.JsonUtils.JsonToMessage;
 
 class JMessageUtils {
 
@@ -124,7 +125,7 @@ class JMessageUtils {
             conversation = Conversation.createGroupConversation(Long.parseLong(groupId));
 
         } else if (type.equals("chatroom")) {
-            long roomId = params.getLong("roomId");
+            long roomId = Long.parseLong(params.getString("roomId"));
             conversation = Conversation.createChatRoomConversation(roomId);
         }
 
@@ -143,12 +144,30 @@ class JMessageUtils {
         } else if (type.equals("group")) {
             String groupId = params.getString("groupId");
             conversation = JMessageClient.getGroupConversation(Long.parseLong(groupId));
+
         } else if (type.equals("chatroom")) {
-            long roomId = params.getLong("roomId");
+            long roomId = Long.parseLong(params.getString("roomId"));
             conversation = JMessageClient.getChatRoomConversation(roomId);
         }
 
         return conversation;
+    }
+
+    static Message getMessage(JSONObject params) throws JSONException {
+        if (params.has("messageId")) {  // 代表 JS 层为显式传入所需的参数。
+            Conversation conversation = getConversation(params);
+            if (conversation == null) {
+                return null;
+            }
+
+            String messageId = params.getString("messageId");
+            return conversation.getMessage(Integer.parseInt(messageId));
+
+        } else if (params.has("id")) {    // 代表 JS 层传入的是 Message 对象。
+            return JsonToMessage(params);
+        }
+
+        return null;
     }
 
     static void sendMessage(Conversation conversation, MessageContent content,
@@ -228,4 +247,5 @@ class JMessageUtils {
 
         return file;
     }
+
 }

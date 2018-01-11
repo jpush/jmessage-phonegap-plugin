@@ -836,7 +836,7 @@ var JMessagePlugin = {
       exec(success, error, PLUGIN_NAME, 'getChatroomInfoListById', [params])
     },
     /**
-     * 获取聊天室拥有者的信息。
+     * 获取聊天室拥有者的用户信息。
      * 
      * @param {*} params = { roomId: String } // 聊天室 id
      * @param {function} success = function (userInfo) {}
