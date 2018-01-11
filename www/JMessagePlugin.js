@@ -876,10 +876,10 @@ var JMessagePlugin = {
       exec(success, error, PLUGIN_NAME, 'getChatroomConversation', [params])
     },
     /**
+     * 从本地数据库中获取包含当前登录用户所有聊天室会话的列表。
      *
-     * @param {*} params
-     * @param {*} success
-     * @param {*} error
+     * @param {function} success = function (conversationList) {}
+     * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
      */
     getChatroomConversationList (params, success, error) {
       exec(success, error, PLUGIN_NAME, 'getChatroomConversationList', [params])
