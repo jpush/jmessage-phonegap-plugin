@@ -1972,7 +1972,8 @@ public class JMessagePlugin extends CordovaPlugin {
         }
 
         String extraStr = extra == null ? "" : extra.toString();
-        boolean isSuccess = conversation.updateConversationExtra(extraStr);
+        conversation.updateConversationExtra(extraStr);
+        handleResult(toJson(conversation), 0, null, callback);
     }
 
     // 聊天会话 - end
