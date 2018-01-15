@@ -169,12 +169,6 @@ NSMutableDictionary *_jmessageEventCache;
     return;
   }
   
-  if (param[@"text"] == nil) {
-    NSError *error = [NSError errorWithDomain:@"param error!" code: 1 userInfo: nil];
-    callback(nil,error);
-    return;
-  }
-  
   NSString *appKey = nil;
   if (param[@"appKey"]) {
     appKey = param[@"appKey"];
@@ -956,7 +950,7 @@ NSMutableDictionary *_jmessageEventCache;
       messageSendingOptions = [self convertDicToJMSGOptionalContent:param[@"messageSendingOptions"]];
     }
   
-    JMSGMessage *message = [self createMessageWithDictionary:param type:kJMSGContentTypeLocation];
+    JMSGMessage *message = [self createMessageWithDictionary:param type:kJMSGContentTypeFile];
     if (!message) {
       [self returnErrorWithLog:@"cannot create message, check your params and make sure the media resource is valid" command:command];
       return;
@@ -994,7 +988,7 @@ NSMutableDictionary *_jmessageEventCache;
 
     NSArray *messageDicArr = [messageList mapObjectsUsingBlock:^id(id obj, NSUInteger idx) {
       JMSGMessage *message = obj;
-      return messageDicArr;
+      return [message messageToDictionary];
     }];
     [self handleResultWithArray:messageDicArr command:command error:error];
   }];
