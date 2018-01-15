@@ -11,7 +11,7 @@ var EventHandlers = {
   contactNotify: [],
   retractMessage: [],
   receiveTransCommand: [], // 透传命令
-  receiveChatroomMessage: [] // 聊天室消息
+  receiveChatRoomMessage: [] // 聊天室消息
 }
 
 var JMessagePlugin = {
@@ -202,7 +202,7 @@ var JMessagePlugin = {
    * 增加或更新扩展字段,可扩展会话属性，比如：会话置顶、标识特殊会话等
    *
    * @param {object} params = {
-   *  'type': String,            // 'single' / 'group' / 'chatroom'
+   *  'type': String,            // 'single' / 'group' / 'chatRoom'
    *  'groupId': String,         // 目标群组 id。
    *  'username': String,        // 目标用户名。
    *  'appKey': String,          // 目标用户所属 AppKey。
@@ -217,11 +217,11 @@ var JMessagePlugin = {
 
   /**
    * @param {object} params = {
-   *  'type': String,                                // 'single' / 'group' / 'chatroom'
+   *  'type': String,                                // 'single' / 'group' / 'chatRoom'
    *  'groupId': String,                             // 当 type 为 'group' 时，groupId 不能为空
    *  'username': String,                            // 当 type 为 'single' 时，username 不能为空
    *  'appKey': String,                              // 当 type 为 'single' 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用
-   *  'roomId': String,                              // 当 type 为 'chatroom' 时，roomId 不能为空
+   *  'roomId': String,                              // 当 type 为 'chatRoom' 时，roomId 不能为空
    *  'text': String,                                // 消息内容
    *  'extras': Object,                              // Optional. 自定义键值对 = {'key1': 'value1'}
    *  'messageSendingOptions': MessageSendingOptions // Optional. MessageSendingOptions 对象
@@ -234,11 +234,11 @@ var JMessagePlugin = {
   },
   /**
    * @param {object} params = {
-   *  'type': String,                                // 'single' / 'group' / 'chatroom'
+   *  'type': String,                                // 'single' / 'group' / 'chatRoom'
    *  'groupId': String,                             // 当 type 为 'group' 时，groupId 不能为空
    *  'username': String,                            // 当 type 为 'single' 时，username 不能为空
    *  'appKey': String,                              // 当 type 为 'single' 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用
-   *  'roomId': String,                              // 当 type 为 'chatroom' 时，roomId 不能为空
+   *  'roomId': String,                              // 当 type 为 'chatRoom' 时，roomId 不能为空
    *  'path': String,                                // 本地图片绝对路径。
    *  'extras': object,                              // Optional. 自定义键值对 = {'key1': 'value1'}
    *  'messageSendingOptions': MessageSendingOptions // Optional. MessageSendingOptions 对象
@@ -258,7 +258,7 @@ var JMessagePlugin = {
    *  'groupId': String,                             // 当 type 为 'group' 时，groupId 不能为空
    *  'username': String,                            // 当 type 为 'single' 时，username 不能为空
    *  'appKey': String,                              // 当 type 为 'single' 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
-   *  'roomId': String,                              // 当 type 为 'chatroom' 时，roomId 不能为空
+   *  'roomId': String,                              // 当 type 为 'chatRoom' 时，roomId 不能为空
    *  'path': String,                                // 本地语音文件路径。
    *  'extras': object,                              // Optional. 自定义键值对 = {'key1': 'value1'}
    *  'messageSendingOptions': MessageSendingOptions // Optional. MessageSendingOptions 对象。
@@ -271,10 +271,10 @@ var JMessagePlugin = {
   },
   /**
    * @param {object} params = {
-   *  'type': String,           // 'single' / 'group' / 'chatroom'
+   *  'type': String,           // 'single' / 'group' / 'chatRoom'
    *  'groupId': String,        // 当 type 为 'group' 时，groupId 不能为空
    *  'username': String,       // 当 type 为 'single' 时，username 不能为空
-   *  'roomId': String,         // 当 type 为 'chatroom' 时，roomId 不能为空
+   *  'roomId': String,         // 当 type 为 'chatRoom' 时，roomId 不能为空
    *  'appKey': String,         // 当 type 为 'single' 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
    *  'customObject': {'key1': 'value1'}  // Optional. 自定义键值对
    * }
@@ -286,11 +286,11 @@ var JMessagePlugin = {
   },
   /**
    * @param {object} params = {
-   *  'type': String,           // 'single' / 'group' / 'chatroom'
+   *  'type': String,           // 'single' / 'group' / 'chatRoom'
    *  'groupId': String,        // 当 type 为 'group' 时，groupId 不能为空
    *  'username': String,       // 当 type 为 'single' 时，username 不能为空
    *  'appKey': String,         // 当 type 为 'single' 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
-   *  'roomId': String,         // 当 type 为 'chatroom' 时，roomId 不能为空
+   *  'roomId': String,         // 当 type 为 'chatRoom' 时，roomId 不能为空
    *  'latitude': Number,       // 纬度信息
    *  'longitude': Number,      // 经度信息
    *  'scale': Number,          // 地图缩放比例
@@ -305,11 +305,11 @@ var JMessagePlugin = {
   },
   /**
    * @param {object} params = {
-   *  'type': String,                                // 'single' / 'group' / 'chatroom'
+   *  'type': String,                                // 'single' / 'group' / 'chatRoom'
    *  'groupId': String,                             // 当 type 为 'group' 时，groupId 不能为空。
    *  'username': String,                            // 当 type 为 'single' 时，username 不能为空。
    *  'appKey': String,                              // 当 type 为 'single' 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
-   *  'roomId': String,                              // 当 type 为 'chatroom' 时，roomId 不能为空
+   *  'roomId': String,                              // 当 type 为 'chatRoom' 时，roomId 不能为空
    *  'path': String,                                // 本地文件路径。
    *  'extras': object,                              // Optional. 自定义键值对 = {'key1': 'value1'}
    *  'messageSendingOptions': MessageSendingOptions // Optional. MessageSendingOptions 对象。
@@ -324,10 +324,10 @@ var JMessagePlugin = {
    * 消息撤回。
    *
    * @param {object} params = {
-   *  'type': String,       // 'single' / 'group' / 'chatroom'
+   *  'type': String,       // 'single' / 'group' / 'chatRoom'
    *  'groupId': String,    // 当 type 为 'group' 时，groupId 不能为空。
    *  'username': String,   // 当 type 为 'single' 时，username 不能为空。
-   *  'roomId': String,     // 当 type 为 'chatroom' 时，roomId 不能为空。
+   *  'roomId': String,     // 当 type 为 'chatRoom' 时，roomId 不能为空。
    *  'appKey': String,     // 当 type 为 'single' 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
    *  'messageId': string   // 消息 id。
    * }
@@ -343,11 +343,11 @@ var JMessagePlugin = {
    * 例如：当 from = 0 && limit = -1 时，返回所有历史消息。
    *
    * @param {object} params = {
-   *  'type': String,            // 'single' / 'group' / 'chatroom'
+   *  'type': String,            // 'single' / 'group' / 'chatRoom'
    *  'groupId': String,         // 当 type 为 'group' 时，groupId 不能为空。
    *  'username': String,        // 当 type 为 'single' 时，username 不能为空。
    *  'appKey': String,          // 当 type 为 'single' 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
-   *  'roomId': String,          // 当 type 为 'chatroom' 时，roomId 不能为空。
+   *  'roomId': String,          // 当 type 为 'chatRoom' 时，roomId 不能为空。
    *  'from': Number,            // 开始的消息下标。
    *  'limit': Number            // 要获取的消息数。比如当 from = 0, limit = 10 时，是获取第 0 - 9 的 10 条历史消息。
    * }
@@ -361,11 +361,11 @@ var JMessagePlugin = {
    * 根据消息 id 获取消息对象。
    *
    * @param {object} params = {
-   *   type: String,      // 'single' / 'group' / 'chatroom'
+   *   type: String,      // 'single' / 'group' / 'chatRoom'
    *   groupId: String,   // 当 type = 'group' 时，groupId 必填。
    *   username: String,  // 当 type = 'single' 时，username 必填。
    *   appKey: String,    // 当 type = 'single' 时，用于指定对象所属应用的 appKey。如果未空，则默认为当前应用。
-   *   roomId: String,    // 当 type 为 'chatroom' 时，roomId 不能为空。
+   *   roomId: String,    // 当 type 为 'chatRoom' 时，roomId 不能为空。
    *   messageId: string  // 消息 Id。
    * }
    */
@@ -723,13 +723,14 @@ var JMessagePlugin = {
     exec(success, error, PLUGIN_NAME, 'downloadFile', [params])
   },
   /**
-   * 创建聊天会话。
+   * 创建聊天会话。目前可创建单聊、群聊和聊天室会话。
    *
    * @param {object} params = {
-   *  'type': String,            // 'single' / 'group'
+   *  'type': String,            // 'single' / 'group' / 'chatRoom'
    *  'groupId': String,         // 目标群组 id。
    *  'username': String,        // 目标用户名。
    *  'appKey': String,          // 目标用户所属 AppKey。
+   *  'roomId': String           // 目标聊天室 id。
    * }
    * @param {function} success = function (conversation) {} // 以参数形式返回聊天会话对象。
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
@@ -738,13 +739,14 @@ var JMessagePlugin = {
     exec(success, error, PLUGIN_NAME, 'createConversation', [params])
   },
   /**
-   * 删除聊天会话，同时会删除本地聊天记录。
+   * 删除聊天会话，同时将删除本地聊天记录。
    *
    * @param {object} params = {
-   *  'type': String,            // 'single' / 'group'
+   *  'type': String,            // 'single' / 'group' / 'chatRoom'
    *  'groupId': String,         // 目标群组 id。
    *  'username': String,        // 目标用户名。
    *  'appKey': String,          // 目标用户所属 AppKey。
+   *  'roomId': String           // 目标聊天室 id。
    * }
    * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
@@ -754,12 +756,13 @@ var JMessagePlugin = {
   },
   /**
    * 进入聊天会话。可以在进入聊天会话页面时调用该方法，这样在收到当前聊天用户的消息时，不会显示通知。
+   * 对于聊天室（Chat Room）需要调用 `enterChatRoom` 方法。
    *
    * @param {object} params = {
    *  'type': String,            // 'single' / 'group'
    *  'groupId': String,         // 目标群组 id。
    *  'username': String,        // 目标用户名。
-   *  'appKey': String,          // 目标用户所属 AppKey。
+   *  'appKey': String           // 目标用户所属 AppKey。
    * }
    * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
@@ -769,6 +772,10 @@ var JMessagePlugin = {
       exec(success, error, PLUGIN_NAME, 'enterConversation', [params])
     }
   },
+  /**
+   * 退出聊天会话。
+   * 对于聊天室（Chat Room）需要调用 `exitChatRoom` 方法。
+   */
   exitConversation: function () {
     if (device.platform === 'Android') {
       exec(null, null, PLUGIN_NAME, 'exitConversation', [])
@@ -776,7 +783,7 @@ var JMessagePlugin = {
   },
   /**
    * @param {object} params = {
-   *  'type': String,            // 'single' / 'group' / 'roomId'
+   *  'type': String,            // 'single' / 'group' / 'chatRoom'
    *  'groupId': String,         // 目标群组 id。当 type 为 'group' 时必填。
    *  'username': String,        // 目标用户名。当 type 为 'single' 时必填。
    *  'appKey': String,          // 目标用户所属 AppKey。如果不传或为空字符串，则默认为当前应用。
@@ -799,7 +806,7 @@ var JMessagePlugin = {
    * 重置单个会话的未读消息数。
    *
    * @param {object} params = {
-   *  'type': String,            // 'single' / 'group' / 'chatroom'
+   *  'type': String,            // 'single' / 'group' / 'chatRoom'
    *  'groupId': String,         // 目标群组 id。
    *  'username': String,        // 目标用户名。
    *  'appKey': String,          // 目标用户所属 AppKey。
@@ -813,27 +820,27 @@ var JMessagePlugin = {
   },
 
   // 聊天室 API - start
-  Chatroom: {
+  ChatRoom: {
     /**
      * 获取当前应用所属聊天室的信息。
      * @param {object} params = {
      *  start: number,  // 索引起始位置，从 0 开始。
      *  count: number   // 查询个数。
      * }
-     * @param {function} success = function (chatroomInfoList) {}
+     * @param {function} success = function (chatRoomInfoList) {}
      * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
      */
-    getChatroomInfoListOfApp: function (params, success, error) {
-      exec(success, error, PLUGIN_NAME, 'getChatroomInfoListOfApp', [params])
+    getChatRoomInfoListOfApp: function (params, success, error) {
+      exec(success, error, PLUGIN_NAME, 'getChatRoomInfoListOfApp', [params])
     },
     /**
      * 获取当前登录用户加入的聊天室列表。
      *
-     * @param {function} success = function (chatroomInfoList) {}
+     * @param {function} success = function (chatRoomInfoList) {}
      * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
      */
-    getChatroomInfoListOfUser: function (success, error) {
-      exec(success, error, PLUGIN_NAME, 'getChatroomInfoListOfUser', [])
+    getChatRoomInfoListOfUser: function (success, error) {
+      exec(success, error, PLUGIN_NAME, 'getChatRoomInfoListOfUser', [])
     },
     /**
      * 根据聊天室 id 获取聊天室信息。
@@ -841,31 +848,33 @@ var JMessagePlugin = {
      * @param {object} params = {
      *  roomIds: [String] // 聊天室 id 字符串数组。
      * }
-     * @param {function} success = function (chatroomInfoList) {}
+     * @param {function} success = function (ChatRoomInfoList) {}
      * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
      */
-    getChatroomInfoListById: function (params, success, error) {
-      exec(success, error, PLUGIN_NAME, 'getChatroomInfoListById', [params])
+    getChatRoomInfoListById: function (params, success, error) {
+      exec(success, error, PLUGIN_NAME, 'getChatRoomInfoListById', [params])
     },
     /**
      * 获取聊天室拥有者的用户信息。
      * 
-     * @param {*} params = { roomId: String } // 聊天室 id
+     * @param {object} params = { roomId: String } // 聊天室 id
      * @param {function} success = function (userInfo) {}
      * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
      */
-    getChatroomOwner: function (params, success, error) {
-      exec(success, error, PLUGIN_NAME, 'getChatroomOwner', [params])
+    getChatRoomOwner: function (params, success, error) {
+      exec(success, error, PLUGIN_NAME, 'getChatRoomOwner', [params])
     },
     /**
      * 进入聊天室。
+     * 用户只有成功调用此接口之后，才能收到聊天室消息，以及在此聊天室中发言。
+     * 成功进入聊天室之后，会将聊天室中最近若干条聊天记录同步到本地并触发 `receiveChatRoomMessage` 事件。
      *
      * @param {object} params = { roomId: String }
      * @param {function} success = function (conversation) {}
      * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
      */
-    enterChatroom: function (params, success, error) {
-      exec(success, error, PLUGIN_NAME, 'enterChatroom', [params])
+    enterChatRoom: function (params, success, error) {
+      exec(success, error, PLUGIN_NAME, 'enterChatRoom', [params])
     },
     /**
      * 离开聊天室。
@@ -874,8 +883,8 @@ var JMessagePlugin = {
      * @param {function} success = function () {}
      * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
      */
-    exitChatroom: function (params, success, error) {
-      exec(success, error, PLUGIN_NAME, 'exitChatroom', [params])
+    exitChatRoom: function (params, success, error) {
+      exec(success, error, PLUGIN_NAME, 'exitChatRoom', [params])
     },
     /**
      * 获取聊天室会话信息。如果无法返回
@@ -884,8 +893,8 @@ var JMessagePlugin = {
      * @param {function} success = function (conversation) {}
      * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
      */
-    getChatroomConversation: function (params, success, error) {
-      exec(success, error, PLUGIN_NAME, 'getChatroomConversation', [params])
+    getChatRoomConversation: function (params, success, error) {
+      exec(success, error, PLUGIN_NAME, 'getChatRoomConversation', [params])
     },
     /**
      * 从本地数据库中获取包含当前登录用户所有聊天室会话的列表。
@@ -893,29 +902,9 @@ var JMessagePlugin = {
      * @param {function} success = function (conversationList) {}
      * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
      */
-    getChatroomConversationList: function (params, success, error) {
-      exec(success, error, PLUGIN_NAME, 'getChatroomConversationList', [params])
+    getChatRoomConversationList: function (params, success, error) {
+      exec(success, error, PLUGIN_NAME, 'getChatRoomConversationList', [params])
     },
-    /**
-     * 创建聊天室会话。
-     *
-     * @param {object} params = { roomId: String }
-     * @param {function} success = function (conversation) {}
-     * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
-     */
-    createChatroomConversation: function (params, success, error) {
-      exec(success, error, PLUGIN_NAME, 'createChatroomConversation', [params])
-    },
-    /**
-     * 删除聊天室会话，同时删除掉本地相关缓存。
-     *
-     * @param {object} params = { roomId: String }
-     * @param {function} success = function (conversation) {}
-     * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
-     */
-    deleteChatroomConversation: function (params, success, error) {
-      exec(success, error, PLUGIN_NAME, 'deleteChatroomConversation', [params])
-    }
   },
   // 聊天室 - end
 
@@ -1070,13 +1059,13 @@ var JMessagePlugin = {
    *  messageArray: Array   // 消息对象数组。
    * }
    */
-  addReceiveChatroomMessageListener: function (listener) {
-    EventHandlers.receiveChatroomMessage.push(listener)
+  addReceiveChatRoomMessageListener: function (listener) {
+    EventHandlers.receiveChatRoomMessage.push(listener)
   },
-  removeReceiveChatroomMessageListener: function (listener) {
-    var handlerIndex = EventHandlers.receiveChatroomMessage.indexOf(listener)
+  removeReceiveChatRoomMessageListener: function (listener) {
+    var handlerIndex = EventHandlers.receiveChatRoomMessage.indexOf(listener)
     if (handlerIndex >= 0) {
-      EventHandlers.receiveChatroomMessage.splice(handlerIndex, 1)
+      EventHandlers.receiveChatRoomMessage.splice(handlerIndex, 1)
     }
   }
 

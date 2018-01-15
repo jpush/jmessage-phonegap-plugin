@@ -124,7 +124,7 @@ class JMessageUtils {
             String groupId = params.getString("groupId");
             conversation = Conversation.createGroupConversation(Long.parseLong(groupId));
 
-        } else if (type.equals("chatroom")) {
+        } else if (type.equals("chatRoom")) {
             long roomId = Long.parseLong(params.getString("roomId"));
             conversation = Conversation.createChatRoomConversation(roomId);
         }
@@ -145,7 +145,7 @@ class JMessageUtils {
             String groupId = params.getString("groupId");
             conversation = JMessageClient.getGroupConversation(Long.parseLong(groupId));
 
-        } else if (type.equals("chatroom")) {
+        } else if (type.equals("chatRoom")) {
             long roomId = Long.parseLong(params.getString("roomId"));
             conversation = JMessageClient.getChatRoomConversation(roomId);
         }
