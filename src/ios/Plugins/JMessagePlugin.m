@@ -369,7 +369,7 @@ NSMutableDictionary *_jmessageEventCache;
     return kJMSGConversationTypeGroup;
   }
   
-  if ([str isEqualToString:@"chatroom"]) {
+  if ([str isEqualToString:@"chatRoom"]) {
     return kJMSGConversationTypeChatRoom;
   }
   
@@ -1907,16 +1907,14 @@ NSMutableDictionary *_jmessageEventCache;
         [self returnParamError:command];
         return;
     }
-    
-    if ([param[@"type"] isEqual: @"single"] && param[@"username"] != nil) {
-        
+  
+    if (([param[@"type"] isEqual: @"single"] && param[@"username"] != nil) ||
+        ([param[@"type"] isEqual: @"group"] && param[@"groupId"] != nil)   ||
+        ([param[@"type"] isEqual: @"chatRoom"] && param[@"roomId"] != nil)) {
+
     } else {
-        if ([param[@"type"] isEqual: @"group"] && param[@"groupId"] != nil) {
-            
-        } else {
-            [self returnParamError:command];
-            return;
-        }
+      [self returnParamError:command];
+      return;
     }
     
     NSString *appKey = nil;
@@ -1925,13 +1923,23 @@ NSMutableDictionary *_jmessageEventCache;
     } else {
         appKey = [JMessageHelper shareInstance].JMessageAppKey;
     }
-    
-    if ([param[@"type"] isEqualToString:@"single"]) {
+  
+    JMSGConversationType type =  [self convertStringToConvsersationType:param[@"type"]];
+    switch (type) {
+      case kJMSGConversationTypeSingle: {
         [JMSGConversation deleteSingleConversationWithUsername:param[@"username"] appKey:appKey];
-    } else {
+        break;
+      }
+      case kJMSGConversationTypeGroup: {
         [JMSGConversation deleteGroupConversationWithGroupId:param[@"groupId"]];
+        break;
+      }
+      case kJMSGConversationTypeChatRoom: {
+        [JMSGConversation deleteChatRoomConversationWithRoomId:param[@"roomId"]];
+        break;
+      }
     }
-    
+  
     [self handleResultWithDictionary:nil command:command error:nil];
 }
 
@@ -1980,7 +1988,7 @@ NSMutableDictionary *_jmessageEventCache;
     [self handleResultWithDictionary:nil command:command error:error];
   }];
 }
-//change
+
 - (void)retractMessage:(CDVInvokedUrlCommand *)command {
     NSDictionary * param = [command argumentAtIndex:0];
 
@@ -2022,6 +2030,7 @@ NSMutableDictionary *_jmessageEventCache;
     [self returnParamError:command];
   }
 }
+
 - (void)downloadThumbGroupAvatar:(CDVInvokedUrlCommand *)command {
   NSDictionary * param = [command argumentAtIndex:0];
   
@@ -2298,44 +2307,6 @@ NSMutableDictionary *_jmessageEventCache;
     
     [self handleResultWithArray:conversationDicArr command:command error:error];
   }];
-}
-
-- (void)createChatroomConversation:(CDVInvokedUrlCommand *)command {
-  NSDictionary * param = [command argumentAtIndex:0];
-  
-  if (!param[@"roomId"]) {
-    [self returnParamError:command];
-    return;
-  }
-  
-  [JMSGConversation createChatRoomConversationWithRoomId:param[@"roomId"] completionHandler:^(id resultObject, NSError *error) {
-    if (error) {
-      [self handleResultWithDictionary: nil command: command error: error];
-      return;
-    }
-    
-    JMSGConversation *conversation = resultObject;
-    [self handleResultWithDictionary:[conversation conversationToDictionary] command:command error:error];
-  }];
-}
-
-- (void)deleteChatroomConversation:(CDVInvokedUrlCommand *)command {
-  NSDictionary * param = [command argumentAtIndex:0];
-  
-  if (!param[@"roomId"]) {
-    [self returnParamError:command];
-    return;
-  }
-  JMSGConversation *chatRoomConversation = [JMSGConversation chatRoomConversationWithRoomId:param[@"roomId"]];
-  NSError *error = nil;
-  if (!chatRoomConversation) {
-    error = [NSError errorWithDomain:@"cannot found chat room convsersation from this roomId" code: 1 userInfo: nil];
-    [self handleResultNilWithCommand:command error:error];
-    return;
-  }
-  
-  [JMSGConversation deleteChatRoomConversationWithRoomId:param[@"roomId"]];
-  [self handleResultWithDictionary:[chatRoomConversation conversationToDictionary] command:command error:error];
 }
 
 - (void)getChatroomOwner:(CDVInvokedUrlCommand *)command {
