@@ -878,6 +878,7 @@ var JMessagePlugin = {
     },
     /**
      * 离开聊天室。
+     * 成功调用此接口之后，用户将能不在此聊天室收发消息。
      *
      * @param {object} params = { roomId: String }
      * @param {function} success = function () {}
