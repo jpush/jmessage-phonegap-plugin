@@ -265,7 +265,7 @@
     case kJMSGConversationTypeChatRoom:{
       JMSGChatRoom *chatroom = self.target;
       dict[@"target"] = [chatroom chatRoomToDictionary];
-      dict[@"conversationType"] = @"chatroom";
+      dict[@"conversationType"] = @"chatRoom";
       break;
     }
   }
@@ -362,7 +362,7 @@
     dict[@"extras"] = self.content.extras;
   }
 
-  dict[@"isSend"] = @(self.isReceived);
+  dict[@"isSend"] = @(!self.isReceived);
   switch (self.targetType) {
     case kJMSGConversationTypeSingle:{
       JMSGUser *user = self.target;
@@ -529,14 +529,14 @@
 @implementation JMSGChatRoom (JMessage)
 - (NSMutableDictionary *)chatRoomToDictionary {
   NSMutableDictionary *dict = @{}.mutableCopy;
-  dict[@"type"] = @"chatroom";
+  dict[@"type"] = @"chatRoom";
   dict[@"roomId"] = self.roomID;
   dict[@"name"] = self.name;
   dict[@"appKey"] = self.appkey;
   dict[@"description"] = self.description;
   dict[@"createTime"] = self.ctime;
   dict[@"maxMemberCount"] = @([self.maxMemberCount integerValue]);
-  dict[@"currentMemberCount"] = @(self.totalMemberCount);
+  dict[@"memberCount"] = @(self.totalMemberCount);
   
   return dict;
 }

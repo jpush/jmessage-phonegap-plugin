@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import cn.jpush.im.android.api.ChatRoomManager;
 import cn.jpush.im.android.api.ContactManager;
 import cn.jpush.im.android.api.JMessageClient;
 import cn.jpush.im.android.api.callback.CreateGroupCallback;
@@ -1829,18 +1830,7 @@ public class JMessagePlugin extends CordovaPlugin {
     void createConversation(JSONArray data, CallbackContext callback) {
         try {
             JSONObject params = data.getJSONObject(0);
-            String type = params.getString("type");
-            Conversation conversation = null;
-
-            if (type.equals("single")) {
-                String username = params.getString("username");
-                String appKey = params.has("appKey") ? params.getString("appKey") : "";
-                conversation = Conversation.createSingleConversation(username, appKey);
-
-            } else if (type.equals("group")) {
-                String groupId = params.getString("groupId");
-                conversation = Conversation.createGroupConversation(Long.parseLong(groupId));
-            }
+            Conversation conversation = JMessageUtils.createConversation(params);
 
             if (conversation != null) {
                 callback.success(toJson(conversation));
@@ -1871,6 +1861,10 @@ public class JMessagePlugin extends CordovaPlugin {
             } else if (type.equals("group")) {
                 long groupId = Long.parseLong(params.getString("groupId"));
                 JMessageClient.deleteGroupConversation(groupId);
+
+            } else if (type.equals("chatRoom")) {
+                long roomId = Long.parseLong(params.getString("roomId"));
+                JMessageClient.deleteChatRoomConversation(roomId);
 
             } else {
                 handleResult(ERR_CODE_PARAMETER, "Conversation type is error", callback);
@@ -1972,51 +1966,40 @@ public class JMessagePlugin extends CordovaPlugin {
         }
 
         String extraStr = extra == null ? "" : extra.toString();
-        boolean isSuccess = conversation.updateConversationExtra(extraStr);
+        conversation.updateConversationExtra(extraStr);
+        handleResult(toJson(conversation), 0, null, callback);
     }
 
     // 聊天会话 - end
 
     // 聊天室 - start
 
-    void getChatroomInfoListOfApp(JSONArray data, CallbackContext callback) {
-        ChatroomHandler.getChatroomInfoListOfApp(data, callback);
+    void getChatRoomInfoListOfApp(JSONArray data, CallbackContext callback) {
+        ChatRoomHandler.getChatRoomInfoListOfApp(data, callback);
     }
 
-    void getChatroomInfoListOfUser(JSONArray data, CallbackContext callback) {
-        ChatroomHandler.getChatroomInfoListOfUser(data, callback);
+    void getChatRoomInfoListOfUser(JSONArray data, CallbackContext callback) {
+        ChatRoomHandler.getChatRoomInfoListOfUser(data, callback);
     }
 
-    void getChatroomInfoListById(JSONArray data, CallbackContext callback) {
-        ChatroomHandler.getChatroomInfoListById(data, callback);
+    void getChatRoomInfoListById(JSONArray data, CallbackContext callback) {
+        ChatRoomHandler.getChatRoomInfoListById(data, callback);
     }
 
-    void getChatroomOwner(JSONArray data, CallbackContext callback) {
-        ChatroomHandler.getChatroomOwner(data, callback);
+    void getChatRoomOwner(JSONArray data, CallbackContext callback) {
+        ChatRoomHandler.getChatRoomOwner(data, callback);
     }
 
-    void enterChatroom(JSONArray data, CallbackContext callback) {
-        ChatroomHandler.enterChatroom(data, callback);
+    void enterChatRoom(JSONArray data, CallbackContext callback) {
+        ChatRoomHandler.enterChatRoom(data, callback);
     }
 
-    void exitChatroom(JSONArray data, CallbackContext callback) {
-        ChatroomHandler.exitChatroom(data, callback);
+    void exitChatRoom(JSONArray data, CallbackContext callback) {
+        ChatRoomHandler.exitChatRoom(data, callback);
     }
 
-    void getChatroomConversation(JSONArray data, CallbackContext callback) {
-        ChatroomHandler.getChatroomConversation(data, callback);
-    }
-
-    void getChatroomConversationList(JSONArray data, CallbackContext callback) {
-        ChatroomHandler.getChatroomConversationList(data, callback);
-    }
-
-    void createChatroomConversation(JSONArray data, CallbackContext callback) {
-        ChatroomHandler.createChatroomConversation(data, callback);
-    }
-
-    void deleteChatroomConversation(JSONArray data, CallbackContext callback) {
-        ChatroomHandler.deleteChatroomConversation(data, callback);
+    void getChatRoomConversationList(JSONArray data, CallbackContext callback) {
+        ChatRoomHandler.getChatRoomConversationList(data, callback);
     }
 
     // 聊天室 - end
@@ -2288,7 +2271,7 @@ public class JMessagePlugin extends CordovaPlugin {
             e.printStackTrace();
         }
 
-        JSONObject eventJson = toJson("receiveChatroomMessage", result);
+        JSONObject eventJson = toJson("receiveChatRoomMessage", result);
         eventSuccess(eventJson);
     }
 

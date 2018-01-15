@@ -220,11 +220,11 @@ class JsonUtils {
                 String username;
                 String appKey;
 
-                if (isSend) {   // 消息由当前用户发送。
+                if (isSend) {   // 消息由当前用户发送，则聊天对象为消息接收方。
                     username = target.getString("username");
                     appKey = target.has("appKey") ? target.getString("appKey") : null;
 
-                } else {    // 当前用户为消息接收方。
+                } else {    // 当前用户为消息接收方，则聊天对象为消息发送方。
                     JSONObject opposite = json.getJSONObject("from");
                     username = opposite.getString("username");
                     appKey = opposite.has("appKey") ? opposite.getString("appKey") : null;
@@ -235,6 +235,10 @@ class JsonUtils {
             } else if (target.getString("type").equals("group")) {
                 long groupId = Long.parseLong(target.getString("id"));
                 conversation = JMessageClient.getGroupConversation(groupId);
+
+            } else if (target.getString("type").equals("chatroom")) {
+                long roomId = Long.parseLong(target.getString("roomId"));
+                conversation = JMessageClient.getChatRoomConversation(roomId);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -316,14 +320,14 @@ class JsonUtils {
 
     static JSONObject toJson(ChatRoomInfo chatRoomInfo) throws JSONException {
         JSONObject json = new JSONObject();
-        json.put("type", "chatroom");
+        json.put("type", "chatRoom");
         json.put("roomId", String.valueOf(chatRoomInfo.getRoomID()));   // 配合 iOS，将 long 转成 String。
         json.put("name", chatRoomInfo.getName());
         json.put("appKey", chatRoomInfo.getAppkey());
         json.put("description", chatRoomInfo.getDescription());
         json.put("createTime", chatRoomInfo.getCreateTime());   // 创建日期，单位秒。
         json.put("maxMemberCount", chatRoomInfo.getMaxMemberCount());   // 最大成员数。
-        json.put("currentMemberCount", chatRoomInfo.getTotalMemberCount()); // 当前成员数。
+        json.put("memberCount", chatRoomInfo.getTotalMemberCount()); // 当前成员数。
         return json;
     }
 }
