@@ -327,7 +327,7 @@ class JsonUtils {
         json.put("description", chatRoomInfo.getDescription());
         json.put("createTime", chatRoomInfo.getCreateTime());   // 创建日期，单位秒。
         json.put("maxMemberCount", chatRoomInfo.getMaxMemberCount());   // 最大成员数。
-        json.put("currentMemberCount", chatRoomInfo.getTotalMemberCount()); // 当前成员数。
+        json.put("memberCount", chatRoomInfo.getTotalMemberCount()); // 当前成员数。
         return json;
     }
 }
