@@ -419,63 +419,63 @@
       
       switch (eventContent.eventType) {
         case kJMSGEventNotificationAcceptedFriendInvitation: {
-          dict[@"evenType"] = @"acceptedFriendInvitation";
+          dict[@"eventType"] = @"acceptedFriendInvitation";
           break;
         }
         case kJMSGEventNotificationAddGroupMembers: {
-          dict[@"evenType"] = @"group_member_added";
+          dict[@"eventType"] = @"group_member_added";
           break;
         }
         case kJMSGEventNotificationCreateGroup: {
-          dict[@"evenType"] = @"createGroup";
+          dict[@"eventType"] = @"createGroup";
           break;
         }
         case kJMSGEventNotificationCurrentUserInfoChange: {
-          dict[@"evenType"] = @"currentUserInfoChange";
+          dict[@"eventType"] = @"currentUserInfoChange";
           break;
         }
         case kJMSGEventNotificationDeclinedFriendInvitation: {
-          dict[@"evenType"] = @"declinedFriendInvitation";
+          dict[@"eventType"] = @"declinedFriendInvitation";
           break;
         }
         case kJMSGEventNotificationDeletedFriend: {
-          dict[@"evenType"] = @"deletedFriend";
+          dict[@"eventType"] = @"deletedFriend";
           break;
         }
         case kJMSGEventNotificationExitGroup: {
-          dict[@"evenType"] = @"group_member_exit";
+          dict[@"eventType"] = @"group_member_exit";
           break;
         }
         case kJMSGEventNotificationLoginKicked: {
-          dict[@"evenType"] = @"loginKicked";
+          dict[@"eventType"] = @"loginKicked";
           break;
         }
         case kJMSGEventNotificationMessageRetract: {
-          dict[@"evenType"] = @"messageRetract";
+          dict[@"eventType"] = @"messageRetract";
           break;
         }
         case kJMSGEventNotificationReceiveFriendInvitation: {
-          dict[@"evenType"] = @"receiveFriendInvitation";
+          dict[@"eventType"] = @"receiveFriendInvitation";
           break;
         }
         case kJMSGEventNotificationReceiveServerFriendUpdate: {
-          dict[@"evenType"] = @"receiveServerFriendUpdate";
+          dict[@"eventType"] = @"receiveServerFriendUpdate";
           break;
         }
         case kJMSGEventNotificationRemoveGroupMembers: {
-          dict[@"evenType"] = @"group_member_removed";
+          dict[@"eventType"] = @"group_member_removed";
           break;
         }
         case kJMSGEventNotificationServerAlterPassword: {
-          dict[@"evenType"] = @"serverAlterPassword";
+          dict[@"eventType"] = @"serverAlterPassword";
           break;
         }
         case kJMSGEventNotificationUpdateGroupInfo: {
-          dict[@"evenType"] = @"updateGroupInfo";
+          dict[@"eventType"] = @"updateGroupInfo";
           break;
         }
         case kJMSGEventNotificationUserLoginStatusUnexpected: {
-          dict[@"evenType"] = @"userLoginStatusUnexpected";
+          dict[@"eventType"] = @"userLoginStatusUnexpected";
           break;
         }
         default:
