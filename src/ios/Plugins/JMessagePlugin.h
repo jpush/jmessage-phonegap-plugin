@@ -71,13 +71,13 @@
 - (void)setConversationExtras:(CDVInvokedUrlCommand *)command;
 
 // 聊天室 API
-- (void)getChatroomInfoListOfApp:(CDVInvokedUrlCommand *)command;
-- (void)getChatroomInfoListOfUser:(CDVInvokedUrlCommand *)command;
-- (void)getChatroomInfoListById:(CDVInvokedUrlCommand *)command;
-- (void)enterChatroom:(CDVInvokedUrlCommand *)command;
-- (void)exitChatroom:(CDVInvokedUrlCommand *)command;
-- (void)getChatroomConversation:(CDVInvokedUrlCommand *)command;
-- (void)getChatroomConversationList:(CDVInvokedUrlCommand *)command;
-- (void)getChatroomOwner:(CDVInvokedUrlCommand *)command;
+- (void)getChatRoomInfoListOfApp:(CDVInvokedUrlCommand *)command;
+- (void)getChatRoomInfoListOfUser:(CDVInvokedUrlCommand *)command;
+- (void)getChatRoomInfoListById:(CDVInvokedUrlCommand *)command;
+- (void)enterChatRoom:(CDVInvokedUrlCommand *)command;
+- (void)exitChatRoom:(CDVInvokedUrlCommand *)command;
+- (void)getChatRoomConversation:(CDVInvokedUrlCommand *)command;
+- (void)getChatRoomConversationList:(CDVInvokedUrlCommand *)command;
+- (void)getChatRoomOwner:(CDVInvokedUrlCommand *)command;
 
 @end
