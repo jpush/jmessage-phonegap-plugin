@@ -823,6 +823,7 @@ var JMessagePlugin = {
   ChatRoom: {
     /**
      * 获取当前应用所属聊天室的信息。
+     * 
      * @param {object} params = {
      *  start: number,  // 索引起始位置，从 0 开始。
      *  count: number   // 查询个数。
