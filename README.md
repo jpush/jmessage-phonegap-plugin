@@ -1,6 +1,6 @@
 # JMessage PhoneGap / Cordova Plugin
 
-[![release](https://img.shields.io/badge/release-3.1.7-blue.svg)](https://github.com/jpush/jmessage-phonegap-plugin/releases)
+[![release](https://img.shields.io/badge/release-3.2.0-blue.svg)](https://github.com/jpush/jmessage-phonegap-plugin/releases)
 [![platforms](https://img.shields.io/badge/platforms-iOS%7CAndroid-green.svg)](https://github.com/jpush/jmessage-phonegap-plugin)
 [![Code Triagers Badge](https://www.codetriage.com/jpush/jmessage-phonegap-plugin/badges/users.svg)](https://www.codetriage.com/jpush/jmessage-phonegap-plugin)
 [![weibo](https://img.shields.io/badge/weibo-JPush-blue.svg)](http://weibo.com/jpush?refer_flag=1001030101_&is_all=1)
@@ -8,8 +8,6 @@
 极光官方开发的[极光 IM](https://docs.jiguang.cn/jmessage/guideline/jmessage_guide/) cordova 插件，目前支持 iOS 和 Android 平台。
 
 若只需要简单的聊天功能，可优先考虑使用 [JMessage Web SDK](https://docs.jiguang.cn/jmessage/client/im_sdk_js_v2/)。
-
-**目前重构了 3.0.0+ 版本，Android, iOS 完全统一接口和对象字段，优化了 API 调用方式，不兼容老版本，升级时请注意。**
 
 ## Full Documentation
 

@@ -112,7 +112,7 @@ NSMutableDictionary *_jmessageEventCache;
                           name:kJJMessageReceiveMessage
                         object:nil];
   [defaultCenter addObserver:self
-                    selector:@selector(didReceiveJMessageChatroomMessage:)
+                    selector:@selector(didReceiveJMessageChatRoomMessage:)
                         name:kJJMessageReceiveChatroomMessage
                       object:nil];
     
@@ -451,8 +451,8 @@ NSMutableDictionary *_jmessageEventCache;
     [self.commandDelegate sendPluginResult:result callbackId:self.callBack.callbackId];
 }
 
-- (void)didReceiveJMessageChatroomMessage:(NSNotification *)notification {
-  CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:@{@"eventName": @"receiveChatroomMessage", @"value": notification.object}];
+- (void)didReceiveJMessageChatRoomMessage:(NSNotification *)notification {
+  CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:@{@"eventName": @"receiveChatRoomMessage", @"value": notification.object}];
   [result setKeepCallback:@(true)];
   
   [self.commandDelegate sendPluginResult:result callbackId:self.callBack.callbackId];
@@ -2156,21 +2156,22 @@ NSMutableDictionary *_jmessageEventCache;
   }];
 }
 
-- (void)getChatroomInfoListOfApp:(CDVInvokedUrlCommand *)command {
+- (void)getChatRoomInfoListOfApp:(CDVInvokedUrlCommand *)command {
   NSDictionary * param = [command argumentAtIndex:0];
   NSNumber *start = nil;
   NSNumber *count = nil;
-  if (!param[@"start"]) {
+  if (param[@"start"]) {
     [self returnParamError:command];
-    start = param[@"start"];
     return;
   }
   
-  if (!param[@"count"]) {
+  if (param[@"count"]) {
     [self returnParamError:command];
-    count = param[@"count"];
     return;
   }
+  
+  start = param[@"start"];
+  count = param[@"count"];
   
   NSString *appKey = nil;
   if (param[@"appKey"]) {
@@ -2194,7 +2195,7 @@ NSMutableDictionary *_jmessageEventCache;
   }];
 }
 
-- (void)getChatroomInfoListOfUser:(CDVInvokedUrlCommand *)command {
+- (void)getChatRoomInfoListOfUser:(CDVInvokedUrlCommand *)command {
   [JMSGChatRoom getMyChatRoomListCompletionHandler:^(id resultObject, NSError *error) {
     if (error) {
       [self handleResultWithDictionary: nil command: command error: error];
@@ -2211,7 +2212,7 @@ NSMutableDictionary *_jmessageEventCache;
   }];
 }
 
-- (void)getChatroomInfoListById:(CDVInvokedUrlCommand *)command {
+- (void)getChatRoomInfoListById:(CDVInvokedUrlCommand *)command {
   NSDictionary * param = [command argumentAtIndex:0];
   
   if (!param[@"roomIds"]) {
@@ -2235,7 +2236,7 @@ NSMutableDictionary *_jmessageEventCache;
   }];
 }
 
-- (void)enterChatroom:(CDVInvokedUrlCommand *)command {
+- (void)enterChatRoom:(CDVInvokedUrlCommand *)command {
   NSDictionary * param = [command argumentAtIndex:0];
   
   if (!param[@"roomId"]) {
@@ -2255,7 +2256,7 @@ NSMutableDictionary *_jmessageEventCache;
   }];
 }
 
-- (void)exitChatroom:(CDVInvokedUrlCommand *)command {
+- (void)exitChatRoom:(CDVInvokedUrlCommand *)command {
   NSDictionary * param = [command argumentAtIndex:0];
   
   if (!param[@"roomId"]) {
@@ -2272,7 +2273,7 @@ NSMutableDictionary *_jmessageEventCache;
   }];
 }
 
-- (void)getChatroomConversation:(CDVInvokedUrlCommand *)command {
+- (void)getChatRoomConversation:(CDVInvokedUrlCommand *)command {
   NSDictionary * param = [command argumentAtIndex:0];
   
   if (!param[@"roomId"]) {
@@ -2291,7 +2292,7 @@ NSMutableDictionary *_jmessageEventCache;
   [self handleResultWithDictionary:[chatRoomConversation conversationToDictionary] command:command error: error];
 }
 
-- (void)getChatroomConversationList:(CDVInvokedUrlCommand *)command {
+- (void)getChatRoomConversationList:(CDVInvokedUrlCommand *)command {
   
   [JMSGConversation allChatRoomConversation:^(id resultObject, NSError *error) {
     if (error) {
@@ -2309,7 +2310,7 @@ NSMutableDictionary *_jmessageEventCache;
   }];
 }
 
-- (void)getChatroomOwner:(CDVInvokedUrlCommand *)command {
+- (void)getChatRoomOwner:(CDVInvokedUrlCommand *)command {
   NSDictionary * param = [command argumentAtIndex:0];
   
   if (!param[@"roomId"]) {

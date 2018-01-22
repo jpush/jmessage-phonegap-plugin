@@ -127,20 +127,23 @@ class JsonUtils {
             result.put("from", toJson(msg.getFromUser()));  // 消息发送者
             result.put("isSend", msg.getDirect() == MessageDirect.send);    // 消息是否是由当前用户发出
 
-            if (msg.getDirect() == MessageDirect.send) {    // 消息发送
-                if (msg.getTargetType() == ConversationType.single) {   // 消息发送对象的类型
-                    result.put("target", toJson((UserInfo) msg.getTargetInfo()));
-                } else if (msg.getTargetType() == ConversationType.group) {
-                    result.put("target", toJson((GroupInfo) msg.getTargetInfo()));
-                }
-
-            } else if (msg.getDirect() == MessageDirect.receive) {    // 消息接收
-                if (msg.getTargetType() == ConversationType.single) {
-                    result.put("target", toJson(JMessageClient.getMyInfo()));
-                } else if (msg.getTargetType() == ConversationType.group) {
-                    result.put("target", toJson((GroupInfo) msg.getTargetInfo()));
-                }
+            JSONObject targetJson = null;
+            switch (msg.getTargetType()) {
+                case single:
+                    if (msg.getDirect() == MessageDirect.send) {    // 消息发送
+                        targetJson = toJson((UserInfo) msg.getTargetInfo());
+                    } else {    // 消息接收
+                        targetJson = toJson(JMessageClient.getMyInfo());
+                    }
+                    break;
+                case group:
+                    targetJson = toJson((GroupInfo) msg.getTargetInfo());
+                    break;
+                case chatroom:
+                    targetJson = toJson((ChatRoomInfo) msg.getTargetInfo());
+                    break;
             }
+            result.put("target", targetJson);
 
             MessageContent content = msg.getContent();
             if (content.getStringExtras() != null) {
