@@ -2160,17 +2160,18 @@ NSMutableDictionary *_jmessageEventCache;
   NSDictionary * param = [command argumentAtIndex:0];
   NSNumber *start = nil;
   NSNumber *count = nil;
-  if (!param[@"start"]) {
+  if (param[@"start"]) {
     [self returnParamError:command];
-    start = param[@"start"];
     return;
   }
   
-  if (!param[@"count"]) {
+  if (param[@"count"]) {
     [self returnParamError:command];
-    count = param[@"count"];
     return;
   }
+  
+  start = param[@"start"];
+  count = param[@"count"];
   
   NSString *appKey = nil;
   if (param[@"appKey"]) {
