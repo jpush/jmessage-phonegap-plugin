@@ -889,7 +889,7 @@ var JMessagePlugin = {
       exec(success, error, PLUGIN_NAME, 'exitChatRoom', [params])
     },
     /**
-     * 获取聊天室会话信息。如果无法返回
+     * 获取聊天室会话信息。
      *
      * @param {object} params = { roomId: String }
      * @param {function} success = function (conversation) {}
