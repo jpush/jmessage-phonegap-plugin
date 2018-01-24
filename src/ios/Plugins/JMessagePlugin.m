@@ -251,7 +251,8 @@ NSMutableDictionary *_jmessageEventCache;
         return nil;
       }
       content = [[JMSGImageContent alloc] initWithImageData: [NSData dataWithContentsOfFile: mediaPath]];
-      
+      JMSGImageContent *imgContent = content;
+      imgContent.format = [mediaPath pathExtension];
       break;
     }
     case kJMSGContentTypeVoice:{
@@ -294,6 +295,8 @@ NSMutableDictionary *_jmessageEventCache;
       }
       
       content = [[JMSGFileContent alloc] initWithFileData:[NSData dataWithContentsOfFile: mediaPath] fileName: fileName];
+      JMSGFileContent *fileContent = content;
+      fileContent.format =[mediaPath pathExtension];
       break;
     }
     case kJMSGContentTypeCustom:{
