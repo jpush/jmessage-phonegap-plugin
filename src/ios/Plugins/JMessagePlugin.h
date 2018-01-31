@@ -80,4 +80,5 @@
 - (void)getChatRoomConversationList:(CDVInvokedUrlCommand *)command;
 - (void)getChatRoomOwner:(CDVInvokedUrlCommand *)command;
 
+- (void)setBadge:(CDVInvokedUrlCommand *)command;
 @end

@@ -251,7 +251,8 @@ NSMutableDictionary *_jmessageEventCache;
         return nil;
       }
       content = [[JMSGImageContent alloc] initWithImageData: [NSData dataWithContentsOfFile: mediaPath]];
-      
+      JMSGImageContent *imgContent = content;
+      imgContent.format = [mediaPath pathExtension];
       break;
     }
     case kJMSGContentTypeVoice:{
@@ -294,6 +295,8 @@ NSMutableDictionary *_jmessageEventCache;
       }
       
       content = [[JMSGFileContent alloc] initWithFileData:[NSData dataWithContentsOfFile: mediaPath] fileName: fileName];
+      JMSGFileContent *fileContent = content;
+      fileContent.format =[mediaPath pathExtension];
       break;
     }
     case kJMSGContentTypeCustom:{
@@ -2340,4 +2343,12 @@ NSMutableDictionary *_jmessageEventCache;
   }];
 }
 
+
+- (void)setBadge:(CDVInvokedUrlCommand *)command {
+  NSDictionary * param = [command argumentAtIndex:0];
+  
+  if (param[@"badge"]) {
+    [JMessage setBadge:[param[@"badge"] integerValue]];
+  }
+}
 @end
