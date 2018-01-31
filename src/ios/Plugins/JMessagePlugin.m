@@ -2343,4 +2343,12 @@ NSMutableDictionary *_jmessageEventCache;
   }];
 }
 
+
+- (void)setBadge:(CDVInvokedUrlCommand *)command {
+  NSDictionary * param = [command argumentAtIndex:0];
+  
+  if (param[@"badge"]) {
+    [JMessage setBadge:[param[@"badge"] integerValue]];
+  }
+}
 @end
