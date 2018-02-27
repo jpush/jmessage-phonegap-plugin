@@ -107,16 +107,15 @@ var JMessagePlugin = {
     exec(null, null, PLUGIN_NAME, 'userLogout', [])
   },
   /**
-   * 设置 JMessage 服务器角标。
+   * （iOS only）设置 JMessage 服务器角标。
    * @param {object} params = {
    *  badge: number
    * }
    */
   setBadge: function (params) {
-    if (device.platform !== 'Android') {
+    if (device.platform === 'iOS') {
       exec(null, null, PLUGIN_NAME, 'setBadge', [params])  
     }
-    
   },
   /**
    * 登录成功则返回用户信息，未登录则对应用户信息为空对象。
