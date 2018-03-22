@@ -145,11 +145,7 @@ NSMutableDictionary *_jmessageEventCache;
                       selector:@selector(didReceiveRetractMessage:)
                           name:kJJMessageRetractMessage
                         object:nil];
-    
-    [defaultCenter addObserver:self
-                      selector:@selector(groupInfoChanged:)
-                          name:kJJMessageGroupInfoChanged
-                        object:nil];
+  
 
     [defaultCenter addObserver:self
                       selector:@selector(onSyncOfflineMessage:)
@@ -420,10 +416,6 @@ NSMutableDictionary *_jmessageEventCache;
 
 - (void)unreadChanged:(NSNotification *)notification{
     [self evalFuntionName:@"onUnreadChanged" jsonParm:[notification.object toJsonString]];
-}
-
-- (void)groupInfoChanged:(NSNotification *)notification{
-    [self evalFuntionName:@"onGroupInfoChanged" jsonParm:[notification.object toJsonString]];
 }
 
 - (void)loginStateChanged:(NSNotification *)notification{
