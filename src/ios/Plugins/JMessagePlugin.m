@@ -979,12 +979,24 @@ NSMutableDictionary *_jmessageEventCache;
     if ([limit isEqualToNumber:@(-1)]) {
       limit = nil;
     }
+    
+    BOOL isDecend = false;
+    if (param[@"isDecend"]) {
+      NSNumber *number = param[@"isDecend"];
+      isDecend = [number boolValue];
+    }
+    
     NSArray *messageList = [conversation messageArrayFromNewestWithOffset:param[@"from"] limit:limit];
 
     NSArray *messageDicArr = [messageList mapObjectsUsingBlock:^id(id obj, NSUInteger idx) {
       JMSGMessage *message = obj;
       return [message messageToDictionary];
     }];
+    
+    if (isDecend) {
+      messageDicArr = [[messageDicArr reverseObjectEnumerator] allObjects];
+    }
+    
     [self handleResultWithArray:messageDicArr command:command error:error];
   }];
 }
