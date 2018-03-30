@@ -980,10 +980,10 @@ NSMutableDictionary *_jmessageEventCache;
       limit = nil;
     }
     
-    BOOL isDecend = false;
-    if (param[@"isDecend"]) {
-      NSNumber *number = param[@"isDecend"];
-      isDecend = [number boolValue];
+    BOOL isDescend = false;
+    if (param[@"isDescend"]) {
+      NSNumber *number = param[@"isDescend"];
+      isDescend = [number boolValue];
     }
     
     NSArray *messageList = [conversation messageArrayFromNewestWithOffset:param[@"from"] limit:limit];
@@ -993,7 +993,7 @@ NSMutableDictionary *_jmessageEventCache;
       return [message messageToDictionary];
     }];
     
-    if (isDecend) {
+    if (isDescend) {
       messageDicArr = [[messageDicArr reverseObjectEnumerator] allObjects];
     }
     
