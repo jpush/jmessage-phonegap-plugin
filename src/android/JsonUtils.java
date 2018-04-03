@@ -124,12 +124,14 @@ class JsonUtils {
             result.put("id", String.valueOf(msg.getId()));  // 本地数据库 id
             result.put("serverMessageId", String.valueOf(msg.getServerMessageId()));    // 服务器端 id
             result.put("from", toJson(msg.getFromUser()));  // 消息发送者
-            result.put("isSend", msg.getDirect() == MessageDirect.send);    // 消息是否是由当前用户发出
+
+            boolean isSend = msg.getDirect().equals(MessageDirect.send);
+            result.put("isSend", isSend);    // 消息是否是由当前用户发出
 
             JSONObject targetJson = null;
             switch (msg.getTargetType()) {
                 case single:
-                    if (msg.getDirect() == MessageDirect.send) {    // 消息发送
+                    if (isSend) {    // 消息发送
                         targetJson = toJson((UserInfo) msg.getTargetInfo());
                     } else {    // 消息接收
                         targetJson = toJson(JMessageClient.getMyInfo());
@@ -141,6 +143,7 @@ class JsonUtils {
                 case chatroom:
                     targetJson = toJson((ChatRoomInfo) msg.getTargetInfo());
                     break;
+                default:
             }
             result.put("target", targetJson);
 
@@ -186,7 +189,9 @@ class JsonUtils {
                 case eventNotification:
                     result.put("type", "event");
                     List usernameList = ((EventNotificationContent) content).getUserNames();
-                    result.put("usernames", toJson(usernameList));
+                    if (usernameList != null) {
+                        result.put("usernames", toJson(usernameList));
+                    }
                     switch (((EventNotificationContent) content).getEventNotificationType()) {
                         case group_member_added:
                             //群成员加群事件
@@ -200,7 +205,9 @@ class JsonUtils {
                             //群成员退群事件
                             result.put("eventType", "group_member_exit");
                             break;
+                        default:
                     }
+                default:
             }
         } catch (JSONException e) {
             e.printStackTrace();

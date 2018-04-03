@@ -1,6 +1,6 @@
 # JMessage PhoneGap / Cordova Plugin
 
-[![release](https://img.shields.io/badge/release-3.4.0-blue.svg)](https://github.com/jpush/jmessage-phonegap-plugin/releases)
+[![release](https://img.shields.io/badge/release-3.4.4-blue.svg)](https://github.com/jpush/jmessage-phonegap-plugin/releases)
 [![platforms](https://img.shields.io/badge/platforms-iOS%7CAndroid-green.svg)](https://github.com/jpush/jmessage-phonegap-plugin)
 [![Code Triagers Badge](https://www.codetriage.com/jpush/jmessage-phonegap-plugin/badges/users.svg)](https://www.codetriage.com/jpush/jmessage-phonegap-plugin)
 [![weibo](https://img.shields.io/badge/weibo-JPush-blue.svg)](http://weibo.com/jpush?refer_flag=1001030101_&is_all=1)
@@ -9,7 +9,9 @@
 
 若只需要简单的聊天功能，可优先考虑使用 [JMessage Web SDK](https://docs.jiguang.cn/jmessage/client/im_sdk_js_v2/)。
 
-注意：从 v3.4.0 开始支持 cordova-android 7.0.0，因 cordova-android 7.0.0 修改了 Android 项目结构，因此不兼容之前的版本，升级前请务必注意。如果需要安装之前版本的插件，请先安装 v1.2.0 以下版本的 cordova-plugin-jcore，再安装插件。
+>注意：从 v3.4.0 开始支持 cordova-android 7.0.0，因 cordova-android 7.0.0 修改了 Android 项目结构，因此不兼容之前的版本，升级前请务必注意。
+>
+>如果需要安装之前版本的插件，请先自行安装 v1.2.0 以下版本（建议安装 v1.1.12，cordova-plugin-jcore 向下兼容）的 cordova-plugin-jcore，再安装插件，否则运行会报错。
 
 ## Full Documentation
 

@@ -217,10 +217,6 @@
 
 #pragma mark - Group 回调
 
-- (void)onGroupInfoChanged:(JMSGGroup *)group{
-  [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageGroupInfoChanged object:[group groupToDictionary]];
-}
-
 @end
 
 

@@ -35,17 +35,17 @@ var JMessagePlugin = {
      * 是否开启了自定义接收方通知栏功能。
      * @type {?boolean}
      */
-    isCustomNotificationEnabled: null,
+    isCustomNotificationEnabled: undefined,
     /**
      * 设置此条消息在接收方通知栏所展示通知的标题。
      * @type {?string}
      */
-    notificationTitle: null,
+    notificationTitle: undefined,
     /**
      * 设置此条消息在接收方通知栏所展示通知的内容。
      * @type {?string}
      */
-    notificationText: null
+    notificationText: undefined
   },
   /**
    * @param {object} params = {

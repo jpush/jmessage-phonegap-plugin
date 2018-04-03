@@ -145,11 +145,7 @@ NSMutableDictionary *_jmessageEventCache;
                       selector:@selector(didReceiveRetractMessage:)
                           name:kJJMessageRetractMessage
                         object:nil];
-    
-    [defaultCenter addObserver:self
-                      selector:@selector(groupInfoChanged:)
-                          name:kJJMessageGroupInfoChanged
-                        object:nil];
+  
 
     [defaultCenter addObserver:self
                       selector:@selector(onSyncOfflineMessage:)
@@ -420,10 +416,6 @@ NSMutableDictionary *_jmessageEventCache;
 
 - (void)unreadChanged:(NSNotification *)notification{
     [self evalFuntionName:@"onUnreadChanged" jsonParm:[notification.object toJsonString]];
-}
-
-- (void)groupInfoChanged:(NSNotification *)notification{
-    [self evalFuntionName:@"onGroupInfoChanged" jsonParm:[notification.object toJsonString]];
 }
 
 - (void)loginStateChanged:(NSNotification *)notification{
@@ -987,12 +979,24 @@ NSMutableDictionary *_jmessageEventCache;
     if ([limit isEqualToNumber:@(-1)]) {
       limit = nil;
     }
+    
+    BOOL isDescend = false;
+    if (param[@"isDescend"]) {
+      NSNumber *number = param[@"isDescend"];
+      isDescend = [number boolValue];
+    }
+    
     NSArray *messageList = [conversation messageArrayFromNewestWithOffset:param[@"from"] limit:limit];
 
     NSArray *messageDicArr = [messageList mapObjectsUsingBlock:^id(id obj, NSUInteger idx) {
       JMSGMessage *message = obj;
       return [message messageToDictionary];
     }];
+    
+    if (isDescend) {
+      messageDicArr = [[messageDicArr reverseObjectEnumerator] allObjects];
+    }
+    
     [self handleResultWithArray:messageDicArr command:command error:error];
   }];
 }
