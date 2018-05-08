@@ -1,45 +1,244 @@
 /**
- * This is a template for new plugin wrappers
  *
  * TODO:
- * - Add/Change information below
- * - Document usage (importing, executing main functionality)
- * - Remove any imports that you are not using
- * - Add this file to /src/index.ts (follow style of other plugins)
- * - Remove all the comments included in this template, EXCEPT the @Plugin wrapper docs and any other docs you added
+ * - Add Promise callback params type
+ * - Add ChatRoom API
+ * - Test ionic plugin
  * - Remove this note
- *
  */
-import {Injectable} from '@angular/core';
+import { Injectable } from '@angular/core';
 import {
   Plugin,
   Cordova,
   IonicNativePlugin
 } from '@ionic-native/core';
 
+
+export interface JMSingleType {
+  type: 'single',
+  username: string,
+  appKey: string
+}
+
+export interface JMGroupType {
+  type: 'group',
+  groupId: string
+}
+
+export interface JMChatRoomType {
+  type: 'chatRoom',
+  roomId: string
+}
+
+export type JMAllType = (JMSingleType | JMGroupType | JMChatRoomType)
+
+export interface JMMessageOptions {
+  extras?: { [key: string]: string; },
+  messageSendingOptions?: JMMessageSendOptions
+}
+
+export interface JMConfig {
+  isOpenMessageRoaming: boolean
+}
+
+export interface JMError {
+  code: string,
+  description: string
+}
+
 /**
- * @name jmessage Chenyu
+ * Message type
+ */
+
+export interface JMNormalMessage {
+  id: string,                      // 本地数据库中的消息 id
+  serverMessageId: string          // 对应服务器端的消息 id
+  isSend: boolean,                 // 消息是否由当前用户发出。true：为当前用户发送；false：为对方用户发送。
+  from: JMUserInfo,                // 消息发送者对象
+  target: JMUserInfo | JMGroupInfo,// 消息接收者对象
+  createTime: number,             // 发送消息时间
+  extras?: { [key: string]: string; }                  // 附带的键值对
+}
+
+export type JMTextMessage = JMNormalMessage & {
+  text: string,                   // 消息内容
+}
+
+export type JMVoiceMessage = JMNormalMessage & {
+  path?: string,                   // 语音文件路径,如果为空需要调用相应下载方法
+  duration: number                 // 语音时长，单位秒
+}
+
+export type JMImageMessage = JMNormalMessage & {
+  thumbPath?: string,               // 图片的缩略图路径, 如果为空需要调用相应下载方法
+}
+
+export type JMFileMessage = JMNormalMessage & {
+  fileName: string                 // 文件名
+}
+
+export type JMLocationMessage = JMNormalMessage & {
+  longitude: number,              // 经度
+  latitude: number,               // 纬度
+  scale: number                   // 地图缩放比例
+  address?: string,               // 详细地址
+}
+
+export type JMCustomMessage = JMNormalMessage & {
+  customObject: { [key: string]: string; }            // 自定义键值对
+}
+
+export interface JMEventMessage {
+  type: 'event',           // 消息类型
+  eventType: 'group_member_added' | 'group_member_removed' | 'group_member_exit',       // 'group_member_added' / 'group_member_removed' / 'group_member_exit'
+  usernames: JMUserInfo[]         // 该事件涉及到的用户 username 数组
+}
+
+type JMAllMessage = JMTextMessage | JMVoiceMessage | JMImageMessage | JMFileMessage | JMEventMessage
+
+export type JMMessageEventListener = (message: JMAllMessage) => void
+
+export type JMSyncOfflineMessageListener = (event: {
+  conversation: JMConversationInfo,
+  messageArray: JMAllMessage[]
+}) => void
+
+export type JMSyncRoamingMessageListener = (event: {
+  conversation: JMConversationInfo
+}) => void
+
+export type JMLoginStateChangedListener = (event: {
+  type: 'user_password_change' | 'user_logout' | 'user_deleted' | 'user_login_status_unexpected'
+}) => void
+
+export type JMContactNotifyListener = (event: {
+  type: 'invite_received' | 'invite_accepted' | 'invite_declined' | 'contact_deleted',
+  reason: string,
+  fromUsername: string,
+  fromUserAppKey: string
+}) => void
+
+export type JMMessageRetractListener = (event: {
+  conversation: JMConversationInfo,
+  retractedMessage: JMAllMessage
+}) => void
+
+export type JMReceiveTransCommandListener = (event: {
+  message: string,
+  sender: JMUserInfo,
+  receiver: JMUserInfo | JMGroupInfo,
+  receiverType: 'single' | 'group'
+}) => void
+
+export type JMReceiveChatRoomMessageListener = (event: {
+  messageArray: JMAllMessage[]
+}) => void
+
+/**
+ * User Type
+ */
+export interface JMUserInfo {
+  type: 'user',
+  username: string,           // 用户名
+  appKey: string,             // 用户所属应用的 appKey，可与 username 共同作为用户的唯一标识
+  nickname?: string,           // 昵称
+  gender: 'male' | 'female' | 'unknown',             // 'male' / 'female' / 'unknown'
+  avatarThumbPath: string,    // 头像的缩略图地址
+  birthday?: number,           // 日期的毫秒数
+  region?: string,             // 地区
+  signature?: string,          // 个性签名
+  address?: string,            // 具体地址
+  noteName?: string,           // 备注名
+  noteText?: string,           // 备注信息
+  isNoDisturb: boolean,       // 是否免打扰
+  isInBlackList: boolean,     // 是否在黑名单中
+  isFriend: boolean,          // 是否为好友
+  extras?: { [key: string]: string; }              // 自定义键值对
+}
+
+export interface JMGroupInfo {
+  type: 'group',
+  id: string,                 // 群组 id
+  name?: string,               // 群组名称
+  desc?: string,               // 群组描述
+  level: number,              // 群组等级，默认等级 4
+  owner: string,              // 群主的 username
+  ownerAppKey: string,        // 群主的 appKey
+  maxMemberCount: number,     // 最大成员数
+  isNoDisturb: boolean,       // 是否免打扰
+  isBlocked: boolean          // 是否屏蔽群消息
+}
+
+export interface JMChatRoomInfo {
+  type: 'chatRoom',
+  roomId: string,   // 聊天室 id
+  name: string,     // 聊天室名称
+  appKey: string,   // 聊天室所属应用的 App Key
+  description?: string, // 聊天室描述信息
+  createTime: number, // 创建日期，单位：秒
+  maxMemberCount?: number, // 最大成员数
+  memberCount: number     // 当前成员数
+}
+
+export type JMConversationInfo = ({
+  conversationType: 'single',
+  target: JMUserInfo  
+} | {
+  conversationType: 'group'
+  target: JMGroupInfo
+}) & {
+  title: string,                  // 会话标题
+  latestMessage: JMAllMessage,    // 最近的一条消息对象。如果不存在消息，则 conversation 对象中没有该属性。
+  unreadCount: number,            // 未读消息数
+}
+
+export interface JMMessageSendOptions {
+  /**
+ * 接收方是否针对此次消息发送展示通知栏通知。
+ * @type {boolean}
+ * @defaultvalue
+ */
+  isShowNotification?: boolean,
+  /**
+   * 是否让后台在对方不在线时保存这条离线消息，等到对方上线后再推送给对方。
+   * @type {boolean}
+   * @defaultvalue
+   */
+  isRetainOffline?: boolean,
+  /**
+   * 是否开启了自定义接收方通知栏功能。
+   * @type {?boolean}
+   */
+  isCustomNotificationEnabled?: boolean,
+  /**
+   * 设置此条消息在接收方通知栏所展示通知的标题。
+   * @type {?string}
+   */
+  notificationTitle?: string,
+  /**
+   * 设置此条消息在接收方通知栏所展示通知的内容。
+   * @type {?string}
+   */
+  notificationText: string
+}
+
+
+/**
+ * @name jmessage
  * @description
  * This plugin does something
- *
- *
- * ...
- *
- *
- *
- * ```
  */
 @Plugin({
   pluginName: 'JMessagePlugin',
-  plugin: 'jmessage-phonegap-plugin', // npm package name, example: cordova-plugin-camera
-  pluginRef: 'JMessage', // the variable reference to call the plugin, example: navigator.geolocation
-  repo: '', // the github repository URL for the plugin
+  plugin: 'jmessage-phonegap-plugin',
+  pluginRef: 'JMessage',
+  repo: 'https://github.com/jpush/jmessage-phonegap-plugin',
   install: 'cordova plugin add jmessage-phonegap-plugin --variable APP_KEY=your_app_key', // OPTIONAL install command, in case the plugin requires variables
-  installVariables: ['APP_KEY'], // OPTIONAL the plugin requires variables
-  platforms: ['Android', 'iOS'] // Array of platforms supported, example: ['Android', 'iOS']
+  installVariables: ['APP_KEY'],
+  platforms: ['Android', 'iOS']
 })
 @Injectable()
-export class JmessageChenyu extends IonicNativePlugin {
+export class JMessagePlugin extends IonicNativePlugin {
 
   /**
    * This function does something
@@ -48,102 +247,357 @@ export class JmessageChenyu extends IonicNativePlugin {
    * @return {Promise<any>} Returns a promise that resolves when something happens
    */
   @Cordova()
-  init(obj?: any): Promise<any> {
+  init(obj?: JMConfig): Promise<any> {
     return; // We add return; here to avoid any IDE / Compiler errors
   }
 
   @Cordova()
-  setDebugMode(obj?: any): Promise<any> {
+  setDebugMode(obj?: { enable: boolean }): Promise<any> {
     return; // We add return; here to avoid any IDE / Compiler errors
   }
 
   @Cordova()
-  register(obj?: any): Promise<any> {
+  register(obj?: {
+    username: string,
+    password: string,
+    nickname: string
+  }): Promise<any> {
     return; // We add return; here to avoid any IDE / Compiler errors
   }
 
   @Cordova()
-  login(obj?: any): Promise<any> {
+  login(obj?: {
+    username: string,
+    password: string
+  }): Promise<any> {
+    return; // We add return; here to avoid any IDE / Compiler errors
+  }
+
+  // TODO:
+  @Cordova()
+  logout(): Promise<any> {
     return; // We add return; here to avoid any IDE / Compiler errors
   }
 
   @Cordova()
-  logout(obj?: any): Promise<any> {
+  setBadge(obj?: { badge: number }): Promise<any> {
+    return; // We add return; here to avoid any IDE / Compiler errors
+  };
+
+  @Cordova()
+  getMyInfo(): Promise<any> {
     return; // We add return; here to avoid any IDE / Compiler errors
   }
 
-  @Cordova()
-  getMyInfo(obj?: any): Promise<any> {
-    return; // We add return; here to avoid any IDE / Compiler errors
-  }
 
   @Cordova()
-  getUserInfo(obj?: any): Promise<any> {
+  getUserInfo(obj?: {
+    username: string,
+    appKey?: string
+  }): Promise<any> {
     return;
   }
 
   @Cordova()
-  updateMyPassword(obj?: any): Promise<any> {
+  updateMyPassword(obj?: {
+    oldPwd: string,
+    newPwd: string
+  }): Promise<any> {
+    return;
+  }
+
+  /**
+   * 更新当前用户头像。
+   * @param {object} params = {
+   *  imgPath: string // 本地图片绝对路径。
+   * }
+   * 注意 Android 与 iOS 的文件路径是不同的：
+   *   - Android 类似：/storage/emulated/0/DCIM/Camera/IMG_20160526_130223.jpg
+   *   - iOS 类似：/var/mobile/Containers/Data/Application/7DC5CDFF-6581-4AD3-B165-B604EBAB1250/tmp/photo.jpg
+   */
+  @Cordova()
+  updateMyAvatar(obj?: {
+    imgPath: string
+  }): Promise<any> {
     return;
   }
 
   @Cordova()
-  updateMyAvatar(obj?: any): Promise<any> {
+  updateMyInfo(obj?: {
+    birthday?: number,
+    gender?: 'male' | 'female' | 'unknown',
+    extras?: { [key: string]: string; }
+  }): Promise<any> {
     return;
   }
 
   @Cordova()
-  downloadThumbUserAvatar(obj?: any): Promise<any> {
+  updateGroupAvatar(obj?: {
+    id: string,
+    imgPath: string
+  }): Promise<any> {
+    return
+  }
+
+  @Cordova()
+  downloadThumbGroupAvatar(obj?: {
+    id: string
+  }): Promise<any> {
+    return
+  }
+
+  @Cordova()
+  downloadOriginalGroupAvatar(obj?: {
+    id: string
+  }): Promise<any> {
+    return
+  }
+
+  @Cordova()
+  setConversationExtras(obj?: JMAllType & { extras: { [key: string]: string; } }): Promise<any> {
+    return
+  }
+
+  @Cordova()
+  sendTextMessage(obj?: JMAllType & JMMessageOptions & { text: string }): Promise<any> {
     return;
   }
 
   @Cordova()
-  downloadOriginalUserAvatar(obj?: any): Promise<any> {
+  sendImageMessage(obj?: JMAllType & JMMessageOptions & { path: string }): Promise<any> {
     return;
   }
 
   @Cordova()
-  updateMyInfo(obj?: any): Promise<any> {
+  sendVoiceMessage(obj?: JMAllType & JMMessageOptions & { path: string }): Promise<any> {
     return;
   }
 
   @Cordova()
-  createGroup(obj?: any): Promise<any> {
+  sendCustomMessage(obj?: JMAllType & JMMessageOptions & { customObject: { [key: string]: string; } }): Promise<any> {
     return;
   }
 
   @Cordova()
-  getGroupInfo(obj?: any): Promise<any> {
+  sendLocationMessage(obj?: JMAllType & JMMessageOptions & {
+    latitude: number,
+    longitude: number,
+    scale: number,
+    address: string
+  }): Promise<any> {
     return;
   }
 
   @Cordova()
-  addGroupMembers(obj?: any): Promise<any> {
+  sendFileMessage(obj?: JMAllType & JMMessageOptions & {
+    path: string
+  }): Promise<any> {
+    return;
+  }
+
+
+  @Cordova()
+  retractMessage(obj?: JMAllType & { messageId: string }): Promise<any> {
     return;
   }
 
   @Cordova()
-  removeGroupMembers(obj?: any): Promise<any> {
+  getHistoryMessages(obj?: (JMSingleType | JMGroupType) & {
+    from: number,
+    limit: number
+  }): Promise<any> {
     return;
   }
 
   @Cordova()
-  getGroupMembers(obj?: any): Promise<any> {
+  getMessageById(obj?: JMAllType & { messageId: string }): Promise<any> {
     return;
   }
 
   @Cordova()
-  exitGroup(obj?: any): Promise<any> {
+  deleteMessageById(obj?: JMAllType & { messageId: string }): Promise<any> {
     return;
   }
 
   @Cordova()
-  blockGroupMessage(obj?: any): Promise<any> {
+  sendInvitationRequest(obj?: {
+    username: string,
+    reason: string
+    appKey?: string,
+  }): Promise<any> {
     return;
   }
 
   @Cordova()
-  isGroupBlocked(obj?: any): Promise<any> {
+  acceptInvitation(obj?: {
+    username: string,
+    appKey?: string
+  }): Promise<any> {
+    return;
+  }
+
+  @Cordova()
+  declineInvitation(obj?: {
+    username: string,
+    reason: string
+    appKey?: string,
+  }): Promise<any> {
+    return;
+  }
+
+
+
+  @Cordova()
+  removeFromFriendList(obj?: {
+    username: string,
+    appKey?: string
+  }): Promise<any> {
+    return;
+  }
+
+  @Cordova()
+  updateFriendNoteName(obj?: {
+    username: string,
+    noteName: string,
+    appKey?: string
+  }): Promise<any> {
+    return;
+  }
+
+  @Cordova()
+  updateFriendNoteText(obj?: {
+    username: string,
+    noteText: string,
+    appKey?: string
+  }): Promise<any> {
+    return;
+  }
+
+  @Cordova()
+  getFriends(): Promise<any> {
+    return;
+  }
+
+  @Cordova()
+  createGroup(obj?: {
+    name?: string,
+    desc?: string
+  }): Promise<any> {
+    return;
+  }
+
+  @Cordova()
+  getGroupIds(): Promise<any> {
+    return;
+  }
+
+  @Cordova()
+  getGroupInfo(obj?: { id: string }): Promise<any> {
+    return;
+  }
+
+  @Cordova()
+  updateGroupInfo(obj?: {
+    id: string,
+    newName: string,
+    newDesc?: string
+  } | {
+      id: string,
+      newDesc: string
+    }): Promise<any> {
+    return;
+  }
+
+  @Cordova()
+  addGroupMembers(obj?: {
+    id: string,
+    usernameArray: string[],
+    appKey?: string
+  }): Promise<any> {
+    return;
+  }
+
+  @Cordova()
+  removeGroupMembers(obj?: {
+    id: string,
+    usernameArray: string[],
+    appKey?: string
+  }): Promise<any> {
+    return;
+  }
+
+
+  @Cordova()
+  exitGroup(obj?: {
+    id: string
+  }): Promise<any> {
+    return;
+  }
+
+  @Cordova()
+  getGroupMembers(obj?: {
+    id: string
+  }): Promise<any> {
+    return;
+  }
+
+  @Cordova()
+  addUsersToBlacklist(obj?: {
+    usernameArray: string[],
+    appKey?: string
+  }): Promise<any> {
+    return;
+  }
+
+  @Cordova()
+  removeUsersFromBlacklist(obj?: {
+    usernameArray: string[],
+    appKey?: string
+  }): Promise<any> {
+    return;
+  }
+
+  @Cordova()
+  getBlacklist(): Promise<any> {
+    return;
+  }
+
+  @Cordova()
+  setNoDisturb(obj?: (JMSingleType | JMGroupType) & {
+    isNoDisturb: boolean
+  }): Promise<any> {
+    return;
+  }
+
+  @Cordova()
+  getNoDisturbList(): Promise<any> {
+    return;
+  }
+
+  @Cordova()
+  setNoDisturbGlobal(obj?: {
+    isNoDisturb: boolean
+  }): Promise<any> {
+    return;
+  }
+
+  @Cordova()
+  isNoDisturbGlobal(): Promise<any> {
+    return;
+  }
+
+  @Cordova()
+  blockGroupMessage(obj?: {
+    id: string,
+    isBlock: boolean
+  }): Promise<any> {
+    return;
+  }
+
+  @Cordova()
+  isGroupBlocked(obj?: {
+    id: string
+  }): Promise<any> {
     return;
   }
 
@@ -153,245 +607,238 @@ export class JmessageChenyu extends IonicNativePlugin {
   }
 
   @Cordova()
-  sendTextMessage(obj?: any): Promise<any> {
+  downloadThumbUserAvatar(obj?: {
+    username: string,
+    appKey?: string
+  }): Promise<any> {
     return;
   }
 
   @Cordova()
-  sendImageMessage(obj?: any): Promise<any> {
+  downloadOriginalUserAvatar(obj?: {
+    username: string,
+    appKey?: string
+  }): Promise<any> {
     return;
   }
 
   @Cordova()
-  sendVoiceMessage(obj?: any): Promise<any> {
+  downloadThumbImage(obj?: (JMSingleType | JMGroupType) & {
+    messageId: string
+  }): Promise<any> {
     return;
   }
 
   @Cordova()
-  sendCustomMessage(obj?: any): Promise<any> {
+  downloadOriginalImage(obj?: (JMSingleType | JMGroupType) & {
+    messageId: string
+  }): Promise<any> {
     return;
   }
 
   @Cordova()
-  sendLocationMessage(obj?: any): Promise<any> {
+  downloadVoiceFile(obj?: (JMSingleType | JMGroupType) & {
+    messageId: string
+  }): Promise<any> {
     return;
   }
 
   @Cordova()
-  sendFileMessage(obj?: any): Promise<any> {
+  downloadFile(obj?: (JMSingleType | JMGroupType) & {
+    messageId: string
+  }): Promise<any> {
     return;
   }
 
   @Cordova()
-  retractMessage(obj?: any): Promise<any> {
+  createConversation(obj?: JMAllType): Promise<any> {
     return;
   }
 
   @Cordova()
-  getHistoryMessages(obj?: any): Promise<any> {
+  deleteConversation(obj?: JMAllType): Promise<any> {
     return;
   }
 
   @Cordova()
-  getMessageById(obj?: any): Promise<any> {
+  enterConversation(obj?: JMSingleType | JMGroupType): Promise<any> {
     return;
   }
 
   @Cordova()
-  deleteMessageById(obj?: any): Promise<any> {
+  exitConversation(obj?: JMSingleType | JMGroupType): Promise<any> {
     return;
   }
 
   @Cordova()
-  downloadOriginalImage(obj?: any): Promise<any> {
+  getConversation(obj?: JMAllType): Promise<any> {
     return;
   }
 
   @Cordova()
-  downloadVoiceFile(obj?: any): Promise<any> {
+  getConversations(): Promise<any> {
     return;
   }
 
   @Cordova()
-  downloadFile(obj?: any): Promise<any> {
+  resetUnreadMessageCount(obj?: JMAllType): Promise<any> {
+    return;
+  }
+
+
+
+  /**
+   * TODO:
+   * 
+   * chatRoom internal api.
+   */
+
+  @Cordova()
+  enterChatRoom(obj?: {
+    roomId: string
+  }): Promise<any> {
     return;
   }
 
   @Cordova()
-  sendSingleTransCommand(obj?: any): Promise<any> {
+  exitChatRoom(obj?: {
+    roomId: string
+  }): Promise<any> {
     return;
   }
 
   @Cordova()
-  sendGroupTransCommand(obj?: any): Promise<any> {
+  getChatRoomConversation(obj?: {
+    roomId: string
+  }): Promise<any> {
     return;
   }
 
   @Cordova()
-  createConversation(obj?: any): Promise<any> {
+  getChatRoomConversationList(): Promise<any> {
     return;
   }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // @Cordova()
+  // sendSingleTransCommand(obj?: any): Promise<any> {
+  //   return;
+  // }
+
+  // @Cordova()
+  // sendGroupTransCommand(obj?: any): Promise<any> {
+  //   return;
+  // }
+
+
+
   @Cordova()
-  deleteConversation(obj?: any): Promise<any> {
-    return;
+  addReceiveMessageListener(obj?: JMMessageEventListener): void {
   }
 
   @Cordova()
-  enterConversation(obj?: any): Promise<any> {
-    return;
+  removeReceiveMessageListener(obj?: JMMessageEventListener): void {
   }
 
   @Cordova()
-  exitConversation(obj?: any): Promise<any> {
-    return;
+  addClickMessageNotificationListener(obj?: JMMessageEventListener): void {
   }
 
   @Cordova()
-  getConversation(obj?: any): Promise<any> {
-    return;
+  removeClickMessageNotificationListener(obj?: JMMessageEventListener): void {
   }
 
   @Cordova()
-  getConversations(obj?: any): Promise<any> {
-    return;
+  addSyncOfflineMessageListener(obj?: JMSyncOfflineMessageListener): void {
   }
 
   @Cordova()
-  resetUnreadMessageCount(obj?: any): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  sendInvitationRequest(obj?: any): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  acceptInvitation(obj?: any): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  declineInvitation(obj?: any): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  getFriends(obj?: any): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  removeFromFriendList(obj?: any): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  updateFriendNoteName(obj?: any): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  updateFriendNoteText(obj?: any): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  addUsersToBlacklist(obj?: any): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  removeUsersFromBlacklist(obj?: any): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  getBlacklist(obj?: any): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  setNoDisturb(obj?: any): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  setNoDisturbGlobal(obj?: any): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  isNoDisturbGlobal(obj?: any): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  getNoDisturbList(obj?: any): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  setNotificationFlag(obj?: any): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  addReceiveMessageListener(obj?: any) {
-  }
-
-  @Cordova()
-  removeReceiveMessageListener(obj?: any) {
-  }
-
-  @Cordova()
-  addClickMessageNotificationListener(obj?: any) {
-  }
-
-  @Cordova()
-  removeClickMessageNotificationListener(obj?: any) {
-  }
-
-  @Cordova()
-  addSyncOfflineMessageListener(obj?: any) {
-  }
-
-  @Cordova()
-  removeSyncOfflineMessageListener(obj?: any) {
+  removeSyncOfflineMessageListener(obj?: JMSyncOfflineMessageListener): void {
 
   }
 
   @Cordova()
-  addLoginStateChangedListener(obj?: any) {
+  addSyncRoamingMessageListener(obj?: JMSyncRoamingMessageListener): void {
   }
 
   @Cordova()
-  removeLoginStateChangedListener(obj?: any) {
+  removeSyncRoamingMessageListener(obj?: JMSyncRoamingMessageListener): void {
   }
 
   @Cordova()
-  addContactNotifyListener(obj?: any) {
+  addLoginStateChangedListener(obj?: JMLoginStateChangedListener): void {
   }
 
   @Cordova()
-  removeContactNotifyListener(obj?: any) {
+  removeLoginStateChangedListener(obj?: JMLoginStateChangedListener): void {
+  }
+
+
+  @Cordova()
+  addContactNotifyListener(obj?: JMContactNotifyListener): void {
   }
 
   @Cordova()
-  addSyncRoamingMessageListener(obj?: any) {
+  removeContactNotifyListener(obj?: JMContactNotifyListener): void {
   }
 
   @Cordova()
-  removeSyncRoamingMessageListener(obj?: any) {
+  addMessageRetractListener(obj?: JMMessageRetractListener): void {
   }
 
   @Cordova()
-  addMessageRetractListener(obj?: any) {
+  removeMessageRetractListener(obj?: JMMessageRetractListener): void {
   }
 
   @Cordova()
-  removeMessageRetractListener(obj?: any) {
+  addReceiveTransCommandListener(obj?: JMReceiveTransCommandListener): void {
   }
+
+  @Cordova()
+  removeReceiveTransCommandListener(obj?: JMReceiveTransCommandListener): void {
+  }
+
+
+  @Cordova()
+  addReceiveChatRoomMessageListener(obj?: JMReceiveChatRoomMessageListener): void {
+  }
+
+  @Cordova()
+  removeReceiveChatRoomMessageListener(obj?: JMReceiveChatRoomMessageListener): void {
+  }
+
+
+
+
+
+
+
+
+
 
 }
