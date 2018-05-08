@@ -719,44 +719,6 @@ export class JMessagePlugin extends IonicNativePlugin {
     return;
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  // @Cordova()
-  // sendSingleTransCommand(obj?: any): Promise<any> {
-  //   return;
-  // }
-
-  // @Cordova()
-  // sendGroupTransCommand(obj?: any): Promise<any> {
-  //   return;
-  // }
-
-
-
   @Cordova()
   addReceiveMessageListener(obj?: JMMessageEventListener): void {
   }
