@@ -15,182 +15,182 @@ import {
 
 
 export interface JMSingleType {
-  type: 'single',
-  username: string,
-  appKey: string
-}
+  type: 'single';
+  username: string;
+  appKey: string;
+};
 
 export interface JMGroupType {
-  type: 'group',
-  groupId: string
-}
+  type: 'group';
+  groupId: string;
+};
 
 export interface JMChatRoomType {
-  type: 'chatRoom',
-  roomId: string
-}
+  type: 'chatRoom';
+  roomId: string;
+};
 
-export type JMAllType = (JMSingleType | JMGroupType | JMChatRoomType)
+export type JMAllType = (JMSingleType | JMGroupType | JMChatRoomType);
 
 export interface JMMessageOptions {
-  extras?: { [key: string]: string; },
-  messageSendingOptions?: JMMessageSendOptions
-}
+  extras?: { [key: string]: string; };
+  messageSendingOptions?: JMMessageSendOptions;
+};
 
 export interface JMConfig {
-  isOpenMessageRoaming: boolean
-}
+  isOpenMessageRoaming: boolean;
+};
 
 export interface JMError {
-  code: string,
-  description: string
-}
+  code: string;
+  description: string;
+};
 
 /**
  * Message type
  */
 
 export interface JMNormalMessage {
-  id: string,                      // 本地数据库中的消息 id
-  serverMessageId: string          // 对应服务器端的消息 id
-  isSend: boolean,                 // 消息是否由当前用户发出。true：为当前用户发送；false：为对方用户发送。
-  from: JMUserInfo,                // 消息发送者对象
-  target: JMUserInfo | JMGroupInfo,// 消息接收者对象
-  createTime: number,             // 发送消息时间
-  extras?: { [key: string]: string; }                  // 附带的键值对
-}
+  id: string;                      // 本地数据库中的消息 id
+  serverMessageId: string;          // 对应服务器端的消息 id
+  isSend: boolean;                 // 消息是否由当前用户发出。true：为当前用户发送；false：为对方用户发送。
+  from: JMUserInfo;                // 消息发送者对象
+  target: (JMUserInfo | JMGroupInfo); // 消息接收者对象
+  createTime: number;             // 发送消息时间
+  extras?: { [key: string]: string; };                  // 附带的键值对
+};
 
 export type JMTextMessage = JMNormalMessage & {
-  text: string,                   // 消息内容
-}
+  text: string;                   // 消息内容
+};
 
 export type JMVoiceMessage = JMNormalMessage & {
-  path?: string,                   // 语音文件路径,如果为空需要调用相应下载方法
-  duration: number                 // 语音时长，单位秒
-}
+  path?: string;                   // 语音文件路径,如果为空需要调用相应下载方法
+  duration: number;                 // 语音时长，单位秒
+};
 
 export type JMImageMessage = JMNormalMessage & {
-  thumbPath?: string,               // 图片的缩略图路径, 如果为空需要调用相应下载方法
-}
+  thumbPath?: string;               // 图片的缩略图路径, 如果为空需要调用相应下载方法
+};
 
 export type JMFileMessage = JMNormalMessage & {
-  fileName: string                 // 文件名
-}
+  fileName: string;                 // 文件名
+};
 
 export type JMLocationMessage = JMNormalMessage & {
-  longitude: number,              // 经度
-  latitude: number,               // 纬度
-  scale: number                   // 地图缩放比例
-  address?: string,               // 详细地址
-}
+  longitude: number;              // 经度
+  latitude: number;               // 纬度
+  scale: number;                   // 地图缩放比例
+  address?: string;               // 详细地址
+};
 
 export type JMCustomMessage = JMNormalMessage & {
   customObject: { [key: string]: string; }            // 自定义键值对
-}
+};
 
 export interface JMEventMessage {
-  type: 'event',           // 消息类型
-  eventType: 'group_member_added' | 'group_member_removed' | 'group_member_exit',       // 'group_member_added' / 'group_member_removed' / 'group_member_exit'
-  usernames: JMUserInfo[]         // 该事件涉及到的用户 username 数组
-}
+  type: 'event';           // 消息类型
+  eventType: 'group_member_added' | 'group_member_removed' | 'group_member_exit';       // 'group_member_added' / 'group_member_removed' / 'group_member_exit'
+  usernames: JMUserInfo[];         // 该事件涉及到的用户 username 数组
+};
 
-type JMAllMessage = JMTextMessage | JMVoiceMessage | JMImageMessage | JMFileMessage | JMEventMessage
+export type JMAllMessage = JMTextMessage | JMVoiceMessage | JMImageMessage | JMFileMessage | JMEventMessage;
 
-export type JMMessageEventListener = (message: JMAllMessage) => void
+export type JMMessageEventListener = (message: JMAllMessage) => void;
 
 export type JMSyncOfflineMessageListener = (event: {
-  conversation: JMConversationInfo,
-  messageArray: JMAllMessage[]
-}) => void
+  conversation: JMConversationInfo;
+  messageArray: JMAllMessage[];
+}) => void;
 
 export type JMSyncRoamingMessageListener = (event: {
-  conversation: JMConversationInfo
-}) => void
+  conversation: JMConversationInfo;
+}) => void;
 
 export type JMLoginStateChangedListener = (event: {
-  type: 'user_password_change' | 'user_logout' | 'user_deleted' | 'user_login_status_unexpected'
-}) => void
+  type: 'user_password_change' | 'user_logout' | 'user_deleted' | 'user_login_status_unexpected';
+}) => void;
 
 export type JMContactNotifyListener = (event: {
-  type: 'invite_received' | 'invite_accepted' | 'invite_declined' | 'contact_deleted',
-  reason: string,
-  fromUsername: string,
-  fromUserAppKey: string
-}) => void
+  type: 'invite_received' | 'invite_accepted' | 'invite_declined' | 'contact_deleted';
+  reason: string;
+  fromUsername: string;
+  fromUserAppKey: string;
+}) => void;
 
 export type JMMessageRetractListener = (event: {
-  conversation: JMConversationInfo,
-  retractedMessage: JMAllMessage
-}) => void
+  conversation: JMConversationInfo;
+  retractedMessage: JMAllMessage;
+}) => void;
 
 export type JMReceiveTransCommandListener = (event: {
-  message: string,
-  sender: JMUserInfo,
-  receiver: JMUserInfo | JMGroupInfo,
-  receiverType: 'single' | 'group'
-}) => void
+  message: string;
+  sender: JMUserInfo;
+  receiver: JMUserInfo | JMGroupInfo;
+  receiverType: 'single' | 'group';
+}) => void;
 
 export type JMReceiveChatRoomMessageListener = (event: {
-  messageArray: JMAllMessage[]
-}) => void
+  messageArray: JMAllMessage[];
+}) => void;
 
 /**
  * User Type
  */
 export interface JMUserInfo {
-  type: 'user',
-  username: string,           // 用户名
-  appKey: string,             // 用户所属应用的 appKey，可与 username 共同作为用户的唯一标识
-  nickname?: string,           // 昵称
-  gender: 'male' | 'female' | 'unknown',             // 'male' / 'female' / 'unknown'
-  avatarThumbPath: string,    // 头像的缩略图地址
-  birthday?: number,           // 日期的毫秒数
-  region?: string,             // 地区
-  signature?: string,          // 个性签名
-  address?: string,            // 具体地址
-  noteName?: string,           // 备注名
-  noteText?: string,           // 备注信息
-  isNoDisturb: boolean,       // 是否免打扰
-  isInBlackList: boolean,     // 是否在黑名单中
-  isFriend: boolean,          // 是否为好友
-  extras?: { [key: string]: string; }              // 自定义键值对
-}
+  type: 'user';
+  username: string;           // 用户名
+  appKey: string;             // 用户所属应用的 appKey，可与 username 共同作为用户的唯一标识
+  nickname?: string;           // 昵称
+  gender: 'male' | 'female' | 'unknown';             // 'male' / 'female' / 'unknown'
+  avatarThumbPath: string;    // 头像的缩略图地址
+  birthday?: number;           // 日期的毫秒数
+  region?: string;             // 地区
+  signature?: string;          // 个性签名
+  address?: string;            // 具体地址
+  noteName?: string;           // 备注名
+  noteText?: string;           // 备注信息
+  isNoDisturb: boolean;       // 是否免打扰
+  isInBlackList: boolean;     // 是否在黑名单中
+  isFriend: boolean;          // 是否为好友
+  extras?: { [key: string]: string; };              // 自定义键值对
+};
 
 export interface JMGroupInfo {
-  type: 'group',
-  id: string,                 // 群组 id
-  name?: string,               // 群组名称
-  desc?: string,               // 群组描述
-  level: number,              // 群组等级，默认等级 4
-  owner: string,              // 群主的 username
-  ownerAppKey: string,        // 群主的 appKey
-  maxMemberCount: number,     // 最大成员数
-  isNoDisturb: boolean,       // 是否免打扰
-  isBlocked: boolean          // 是否屏蔽群消息
-}
+  type: 'group';
+  id: string;                 // 群组 id
+  name?: string;               // 群组名称
+  desc?: string;               // 群组描述
+  level: number;              // 群组等级，默认等级 4
+  owner: string;              // 群主的 username
+  ownerAppKey: string;        // 群主的 appKey
+  maxMemberCount: number;     // 最大成员数
+  isNoDisturb: boolean;       // 是否免打扰
+  isBlocked: boolean;          // 是否屏蔽群消息
+};
 
 export interface JMChatRoomInfo {
-  type: 'chatRoom',
-  roomId: string,   // 聊天室 id
-  name: string,     // 聊天室名称
-  appKey: string,   // 聊天室所属应用的 App Key
-  description?: string, // 聊天室描述信息
-  createTime: number, // 创建日期，单位：秒
-  maxMemberCount?: number, // 最大成员数
-  memberCount: number     // 当前成员数
-}
+  type: 'chatRoom';
+  roomId: string;   // 聊天室 id
+  name: string;     // 聊天室名称
+  appKey: string;   // 聊天室所属应用的 App Key
+  description?: string; // 聊天室描述信息
+  createTime: number; // 创建日期，单位：秒
+  maxMemberCount?: number; // 最大成员数
+  memberCount: number;     // 当前成员数
+};
 
 export type JMConversationInfo = ({
-  conversationType: 'single',
-  target: JMUserInfo  
+  conversationType: 'single';
+  target: JMUserInfo;
 } | {
-  conversationType: 'group'
-  target: JMGroupInfo
+  conversationType: 'group';
+  target: JMGroupInfo;
 }) & {
-  title: string,                  // 会话标题
-  latestMessage: JMAllMessage,    // 最近的一条消息对象。如果不存在消息，则 conversation 对象中没有该属性。
-  unreadCount: number,            // 未读消息数
-}
+  title: string;                  // 会话标题
+  latestMessage: JMAllMessage;    // 最近的一条消息对象。如果不存在消息，则 conversation 对象中没有该属性。
+  unreadCount: number;            // 未读消息数
+};
 
 export interface JMMessageSendOptions {
   /**
@@ -198,29 +198,29 @@ export interface JMMessageSendOptions {
  * @type {boolean}
  * @defaultvalue
  */
-  isShowNotification?: boolean,
+  isShowNotification?: boolean;
   /**
    * 是否让后台在对方不在线时保存这条离线消息，等到对方上线后再推送给对方。
    * @type {boolean}
    * @defaultvalue
    */
-  isRetainOffline?: boolean,
+  isRetainOffline?: boolean;
   /**
    * 是否开启了自定义接收方通知栏功能。
    * @type {?boolean}
    */
-  isCustomNotificationEnabled?: boolean,
+  isCustomNotificationEnabled?: boolean;
   /**
    * 设置此条消息在接收方通知栏所展示通知的标题。
    * @type {?string}
    */
-  notificationTitle?: string,
+  notificationTitle?: string;
   /**
    * 设置此条消息在接收方通知栏所展示通知的内容。
    * @type {?string}
    */
-  notificationText: string
-}
+  notificationText?: string;
+};
 
 
 /**
@@ -252,23 +252,23 @@ export class JMessagePlugin extends IonicNativePlugin {
   }
 
   @Cordova()
-  setDebugMode(obj?: { enable: boolean }): Promise<any> {
+  setDebugMode(obj?: { enable: boolean; }): Promise<any> {
     return; // We add return; here to avoid any IDE / Compiler errors
   }
 
   @Cordova()
   register(obj?: {
-    username: string,
-    password: string,
-    nickname: string
+    username: string;
+    password: string;
+    nickname: string;
   }): Promise<any> {
     return; // We add return; here to avoid any IDE / Compiler errors
   }
 
   @Cordova()
   login(obj?: {
-    username: string,
-    password: string
+    username: string;
+    password: string;
   }): Promise<any> {
     return; // We add return; here to avoid any IDE / Compiler errors
   }
@@ -280,7 +280,7 @@ export class JMessagePlugin extends IonicNativePlugin {
   }
 
   @Cordova()
-  setBadge(obj?: { badge: number }): Promise<any> {
+  setBadge(obj?: { badge: number; }): Promise<any> {
     return; // We add return; here to avoid any IDE / Compiler errors
   };
 
@@ -292,16 +292,16 @@ export class JMessagePlugin extends IonicNativePlugin {
 
   @Cordova()
   getUserInfo(obj?: {
-    username: string,
-    appKey?: string
+    username: string;
+    appKey?: string;
   }): Promise<any> {
     return;
   }
 
   @Cordova()
   updateMyPassword(obj?: {
-    oldPwd: string,
-    newPwd: string
+    oldPwd: string;
+    newPwd: string;
   }): Promise<any> {
     return;
   }
@@ -317,130 +317,130 @@ export class JMessagePlugin extends IonicNativePlugin {
    */
   @Cordova()
   updateMyAvatar(obj?: {
-    imgPath: string
+    imgPath: string;
   }): Promise<any> {
     return;
   }
 
   @Cordova()
   updateMyInfo(obj?: {
-    birthday?: number,
-    gender?: 'male' | 'female' | 'unknown',
-    extras?: { [key: string]: string; }
+    birthday?: number;
+    gender?: 'male' | 'female' | 'unknown';
+    extras?: { [key: string]: string; };
   }): Promise<any> {
     return;
   }
 
   @Cordova()
   updateGroupAvatar(obj?: {
-    id: string,
-    imgPath: string
+    id: string;
+    imgPath: string;
   }): Promise<any> {
-    return
+    return;
   }
 
   @Cordova()
   downloadThumbGroupAvatar(obj?: {
-    id: string
+    id: string;
   }): Promise<any> {
-    return
+    return;
   }
 
   @Cordova()
   downloadOriginalGroupAvatar(obj?: {
-    id: string
+    id: string;
   }): Promise<any> {
-    return
-  }
-
-  @Cordova()
-  setConversationExtras(obj?: JMAllType & { extras: { [key: string]: string; } }): Promise<any> {
-    return
-  }
-
-  @Cordova()
-  sendTextMessage(obj?: JMAllType & JMMessageOptions & { text: string }): Promise<any> {
     return;
   }
 
   @Cordova()
-  sendImageMessage(obj?: JMAllType & JMMessageOptions & { path: string }): Promise<any> {
+  setConversationExtras(obj?: JMAllType & { extras: { [key: string]: string; }; }): Promise<any> {
     return;
   }
 
   @Cordova()
-  sendVoiceMessage(obj?: JMAllType & JMMessageOptions & { path: string }): Promise<any> {
+  sendTextMessage(obj?: JMAllType & JMMessageOptions & { text: string; }): Promise<any> {
     return;
   }
 
   @Cordova()
-  sendCustomMessage(obj?: JMAllType & JMMessageOptions & { customObject: { [key: string]: string; } }): Promise<any> {
+  sendImageMessage(obj?: JMAllType & JMMessageOptions & { path: string; }): Promise<any> {
+    return;
+  }
+
+  @Cordova()
+  sendVoiceMessage(obj?: JMAllType & JMMessageOptions & { path: string; }): Promise<any> {
+    return;
+  }
+
+  @Cordova()
+  sendCustomMessage(obj?: JMAllType & JMMessageOptions & { customObject: { [key: string]: string; }; }): Promise<any> {
     return;
   }
 
   @Cordova()
   sendLocationMessage(obj?: JMAllType & JMMessageOptions & {
-    latitude: number,
-    longitude: number,
-    scale: number,
-    address: string
+    latitude: number;
+    longitude: number;
+    scale: number;
+    address: string;
   }): Promise<any> {
     return;
   }
 
   @Cordova()
   sendFileMessage(obj?: JMAllType & JMMessageOptions & {
-    path: string
+    path: string;
   }): Promise<any> {
     return;
   }
 
 
   @Cordova()
-  retractMessage(obj?: JMAllType & { messageId: string }): Promise<any> {
+  retractMessage(obj?: JMAllType & { messageId: string; }): Promise<any> {
     return;
   }
 
   @Cordova()
   getHistoryMessages(obj?: (JMSingleType | JMGroupType) & {
-    from: number,
-    limit: number
+    from: number;
+    limit: number;
   }): Promise<any> {
     return;
   }
 
   @Cordova()
-  getMessageById(obj?: JMAllType & { messageId: string }): Promise<any> {
+  getMessageById(obj?: JMAllType & { messageId: string; }): Promise<any> {
     return;
   }
 
   @Cordova()
-  deleteMessageById(obj?: JMAllType & { messageId: string }): Promise<any> {
+  deleteMessageById(obj?: JMAllType & { messageId: string; }): Promise<any> {
     return;
   }
 
   @Cordova()
   sendInvitationRequest(obj?: {
-    username: string,
-    reason: string
-    appKey?: string,
+    username: string;
+    reason: string;
+    appKey?: string;
   }): Promise<any> {
     return;
   }
 
   @Cordova()
   acceptInvitation(obj?: {
-    username: string,
-    appKey?: string
+    username: string;
+    appKey?: string;
   }): Promise<any> {
     return;
   }
 
   @Cordova()
   declineInvitation(obj?: {
-    username: string,
-    reason: string
-    appKey?: string,
+    username: string;
+    reason: string;
+    appKey?: string;
   }): Promise<any> {
     return;
   }
@@ -449,26 +449,26 @@ export class JMessagePlugin extends IonicNativePlugin {
 
   @Cordova()
   removeFromFriendList(obj?: {
-    username: string,
-    appKey?: string
+    username: string;
+    appKey?: string;
   }): Promise<any> {
     return;
   }
 
   @Cordova()
   updateFriendNoteName(obj?: {
-    username: string,
-    noteName: string,
-    appKey?: string
+    username: string;
+    noteName: string;
+    appKey?: string;
   }): Promise<any> {
     return;
   }
 
   @Cordova()
   updateFriendNoteText(obj?: {
-    username: string,
-    noteText: string,
-    appKey?: string
+    username: string;
+    noteText: string;
+    appKey?: string;
   }): Promise<any> {
     return;
   }
@@ -480,8 +480,8 @@ export class JMessagePlugin extends IonicNativePlugin {
 
   @Cordova()
   createGroup(obj?: {
-    name?: string,
-    desc?: string
+    name?: string;
+    desc?: string;
   }): Promise<any> {
     return;
   }
@@ -492,36 +492,36 @@ export class JMessagePlugin extends IonicNativePlugin {
   }
 
   @Cordova()
-  getGroupInfo(obj?: { id: string }): Promise<any> {
+  getGroupInfo(obj?: { id: string; }): Promise<any> {
     return;
   }
 
   @Cordova()
   updateGroupInfo(obj?: {
-    id: string,
-    newName: string,
-    newDesc?: string
+    id: string;
+    newName: string;
+    newDesc?: string;
   } | {
-      id: string,
-      newDesc: string
+      id: string;
+      newDesc: string;
     }): Promise<any> {
     return;
   }
 
   @Cordova()
   addGroupMembers(obj?: {
-    id: string,
-    usernameArray: string[],
-    appKey?: string
+    id: string;
+    usernameArray: string[];
+    appKey?: string;
   }): Promise<any> {
     return;
   }
 
   @Cordova()
   removeGroupMembers(obj?: {
-    id: string,
-    usernameArray: string[],
-    appKey?: string
+    id: string;
+    usernameArray: string[];
+    appKey?: string;
   }): Promise<any> {
     return;
   }
@@ -529,30 +529,30 @@ export class JMessagePlugin extends IonicNativePlugin {
 
   @Cordova()
   exitGroup(obj?: {
-    id: string
+    id: string;
   }): Promise<any> {
     return;
   }
 
   @Cordova()
   getGroupMembers(obj?: {
-    id: string
+    id: string;
   }): Promise<any> {
     return;
   }
 
   @Cordova()
   addUsersToBlacklist(obj?: {
-    usernameArray: string[],
-    appKey?: string
+    usernameArray: string[];
+    appKey?: string;
   }): Promise<any> {
     return;
   }
 
   @Cordova()
   removeUsersFromBlacklist(obj?: {
-    usernameArray: string[],
-    appKey?: string
+    usernameArray: string[];
+    appKey?: string;
   }): Promise<any> {
     return;
   }
@@ -564,7 +564,7 @@ export class JMessagePlugin extends IonicNativePlugin {
 
   @Cordova()
   setNoDisturb(obj?: (JMSingleType | JMGroupType) & {
-    isNoDisturb: boolean
+    isNoDisturb: boolean;
   }): Promise<any> {
     return;
   }
@@ -576,7 +576,7 @@ export class JMessagePlugin extends IonicNativePlugin {
 
   @Cordova()
   setNoDisturbGlobal(obj?: {
-    isNoDisturb: boolean
+    isNoDisturb: boolean;
   }): Promise<any> {
     return;
   }
@@ -588,15 +588,15 @@ export class JMessagePlugin extends IonicNativePlugin {
 
   @Cordova()
   blockGroupMessage(obj?: {
-    id: string,
-    isBlock: boolean
+    id: string;
+    isBlock: boolean;
   }): Promise<any> {
     return;
   }
 
   @Cordova()
   isGroupBlocked(obj?: {
-    id: string
+    id: string;
   }): Promise<any> {
     return;
   }
@@ -608,44 +608,44 @@ export class JMessagePlugin extends IonicNativePlugin {
 
   @Cordova()
   downloadThumbUserAvatar(obj?: {
-    username: string,
-    appKey?: string
+    username: string;
+    appKey?: string;
   }): Promise<any> {
     return;
   }
 
   @Cordova()
   downloadOriginalUserAvatar(obj?: {
-    username: string,
-    appKey?: string
+    username: string;
+    appKey?: string;
   }): Promise<any> {
     return;
   }
 
   @Cordova()
   downloadThumbImage(obj?: (JMSingleType | JMGroupType) & {
-    messageId: string
+    messageId: string;
   }): Promise<any> {
     return;
   }
 
   @Cordova()
   downloadOriginalImage(obj?: (JMSingleType | JMGroupType) & {
-    messageId: string
+    messageId: string;
   }): Promise<any> {
     return;
   }
 
   @Cordova()
   downloadVoiceFile(obj?: (JMSingleType | JMGroupType) & {
-    messageId: string
+    messageId: string;
   }): Promise<any> {
     return;
   }
 
   @Cordova()
   downloadFile(obj?: (JMSingleType | JMGroupType) & {
-    messageId: string
+    messageId: string;
   }): Promise<any> {
     return;
   }
@@ -695,21 +695,21 @@ export class JMessagePlugin extends IonicNativePlugin {
 
   @Cordova()
   enterChatRoom(obj?: {
-    roomId: string
+    roomId: string;
   }): Promise<any> {
     return;
   }
 
   @Cordova()
   exitChatRoom(obj?: {
-    roomId: string
+    roomId: string;
   }): Promise<any> {
     return;
   }
 
   @Cordova()
   getChatRoomConversation(obj?: {
-    roomId: string
+    roomId: string;
   }): Promise<any> {
     return;
   }
@@ -793,14 +793,4 @@ export class JMessagePlugin extends IonicNativePlugin {
   @Cordova()
   removeReceiveChatRoomMessageListener(obj?: JMReceiveChatRoomMessageListener): void {
   }
-
-
-
-
-
-
-
-
-
-
 }
