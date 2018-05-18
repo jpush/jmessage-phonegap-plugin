@@ -10,6 +10,7 @@ import { Injectable } from '@angular/core';
 import {
   Plugin,
   Cordova,
+  CordovaProperty,
   IonicNativePlugin
 } from '@ionic-native/core';
 
@@ -61,28 +62,23 @@ export interface JMNormalMessage {
 };
 
 export type JMTextMessage = JMNormalMessage & {
-  type: 'text';
   text: string;                   // 消息内容
 };
 
 export type JMVoiceMessage = JMNormalMessage & {
-  type: 'voice';
   path?: string;                   // 语音文件路径,如果为空需要调用相应下载方法
   duration: number;                 // 语音时长，单位秒
 };
 
 export type JMImageMessage = JMNormalMessage & {
-  type: 'image';
   thumbPath?: string;               // 图片的缩略图路径, 如果为空需要调用相应下载方法
 };
 
 export type JMFileMessage = JMNormalMessage & {
-  type: 'file';
   fileName: string;                 // 文件名
 };
 
 export type JMLocationMessage = JMNormalMessage & {
-  type: 'location';
   longitude: number;              // 经度
   latitude: number;               // 纬度
   scale: number;                   // 地图缩放比例
@@ -90,7 +86,6 @@ export type JMLocationMessage = JMNormalMessage & {
 };
 
 export type JMCustomMessage = JMNormalMessage & {
-  type: 'custom'
   customObject: { [key: string]: string; }            // 自定义键值对
 };
 
@@ -228,7 +223,49 @@ export interface JMMessageSendOptions {
   notificationText?: string;
 };
 
+// TODO: to Promise
+@Injectable()
+export class JMChatRoom {
 
+  @Cordova()
+  getChatRoomInfoListOfApp(params: {
+    start: number;
+    count: number;
+  }, success: (chatroomList: JMChatRoomInfo[]) => void, fail: (error: JMError) => void): void {}
+
+  @Cordova()
+  getChatRoomInfoListOfUser(
+    success: (chatroomList: JMChatRoomInfo[]) => void,
+    fail: (error: JMError) => void): void {}
+
+  @Cordova()
+  getChatRoomInfoListById(params: {
+    roomId: string;
+  }, success: (chatroomList: JMChatRoomInfo[]) => void, fail: (error: JMError) => void): void {}
+
+  @Cordova()
+  getChatRoomOwner(params: {
+    roomId: string;
+  }, success: (chatroomList: JMUserInfo) => void, fail: (error: JMError) => void): void {}
+
+  @Cordova()
+  enterChatRoom(obj: {
+    roomId: string;
+  }, success: (conversation: JMConversationInfo) => void, fail: (error: JMError) => void): void {}
+
+  @Cordova()
+  exitChatRoom(params: {
+    roomId: string;
+  }, success: () => void, fail: (error: JMError) => void): void {}
+
+  @Cordova()
+  getChatRoomConversation(params: {
+    roomId: string;
+  }, success: () => void, fail: (error: JMError) => void): void {}
+
+  @Cordova()
+  getChatRoomConversationList(success: (conversationList: JMConversationInfo[]) => void, fail: (error: JMError) => void): void {}
+}
 /**
  * @name jmessage
  * @description
@@ -252,63 +289,66 @@ export class JMessagePlugin extends IonicNativePlugin {
    * @param arg2 {number} Another param to configure something
    * @return {Promise<any>} Returns a promise that resolves when something happens
    */
-  @Cordova()
-  init(obj?: JMConfig): Promise<any> {
-    return; // We add return; here to avoid any IDE / Compiler errors
-  }
+  @Cordova({
+     sync: true,
+     platforms: ['iOS', 'Android']
+    })
+  init(params: JMConfig): void { }
+
+  @Cordova({
+    sync: true,
+    platforms: ['iOS', 'Android']
+   })
+  setDebugMode(params: { enable: boolean; }): void {}
 
   @Cordova()
-  setDebugMode(obj?: { enable: boolean; }): Promise<any> {
-    return; // We add return; here to avoid any IDE / Compiler errors
-  }
-
-  @Cordova()
-  register(obj?: {
+  register(params: {
     username: string;
     password: string;
     nickname: string;
-  }): Promise<any> {
-    return; // We add return; here to avoid any IDE / Compiler errors
-  }
-
-  @Cordova()
-  login(obj?: {
-    username: string;
-    password: string;
-  }): Promise<any> {
-    return; // We add return; here to avoid any IDE / Compiler errors
-  }
-
-  // TODO:
-  @Cordova()
-  logout(): Promise<any> {
-    return; // We add return; here to avoid any IDE / Compiler errors
-  }
-
-  @Cordova()
-  setBadge(obj?: { badge: number; }): Promise<any> {
-    return; // We add return; here to avoid any IDE / Compiler errors
-  };
-
-  @Cordova()
-  getMyInfo(): Promise<any> {
-    return; // We add return; here to avoid any IDE / Compiler errors
-  }
-
-
-  @Cordova()
-  getUserInfo(obj?: {
-    username: string;
-    appKey?: string;
-  }): Promise<any> {
+  }): Promise<void> {
     return;
   }
 
   @Cordova()
-  updateMyPassword(obj?: {
+  login(params: {
+    username: string;
+    password: string;
+  }): Promise<void> {
+    return;
+  }
+
+  @Cordova({
+    sync: true,
+    platforms: ['iOS', 'Android']
+   })
+  logout(): void {}
+
+  @Cordova({
+    sync: true,
+    platforms: ['iOS', 'Android']
+   })
+  setBadge(params: { badge: number; }): void { }
+
+  @Cordova()
+  getMyInfo(): Promise< JMUserInfo | {} > {
+    return; // We add return; here to avoid any IDE / Compiler errors
+  }
+
+
+  @Cordova()
+  getUserInfo(params: {
+    username: string;
+    appKey?: string;
+  }): Promise<JMUserInfo> {
+    return;
+  }
+
+  @Cordova()
+  updateMyPassword(params: {
     oldPwd: string;
     newPwd: string;
-  }): Promise<any> {
+  }): Promise<void> {
     return;
   }
 
@@ -322,14 +362,14 @@ export class JMessagePlugin extends IonicNativePlugin {
    *   - iOS 类似：/var/mobile/Containers/Data/Application/7DC5CDFF-6581-4AD3-B165-B604EBAB1250/tmp/photo.jpg
    */
   @Cordova()
-  updateMyAvatar(obj?: {
+  updateMyAvatar(params: {
     imgPath: string;
   }): Promise<any> {
     return;
   }
 
   @Cordova()
-  updateMyInfo(obj?: {
+  updateMyInfo(params: {
     birthday?: number;
     gender?: 'male' | 'female' | 'unknown';
     extras?: { [key: string]: string; };
@@ -338,7 +378,7 @@ export class JMessagePlugin extends IonicNativePlugin {
   }
 
   @Cordova()
-  updateGroupAvatar(obj?: {
+  updateGroupAvatar(params: {
     id: string;
     imgPath: string;
   }): Promise<any> {
@@ -346,46 +386,46 @@ export class JMessagePlugin extends IonicNativePlugin {
   }
 
   @Cordova()
-  downloadThumbGroupAvatar(obj?: {
+  downloadThumbGroupAvatar(params: {
     id: string;
   }): Promise<any> {
     return;
   }
 
   @Cordova()
-  downloadOriginalGroupAvatar(obj?: {
+  downloadOriginalGroupAvatar(params: {
     id: string;
   }): Promise<any> {
     return;
   }
 
   @Cordova()
-  setConversationExtras(obj?: JMAllType & { extras: { [key: string]: string; }; }): Promise<any> {
+  setConversationExtras(params: JMAllType & { extras: { [key: string]: string; }; }): Promise<any> {
     return;
   }
 
   @Cordova()
-  sendTextMessage(obj?: JMAllType & JMMessageOptions & { text: string; }): Promise<any> {
+  sendTextMessage(params: JMAllType & JMMessageOptions & { text: string; }): Promise<any> {
     return;
   }
 
   @Cordova()
-  sendImageMessage(obj?: JMAllType & JMMessageOptions & { path: string; }): Promise<any> {
+  sendImageMessage(params: JMAllType & JMMessageOptions & { path: string; }): Promise<any> {
     return;
   }
 
   @Cordova()
-  sendVoiceMessage(obj?: JMAllType & JMMessageOptions & { path: string; }): Promise<any> {
+  sendVoiceMessage(params: JMAllType & JMMessageOptions & { path: string; }): Promise<any> {
     return;
   }
 
   @Cordova()
-  sendCustomMessage(obj?: JMAllType & JMMessageOptions & { customObject: { [key: string]: string; }; }): Promise<any> {
+  sendCustomMessage(params: JMAllType & JMMessageOptions & { customObject: { [key: string]: string; }; }): Promise<any> {
     return;
   }
 
   @Cordova()
-  sendLocationMessage(obj?: JMAllType & JMMessageOptions & {
+  sendLocationMessage(params: JMAllType & JMMessageOptions & {
     latitude: number;
     longitude: number;
     scale: number;
@@ -395,7 +435,7 @@ export class JMessagePlugin extends IonicNativePlugin {
   }
 
   @Cordova()
-  sendFileMessage(obj?: JMAllType & JMMessageOptions & {
+  sendFileMessage(params: JMAllType & JMMessageOptions & {
     path: string;
   }): Promise<any> {
     return;
@@ -403,12 +443,12 @@ export class JMessagePlugin extends IonicNativePlugin {
 
 
   @Cordova()
-  retractMessage(obj?: JMAllType & { messageId: string; }): Promise<any> {
+  retractMessage(params: JMAllType & { messageId: string; }): Promise<any> {
     return;
   }
 
   @Cordova()
-  getHistoryMessages(obj?: (JMSingleType | JMGroupType) & {
+  getHistoryMessages(params: (JMSingleType | JMGroupType) & {
     from: number;
     limit: number;
   }): Promise<any> {
@@ -416,17 +456,17 @@ export class JMessagePlugin extends IonicNativePlugin {
   }
 
   @Cordova()
-  getMessageById(obj?: JMAllType & { messageId: string; }): Promise<any> {
+  getMessageById(params: JMAllType & { messageId: string; }): Promise<any> {
     return;
   }
 
   @Cordova()
-  deleteMessageById(obj?: JMAllType & { messageId: string; }): Promise<any> {
+  deleteMessageById(params: JMAllType & { messageId: string; }): Promise<any> {
     return;
   }
 
   @Cordova()
-  sendInvitationRequest(obj?: {
+  sendInvitationRequest(params: {
     username: string;
     reason: string;
     appKey?: string;
@@ -435,7 +475,7 @@ export class JMessagePlugin extends IonicNativePlugin {
   }
 
   @Cordova()
-  acceptInvitation(obj?: {
+  acceptInvitation(params: {
     username: string;
     appKey?: string;
   }): Promise<any> {
@@ -443,7 +483,7 @@ export class JMessagePlugin extends IonicNativePlugin {
   }
 
   @Cordova()
-  declineInvitation(obj?: {
+  declineInvitation(params: {
     username: string;
     reason: string;
     appKey?: string;
@@ -454,7 +494,7 @@ export class JMessagePlugin extends IonicNativePlugin {
 
 
   @Cordova()
-  removeFromFriendList(obj?: {
+  removeFromFriendList(params: {
     username: string;
     appKey?: string;
   }): Promise<any> {
@@ -462,7 +502,7 @@ export class JMessagePlugin extends IonicNativePlugin {
   }
 
   @Cordova()
-  updateFriendNoteName(obj?: {
+  updateFriendNoteName(params: {
     username: string;
     noteName: string;
     appKey?: string;
@@ -471,7 +511,7 @@ export class JMessagePlugin extends IonicNativePlugin {
   }
 
   @Cordova()
-  updateFriendNoteText(obj?: {
+  updateFriendNoteText(params: {
     username: string;
     noteText: string;
     appKey?: string;
@@ -485,10 +525,10 @@ export class JMessagePlugin extends IonicNativePlugin {
   }
 
   @Cordova()
-  createGroup(obj?: {
+  createGroup(params: {
     name?: string;
     desc?: string;
-  }): Promise<any> {
+  }): Promise<string> {
     return;
   }
 
@@ -498,12 +538,12 @@ export class JMessagePlugin extends IonicNativePlugin {
   }
 
   @Cordova()
-  getGroupInfo(obj?: { id: string; }): Promise<any> {
+  getGroupInfo(params: { id: string; }): Promise<any> {
     return;
   }
 
   @Cordova()
-  updateGroupInfo(obj?: {
+  updateGroupInfo(params: {
     id: string;
     newName: string;
     newDesc?: string;
@@ -515,7 +555,7 @@ export class JMessagePlugin extends IonicNativePlugin {
   }
 
   @Cordova()
-  addGroupMembers(obj?: {
+  addGroupMembers(params: {
     id: string;
     usernameArray: string[];
     appKey?: string;
@@ -524,7 +564,7 @@ export class JMessagePlugin extends IonicNativePlugin {
   }
 
   @Cordova()
-  removeGroupMembers(obj?: {
+  removeGroupMembers(params: {
     id: string;
     usernameArray: string[];
     appKey?: string;
@@ -534,21 +574,21 @@ export class JMessagePlugin extends IonicNativePlugin {
 
 
   @Cordova()
-  exitGroup(obj?: {
+  exitGroup(params: {
     id: string;
   }): Promise<any> {
     return;
   }
 
   @Cordova()
-  getGroupMembers(obj?: {
+  getGroupMembers(params: {
     id: string;
   }): Promise<any> {
     return;
   }
 
   @Cordova()
-  addUsersToBlacklist(obj?: {
+  addUsersToBlacklist(params: {
     usernameArray: string[];
     appKey?: string;
   }): Promise<any> {
@@ -556,7 +596,7 @@ export class JMessagePlugin extends IonicNativePlugin {
   }
 
   @Cordova()
-  removeUsersFromBlacklist(obj?: {
+  removeUsersFromBlacklist(params: {
     usernameArray: string[];
     appKey?: string;
   }): Promise<any> {
@@ -569,7 +609,7 @@ export class JMessagePlugin extends IonicNativePlugin {
   }
 
   @Cordova()
-  setNoDisturb(obj?: (JMSingleType | JMGroupType) & {
+  setNoDisturb(params: (JMSingleType | JMGroupType) & {
     isNoDisturb: boolean;
   }): Promise<any> {
     return;
@@ -581,7 +621,7 @@ export class JMessagePlugin extends IonicNativePlugin {
   }
 
   @Cordova()
-  setNoDisturbGlobal(obj?: {
+  setNoDisturbGlobal(params: {
     isNoDisturb: boolean;
   }): Promise<any> {
     return;
@@ -593,7 +633,7 @@ export class JMessagePlugin extends IonicNativePlugin {
   }
 
   @Cordova()
-  blockGroupMessage(obj?: {
+  blockGroupMessage(params: {
     id: string;
     isBlock: boolean;
   }): Promise<any> {
@@ -601,7 +641,7 @@ export class JMessagePlugin extends IonicNativePlugin {
   }
 
   @Cordova()
-  isGroupBlocked(obj?: {
+  isGroupBlocked(params: {
     id: string;
   }): Promise<any> {
     return;
@@ -613,7 +653,7 @@ export class JMessagePlugin extends IonicNativePlugin {
   }
 
   @Cordova()
-  downloadThumbUserAvatar(obj?: {
+  downloadThumbUserAvatar(params: {
     username: string;
     appKey?: string;
   }): Promise<any> {
@@ -621,7 +661,7 @@ export class JMessagePlugin extends IonicNativePlugin {
   }
 
   @Cordova()
-  downloadOriginalUserAvatar(obj?: {
+  downloadOriginalUserAvatar(params: {
     username: string;
     appKey?: string;
   }): Promise<any> {
@@ -629,55 +669,56 @@ export class JMessagePlugin extends IonicNativePlugin {
   }
 
   @Cordova()
-  downloadThumbImage(obj?: (JMSingleType | JMGroupType) & {
+  downloadThumbImage(params: (JMSingleType | JMGroupType) & {
     messageId: string;
   }): Promise<any> {
     return;
   }
 
   @Cordova()
-  downloadOriginalImage(obj?: (JMSingleType | JMGroupType) & {
+  downloadOriginalImage(params: (JMSingleType | JMGroupType) & {
     messageId: string;
   }): Promise<any> {
     return;
   }
 
   @Cordova()
-  downloadVoiceFile(obj?: (JMSingleType | JMGroupType) & {
+  downloadVoiceFile(params: (JMSingleType | JMGroupType) & {
     messageId: string;
   }): Promise<any> {
     return;
   }
 
   @Cordova()
-  downloadFile(obj?: (JMSingleType | JMGroupType) & {
+  downloadFile(params: (JMSingleType | JMGroupType) & {
     messageId: string;
   }): Promise<any> {
     return;
   }
 
   @Cordova()
-  createConversation(obj?: JMAllType): Promise<any> {
+  createConversation(params: JMAllType): Promise<any> {
     return;
   }
 
   @Cordova()
-  deleteConversation(obj?: JMAllType): Promise<any> {
+  deleteConversation(params: JMAllType): Promise<any> {
     return;
   }
 
   @Cordova()
-  enterConversation(obj?: JMSingleType | JMGroupType): Promise<any> {
+  enterConversation(params: JMSingleType | JMGroupType): Promise<any> {
     return;
   }
 
-  @Cordova()
-  exitConversation(obj?: JMSingleType | JMGroupType): Promise<any> {
-    return;
-  }
+  @Cordova({
+    sync: true,
+    platforms: ['iOS', 'Android']
+   })
+  exitConversation(params: JMSingleType | JMGroupType): void {}
 
   @Cordova()
-  getConversation(obj?: JMAllType): Promise<any> {
+  getConversation(params: JMAllType): Promise<any> {
     return;
   }
 
@@ -687,7 +728,7 @@ export class JMessagePlugin extends IonicNativePlugin {
   }
 
   @Cordova()
-  resetUnreadMessageCount(obj?: JMAllType): Promise<any> {
+  resetUnreadMessageCount(params: JMAllType): Promise<any> {
     return;
   }
 
@@ -698,23 +739,25 @@ export class JMessagePlugin extends IonicNativePlugin {
    * 
    * chatRoom internal api.
    */
+  @CordovaProperty
+  ChatRoom: JMChatRoom;
 
   @Cordova()
-  enterChatRoom(obj?: {
+  enterChatRoom(params: {
     roomId: string;
   }): Promise<any> {
     return;
   }
 
   @Cordova()
-  exitChatRoom(obj?: {
+  exitChatRoom(params: {
     roomId: string;
   }): Promise<any> {
     return;
   }
 
   @Cordova()
-  getChatRoomConversation(obj?: {
+  getChatRoomConversation(params: {
     roomId: string;
   }): Promise<any> {
     return;
@@ -725,78 +768,132 @@ export class JMessagePlugin extends IonicNativePlugin {
     return;
   }
 
-  @Cordova()
-  addReceiveMessageListener(obj?: JMMessageEventListener): void {
+  @Cordova({
+    sync: true,
+    platforms: ['iOS', 'Android']
+   })
+  addReceiveMessageListener(params: JMMessageEventListener): void {
   }
 
-  @Cordova()
-  removeReceiveMessageListener(obj?: JMMessageEventListener): void {
+  @Cordova({
+    sync: true,
+    platforms: ['iOS', 'Android']
+   })
+  removeReceiveMessageListener(params: JMMessageEventListener): void {
   }
 
-  @Cordova()
-  addClickMessageNotificationListener(obj?: JMMessageEventListener): void {
+  @Cordova({
+    sync: true,
+    platforms: ['iOS', 'Android']
+   })
+  addClickMessageNotificationListener(params: JMMessageEventListener): void {
   }
 
-  @Cordova()
-  removeClickMessageNotificationListener(obj?: JMMessageEventListener): void {
+  @Cordova({
+    sync: true,
+    platforms: ['iOS', 'Android']
+   })
+  removeClickMessageNotificationListener(params: JMMessageEventListener): void {
   }
 
-  @Cordova()
-  addSyncOfflineMessageListener(obj?: JMSyncOfflineMessageListener): void {
+  @Cordova({
+    sync: true,
+    platforms: ['iOS', 'Android']
+   })
+  addSyncOfflineMessageListener(params: JMSyncOfflineMessageListener): void {
   }
 
-  @Cordova()
-  removeSyncOfflineMessageListener(obj?: JMSyncOfflineMessageListener): void {
+  @Cordova({
+    sync: true,
+    platforms: ['iOS', 'Android']
+   })
+  removeSyncOfflineMessageListener(params: JMSyncOfflineMessageListener): void {
 
   }
 
-  @Cordova()
-  addSyncRoamingMessageListener(obj?: JMSyncRoamingMessageListener): void {
+  @Cordova({
+    sync: true,
+    platforms: ['iOS', 'Android']
+   })
+  addSyncRoamingMessageListener(params: JMSyncRoamingMessageListener): void {
   }
 
-  @Cordova()
-  removeSyncRoamingMessageListener(obj?: JMSyncRoamingMessageListener): void {
+  @Cordova({
+    sync: true,
+    platforms: ['iOS', 'Android']
+   })
+  removeSyncRoamingMessageListener(params: JMSyncRoamingMessageListener): void {
   }
 
-  @Cordova()
-  addLoginStateChangedListener(obj?: JMLoginStateChangedListener): void {
+  @Cordova({
+    sync: true,
+    platforms: ['iOS', 'Android']
+   })
+  addLoginStateChangedListener(params: JMLoginStateChangedListener): void {
   }
 
-  @Cordova()
-  removeLoginStateChangedListener(obj?: JMLoginStateChangedListener): void {
-  }
-
-
-  @Cordova()
-  addContactNotifyListener(obj?: JMContactNotifyListener): void {
-  }
-
-  @Cordova()
-  removeContactNotifyListener(obj?: JMContactNotifyListener): void {
-  }
-
-  @Cordova()
-  addMessageRetractListener(obj?: JMMessageRetractListener): void {
-  }
-
-  @Cordova()
-  removeMessageRetractListener(obj?: JMMessageRetractListener): void {
-  }
-
-  @Cordova()
-  addReceiveTransCommandListener(obj?: JMReceiveTransCommandListener): void {
-  }
-
-  @Cordova()
-  removeReceiveTransCommandListener(obj?: JMReceiveTransCommandListener): void {
+  @Cordova({
+    sync: true,
+    platforms: ['iOS', 'Android']
+   })
+  removeLoginStateChangedListener(params: JMLoginStateChangedListener): void {
   }
 
 
-  @Cordova()
-  addReceiveChatRoomMessageListener(obj?: JMReceiveChatRoomMessageListener): void {
+  @Cordova({
+    sync: true,
+    platforms: ['iOS', 'Android']
+   })
+  addContactNotifyListener(params: JMContactNotifyListener): void {
   }
 
-  @Cordova()
-  removeReceiveChatRoomMessageListener(obj?: JMReceiveChatRoomMessageListener): void {
+  @Cordova({
+    sync: true,
+    platforms: ['iOS', 'Android']
+   })
+  removeContactNotifyListener(params: JMContactNotifyListener): void {
+  }
+
+  @Cordova({
+    sync: true,
+    platforms: ['iOS', 'Android']
+   })
+  addMessageRetractListener(params: JMMessageRetractListener): void {
+  }
+
+  @Cordova({
+    sync: true,
+    platforms: ['iOS', 'Android']
+   })
+  removeMessageRetractListener(params: JMMessageRetractListener): void {
+  }
+
+  @Cordova({
+    sync: true,
+    platforms: ['iOS', 'Android']
+   })
+  addReceiveTransCommandListener(params: JMReceiveTransCommandListener): void {
+  }
+
+  @Cordova({
+    sync: true,
+    platforms: ['iOS', 'Android']
+   })
+  removeReceiveTransCommandListener(params: JMReceiveTransCommandListener): void {
+  }
+
+
+  @Cordova({
+    sync: true,
+    platforms: ['iOS', 'Android']
+   })
+  addReceiveChatRoomMessageListener(params: JMReceiveChatRoomMessageListener): void {
+  }
+
+  @Cordova({
+    sync: true,
+    platforms: ['iOS', 'Android']
+   })
+  removeReceiveChatRoomMessageListener(params: JMReceiveChatRoomMessageListener): void {
   }
 }
