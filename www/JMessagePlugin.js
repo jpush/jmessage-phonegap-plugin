@@ -631,23 +631,7 @@ var JMessagePlugin = {
   getBlockedGroupList: function (success, error) {
     exec(success, error, PLUGIN_NAME, 'getBlockedGroupList', [])
   },
-  /**
-   * 判断指定群组是否被屏蔽。
-   *
-   * @param {object} params = { id: String }
-   * @param {function} success = function ({ isBlocked: boolean }) {} // 以参数形式返回结果。
-   */
-  isGroupBlocked: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'isGroupBlocked', [params])
-  },
-  /**
-   * 获取当前用户的群屏蔽列表。
-   *
-   * @param {function} success = function (groupArr) {} // 以参数形式返回结果。
-   */
-  getBlockedGroupList: function (success, error) {
-    exec(success, error, PLUGIN_NAME, 'getBlockedGroupList', [])
-  },
+
   /**
    * 下载用户头像缩略图，如果已经下载，不会重复下载。
    *
@@ -915,8 +899,8 @@ var JMessagePlugin = {
      * @param {function} success = function (conversationList) {}
      * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
      */
-    getChatRoomConversationList: function (params, success, error) {
-      exec(success, error, PLUGIN_NAME, 'getChatRoomConversationList', [params])
+    getChatRoomConversationList: function (success, error) {
+      exec(success, error, PLUGIN_NAME, 'getChatRoomConversationList', [])
     },
   },
   // 聊天室 - end
