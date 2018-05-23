@@ -62,23 +62,28 @@ export interface JMNormalMessage {
 };
 
 export type JMTextMessage = JMNormalMessage & {
+  type: 'text';
   text: string;                   // 消息内容
 };
 
 export type JMVoiceMessage = JMNormalMessage & {
+  type: 'voice';
   path?: string;                   // 语音文件路径,如果为空需要调用相应下载方法
   duration: number;                 // 语音时长，单位秒
 };
 
 export type JMImageMessage = JMNormalMessage & {
+  type: 'image';
   thumbPath?: string;               // 图片的缩略图路径, 如果为空需要调用相应下载方法
 };
 
 export type JMFileMessage = JMNormalMessage & {
+  type: 'file';
   fileName: string;                 // 文件名
 };
 
 export type JMLocationMessage = JMNormalMessage & {
+  type: 'location';
   longitude: number;              // 经度
   latitude: number;               // 纬度
   scale: number;                   // 地图缩放比例
@@ -86,6 +91,7 @@ export type JMLocationMessage = JMNormalMessage & {
 };
 
 export type JMCustomMessage = JMNormalMessage & {
+  type: 'custom';
   customObject: { [key: string]: string; }            // 自定义键值对
 };
 

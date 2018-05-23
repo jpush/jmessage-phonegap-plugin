@@ -41,25 +41,31 @@ export interface JMNormalMessage {
     };
 }
 export declare type JMTextMessage = JMNormalMessage & {
+    type: 'text';
     text: string;
 };
 export declare type JMVoiceMessage = JMNormalMessage & {
+    type: 'voice';
     path?: string;
     duration: number;
 };
 export declare type JMImageMessage = JMNormalMessage & {
+    type: 'image';
     thumbPath?: string;
 };
 export declare type JMFileMessage = JMNormalMessage & {
+    type: 'file';
     fileName: string;
 };
 export declare type JMLocationMessage = JMNormalMessage & {
+    type: 'location';
     longitude: number;
     latitude: number;
     scale: number;
     address?: string;
 };
 export declare type JMCustomMessage = JMNormalMessage & {
+    type: 'custom';
     customObject: {
         [key: string]: string;
     };
