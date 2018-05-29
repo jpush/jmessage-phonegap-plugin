@@ -413,6 +413,14 @@
       dict[@"type"] = @"event";
       JMSGEventContent *eventContent = (JMSGEventContent *) self.content;
       
+      NSArray *userArr = [eventContent getEventToUsernameList];
+      NSArray *userDicArr = [userArr mapObjectsUsingBlock:^id(id obj, NSUInteger idx) {
+          JMSGUser *user = obj;
+          return user.username;
+      }];
+        
+      dict[@"usernames"] = userDicArr;
+        
       switch (eventContent.eventType) {
         case kJMSGEventNotificationAcceptedFriendInvitation: {
           dict[@"eventType"] = @"acceptedFriendInvitation";
