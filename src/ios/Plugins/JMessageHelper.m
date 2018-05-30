@@ -414,12 +414,7 @@
       JMSGEventContent *eventContent = (JMSGEventContent *) self.content;
       
       NSArray *userArr = [eventContent getEventToUsernameList];
-      NSArray *userDicArr = [userArr mapObjectsUsingBlock:^id(id obj, NSUInteger idx) {
-          JMSGUser *user = obj;
-          return user.username;
-      }];
-        
-      dict[@"usernames"] = userDicArr;
+      dict[@"usernames"] = userArr;
         
       switch (eventContent.eventType) {
         case kJMSGEventNotificationAcceptedFriendInvitation: {
