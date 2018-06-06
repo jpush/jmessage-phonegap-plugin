@@ -1,0 +1,14 @@
+<ion-header>
+    <ion-navbar>
+      <ion-title>
+        Login
+      </ion-title>
+    </ion-navbar>
+  </ion-header>
+  
+  <ion-content padding>
+    <ion-input [(ngModel)]="username" placeholder="Username"></ion-input>
+    <ion-input [(ngModel)]="password" placeholder="Password"></ion-input>
+    <button ion-button (click)="Login()">Login</button>
+    <button ion-button color="secondary" (click)="Register()">Register</button>
+  </ion-content>

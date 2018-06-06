@@ -1,0 +1,21 @@
+<ion-header>
+    <ion-navbar>
+      <ion-title>
+        Contact
+      </ion-title>
+    </ion-navbar>
+  </ion-header>
+  
+  <ion-content padding>
+      <ion-list>
+
+        <ion-item *ngFor="let friend of friendList"
+          (click)="enterUser(friend)">
+          <ion-avatar item-left>
+            <img src="assets/imgs/user-icon.png">
+          </ion-avatar>
+          <h2>{{ friend.username }}</h2>
+        </ion-item>
+  
+      </ion-list>
+  </ion-content>

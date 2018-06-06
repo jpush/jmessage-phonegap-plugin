@@ -1,0 +1,77 @@
+{
+    "name": "jmessageIonic",
+    "version": "0.0.1",
+    "author": "Ionic Framework",
+    "homepage": "http://ionicframework.com/",
+    "private": true,
+    "scripts": {
+        "clean": "ionic-app-scripts clean",
+        "build": "ionic-app-scripts build",
+        "lint": "ionic-app-scripts lint",
+        "ionic:build": "ionic-app-scripts build",
+        "ionic:serve": "ionic-app-scripts serve"
+    },
+    "dependencies": {
+        "@angular/common": "5.0.0",
+        "@angular/compiler": "5.0.0",
+        "@angular/compiler-cli": "5.0.0",
+        "@angular/core": "5.0.0",
+        "@angular/forms": "5.0.0",
+        "@angular/http": "5.0.0",
+        "@angular/platform-browser": "5.0.0",
+        "@angular/platform-browser-dynamic": "5.0.0",
+        "@ionic-native/camera": "^4.7.0",
+        "@ionic-native/core": "4.3.2",
+        "@ionic-native/file": "^4.7.0",
+        "@ionic-native/jmessage": "file:../../../workproject/ionic-native/dist/@ionic-native/jmessage",
+        "@ionic-native/media": "^4.7.0",
+        "@ionic-native/splash-screen": "4.3.2",
+        "@ionic-native/status-bar": "4.3.2",
+        "@ionic/storage": "2.1.3",
+        "@jiguang-ionic/jmessage": "file:../../../workproject/ionic-native/dist/@ionic-native/jmessage",
+        "cordova-android": "^7.0.0",
+        "cordova-ios": "^4.5.4",
+        "cordova-plugin-camera": "^4.0.3",
+        "cordova-plugin-device": "^1.1.4",
+        "cordova-plugin-file": "^6.0.1",
+        "cordova-plugin-ionic-webview": "^1.2.1",
+        "cordova-plugin-jcore": "^1.2.0",
+        "cordova-plugin-media": "^5.0.2",
+        "cordova-plugin-splashscreen": "^4.0.3",
+        "cordova-plugin-whitelist": "^1.3.1",
+        "ionic-angular": "3.9.2",
+        "ionic-plugin-keyboard": "^2.2.1",
+        "ionicons": "3.0.0",
+        "jmessage-chenyu": "^1.0.9",
+        "jmessage-phonegap-plugin": "file:///Users/HuminiOS/Desktop/workproject/jmessage-phonegap-plugin",
+        "rxjs": "5.5.2",
+        "sw-toolbox": "3.6.0",
+        "zone.js": "0.8.18"
+    },
+    "devDependencies": {
+        "@ionic/app-scripts": "3.1.0",
+        "typescript": "2.4.2"
+    },
+    "description": "An Ionic project",
+    "cordova": {
+        "plugins": {
+            "cordova-plugin-device": {},
+            "cordova-plugin-ionic-webview": {},
+            "cordova-plugin-splashscreen": {},
+            "cordova-plugin-whitelist": {},
+            "ionic-plugin-keyboard": {},
+            "cordova-plugin-camera": {},
+            "cordova-plugin-file": {},
+            "cordova-plugin-media": {
+                "KEEP_AVAUDIOSESSION_ALWAYS_ACTIVE": "NO"
+            },
+            "jmessage-phonegap-plugin": {
+                "APP_KEY": "a1703c14b186a68a66ef86c1"
+            }
+        },
+        "platforms": [
+            "android",
+            "ios"
+        ]
+    }
+}

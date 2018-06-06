@@ -1,0 +1,50 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>
+      Chat
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+  
+<ion-content padding>
+
+  <div *ngFor="let message of messageList">
+
+    <div class="message-item"
+      [class.left]="!message.isSend"
+      [class.right]="message.isSend"
+      >
+
+      <img class="user-avatar" src="assets/imgs/singgle-icon.png"/>
+      <!-- <img class="user-avatar" src="{{ message.from.avatarThumbPath }}"/> -->
+      <div class="message-detail">
+          <p *ngIf="message.from != undefined" class="username">{{ message.from.nickname }}</p>
+          <div class="message-content">
+            <p *ngIf="message.type == 'text'">{{ message.text }}</p>
+            <img *ngIf="message.type == 'image'" [src]="imageMap[message.id]" class="image-content"/>
+            <p *ngIf="message.type == 'voice'" (click)="onVoiceMessageContent(message)" class="voice-content">[voice]</p>
+            <p *ngIf="message.type == 'file'">[file]</p>
+            <p *ngIf="message.type == 'custom'">[custom]</p>
+          </div>
+          
+      </div>
+
+    </div>
+  </div>
+  
+</ion-content>
+
+<ion-footer>
+      <!-- <button class="send-btn" ion-button color="secondary" (click)="onSend()">Send</button> -->
+      <ion-input class="text-input" [(ngModel)]="text" placeholder="Send Text"></ion-input>
+      <button class="send-btn" ion-button color="secondary" (click)="onSendText()">Send</button>
+      <div class="more-container">
+        <button class="camera-btn" ion-button (click)="onTakePicture()">拍照</button>
+        <button class="voice-btn" ion-button 
+        (touchstart)="recordVoice($event)" 
+        (touchend)="didRecordVoice($event)"
+        >{{ isRecording? '松开停止':'按下录音'}}</button>
+      </div>
+</ion-footer>
+
+<!-- (click)="onRecordBtn()"  -->

@@ -1,0 +1,29 @@
+account-page {
+
+    .avatar-content {
+
+        display: block;
+        width: 60px;
+        height: 60px;
+        margin: 0 auto;
+        margin-top: 30px;
+
+        .avatar {
+            display: block;
+            background-color: aqua;
+        }
+    }
+    
+    .user-info {
+        margin-top: 30px;
+        border-color: rgb(205, 205, 205);
+        border-width: 0px;
+        
+        border-style:solid;
+        border-top-width: 1px;
+    }
+    .logout {
+        display: block;
+        margin: 30px auto;
+    }
+}

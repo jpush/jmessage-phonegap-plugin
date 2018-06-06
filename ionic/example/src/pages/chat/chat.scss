@@ -1,0 +1,116 @@
+chat-page {
+
+    $userBackgroundColor: #387ef5;
+    $toUserBackgroundColor: #fff;
+  
+    ion-content {
+      background-color: #387ef5;
+    
+      .message-item {
+        display: block;
+        min-height: 60px;
+
+        .user-avatar {
+          position: absolute;
+          width: 40px;
+          height: 40px;
+        }
+        
+        .message-detail {
+          display: block;
+          margin-left: 60px;
+
+          .username {
+            height: 0px;
+            color: #cbcbcb
+          }
+
+          .message-content p {
+            display: inline-block;
+            background-color: #387ef5;
+            padding: 4px 8px;
+            color: white;
+            border-radius: 8px;
+            word-wrap: break-word;
+            max-width: 200px;
+
+          }
+          .message-content {
+            .image-content {
+              margin-top: 8px;
+              max-width: 150px;
+              max-height: 150px;
+              border-radius: 8px;
+            }
+
+            .voice-content {
+              padding: 4px 8px;
+            }
+          }
+        }
+      }
+
+      .message-item.right {
+
+        .user-avatar {
+          position: absolute;
+          right: 8px;
+          width: 40px;
+          height: 40px;
+        }
+
+        .message-detail {
+          display: block;
+          margin-right: 40px;
+          text-align: right;
+
+          .message-content p {
+            display: inline-block;
+            
+          }
+        }
+      }
+    }
+  
+    ion-footer {
+      box-shadow: 0 0 4px rgba(0, 0, 0, 0.11);
+      background-color: #fff;
+      align-content: center;
+      text-align: center;
+      padding: 0px;
+      height: 94px;
+
+      
+      .text-input {
+        width: auto;
+        margin: 8px 4px;
+        display: inline-block;
+      }
+      
+      .send-btn {
+          display: inline-block;
+          height: 30px;
+          margin-left: 0%;
+          padding: 4px 8px;
+      }
+      
+      .more-container {
+        .camera-btn {
+          display: inline-block;
+          widows: 30px;
+          height: 30px;
+          padding: 4px 8px;
+          margin-left: 0;
+        }
+        .voice-btn {
+          display: inline-block;
+          widows: 30px;
+          height: 30px;
+          padding: 4px 8px;
+          margin-left: 0;
+        }
+        
+      }
+    }
+  }
+  

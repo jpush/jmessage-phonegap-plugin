@@ -1,0 +1,21 @@
+{
+    "zh": {
+        "Home": {
+            "tilte": "首页"
+        },
+        "Chat": {
+            "tilte": "聊天"
+        },
+        "Login": {
+            "tilte": "登录",
+            "username": "用户名",
+            "password": "密码"
+        },
+        "Register": {
+            "tilte": "注册",
+            "username": "用户名",
+            "password": "密码"
+
+        }
+    }
+}
