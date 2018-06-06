@@ -1,0 +1,25 @@
+<ion-header>
+    <ion-navbar>
+      <ion-title>
+        My Account
+      </ion-title>
+    </ion-navbar>
+  </ion-header>
+  
+  <ion-content>
+    <div class="avatar-content" (click)="uploadAvatar()">
+      <img *ngIf="avatarData != ''" class="avatar" [src]="avatarData"/>
+      <img *ngIf="avatarData == ''" class="avatar" src="assets/imgs/camera.png"/>
+    </div>
+
+
+    <ion-item class="user-info">
+      <ion-avatar item-left>
+        <img src="assets/imgs/user-icon.png">
+      </ion-avatar>
+      <p>{{ myInfo.username }}</p>
+    </ion-item>
+
+
+    <button class="logout" ion-button color="danger" (click)="logout()">Logout</button>
+  </ion-content>

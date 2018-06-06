@@ -1,10 +1,10 @@
 {
-  "name": "@ionic-native/jmessage",
-  "version": "1.0.0",
+  "name": "@jiguang-ionic/jmessage",
+  "version": "1.0.1",
   "description": "Ionic Native - Native plugins for ionic apps",
   "module": "index.js",
   "typings": "index.d.ts",
-  "author": "ionic",
+  "author": "huminios",
   "license": "MIT",
   "peerDependencies": {
     "@ionic-native/core": "^4.2.0",

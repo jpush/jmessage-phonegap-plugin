@@ -1,2 +1,6 @@
 
 \.DS_Store
+
+./ionic/example/platforms
+./ionic/example/plugins
+./ionic/example/node_modules

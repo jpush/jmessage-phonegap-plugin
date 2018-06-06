@@ -1,0 +1,33 @@
+<ion-header>
+    <ion-navbar>
+      <ion-title>
+        Conversation List
+      </ion-title>
+    </ion-navbar>
+  </ion-header>
+  
+  <ion-content padding>
+    <ion-list>
+
+      
+      <ion-item *ngFor="let conversationInfo of conversationList"
+        (click)="enterChat(conversationInfo)">
+        <ion-avatar item-left>
+          <img src="assets/imgs/user-icon.png">
+        </ion-avatar>
+        <h2 *ngIf="conversationInfo.conversationType == 'single'">{{ conversationInfo.target.nickname }}</h2>
+        <h2 *ngIf="conversationInfo.conversationType == 'group'">{{ conversationInfo.target.name }}</h2>
+        
+        <div *ngIf="conversationInfo.latestMessage != undefined">
+          <p *ngIf="conversationInfo.latestMessage.type == 'text'"> {{ conversationInfo.latestMessage.text }}</p>
+          <p *ngIf="conversationInfo.latestMessage.type == 'voice'"> [语言] </p>
+          <p *ngIf="conversationInfo.latestMessage.type == 'image'"> [图片] </p>
+          <p *ngIf="conversationInfo.latestMessage.type == 'file'"> [文件] </p>
+        </div>
+
+        <ion-badge  *ngIf="conversationInfo.unreadCount > 0" item-end>{{ conversationInfo.unreadCount }}</ion-badge>
+      </ion-item>
+
+    </ion-list>
+
+  </ion-content>
