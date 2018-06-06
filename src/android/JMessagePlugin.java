@@ -537,7 +537,8 @@ public class JMessagePlugin extends CordovaPlugin {
         ImageContent content;
         try {
             File file = getFile(path);
-            content = new ImageContent(file);
+            String suffix = path.substring(path.lastIndexOf(".") + 1);
+            content = new ImageContent(file, suffix);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             handleResult(ERR_CODE_FILE, ERR_MSG_FILE, callback);
