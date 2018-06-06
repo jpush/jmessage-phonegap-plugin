@@ -290,14 +290,21 @@ public class JMessagePlugin extends CordovaPlugin {
             return;
         }
 
-        String imgPath = params.getString("imgPath");
-        File img = new File(imgPath);
-        JMessageClient.updateUserAvatar(img, new BasicCallback() {
-            @Override
-            public void gotResult(int status, String desc) {
-                handleResult(status, desc, callback);
-            }
-        });
+        try {
+            String imgPath = params.getString("imgPath");
+            File img = new File(imgPath);
+            String format = imgPath.substring(imgPath.lastIndexOf(".") + 1);
+            JMessageClient.updateUserAvatar(img, format,new BasicCallback() {
+                @Override
+                public void gotResult(int status, String desc) {
+                    handleResult(status, desc, callback);
+                }
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+            handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
+            return;
+        }
     }
 
     void updateMyInfo(JSONArray data, final CallbackContext callback) {
