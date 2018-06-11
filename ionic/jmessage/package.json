@@ -1,7 +1,7 @@
 {
   "name": "@jiguang-ionic/jmessage",
-  "version": "1.0.1",
-  "description": "Ionic Native - Native plugins for ionic apps",
+  "version": "1.0.2",
+  "description": "JMessage Ionic Plugin",
   "module": "index.js",
   "typings": "index.d.ts",
   "author": "huminios",

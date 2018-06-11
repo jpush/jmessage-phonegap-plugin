@@ -18,7 +18,7 @@ import {
 export interface JMSingleType {
   type: 'single';
   username: string;
-  appKey: string;
+  appKey?: string;
 };
 
 export interface JMGroupType {
@@ -122,7 +122,7 @@ export type JMContactNotifyListener = (event: {
   type: 'invite_received' | 'invite_accepted' | 'invite_declined' | 'contact_deleted';
   reason: string;
   fromUsername: string;
-  fromUserAppKey: string;
+  fromUserAppKey?: string;
 }) => void;
 
 export type JMMessageRetractListener = (event: {
@@ -147,7 +147,7 @@ export type JMReceiveChatRoomMessageListener = (event: {
 export interface JMUserInfo {
   type: 'user';
   username: string;           // 用户名
-  appKey: string;             // 用户所属应用的 appKey，可与 username 共同作为用户的唯一标识
+  appKey?: string;             // 用户所属应用的 appKey，可与 username 共同作为用户的唯一标识
   nickname?: string;           // 昵称
   gender: 'male' | 'female' | 'unknown';             // 'male' / 'female' / 'unknown'
   avatarThumbPath: string;    // 头像的缩略图地址
@@ -170,7 +170,7 @@ export interface JMGroupInfo {
   desc?: string;               // 群组描述
   level: number;              // 群组等级，默认等级 4
   owner: string;              // 群主的 username
-  ownerAppKey: string;        // 群主的 appKey
+  ownerAppKey?: string;        // 群主的 appKey
   maxMemberCount: number;     // 最大成员数
   isNoDisturb: boolean;       // 是否免打扰
   isBlocked: boolean;          // 是否屏蔽群消息
@@ -180,7 +180,7 @@ export interface JMChatRoomInfo {
   type: 'chatRoom';
   roomId: string;   // 聊天室 id
   name: string;     // 聊天室名称
-  appKey: string;   // 聊天室所属应用的 App Key
+  appKey?: string;   // 聊天室所属应用的 App Key
   description?: string; // 聊天室描述信息
   createTime: number; // 创建日期，单位：秒
   maxMemberCount?: number; // 最大成员数

@@ -2,7 +2,7 @@ import { IonicNativePlugin } from '@ionic-native/core';
 export interface JMSingleType {
     type: 'single';
     username: string;
-    appKey: string;
+    appKey?: string;
 }
 export interface JMGroupType {
     type: 'group';
@@ -91,7 +91,7 @@ export declare type JMContactNotifyListener = (event: {
     type: 'invite_received' | 'invite_accepted' | 'invite_declined' | 'contact_deleted';
     reason: string;
     fromUsername: string;
-    fromUserAppKey: string;
+    fromUserAppKey?: string;
 }) => void;
 export declare type JMMessageRetractListener = (event: {
     conversation: JMConversationInfo;
@@ -112,7 +112,7 @@ export declare type JMReceiveChatRoomMessageListener = (event: {
 export interface JMUserInfo {
     type: 'user';
     username: string;
-    appKey: string;
+    appKey?: string;
     nickname?: string;
     gender: 'male' | 'female' | 'unknown';
     avatarThumbPath: string;
@@ -136,7 +136,7 @@ export interface JMGroupInfo {
     desc?: string;
     level: number;
     owner: string;
-    ownerAppKey: string;
+    ownerAppKey?: string;
     maxMemberCount: number;
     isNoDisturb: boolean;
     isBlocked: boolean;
@@ -145,7 +145,7 @@ export interface JMChatRoomInfo {
     type: 'chatRoom';
     roomId: string;
     name: string;
-    appKey: string;
+    appKey?: string;
     description?: string;
     createTime: number;
     maxMemberCount?: number;
