@@ -398,11 +398,11 @@ NSMutableDictionary *_jmessageEventCache;
 }
 
 - (JMSGGroupType)convertStringToGroupType:(NSString *)str {
-    if ([str isEqualToString:@"private"]) {
-        return kJMSGGroupTypePrivate;
+    if ([str isEqualToString:@"public"]) {
+        return kJMSGGroupTypePublic;
     }
     
-    return kJMSGGroupTypePublic;
+    return kJMSGGroupTypePrivate;
 }
 
 #pragma mark IM - Events
@@ -1303,16 +1303,21 @@ NSMutableDictionary *_jmessageEventCache;
 
 - (void)createGroup:(CDVInvokedUrlCommand *)command {
   NSDictionary *param = [command argumentAtIndex:0];
-  
-  [JMSGGroup createGroupWithName:param[@"name"] desc:param[@"desc"] memberArray:nil completionHandler:^(id resultObject, NSError *error) {
-    if (error) {
-      [self handleResultWithDictionary:nil command:command error:error];
-      return;
-    }
     
-    JMSGGroup *group = resultObject;
-    [self handleResultWithString:group.gid command:command error:error];
-  }];
+    JMSGGroupInfo *groupInfo = [[JMSGGroupInfo alloc] init];
+    groupInfo.name = param[@"name"];
+    groupInfo.desc = param[@"desc"];
+    groupInfo.groupType = [self convertStringToGroupType:param[@"groupType"]];
+    
+    [JMSGGroup createGroupWithGroupInfo:groupInfo memberArray:nil completionHandler:^(id resultObject, NSError *error) {
+        if (error) {
+            [self handleResultWithDictionary:nil command:command error:error];
+            return;
+        }
+        
+        JMSGGroup *group = resultObject;
+        [self handleResultWithString:group.gid command:command error:error];
+    }];
 }
 
 - (void)getGroupIds:(CDVInvokedUrlCommand *)command {
