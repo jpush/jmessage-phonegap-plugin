@@ -86,64 +86,64 @@
 
 - (void)onReceiveNotificationEvent:(JMSGNotificationEvent *)event {
   switch (event.eventType) {
-    case kJMSGEventNotificationLoginKicked:
-      [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageLoginStateChanged
-                                                          object:@{@"type":@"user_kicked"}];
-      break;
-    case kJMSGEventNotificationServerAlterPassword:
-      [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageLoginStateChanged
-                                                          object:@{@"type":@"user_password_change"}];
-      break;
-    case kJMSGEventNotificationUserLoginStatusUnexpected:
-      [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageLoginStateChanged
-                                                          object:@{@"type":@"user_login_state_unexpected"}];
-      break;
+//    case kJMSGEventNotificationLoginKicked:
+//      [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageLoginStateChanged
+//                                                          object:@{@"type":@"user_kicked"}];
+//      break;
+//    case kJMSGEventNotificationServerAlterPassword:
+//      [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageLoginStateChanged
+//                                                          object:@{@"type":@"user_password_change"}];
+//      break;
+//    case kJMSGEventNotificationUserLoginStatusUnexpected:
+//      [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageLoginStateChanged
+//                                                          object:@{@"type":@"user_login_state_unexpected"}];
+//      break;
     case kJMSGEventNotificationCurrentUserInfoChange:
       break;
-    case kJMSGEventNotificationReceiveFriendInvitation:{
-      JMSGFriendNotificationEvent *friendEvent = (JMSGFriendNotificationEvent *) event;
-      JMSGUser *user = [friendEvent getFromUser];
-      [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageContactNotify
-                                                          object:@{
-                                                                    @"type":@"invite_received",
-                                                                    @"reason":[friendEvent eventDescription],
-                                                                    @"fromUsername":[friendEvent getFromUsername],
-                                                                    @"fromUserAppKey":user.appKey}];
-      }
-      break;
-    case kJMSGEventNotificationAcceptedFriendInvitation:{
-      JMSGFriendNotificationEvent *friendEvent = (JMSGFriendNotificationEvent *) event;
-      JMSGUser *user = [friendEvent getFromUser];
-      [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageContactNotify
-                                                          object:@{
-                                                                    @"type":@"invite_accepted",
-                                                                    @"reason":[friendEvent eventDescription],
-                                                                    @"fromUsername":[friendEvent getFromUsername],
-                                                                    @"fromUserAppKey":user.appKey}];
-      }
-      break;
-    case kJMSGEventNotificationDeclinedFriendInvitation:{
-      JMSGFriendNotificationEvent *friendEvent = (JMSGFriendNotificationEvent *) event;
-      JMSGUser *user = [friendEvent getFromUser];
-      [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageContactNotify
-                                                          object:@{
-                                                                    @"type":@"invite_declined",
-                                                                    @"reason":[friendEvent eventDescription],
-                                                                    @"fromUsername":[friendEvent getFromUsername],
-                                                                    @"fromUserAppKey":user.appKey}];
-      }
-      break;
-    case kJMSGEventNotificationDeletedFriend:{
-      JMSGFriendNotificationEvent *friendEvent = (JMSGFriendNotificationEvent *) event;
-      JMSGUser *user = [friendEvent getFromUser];
-      [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageContactNotify
-                                                          object:@{
-                                                                    @"type":@"contact_deleted",
-                                                                    @"reason":[friendEvent eventDescription],
-                                                                    @"fromUsername":[friendEvent getFromUsername],
-                                                                    @"fromUserAppKey":user.appKey}];
-      }
-      break;
+//    case kJMSGEventNotificationReceiveFriendInvitation:{
+//      JMSGFriendNotificationEvent *friendEvent = (JMSGFriendNotificationEvent *) event;
+//      JMSGUser *user = [friendEvent getFromUser];
+//      [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageContactNotify
+//                                                          object:@{
+//                                                                    @"type":@"invite_received",
+//                                                                    @"reason":[friendEvent eventDescription],
+//                                                                    @"fromUsername":[friendEvent getFromUsername],
+//                                                                    @"fromUserAppKey":user.appKey}];
+//      }
+//      break;
+//    case kJMSGEventNotificationAcceptedFriendInvitation:{
+//      JMSGFriendNotificationEvent *friendEvent = (JMSGFriendNotificationEvent *) event;
+//      JMSGUser *user = [friendEvent getFromUser];
+//      [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageContactNotify
+//                                                          object:@{
+//                                                                    @"type":@"invite_accepted",
+//                                                                    @"reason":[friendEvent eventDescription],
+//                                                                    @"fromUsername":[friendEvent getFromUsername],
+//                                                                    @"fromUserAppKey":user.appKey}];
+//      }
+//      break;
+//    case kJMSGEventNotificationDeclinedFriendInvitation:{
+//      JMSGFriendNotificationEvent *friendEvent = (JMSGFriendNotificationEvent *) event;
+//      JMSGUser *user = [friendEvent getFromUser];
+//      [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageContactNotify
+//                                                          object:@{
+//                                                                    @"type":@"invite_declined",
+//                                                                    @"reason":[friendEvent eventDescription],
+//                                                                    @"fromUsername":[friendEvent getFromUsername],
+//                                                                    @"fromUserAppKey":user.appKey}];
+//      }
+//      break;
+//    case kJMSGEventNotificationDeletedFriend:{
+//      JMSGFriendNotificationEvent *friendEvent = (JMSGFriendNotificationEvent *) event;
+//      JMSGUser *user = [friendEvent getFromUser];
+//      [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageContactNotify
+//                                                          object:@{
+//                                                                    @"type":@"contact_deleted",
+//                                                                    @"reason":[friendEvent eventDescription],
+//                                                                    @"fromUsername":[friendEvent getFromUsername],
+//                                                                    @"fromUserAppKey":user.appKey}];
+//      }
+//      break;
     case kJMSGEventNotificationReceiveServerFriendUpdate:
       
       break;
@@ -165,6 +165,117 @@
     default:
       break;
   }
+}
+
+// 登录状态变更事件
+- (void)onReceiveUserLoginStatusChangeEvent:(JMSGUserLoginStatusChangeEvent *)event {
+    switch (event.eventType) {
+        case kJMSGEventNotificationLoginKicked:
+            [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageLoginStateChanged
+                                                                object:@{@"type":@"user_kicked"}];
+            break;
+        case kJMSGEventNotificationServerAlterPassword:
+            [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageLoginStateChanged
+                                                                object:@{@"type":@"user_password_change"}];
+            break;
+        case kJMSGEventNotificationUserLoginStatusUnexpected:
+            [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageLoginStateChanged
+                                                                object:@{@"type":@"user_login_state_unexpected"}];
+            break;
+    }
+}
+
+// 好友事件
+- (void)onReceiveFriendNotificationEvent:(JMSGFriendNotificationEvent *)event {
+    switch (event.eventType) {
+        case kJMSGEventNotificationReceiveFriendInvitation:{
+            JMSGFriendNotificationEvent *friendEvent = (JMSGFriendNotificationEvent *) event;
+            JMSGUser *user = [friendEvent getFromUser];
+            [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageContactNotify
+                                                                object:@{
+                                                                         @"type":@"invite_received",
+                                                                         @"reason":[friendEvent eventDescription],
+                                                                         @"fromUsername":[friendEvent getFromUsername],
+                                                                         @"fromUserAppKey":user.appKey}];
+        }
+            break;
+        case kJMSGEventNotificationAcceptedFriendInvitation:{
+            JMSGFriendNotificationEvent *friendEvent = (JMSGFriendNotificationEvent *) event;
+            JMSGUser *user = [friendEvent getFromUser];
+            [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageContactNotify
+                                                                object:@{
+                                                                         @"type":@"invite_accepted",
+                                                                         @"reason":[friendEvent eventDescription],
+                                                                         @"fromUsername":[friendEvent getFromUsername],
+                                                                         @"fromUserAppKey":user.appKey}];
+        }
+            break;
+        case kJMSGEventNotificationDeclinedFriendInvitation:{
+            JMSGFriendNotificationEvent *friendEvent = (JMSGFriendNotificationEvent *) event;
+            JMSGUser *user = [friendEvent getFromUser];
+            [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageContactNotify
+                                                                object:@{
+                                                                         @"type":@"invite_declined",
+                                                                         @"reason":[friendEvent eventDescription],
+                                                                         @"fromUsername":[friendEvent getFromUsername],
+                                                                         @"fromUserAppKey":user.appKey}];
+        }
+            break;
+        case kJMSGEventNotificationDeletedFriend:{
+            JMSGFriendNotificationEvent *friendEvent = (JMSGFriendNotificationEvent *) event;
+            JMSGUser *user = [friendEvent getFromUser];
+            [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageContactNotify
+                                                                object:@{
+                                                                         @"type":@"contact_deleted",
+                                                                         @"reason":[friendEvent eventDescription],
+                                                                         @"fromUsername":[friendEvent getFromUsername],
+                                                                         @"fromUserAppKey":user.appKey}];
+        }
+            break;
+            
+        default:
+            break;
+    }
+}
+
+#pragma mark - Group 回调
+
+/*!
+ * @abstract 群组信息 (GroupInfo) 信息通知
+ * @param group 变更后的群组对象
+ * @discussion 如果想要获取通知, 需要先注册回调. 具体请参考 JMessageDelegate 里的说明.
+ */
+- (void)onGroupInfoChanged:(JMSGGroup *)group {
+    
+}
+
+/*!
+ * @abstract 监听申请入群通知
+ * @param event 申请入群事件
+ * @discussion 只有群主和管理员能收到此事件；申请入群事件相关参数请查看 JMSGApplyJoinGroupEvent 类，在群主审批此事件时需要传递事件的相关参数
+ */
+- (void)onReceiveApplyJoinGroupApprovalEvent:(JMSGApplyJoinGroupEvent *)event {
+    [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageReceiveApplyJoinGroupApproval
+                                                        object: [event eventToDictionary]];
+}
+
+/*!
+ * @abstract 监听管理员拒绝入群申请通知
+ * @param event 拒绝入群申请事件
+ * @discussion 只有申请方和被申请方会收到此事件；拒绝的相关描述和原因请查看 JMSGGroupAdminRejectApplicationEvent 类
+ */
+- (void)onReceiveGroupAdminRejectApplicationEvent:(JMSGGroupAdminRejectApplicationEvent *)event {
+    [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageReceiveGroupAdminReject
+                                                        object: [event eventToDictionary]];
+}
+
+/*!
+ * @abstract 监听管理员审批通知
+ * @discussion 只有管理员才会收到该事件；当管理员同意或拒绝了某个入群申请事件时，其他管理员就会收到该事件，相关属性请查看 JMSGGroupAdminApprovalEvent 类
+ */
+- (void)onReceiveGroupAdminApprovalEvent:(JMSGGroupAdminApprovalEvent *)event {
+    [[NSNotificationCenter defaultCenter] postNotificationName:kJMessageReceiveGroupAdminApproval
+                                                        object: [event eventToDictionary]];
 }
 
 - (NSString *)getFullPathWith:(NSString *) path {
@@ -342,6 +453,26 @@
   dict[@"isShieldMessage"] = @(self.isShieldMessage);
   dict[@"displayName"] = self.displayName;
   return dict;
+}
+@end
+
+@implementation JMSGGroupInfo (JMessage)
+-(NSMutableDictionary*)groupToDictionary {
+    NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+    dict[@"id"] = self.gid;
+    dict[@"name"] = self.name;
+    dict[@"desc"] = self.desc;
+    dict[@"maxMemberCount"] = self.maxMemberCount;
+    switch (self.groupType) {
+        case kJMSGGroupTypePublic:
+            dict[@"groupType"] = @"public";
+            break;
+            
+        default:
+            dict[@"groupType"] = @"private";
+            break;
+    }
+    return dict;
 }
 @end
 
@@ -553,4 +684,54 @@
   return result;
 }
 
+@end
+
+@implementation JMSGApplyJoinGroupEvent (JMessage)
+- (NSMutableDictionary *)eventToDictionary {
+    NSMutableDictionary *dict = @{}.mutableCopy;
+    
+    dict[@"eventId"] = self.eventID;
+    dict[@"groupId"] = self.groupID;
+    dict[@"isInitiativeApply"] = @(self.isInitiativeApply);
+    dict[@"sendApplyUser"] = self.sendApplyUser != nil ? @{} : [self.sendApplyUser userToDictionary];
+    if (self.joinGroupUsers != nil) {
+        NSArray *userDicArr = [self.joinGroupUsers mapObjectsUsingBlock:^id(id obj, NSUInteger idx) {
+            JMSGUser *user = obj;
+            return [user userToDictionary];
+        }];
+        dict[@"joinGroupUsers"] = userDicArr;
+    }
+    dict[@"reason"] = self.reason;
+    return dict;
+}
+@end
+
+
+@implementation JMSGGroupAdminRejectApplicationEvent (JMessage)
+- (NSMutableDictionary *)eventToDictionary {
+    NSMutableDictionary *dict = @{}.mutableCopy;
+    dict[@"groupId"] = self.groupID;
+    dict[@"reason"] = self.rejectReason;
+    dict[@"groupManager"] = [self.groupManager userToDictionary];
+    return dict;
+}
+@end
+
+@implementation JMSGGroupAdminApprovalEvent (JMessage)
+- (NSMutableDictionary *)eventToDictionary {
+    NSMutableDictionary *dict = @{}.mutableCopy;
+    dict[@"isAgree"] = @(self.isAgreeApply);
+    dict[@"applyEventId"] = self.applyEventID;
+    dict[@"groupId"] = self.groupID;
+    dict[@"groupAdmin"] = self.groupAdmin;
+    
+    if (self.users != nil) {
+        NSArray *userDicArr = [self.users mapObjectsUsingBlock:^id(id obj, NSUInteger idx) {
+            JMSGUser *user = obj;
+            return [user userToDictionary];
+        }];
+        dict[@"users"] = userDicArr;
+    }
+    return dict;
+}
 @end
