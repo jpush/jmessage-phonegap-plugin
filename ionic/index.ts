@@ -141,6 +141,29 @@ export type JMReceiveChatRoomMessageListener = (event: {
   messageArray: JMAllMessage[];
 }) => void;
 
+
+export type JMReceiveApplyJoinGroupApprovalListener = (event: {
+  eventId: string;
+  groupId: string;
+  isInitiativeApply: boolean;
+  sendApplyUser: JMUserInfo;
+  joinGroupUsers?: JMUserInfo[];
+  reason?: string;
+}) => void;
+
+export type JMReceiveGroupAdminRejectListener = (event: {
+  groupId: string;
+  groupManager: JMUserInfo;
+  reason?: string;
+}) => void;
+
+export type JMReceiveGroupAdminApprovalListener = (event: {
+  isAgree: boolean;
+  applyEventId: string;
+  groupId: string;
+  groupAdmin: JMUserInfo;
+  users: JMUserInfo[];
+}) => void;
 /**
  * User Type
  */
@@ -532,6 +555,7 @@ export class JMessagePlugin extends IonicNativePlugin {
 
   @Cordova()
   createGroup(params: {
+    groupType?: 'public' | 'private';
     name?: string;
     desc?: string;
   }): Promise<string> {
@@ -774,6 +798,71 @@ export class JMessagePlugin extends IonicNativePlugin {
     return;
   }
 
+  @Cordova()
+  getAllUnreadCount(): Promise< { count: number; } > {
+    return; // We add return; here to avoid any IDE / Compiler errors
+  }
+
+  @Cordova()
+  addGroupAdmins(params: {
+    groupId: string;
+    usernames: string[];
+    appKey?: string;
+  }): Promise<any> {
+    return;
+  }
+
+  @Cordova()
+  removeGroupAdmins(params: {
+    groupId: string;
+    usernames: string[];
+    appKey?: string;
+  }): Promise<any> {
+    return;
+  }
+
+  @Cordova()
+  changeGroupType(params: {
+    groupId: string;
+    type: 'public' | 'private';
+  }): Promise<any> {
+    return;
+  }
+
+  @Cordova()
+  getPublicGroupInfos(params: {
+    appKey: string;
+    start: number;
+    count: number;
+  }): Promise<any> {
+    return;
+  }
+
+  @Cordova()
+  applyJoinGroup(params: {
+    groupId: string;
+    reason?: string;
+  }): Promise<any> {
+    return;
+  }
+
+  @Cordova()
+  processApplyJoinGroup(params: {
+    events: string[];
+    isAgree: boolean;
+    isRespondInviter: boolean
+    reason?: string;
+  }): Promise<any> {
+    return;
+  }
+
+  @Cordova()
+  dissolveGroup(params: {
+    groupId: string;
+  }): Promise<any> {
+    return;
+  }
+
   @Cordova({
     sync: true,
     platforms: ['iOS', 'Android']
@@ -901,5 +990,48 @@ export class JMessagePlugin extends IonicNativePlugin {
     platforms: ['iOS', 'Android']
    })
   removeReceiveChatRoomMessageListener(params: JMReceiveChatRoomMessageListener): void {
+  }
+
+  @Cordova({
+    sync: true,
+    platforms: ['iOS', 'Android']
+   })
+   addReceiveApplyJoinGroupApprovalListener(params: JMReceiveChatRoomMessageListener): void {
+  }
+
+  @Cordova({
+    sync: true,
+    platforms: ['iOS', 'Android']
+   })
+   removeReceiveApplyJoinGroupApprovalListener(params: JMReceiveChatRoomMessageListener): void {
+  }
+
+
+  @Cordova({
+    sync: true,
+    platforms: ['iOS', 'Android']
+   })
+   addReceiveGroupAdminRejectListener(params: JMReceiveChatRoomMessageListener): void {
+  }
+
+  @Cordova({
+    sync: true,
+    platforms: ['iOS', 'Android']
+   })
+   removeReceiveGroupAdminRejectListener(params: JMReceiveApplyJoinGroupApprovalListener): void {
+  }
+
+  @Cordova({
+    sync: true,
+    platforms: ['iOS', 'Android']
+   })
+   addReceiveGroupAdminApprovalListener(params: JMReceiveGroupAdminRejectListener): void {
+  }
+
+  @Cordova({
+    sync: true,
+    platforms: ['iOS', 'Android']
+   })
+   removeReceiveGroupAdminApprovalListener(params: JMReceiveGroupAdminApprovalListener): void {
   }
 }
