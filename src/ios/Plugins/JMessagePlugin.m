@@ -398,6 +398,11 @@ NSMutableDictionary *_jmessageEventCache;
 }
 
 - (JMSGGroupType)convertStringToGroupType:(NSString *)str {
+    
+    if (str == nil) {
+        return kJMSGGroupTypePrivate;
+    }
+    
     if ([str isEqualToString:@"public"]) {
         return kJMSGGroupTypePublic;
     }
