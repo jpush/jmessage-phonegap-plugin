@@ -912,7 +912,7 @@ var JMessagePlugin = {
    * @param {function} callback = function([{count: number}])
    */
   getAllUnreadCount: function (callback) {
-    exec(null, null, PLUGIN_NAME, 'getAllUnreadCount', [params])  
+    exec(callback, null, PLUGIN_NAME, 'getAllUnreadCount', []) 
   },
   
   // 群组相关 - start
@@ -922,7 +922,7 @@ var JMessagePlugin = {
    * @param {function} success 
    * @param {function} error 
    */
-  addGroupAdmins: function (param, success, error) {
+  addGroupAdmins: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'addGroupAdmins', [params])
   },
 
@@ -932,7 +932,7 @@ var JMessagePlugin = {
    * @param {function} success 
    * @param {function} error 
    */
-  removeGroupAdmins: function (param, success, error) {
+  removeGroupAdmins: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'removeGroupAdmins', [params])
 
   },
@@ -943,7 +943,7 @@ var JMessagePlugin = {
    * @param {function} success = function({conversation})
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {} 
    */
-  changeGroupType: function (param, success, error) {
+  changeGroupType: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'changeGroupType', [params])
   },
 
@@ -953,7 +953,7 @@ var JMessagePlugin = {
    * @param {function} success = function([groupInfo])
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {} 
    */
-  getPublicGroupInfos: function (param, success, error) {
+  getPublicGroupInfos: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'getPublicGroupInfos', [params])
   },
 
@@ -963,7 +963,7 @@ var JMessagePlugin = {
    * @param {function} success = function()
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {} 
    */
-  applyJoinGroup: function (param, success, error) {
+  applyJoinGroup: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'applyJoinGroup', [params])
   },
 
@@ -976,7 +976,7 @@ var JMessagePlugin = {
    * @param {function} success = _ => {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {} 
    */
-  processApplyJoinGroup: function (param, success, error) {
+  processApplyJoinGroup: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'processApplyJoinGroup', [params])
   },
 
@@ -986,7 +986,7 @@ var JMessagePlugin = {
    * @param {function} success = _ => {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {} 
    */
-  dissolveGroup: function (param, success, error) {
+  dissolveGroup: function (params, success, error) {
     exec(success, error, PLUGIN_NAME, 'dissolveGroup', [params])
   },
 
