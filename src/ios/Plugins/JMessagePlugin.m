@@ -2518,7 +2518,7 @@ NSMutableDictionary *_jmessageEventCache;
     }];
 }
 
-- (void)getPublicGroupInfo:(CDVInvokedUrlCommand *)command {
+- (void)getPublicGroupInfos:(CDVInvokedUrlCommand *)command {
     NSDictionary * param = [command argumentAtIndex:0];
     
     if (param[@"start"] == nil ||
