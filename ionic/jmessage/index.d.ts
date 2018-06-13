@@ -106,6 +106,26 @@ export declare type JMReceiveTransCommandListener = (event: {
 export declare type JMReceiveChatRoomMessageListener = (event: {
     messageArray: JMAllMessage[];
 }) => void;
+export declare type JMReceiveApplyJoinGroupApprovalListener = (event: {
+    eventId: string;
+    groupId: string;
+    isInitiativeApply: boolean;
+    sendApplyUser: JMUserInfo;
+    joinGroupUsers?: JMUserInfo[];
+    reason?: string;
+}) => void;
+export declare type JMReceiveGroupAdminRejectListener = (event: {
+    groupId: string;
+    groupManager: JMUserInfo;
+    reason?: string;
+}) => void;
+export declare type JMReceiveGroupAdminApprovalListener = (event: {
+    isAgree: boolean;
+    applyEventId: string;
+    groupId: string;
+    groupAdmin: JMUserInfo;
+    users: JMUserInfo[];
+}) => void;
 /**
  * User Type
  */
@@ -352,6 +372,7 @@ export declare class JMessagePlugin extends IonicNativePlugin {
     }): Promise<any>;
     getFriends(): Promise<any>;
     createGroup(params: {
+        groupType?: 'public' | 'private';
         name?: string;
         desc?: string;
     }): Promise<string>;
@@ -451,6 +472,41 @@ export declare class JMessagePlugin extends IonicNativePlugin {
         roomId: string;
     }): Promise<any>;
     getChatRoomConversationList(): Promise<any>;
+    getAllUnreadCount(): Promise<{
+        count: number;
+    }>;
+    addGroupAdmins(params: {
+        groupId: string;
+        usernames: string[];
+        appKey?: string;
+    }): Promise<any>;
+    removeGroupAdmins(params: {
+        groupId: string;
+        usernames: string[];
+        appKey?: string;
+    }): Promise<any>;
+    changeGroupType(params: {
+        groupId: string;
+        type: 'public' | 'private';
+    }): Promise<any>;
+    getPublicGroupInfos(params: {
+        appKey: string;
+        start: number;
+        count: number;
+    }): Promise<any>;
+    applyJoinGroup(params: {
+        groupId: string;
+        reason?: string;
+    }): Promise<any>;
+    processApplyJoinGroup(params: {
+        events: string[];
+        isAgree: boolean;
+        isRespondInviter: boolean;
+        reason?: string;
+    }): Promise<any>;
+    dissolveGroup(params: {
+        groupId: string;
+    }): Promise<any>;
     addReceiveMessageListener(params: JMMessageEventListener): void;
     removeReceiveMessageListener(params: JMMessageEventListener): void;
     addClickMessageNotificationListener(params: JMMessageEventListener): void;
@@ -469,4 +525,10 @@ export declare class JMessagePlugin extends IonicNativePlugin {
     removeReceiveTransCommandListener(params: JMReceiveTransCommandListener): void;
     addReceiveChatRoomMessageListener(params: JMReceiveChatRoomMessageListener): void;
     removeReceiveChatRoomMessageListener(params: JMReceiveChatRoomMessageListener): void;
+    addReceiveApplyJoinGroupApprovalListener(params: JMReceiveApplyJoinGroupApprovalListener): void;
+    removeReceiveApplyJoinGroupApprovalListener(params: JMReceiveApplyJoinGroupApprovalListener): void;
+    addReceiveGroupAdminRejectListener(params: JMReceiveGroupAdminRejectListener): void;
+    removeReceiveGroupAdminRejectListener(params: JMReceiveGroupAdminRejectListener): void;
+    addReceiveGroupAdminApprovalListener(params: JMReceiveGroupAdminApprovalListener): void;
+    removeReceiveGroupAdminApprovalListener(params: JMReceiveGroupAdminApprovalListener): void;
 }

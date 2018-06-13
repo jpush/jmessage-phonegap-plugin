@@ -996,14 +996,14 @@ export class JMessagePlugin extends IonicNativePlugin {
     sync: true,
     platforms: ['iOS', 'Android']
    })
-   addReceiveApplyJoinGroupApprovalListener(params: JMReceiveChatRoomMessageListener): void {
+   addReceiveApplyJoinGroupApprovalListener(params: JMReceiveApplyJoinGroupApprovalListener): void {
   }
 
   @Cordova({
     sync: true,
     platforms: ['iOS', 'Android']
    })
-   removeReceiveApplyJoinGroupApprovalListener(params: JMReceiveChatRoomMessageListener): void {
+   removeReceiveApplyJoinGroupApprovalListener(params: JMReceiveApplyJoinGroupApprovalListener): void {
   }
 
 
@@ -1011,21 +1011,21 @@ export class JMessagePlugin extends IonicNativePlugin {
     sync: true,
     platforms: ['iOS', 'Android']
    })
-   addReceiveGroupAdminRejectListener(params: JMReceiveChatRoomMessageListener): void {
+   addReceiveGroupAdminRejectListener(params: JMReceiveGroupAdminRejectListener): void {
   }
 
   @Cordova({
     sync: true,
     platforms: ['iOS', 'Android']
    })
-   removeReceiveGroupAdminRejectListener(params: JMReceiveApplyJoinGroupApprovalListener): void {
+   removeReceiveGroupAdminRejectListener(params: JMReceiveGroupAdminRejectListener): void {
   }
 
   @Cordova({
     sync: true,
     platforms: ['iOS', 'Android']
    })
-   addReceiveGroupAdminApprovalListener(params: JMReceiveGroupAdminRejectListener): void {
+   addReceiveGroupAdminApprovalListener(params: JMReceiveGroupAdminApprovalListener): void {
   }
 
   @Cordova({
