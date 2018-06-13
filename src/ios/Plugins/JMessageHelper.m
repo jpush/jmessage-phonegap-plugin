@@ -723,7 +723,7 @@
     dict[@"isAgree"] = @(self.isAgreeApply);
     dict[@"applyEventId"] = self.applyEventID;
     dict[@"groupId"] = self.groupID;
-    dict[@"groupAdmin"] = self.groupAdmin;
+    dict[@"groupAdmin"] = [self.groupAdmin userToDictionary];
     
     if (self.users != nil) {
         NSArray *userDicArr = [self.users mapObjectsUsingBlock:^id(id obj, NSUInteger idx) {

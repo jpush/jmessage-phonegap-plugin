@@ -912,7 +912,7 @@ var JMessagePlugin = {
    * @param {function} callback = function([{count: number}])
    */
   getAllUnreadCount: function (callback) {
-
+    exec(null, null, PLUGIN_NAME, 'getAllUnreadCount', [params])  
   },
   
   // 群组相关 - start
