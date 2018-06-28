@@ -11,7 +11,10 @@ var EventHandlers = {
   contactNotify: [],
   retractMessage: [],
   receiveTransCommand: [], // 透传命令
-  receiveChatRoomMessage: [] // 聊天室消息
+  receiveChatRoomMessage: [], // 聊天室消息
+  receiveApplyJoinGroupApproval: [],
+  receiveGroupAdminReject: [],
+  receiveGroupAdminApproval: []
 }
 
 var JMessagePlugin = {
@@ -904,9 +907,93 @@ var JMessagePlugin = {
     },
   },
   // 聊天室 - end
+  /**
+   * 获取所有会话未读消息总数
+   * @param {function} callback = function([{count: number}])
+   */
+  getAllUnreadCount: function (callback) {
+    exec(callback, null, PLUGIN_NAME, 'getAllUnreadCount', []) 
+  },
+  
+  // 群组相关 - start
+  /**
+   * 批量添加管理员
+   * @param {object} param = {groupId: string, usernames: [string], appKey: string}
+   * @param {function} success 
+   * @param {function} error 
+   */
+  addGroupAdmins: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'addGroupAdmins', [params])
+  },
+
+  /**
+   * 批量删除管理员
+   * @param {object} param = {groupId: string, usernames: [string], appKey: string}
+   * @param {function} success 
+   * @param {function} error 
+   */
+  removeGroupAdmins: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'removeGroupAdmins', [params])
+
+  },
+
+  /**
+   * 修改群类型，
+   * @param {object} param = {groudId: String, type: 'public' | 'private'} 
+   * @param {function} success = function({conversation})
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {} 
+   */
+  changeGroupType: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'changeGroupType', [params])
+  },
+
+  /**
+   * 分页获取群页面
+   * @param {object} param = {appKey: string, start: number, count: number} 
+   * @param {function} success = function([groupInfo])
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {} 
+   */
+  getPublicGroupInfos: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'getPublicGroupInfos', [params])
+  },
+
+  /**
+   * 申请公开群入群
+   * @param {object} param = {groupId: string, reason: string} 
+   * @param {function} success = function()
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {} 
+   */
+  applyJoinGroup: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'applyJoinGroup', [params])
+  },
+
+  /**
+   * 批量处理公开群入群请求
+   * @param {object} param = {events: [string], isAgree: boolean, reason: string, isRespondInviter: boolean}
+   *  events: 请求的 eventId 数组。
+   *  isAgree: 是否同意入群。
+   *  isRespondInviter: 是否将处理结果返回给申请入群者
+   * @param {function} success = _ => {}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {} 
+   */
+  processApplyJoinGroup: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'processApplyJoinGroup', [params])
+  },
+
+  /**
+   * 解散群
+   * @param {object} param = { groupId: string }
+   * @param {function} success = _ => {}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {} 
+   */
+  dissolveGroup: function (params, success, error) {
+    exec(success, error, PLUGIN_NAME, 'dissolveGroup', [params])
+  },
+
+  // 群组相关 - end
+
 
   // 事件监听 - start
-
   /**
    * 添加收到消息事件监听。
    *
@@ -1064,8 +1151,50 @@ var JMessagePlugin = {
     if (handlerIndex >= 0) {
       EventHandlers.receiveChatRoomMessage.splice(handlerIndex, 1)
     }
-  }
+  },
 
+
+  /**
+   * 监听接收入群申请事件
+   * @param {function} listener = function([{Message}])
+   */
+  addReceiveApplyJoinGroupApprovalListener: function (listener) {
+    EventHandlers.receiveApplyJoinGroupApproval.push(listener)
+  },
+  removeReceiveApplyJoinGroupApprovalListener: function (listener) {
+    var handlerIndex = EventHandlers.receiveApplyJoinGroupApproval.indexOf(listener)
+    if (handlerIndex >= 0) {
+      EventHandlers.receiveApplyJoinGroupApproval.splice(handlerIndex, 1)
+    }
+  },
+
+  /**
+   * 监听管理员拒绝入群申请事件
+   * @param {function} listener = function([{Message}])
+   */
+  addReceiveGroupAdminRejectListener: function (listener) {
+    EventHandlers.receiveGroupAdminReject.push(listener)
+  },
+  removeReceiveGroupAdminRejectListener: function (listener) {
+    var handlerIndex = EventHandlers.receiveApplyJoinGroupApproval.indexOf(listener)
+    if (handlerIndex >= 0) {
+      EventHandlers.receiveGroupAdminReject.splice(handlerIndex, 1)
+    }
+  },
+
+  /**
+   * 监听管理员同意入群申请事件
+   * @param {function} listener = function([{Message}])
+   */
+  addReceiveGroupAdminApprovalListener: function (listener) {
+    EventHandlers.receiveGroupAdminApproval.push(listener)
+  },
+  removeReceiveGroupAdminApprovalListener: function (listener) {
+    var handlerIndex = EventHandlers.receiveGroupAdminApproval.indexOf(listener)
+    if (handlerIndex >= 0) {
+      EventHandlers.receiveGroupAdminApproval.splice(handlerIndex, 1)
+    }
+  }
   // 事件监听 - end
 }
 

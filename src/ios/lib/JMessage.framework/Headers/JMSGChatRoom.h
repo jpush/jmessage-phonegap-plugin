@@ -75,7 +75,7 @@ JMSG_ASSUME_NONNULL_BEGIN
  * @param roomId    聊天室 id
  * @param handler   结果回调. error = nil 表示加入成功，resultObject 为 JMSGConversation 类型
  *
- * @discussion 成功进入聊天室之后，会将聊天室中最近若干条聊天记录同步下来并以 onReceiveChatRoomConversation: 事件的形式通知到上层。
+ * @discussion 成功进入聊天室之后，会将聊天室中最近若干条聊天记录同步下来并以 onReceiveChatRoomConversation: 事件的形式通知到上层，进入聊天室会自动获取最近50条消息。
  */
 + (void)enterChatRoomWithRoomId:(NSString *JMSG_NONNULL)roomId
               completionHandler:(JMSGCompletionHandler JMSG_NULLABLE)handler;

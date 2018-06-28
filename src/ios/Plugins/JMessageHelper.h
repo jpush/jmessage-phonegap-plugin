@@ -51,6 +51,10 @@
 -(NSMutableDictionary*)groupToDictionary;
 @end
 
+@interface JMSGGroupInfo (JMessage)
+-(NSMutableDictionary*)groupToDictionary;
+@end
+
 @interface JMSGMessage (JMessage)
 - (NSMutableDictionary *)messageToDictionary;
 @end
@@ -59,3 +63,14 @@
 - (NSMutableDictionary *)chatRoomToDictionary;
 @end
 
+@interface JMSGApplyJoinGroupEvent (JMessage)
+- (NSMutableDictionary *)eventToDictionary;
+@end
+
+@interface JMSGGroupAdminRejectApplicationEvent (JMessage)
+- (NSMutableDictionary *)eventToDictionary;
+@end
+
+@interface JMSGGroupAdminApprovalEvent (JMessage)
+- (NSMutableDictionary *)eventToDictionary;
+@end

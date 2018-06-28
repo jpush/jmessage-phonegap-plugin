@@ -156,6 +156,28 @@ NSMutableDictionary *_jmessageEventCache;
                       selector:@selector(onSyncRoamingMessage:)
                           name:kJJMessageSyncRoamingMessage
                         object:nil];
+    
+    //    group event
+    
+//    [defaultCenter addObserver:self
+//                      selector:@selector(groupInfoChanged:)
+//                          name:kJJMessageGroupInfoChanged
+//                        object:nil];
+    
+    [defaultCenter addObserver:self
+                      selector:@selector(didReceiveApplyJoinGroupApproval:)
+                          name:kJJMessageReceiveApplyJoinGroupApproval
+                        object:nil];
+    
+    [defaultCenter addObserver:self
+                      selector:@selector(didReceiveGroupAdminReject:)
+                          name:kJJMessageReceiveGroupAdminReject
+                        object:nil];
+    
+    [defaultCenter addObserver:self
+                      selector:@selector(didReceiveGroupAdminApproval:)
+                          name:kJMessageReceiveGroupAdminApproval
+                        object:nil];
 }
 
 - (void)getConversationWithDictionary:(NSDictionary *)param callback:(JMSGConversationCallback)callback {
@@ -375,6 +397,19 @@ NSMutableDictionary *_jmessageEventCache;
   return kJMSGConversationTypeSingle;
 }
 
+- (JMSGGroupType)convertStringToGroupType:(NSString *)str {
+    
+    if (str == nil) {
+        return kJMSGGroupTypePrivate;
+    }
+    
+    if ([str isEqualToString:@"public"]) {
+        return kJMSGGroupTypePublic;
+    }
+    
+    return kJMSGGroupTypePrivate;
+}
+
 #pragma mark IM - Events
 - (void)onSyncOfflineMessage: (NSNotification *) notification {
     CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
@@ -385,6 +420,29 @@ NSMutableDictionary *_jmessageEventCache;
 
 - (void)onSyncRoamingMessage: (NSNotification *) notification {
     CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:@{@"eventName": @"syncRoamingMessage", @"value": notification.object}];
+    [result setKeepCallback:@(true)];
+    [self.commandDelegate sendPluginResult:result callbackId:self.callBack.callbackId];
+}
+
+// group event
+- (void)didReceiveApplyJoinGroupApproval:(NSNotification *)notification {
+    CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
+                                            messageAsDictionary:@{@"eventName": @"receiveApplyJoinGroupApproval",
+                                                                  @"value": notification.object}];
+    [result setKeepCallback:@(true)];
+    [self.commandDelegate sendPluginResult:result callbackId:self.callBack.callbackId];
+}
+
+- (void)didReceiveGroupAdminReject:(NSNotification *)notification {
+    CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
+                                            messageAsDictionary:@{@"eventName": @"receiveGroupAdminReject", @"value": notification.object}];
+    [result setKeepCallback:@(true)];
+    [self.commandDelegate sendPluginResult:result callbackId:self.callBack.callbackId];
+}
+
+- (void)didReceiveGroupAdminApproval:(NSNotification *)notification {
+    CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
+                                            messageAsDictionary:@{@"eventName": @"receiveGroupAdminApproval", @"value": notification.object}];
     [result setKeepCallback:@(true)];
     [self.commandDelegate sendPluginResult:result callbackId:self.callBack.callbackId];
 }
@@ -534,6 +592,8 @@ NSMutableDictionary *_jmessageEventCache;
   
   [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
 }
+
+
 
 -(void)handleResultNilWithCommand:(CDVInvokedUrlCommand*)command error:(NSError*)error{
   CDVPluginResult *result = nil;
@@ -1248,16 +1308,21 @@ NSMutableDictionary *_jmessageEventCache;
 
 - (void)createGroup:(CDVInvokedUrlCommand *)command {
   NSDictionary *param = [command argumentAtIndex:0];
-  
-  [JMSGGroup createGroupWithName:param[@"name"] desc:param[@"desc"] memberArray:nil completionHandler:^(id resultObject, NSError *error) {
-    if (error) {
-      [self handleResultWithDictionary:nil command:command error:error];
-      return;
-    }
     
-    JMSGGroup *group = resultObject;
-    [self handleResultWithString:group.gid command:command error:error];
-  }];
+    JMSGGroupInfo *groupInfo = [[JMSGGroupInfo alloc] init];
+    groupInfo.name = param[@"name"];
+    groupInfo.desc = param[@"desc"];
+    groupInfo.groupType = [self convertStringToGroupType:param[@"groupType"]];
+    
+    [JMSGGroup createGroupWithGroupInfo:groupInfo memberArray:nil completionHandler:^(id resultObject, NSError *error) {
+        if (error) {
+            [self handleResultWithDictionary:nil command:command error:error];
+            return;
+        }
+        
+        JMSGGroup *group = resultObject;
+        [self handleResultWithString:group.gid command:command error:error];
+    }];
 }
 
 - (void)getGroupIds:(CDVInvokedUrlCommand *)command {
@@ -2347,7 +2412,6 @@ NSMutableDictionary *_jmessageEventCache;
   }];
 }
 
-
 - (void)setBadge:(CDVInvokedUrlCommand *)command {
   NSDictionary * param = [command argumentAtIndex:0];
   
@@ -2355,4 +2419,193 @@ NSMutableDictionary *_jmessageEventCache;
     [JMessage setBadge:[param[@"badge"] integerValue]];
   }
 }
+
+- (void)getAllUnreadCount:(CDVInvokedUrlCommand *)command {
+    CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:[JMSGConversation getAllUnreadCount].boolValue];
+    [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+}
+
+- (void)addGroupAdmins:(CDVInvokedUrlCommand *)command {
+    NSDictionary * param = [command argumentAtIndex:0];
+    
+    if (param[@"groupId"] == nil ||
+        param[@"usernames"] == nil) {
+        [self returnParamError:command];
+        return;
+    }
+    
+    NSString *appKey = nil;
+    if (param[@"appKey"]) {
+        appKey = param[@"appKey"];
+    } else {
+        appKey = [JMessageHelper shareInstance].JMessageAppKey;
+    }
+    
+    [JMSGGroup groupInfoWithGroupId:param[@"groupId"] completionHandler:^(id resultObject, NSError *error) {
+        if (error) {
+            [self handleResultWithDictionary: nil command: command error: error];
+            return;
+        }
+        
+        JMSGGroup *group = resultObject;
+        [group addGroupAdminWithUsernames:param[@"usernames"] appKey:appKey completionHandler:^(id resultObject, NSError *error) {
+            if (error) {
+                [self handleResultWithDictionary: nil command: command error: error];
+                return;
+            }
+            [self handleResultNilWithCommand:command error:error];
+        }];
+    }];
+    
+}
+
+- (void)removeGroupAdmins:(CDVInvokedUrlCommand *)command {
+    NSDictionary * param = [command argumentAtIndex:0];
+    if (param[@"groupId"] == nil ||
+        param[@"usernames"] == nil) {
+        [self returnParamError:command];
+        return;
+    }
+    
+    NSString *appKey = nil;
+    if (param[@"appKey"]) {
+        appKey = param[@"appKey"];
+    } else {
+        appKey = [JMessageHelper shareInstance].JMessageAppKey;
+    }
+    
+    [JMSGGroup groupInfoWithGroupId:param[@"groupId"] completionHandler:^(id resultObject, NSError *error) {
+        if (error) {
+            [self handleResultWithDictionary: nil command: command error: error];
+            return;
+        }
+        
+        JMSGGroup *group = resultObject;
+        [group deleteGroupAdminWithUsernames:param[@"usernames"] appKey:appKey completionHandler:^(id resultObject, NSError *error) {
+            if (error) {
+                [self handleResultWithDictionary: nil command: command error: error];
+                return;
+            }
+            [self handleResultNilWithCommand:command error:error];
+        }];
+    }];
+}
+
+- (void)changeGroupType:(CDVInvokedUrlCommand *)command {
+    NSDictionary * param = [command argumentAtIndex:0];
+    
+    if (param[@"groupId"] == nil ||
+        param[@"type"] == nil) {
+        [self returnParamError:command];
+        return;
+    }
+    
+    [JMSGGroup groupInfoWithGroupId:param[@"groupId"] completionHandler:^(id resultObject, NSError *error) {
+        if (error) {
+            [self handleResultWithDictionary: nil command: command error: error];
+            return;
+        }
+        
+        JMSGGroup *group = resultObject;
+        JMSGGroupType type = [self convertStringToGroupType:param[@"type"]];
+        [group changeGroupType:type handler:^(id resultObject, NSError *error) {
+            if (error) {
+                [self handleResultWithDictionary: nil command: command error: error];
+                return;
+            }
+            [self handleResultNilWithCommand:command error:error];
+        }];
+    }];
+}
+
+- (void)getPublicGroupInfos:(CDVInvokedUrlCommand *)command {
+    NSDictionary * param = [command argumentAtIndex:0];
+    
+    if (param[@"start"] == nil ||
+        param[@"count"] == nil) {
+        [self returnParamError:command];
+        return;
+    }
+    
+    NSString *appKey = nil;
+    if (param[@"appKey"]) {
+        appKey = param[@"appKey"];
+    } else {
+        appKey = [JMessageHelper shareInstance].JMessageAppKey;
+    }
+    
+    [JMSGGroup getPublicGroupInfoWithAppKey:appKey start:[param[@"start"] integerValue] count:[param[@"count"] integerValue] completionHandler:^(id resultObject, NSError *error) {
+        if (error) {
+            [self handleResultWithDictionary: nil command: command error: error];
+            return;
+        }
+        
+        NSArray *groupInfoArr = resultObject;
+        NSArray *groupDicArr = [groupInfoArr mapObjectsUsingBlock:^id(id obj, NSUInteger idx) {
+            JMSGGroupInfo *groupInfo = obj;
+            return [groupInfo groupToDictionary];
+        }];
+        [self handleResultWithArray:groupDicArr command:command error:error];
+    }];
+}
+
+- (void)applyJoinGroup:(CDVInvokedUrlCommand *)command {
+    NSDictionary * param = [command argumentAtIndex:0];
+    
+    if (param[@"groupId"] == nil) {
+        [self returnParamError:command];
+        return;
+    }
+    
+    [JMSGGroup applyJoinGroupWithGid:param[@"groupId"] reason:param[@"reason"] completionHandler:^(id resultObject, NSError *error) {
+        if (error) {
+            [self handleResultWithDictionary: nil command: command error: error];
+            return;
+        }
+        [self handleResultNilWithCommand:command error:error];
+    }];
+}
+
+- (void)processApplyJoinGroup:(CDVInvokedUrlCommand *)command {
+    NSDictionary * param = [command argumentAtIndex:0];
+    
+    if (param[@"events"] == nil ||
+        param[@"isAgree"] == nil ||
+        param[@"isRespondInviter"] == nil) {
+        [self returnParamError:command];
+        return;
+    }
+    
+    [JMSGGroup processApplyJoinGroupEvents:param[@"events"]
+                                   isAgree:[param[@"isAgree"] boolValue]
+                                    reason:param[@"reason"]
+                               sendInviter:[param[@"isRespondInviter"] boolValue]
+                                   handler:^(id resultObject, NSError *error) {
+                                       if (error) {
+                                           [self handleResultWithDictionary: nil command: command error: error];
+                                           return;
+                                       }
+                                       
+                                       [self handleResultNilWithCommand:command error:error];
+                                   }];
+}
+
+- (void)dissolveGroup:(CDVInvokedUrlCommand *)command {
+    NSDictionary * param = [command argumentAtIndex:0];
+    
+    if (param[@"groupId"] == nil) {
+        [self returnParamError:command];
+        return;
+    }
+    
+    [JMSGGroup dissolveGroupWithGid:param[@"groupId"] handler:^(id resultObject, NSError *error) {
+        if (error) {
+            [self handleResultWithDictionary: nil command: command error: error];
+            return;
+        }
+        
+        [self handleResultNilWithCommand:command error:error];
+    }];
+}
+
 @end

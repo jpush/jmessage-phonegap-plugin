@@ -12,30 +12,26 @@
 
 #import <Foundation/Foundation.h>
 #import <JMessage/JMSGNotificationEvent.h>
+#import <JMessage/JMSGFriendNotificationEvent.h>
 
 /*!
  * 监听通知事件
  */
 @protocol JMSGEventDelegate <NSObject>
 
-/*!
- * @abstract 监听通知事件
- *
- * @param event 下发的通知事件，事件类型请查看 JMSGNotificationEvent 类
- *
- * @discussion SDK 收到服务器端下发事件后，会以通知代理的方式给到上层,上层通过 event.eventType 判断具体事件.
- *
- * 注意：
- *
- * 非消息事件，如：用户登录状态变更、被踢下线、加好友等，SDK会作为通知事件下发,上层通过此方法可监听此类非消息事件.
- *
- * 消息事件，如：群事件，SDK会作为一个特殊的消息类型下发，上层依旧通过 JMSGMessageDelegate 监听消息事件.
- */
-@optional
-- (void)onReceiveNotificationEvent:(JMSGNotificationEvent *)event;
 
 /*!
- * @abstract 消息撤回事件
+ * @abstract 监听好友相关事件
+ *
+ * @discussion 可监听：加好友、删除好友、好友更新等事件
+ *
+ * @since 3.5.0
+ */
+@optional
+- (void)onReceiveFriendNotificationEvent:(JMSGFriendNotificationEvent *)event;
+
+/*!
+ * @abstract 监听消息撤回事件
  *
  * @param retractEvent 下发的通知事件，事件类型请查看 JMSGMessageRetractEvent 类
  *
@@ -45,7 +41,7 @@
 - (void)onReceiveMessageRetractEvent:(JMSGMessageRetractEvent *)retractEvent;
 
 /*!
- * @abstract 消息回执状态变更事件
+ * @abstract 监听消息回执状态变更事件
  *
  * @param receiptEvent 下发的通知事件，事件类型请查看 JMSGMessageReceiptStatusChangeEvent 类
  *
@@ -57,40 +53,47 @@
 - (void)onReceiveMessageReceiptStatusChangeEvent:(JMSGMessageReceiptStatusChangeEvent *)receiptEvent;
 
 /*!
- * @abstract 消息透传事件
+ * @abstract 监听消息透传事件
  *
  * @param transparentEvent 下发的通知事件，事件类型请查看 JMSGMessageTransparentEvent 类
  *
- * @discussion 上层可以通过 transparentEvent 获取相应信息，如自定义的透传信息、会话
+ * @discussion 消息透传的类型：单聊、群聊、设备间透传消息
  *
  * @since 3.3.0
  */
 @optional
 - (void)onReceiveMessageTransparentEvent:(JMSGMessageTransparentEvent *)transparentEvent;
 
-/*!
- * @abstract 申请入群事件
- *
- * @param event 申请入群事件
- *
- * @discussion 只有群主和管理员能收到此事件；申请入群事件相关参数请查看 JMSGApplyJoinGroupEvent 类，在群主审批此事件时需要传递事件的相关参数
- *
- * @since 3.4.0
- */
-@optional
-- (void)onReceiveApplyJoinGroupApprovalEvent:(JMSGApplyJoinGroupEvent *)event;
+
+
+///----------------------------------------------------
+/// @name 以下是已经过期方法，请使用提示的新方法
+///----------------------------------------------------
 
 /*!
- * @abstract 管理员拒绝入群申请通知
+ * @abstract 监听通知事件
  *
- * @param event 拒绝入群申请事件
+ * @param event 下发的通知事件，上层通过 event.eventType 判断具体事件
  *
- * @discussion 只有申请方和被申请方会收到此事件；拒绝的相关描述和原因请查看 JMSGGroupAdminRejectApplicationEvent 类
+ * @discussion 此方法可监听如下事件:
  *
- * @since 3.4.0
+ * - 好友事件：加好友、删除好友、好友更新；
+ * - 当前用户登录状态变更事件：当前登录用户被踢、非客户端修改密码强制登出、登录状态异常、被删除、信息变更通；
+ *
+ * #### 方法变更：
+ *
+ * 之前版本的好友事件、当前登录用户状态变更事件都是通过此方法监听，SDK 从 3.5.0 开始将此方法细分为两个方法.
+ *
+ *    ```
+ *    // 当前用户登录状态变更事件，在 JMSGUserDelegate 类
+ *    - (void)onReceiveUserLoginStatusChangeEvent:(JMSGUserLoginStatusChangeEvent *)event;
+ *    // 好友相关事件
+ *    - (void)onReceiveFriendNotificationEvent:(JMSGFriendNotificationEvent *)event;
+ *    ```
+ *
+ * #### 注意：此方法已过期，请使用如上所述的两个方法
  */
 @optional
-- (void)onReceiveGroupAdminRejectApplicationEvent:(JMSGGroupAdminRejectApplicationEvent *)event;
-
+- (void)onReceiveNotificationEvent:(JMSGNotificationEvent *)event __attribute__((deprecated("在 JMessage 3.5.0 过期了")));
 @end
 

@@ -33,7 +33,7 @@
 
 /*!
  * @abstract 获取事件发起者的用户名
- * @return 正常返回事件发起者的用户名，如果是系统事件则返回“系统消息”
+ * @return 正常返回事件发起者的用户名，如果是调用后台 API 产生的事件，则返回：管理员
  *
  * @discussion 如果设置了nickname，则返回nickname，否则返回username
  * 可以用于定制 event message，拼接成完整的事件描述信息。

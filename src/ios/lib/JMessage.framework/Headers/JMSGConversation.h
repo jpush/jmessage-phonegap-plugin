@@ -395,7 +395,7 @@ JMSG_ASSUME_NONNULL_BEGIN
  * @abstract 发送@人消息（已经创建好对象的）
  *
  * @param message 通过消息创建类接口，创建好的消息对象
- * @param at_list @对象的数组
+ * @param userList @对象的数组
  *
  * @discussion 发送消息的多个接口，都未在方法上直接提供回调。你应通过 JMSGMessageDelegate中的onReceiveMessage: error:方法来注册消息发送结果
  */
@@ -434,8 +434,23 @@ JMSG_ASSUME_NONNULL_BEGIN
                 duration:(NSNumber *)duration;
 
 /*!
+ * @abstract 发送视频消息
+ *
+ * @param videoData 视频消息数据
+ * @param thumbData 视频封面图片
+ * @param videoFormat 视频格式，如：mp4、mov
+ * @param duration  视频消息时长（秒）. 长度必须大于 0.
+ *
+ * @discussion 快捷发送消息接口。如果发送语音消息不需要附加 extra，则使用此接口更方便。
+ */
+- (void)sendVideoMessage:(NSData *)videoData
+               thumbData:(NSData *JMSG_NULLABLE)thumbData
+             videoFormat:(NSString *JMSG_NULLABLE)videoFormat
+                duration:(NSNumber *)duration;
+
+/*!
  * @abstract 发送文件消息
- * @param voiceData 文件消息数据
+ * @param fileData 文件消息数据
  * @param fileName 文件名
  * @discussion 快捷发送消息接口。如果发送文件消息不需要附加 extra，则使用此接口更方便。
  */
@@ -480,6 +495,7 @@ JMSG_ASSUME_NONNULL_BEGIN
  *
  *  2. 可用来快速实现一些在线场景下的辅助功能 ：输入状态提示、位置信息提示、开发者自定义等。
  *
+ *  3. 透传命令到达是，接收方通过 [JMSGEventDelegate onReceiveMessageTransparentEvent:] 方法监听
  */
 - (void)sendTransparentMessage:(NSString *JMSG_NONNULL)transparentText
              completionHandler:(JMSGCompletionHandler JMSG_NULLABLE)handler;

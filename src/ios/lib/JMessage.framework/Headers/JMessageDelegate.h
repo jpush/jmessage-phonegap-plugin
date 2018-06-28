@@ -20,8 +20,10 @@
 /*!
  * 全局代理协议
  *
- * 一般情况下, App 只需要注册这个全局代理, 则 3 个类别里的代理都注册到.
+ * 一般情况下, App 只需要注册这个全局代理, 则其他类别里的代理都注册到.
  * 由于回调方法都是可选, 你可以根据需要实现一个或者多个回调, 在你实现的方法里, 有事件时就会回调.
+ *
+ * #### 消息接收和发送
  *
  * 以下代码, 假设当前类是 ChatViewController, 要完成这样的功能:
  * 接收当前聊天所在的会话的 - 发出的消息的返回, 以及服务器端下发的消息.
@@ -47,21 +49,38 @@
  *    }
  *    ```
  *
- * 有一类特殊的系统事件, 需要特别提示: 如果当前用户在其他设备上登录, 本设备会收到一个下发通知.
+ * 有些特殊的消息，需要做特殊判断，比如：群里的一些事件消息，添加群成员、设置群管理员事件等.
  * 思路上, 需要先从 onReceiveMessage 上收到事件类型的消息, 判断 JMSGEventContent 里的
- * eventType = kJMSGEventNotificationLoginKicked 表示这是一个用户被踢出登录的事件.
+ * eventType = kJMSGEventNotificationAddGroupMembers 表示这是一个群组加人的事件.
  *
  * 以下示例代码在上述 onReceiveMessage 监听里:
  *
  *    ```
  *    if (message.contentType == kJMSGContentTypeEventNotification) {
  *      JMSGEventContent *eventContent = (JMSGEventContent) message.content;
- *      if (eventContent.eventType == kJMSGEventNotificationLoginKicked) {
- *        // 这里做用户被踢处理. 一般的作法应该是: 弹出提示信息,告诉用户在其他设备登录了;
- *        // 弹窗关闭后界面切换到用户登录界面
+ *      if (eventContent.eventType == kJMSGEventNotificationAddGroupMembers) {
+ *        //  一般的作法应该是界面显示一条消息: “xxx 加入了群组”
  *      }
  *    }
  *    ```
+ *
+ * #### 事件代理
+ *
+ * 有一类特殊的系统事件, 需要特别提示，如:其他设备登录被踢、加好友、申请入群等事件，SDK 会收到一个下发通知.
+ * 思路上, 需要先实现相关事件的代理方法，如果有多个事件共用同一个代理还需判断 eventType.
+ *
+ * 以用户被踢事件为例:
+ *
+ *    ```
+ *    // 实现 JMSGEventDelegate 里的接收事件代理方法
+ *    - (void)onReceiveLoginUserStatusChangeEvent:(JMSGUserLoginStatusChangeEvent *)event {
+ *      if (event.eventType == kJMSGEventNotificationLoginKicked) {
+ *          // 这里做用户被踢处理. 一般的作法应该是: 弹出提示信息,告诉用户在其他设备登录了;
+ *          // 弹窗关闭后界面切换到用户登录界面
+ *      }
+ *    }
+ *    ```
+ * 其他事件的监听类似.
  */
 @protocol JMessageDelegate <JMSGMessageDelegate,
                             JMSGConversationDelegate,
