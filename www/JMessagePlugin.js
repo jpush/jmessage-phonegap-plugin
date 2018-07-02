@@ -57,26 +57,26 @@ var JMessagePlugin = {
    *
    * 打开消息漫游之后，用户多个设备之间登录时，SDK 会自动将当前登录用户的历史消息同步到本地。
    */
-  init: function (params) {
-    var success = function (result) {
+  init: function(params) {
+    var success = function(result) {
       if (!EventHandlers.hasOwnProperty(result.eventName)) {
-        return
+        return;
       }
 
       for (var index in EventHandlers[result.eventName]) {
-        EventHandlers[result.eventName][index].apply(undefined, [result.value])
+        EventHandlers[result.eventName][index].apply(undefined, [result.value]);
       }
-    }
+    };
 
-    exec(success, null, PLUGIN_NAME, 'init', [params])
+    exec(success, null, PLUGIN_NAME, "init", [params]);
   },
   /**
    * 设置是否开启 debug 模式，开启后 SDK 将会输出更多日志信息。应用对外发布时应关闭。
    *
    * @param {object} params = {'enable': boolean}
    */
-  setDebugMode: function (params) {
-    exec(null, null, PLUGIN_NAME, 'setDebugMode', [params])
+  setDebugMode: function(params) {
+    exec(null, null, PLUGIN_NAME, "setDebugMode", [params]);
   },
   /**
    * 注册用户。
@@ -89,8 +89,8 @@ var JMessagePlugin = {
    * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  register: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'userRegister', [params])
+  register: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "userRegister", [params]);
   },
   /**
    * @param {object} params = {
@@ -100,14 +100,14 @@ var JMessagePlugin = {
    * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  login: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'userLogin', [params])
+  login: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "userLogin", [params]);
   },
   /**
    * 用户登出接口，调用后用户将无法收到消息。登出动作必定成功，开发者不需要关心结果回调。
    */
-  logout: function () {
-    exec(null, null, PLUGIN_NAME, 'userLogout', [])
+  logout: function() {
+    exec(null, null, PLUGIN_NAME, "userLogout", []);
   },
   /**
    * （iOS only）设置 JMessage 服务器角标。
@@ -115,9 +115,9 @@ var JMessagePlugin = {
    *  badge: number
    * }
    */
-  setBadge: function (params) {
-    if (device.platform === 'iOS') {
-      exec(null, null, PLUGIN_NAME, 'setBadge', [params])  
+  setBadge: function(params) {
+    if (device.platform === "iOS") {
+      exec(null, null, PLUGIN_NAME, "setBadge", [params]);
     }
   },
   /**
@@ -125,8 +125,8 @@ var JMessagePlugin = {
    *
    * @param {function} success = function (myInfo) {}
    */
-  getMyInfo: function (success) {
-    exec(success, null, PLUGIN_NAME, 'getMyInfo', [])
+  getMyInfo: function(success) {
+    exec(success, null, PLUGIN_NAME, "getMyInfo", []);
   },
   /**
    * 获取用户信息，此接口可用来获取不同 appKey 下用户的信息，如果 appKey 为空，则默认获取当前 appKey 下的用户信息。
@@ -135,14 +135,14 @@ var JMessagePlugin = {
    * @param {function} success = function (userInfo) {} // 通过参数返回用户对象。
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  getUserInfo: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'getUserInfo', [params])
+  getUserInfo: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "getUserInfo", [params]);
   },
   /**
    * @param {object} params = {'oldPwd': String, 'newPwd': string}
    */
-  updateMyPassword: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'updateMyPassword', [params])
+  updateMyPassword: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "updateMyPassword", [params]);
   },
   /**
    * 更新当前用户头像。
@@ -153,8 +153,8 @@ var JMessagePlugin = {
    *   - Android 类似：/storage/emulated/0/DCIM/Camera/IMG_20160526_130223.jpg
    *   - iOS 类似：/var/mobile/Containers/Data/Application/7DC5CDFF-6581-4AD3-B165-B604EBAB1250/tmp/photo.jpg
    */
-  updateMyAvatar: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'updateMyAvatar', [params])
+  updateMyAvatar: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "updateMyAvatar", [params]);
   },
   /**
    * 更新当前登录用户的信息。
@@ -171,8 +171,8 @@ var JMessagePlugin = {
    * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  updateMyInfo: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'updateMyInfo', [params])
+  updateMyInfo: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "updateMyInfo", [params]);
   },
 
   /**
@@ -186,8 +186,8 @@ var JMessagePlugin = {
    *   - Android 类似：/storage/emulated/0/DCIM/Camera/IMG_20160526_130223.jpg
    *   - iOS 类似：/var/mobile/Containers/Data/Application/7DC5CDFF-6581-4AD3-B165-B604EBAB1250/tmp/photo.jpg
    */
-  updateGroupAvatar: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'updateGroupAvatar', [params])
+  updateGroupAvatar: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "updateGroupAvatar", [params]);
   },
 
   /**
@@ -197,8 +197,8 @@ var JMessagePlugin = {
    * @param {function} success = function ({'id': String, 'filePath': String}) {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  downloadThumbGroupAvatar: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'downloadThumbGroupAvatar', [params])
+  downloadThumbGroupAvatar: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "downloadThumbGroupAvatar", [params]);
   },
 
   /**
@@ -208,8 +208,8 @@ var JMessagePlugin = {
    * @param {function} success = function ({'id': String, 'filePath': String}) {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  downloadOriginalGroupAvatar: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'downloadOriginalGroupAvatar', [params])
+  downloadOriginalGroupAvatar: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "downloadOriginalGroupAvatar", [params]);
   },
 
   /**
@@ -225,8 +225,8 @@ var JMessagePlugin = {
    * @param {function} success = function (conversation) {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  setConversationExtras: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'setConversationExtras', [params])
+  setConversationExtras: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "setConversationExtras", [params]);
   },
 
   /**
@@ -243,8 +243,8 @@ var JMessagePlugin = {
    * @param {function} success = function (msg) {}   // 以参数形式返回消息对象。
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  sendTextMessage: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'sendTextMessage', [params])
+  sendTextMessage: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "sendTextMessage", [params]);
   },
   /**
    * @param {object} params = {
@@ -263,8 +263,8 @@ var JMessagePlugin = {
    * @param {function} success = function (msg) {}   // 以参数形式返回消息对象。
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  sendImageMessage: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'sendImageMessage', [params])
+  sendImageMessage: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "sendImageMessage", [params]);
   },
   /**
    * @param {object} params = {
@@ -280,8 +280,8 @@ var JMessagePlugin = {
    * @param {function} success = function (msg) {}   // 以参数形式返回消息对象。
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  sendVoiceMessage: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'sendVoiceMessage', [params])
+  sendVoiceMessage: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "sendVoiceMessage", [params]);
   },
   /**
    * @param {object} params = {
@@ -295,8 +295,8 @@ var JMessagePlugin = {
    * @param {function} success = function (msg) {}   // 以参数形式返回消息对象。
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  sendCustomMessage: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'sendCustomMessage', [params])
+  sendCustomMessage: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "sendCustomMessage", [params]);
   },
   /**
    * @param {object} params = {
@@ -314,8 +314,8 @@ var JMessagePlugin = {
    * @param {function} success = function (msg) {}   // 以参数形式返回消息对象。
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  sendLocationMessage: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'sendLocationMessage', [params])
+  sendLocationMessage: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "sendLocationMessage", [params]);
   },
   /**
    * @param {object} params = {
@@ -331,8 +331,8 @@ var JMessagePlugin = {
    * @param {function} success = function (msg) {}   // 以参数形式返回消息对象。
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  sendFileMessage: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'sendFileMessage', [params])
+  sendFileMessage: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "sendFileMessage", [params]);
   },
   /**
    * 消息撤回。
@@ -348,8 +348,8 @@ var JMessagePlugin = {
    * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  retractMessage: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'retractMessage', [params])
+  retractMessage: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "retractMessage", [params]);
   },
   /**
    * 从最新的消息开始获取历史消息。
@@ -368,8 +368,8 @@ var JMessagePlugin = {
    * @param {function} success = function (messageArray)) {}  // 以参数形式返回历史消息对象数组
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  getHistoryMessages: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'getHistoryMessages', [params])
+  getHistoryMessages: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "getHistoryMessages", [params]);
   },
   /**
    * 根据消息 id 获取消息对象。
@@ -383,16 +383,16 @@ var JMessagePlugin = {
    *   messageId: string  // 消息 Id。
    * }
    */
-  getMessageById: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'getMessageById', [params])
+  getMessageById: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "getMessageById", [params]);
   },
   /**
    * 根据消息 id 删除指定消息。
    *
    * @param {object} params 同上。
    */
-  deleteMessageById: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'deleteMessageById', [params])
+  deleteMessageById: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "deleteMessageById", [params]);
   },
   /**
    * 发送好友请求。
@@ -405,8 +405,8 @@ var JMessagePlugin = {
    * @param {function} success = function () {}
    * @param {function} error = function ({code: '错误码', description: '错误信息'}) {}
    */
-  sendInvitationRequest: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'sendInvitationRequest', [params])
+  sendInvitationRequest: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "sendInvitationRequest", [params]);
   },
   /**
    * @param {object} params = {
@@ -416,8 +416,8 @@ var JMessagePlugin = {
    * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  acceptInvitation: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'acceptInvitation', [params])
+  acceptInvitation: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "acceptInvitation", [params]);
   },
   /**
    * @param {object} params = {
@@ -428,8 +428,8 @@ var JMessagePlugin = {
    * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  declineInvitation: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'declineInvitation', [params])
+  declineInvitation: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "declineInvitation", [params]);
   },
   /**
    * @param {object} params = {
@@ -439,8 +439,8 @@ var JMessagePlugin = {
    * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  removeFromFriendList: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'removeFromFriendList', [params])
+  removeFromFriendList: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "removeFromFriendList", [params]);
   },
   /**
    * @param {object} params = {
@@ -450,8 +450,8 @@ var JMessagePlugin = {
    * }
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  updateFriendNoteName: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'updateFriendNoteName', [params])
+  updateFriendNoteName: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "updateFriendNoteName", [params]);
   },
   /**
    * @param {object} params = {
@@ -461,15 +461,15 @@ var JMessagePlugin = {
    * }
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  updateFriendNoteText: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'updateFriendNoteText', [params])
+  updateFriendNoteText: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "updateFriendNoteText", [params]);
   },
   /**
    * @param {function} success = function (friendArr) {}  // 以参数形式返回好友对象数组
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  getFriends: function (success, error) {
-    exec(success, error, PLUGIN_NAME, 'getFriends', [])
+  getFriends: function(success, error) {
+    exec(success, error, PLUGIN_NAME, "getFriends", []);
   },
   /**
    * 创建群组，创建成功后，创建者默认会包含在群成员中。
@@ -477,12 +477,13 @@ var JMessagePlugin = {
    * @param {object} params = {
    *  name: String,          // 群组名称。
    *  desc: String,          // 群组描述。
+   *  groupType: String      // 'public' | 'private'
    * }
    * @param {function} success = function (groupId) {}  // 以参数形式返回 group id
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  createGroup: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'createGroup', [params])
+  createGroup: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "createGroup", [params]);
   },
   /**
    * 获取当前用户所有所在的群组 Id。
@@ -490,79 +491,79 @@ var JMessagePlugin = {
    * @param {function} success = function (groupIdArray) {} // 以参数形式返回 group Id 数组。
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  getGroupIds: function (success, error) {
-    exec(success, error, PLUGIN_NAME, 'getGroupIds', [])
+  getGroupIds: function(success, error) {
+    exec(success, error, PLUGIN_NAME, "getGroupIds", []);
   },
   /**
    * @param {object} params = {'id': '群组 Id'}
    * @param {function} success = function (groupInfo) {} // 以参数形式返回群组信息对象
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  getGroupInfo: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'getGroupInfo', [params])
+  getGroupInfo: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "getGroupInfo", [params]);
   },
   /**
    * @param {object} params = {'id': '群组 id', 'newName': '新群组名称', 'newDesc': '新群组介绍'}
    * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  updateGroupInfo: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'updateGroupInfo', [params])
+  updateGroupInfo: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "updateGroupInfo", [params]);
   },
   /**
    * @param {object} params = {'id': '群组 id', 'usernameArray': [用户名数组], 'appKey': '待添加用户所在应用的 appKey'}
    * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  addGroupMembers: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'addGroupMembers', [params])
+  addGroupMembers: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "addGroupMembers", [params]);
   },
   /**
    * @param {object} params = {'id': '群组 id', 'usernameArray': [用户名数组], 'appKey': '待删除用户所在应用的 appKey'}
    * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  removeGroupMembers: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'removeGroupMembers', [params])
+  removeGroupMembers: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "removeGroupMembers", [params]);
   },
   /**
    * @param {object} params = {'id': '群组 id'}
    * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  exitGroup: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'exitGroup', [params])
+  exitGroup: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "exitGroup", [params]);
   },
   /**
    * @param {object} params = {'id': '群组 id'}
    * @param {function} success = function (userInfoArray) {} // 以参数形式返回用户对象数组
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  getGroupMembers: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'getGroupMembers', [params])
+  getGroupMembers: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "getGroupMembers", [params]);
   },
   /**
    * @param {object} params = {'usernameArray': [用户名数组], 'appKey': '用户所属 AppKey'}
    * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  addUsersToBlacklist: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'addUsersToBlacklist', [params])
+  addUsersToBlacklist: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "addUsersToBlacklist", [params]);
   },
   /**
    * @param {object} params = {'usernameArray': [用户名数组], 'appKey': '用户所属 AppKey'}
    * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  removeUsersFromBlacklist: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'removeUsersFromBlacklist', [params])
+  removeUsersFromBlacklist: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "removeUsersFromBlacklist", [params]);
   },
   /**
    * @param {function} success = function (userInfoArray) {} // 以参数形式返回黑名单中的用户信息数组
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  getBlacklist: function (success, error) {
-    exec(success, error, PLUGIN_NAME, 'getBlacklist', [])
+  getBlacklist: function(success, error) {
+    exec(success, error, PLUGIN_NAME, "getBlacklist", []);
   },
   /**
    * 设置某个用户或群组是否免打扰。
@@ -577,8 +578,8 @@ var JMessagePlugin = {
    * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  setNoDisturb: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'setNoDisturb', [params])
+  setNoDisturb: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "setNoDisturb", [params]);
   },
   /**
    * 获取免打扰用户和群组名单。
@@ -586,8 +587,8 @@ var JMessagePlugin = {
    * @param {function} success = function ({userInfoArray: [], groupInfoArray: []}) {}  // 以参数形式返回用户和群组对象数组
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  getNoDisturbList: function (success, error) {
-    exec(success, error, PLUGIN_NAME, 'getNoDisturbList', [])
+  getNoDisturbList: function(success, error) {
+    exec(success, error, PLUGIN_NAME, "getNoDisturbList", []);
   },
   /**
    * 设置是否全局免打扰。
@@ -596,8 +597,8 @@ var JMessagePlugin = {
    * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  setNoDisturbGlobal: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'setNoDisturbGlobal', [params])
+  setNoDisturbGlobal: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "setNoDisturbGlobal", [params]);
   },
   /**
    * 判断当前是否全局免打扰。
@@ -605,16 +606,16 @@ var JMessagePlugin = {
    * @param {function} success = function ({'isNoDisturb': boolean}) {} // 以参数形式返回结果
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  isNoDisturbGlobal: function (success, error) {
-    exec(success, error, PLUGIN_NAME, 'isNoDisturbGlobal', [])
+  isNoDisturbGlobal: function(success, error) {
+    exec(success, error, PLUGIN_NAME, "isNoDisturbGlobal", []);
   },
   /**
    * 设置是否屏蔽群消息。
    *
    * @param {Object} params = { id: String, isBlock: boolean }
    */
-  blockGroupMessage: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'blockGroupMessage', [params])
+  blockGroupMessage: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "blockGroupMessage", [params]);
   },
   /**
    * 判断指定群组是否被屏蔽。
@@ -622,8 +623,8 @@ var JMessagePlugin = {
    * @param {object} params = { id: String }
    * @param {function} success = function ({ isBlocked: boolean }) {} // 以参数形式返回结果。
    */
-  isGroupBlocked: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'isGroupBlocked', [params])
+  isGroupBlocked: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "isGroupBlocked", [params]);
   },
 
   /**
@@ -631,8 +632,8 @@ var JMessagePlugin = {
    *
    * @param {function} success = function (groupArr) {} // 以参数形式返回结果。
    */
-  getBlockedGroupList: function (success, error) {
-    exec(success, error, PLUGIN_NAME, 'getBlockedGroupList', [])
+  getBlockedGroupList: function(success, error) {
+    exec(success, error, PLUGIN_NAME, "getBlockedGroupList", []);
   },
 
   /**
@@ -642,8 +643,8 @@ var JMessagePlugin = {
    * @param {function} success = function ({'username': String, 'appKey': String, 'filePath': string}) {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  downloadThumbUserAvatar: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'downloadThumbUserAvatar', [params])
+  downloadThumbUserAvatar: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "downloadThumbUserAvatar", [params]);
   },
   /**
    * 下载用户头像原图，如果已经下载，不会重复下载。
@@ -653,8 +654,8 @@ var JMessagePlugin = {
    * @param {function} success = function ({'username': String, 'appKey': String, 'filePath': string}) {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  downloadOriginalUserAvatar: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'downloadOriginalUserAvatar', [params])
+  downloadOriginalUserAvatar: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "downloadOriginalUserAvatar", [params]);
   },
   /**
    * 下载图片消息的缩略图，如果已下载，会直接返回本地文件路径，不会重复下载。
@@ -669,8 +670,8 @@ var JMessagePlugin = {
    * @param {function} success = function ({'messageId': String, 'filePath': string}) {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  downloadThumbImage: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'downloadThumbImage', [params])
+  downloadThumbImage: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "downloadThumbImage", [params]);
   },
   /**
    * 下载指定图片消息的原图，如果已经下载，会直接返回本地文件路径，不会重复下载。
@@ -685,8 +686,8 @@ var JMessagePlugin = {
    * @param {function} success = function ({'messageId': String, 'filePath': string}) {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  downloadOriginalImage: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'downloadOriginalImage', [params])
+  downloadOriginalImage: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "downloadOriginalImage", [params]);
   },
   /**
    * 下载语音消息文件，如果已经下载，会直接返回本地文件路径，不会重复下载。
@@ -701,8 +702,8 @@ var JMessagePlugin = {
    * @param {function} success = function ({'messageId': String, 'filePath': string}) {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  downloadVoiceFile: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'downloadVoiceFile', [params])
+  downloadVoiceFile: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "downloadVoiceFile", [params]);
   },
   /**
    * 下载文件消息文件，如果已经下载，会直接返回本地文件路径，不会重复下载。
@@ -717,8 +718,8 @@ var JMessagePlugin = {
    * @param {function} success = function ({'messageId': String, 'filePath': string}) {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  downloadFile: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'downloadFile', [params])
+  downloadFile: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "downloadFile", [params]);
   },
   /**
    * 创建聊天会话。目前可创建单聊、群聊和聊天室会话。
@@ -733,8 +734,8 @@ var JMessagePlugin = {
    * @param {function} success = function (conversation) {} // 以参数形式返回聊天会话对象。
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  createConversation: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'createConversation', [params])
+  createConversation: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "createConversation", [params]);
   },
   /**
    * 删除聊天会话，同时将删除本地聊天记录。
@@ -749,8 +750,8 @@ var JMessagePlugin = {
    * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  deleteConversation: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'deleteConversation', [params])
+  deleteConversation: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "deleteConversation", [params]);
   },
   /**
    * 进入聊天会话。可以在进入聊天会话页面时调用该方法，这样在收到当前聊天用户的消息时，不会显示通知。
@@ -765,18 +766,18 @@ var JMessagePlugin = {
    * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  enterConversation: function (params, success, error) {
-    if (device.platform === 'Android') {
-      exec(success, error, PLUGIN_NAME, 'enterConversation', [params])
+  enterConversation: function(params, success, error) {
+    if (device.platform === "Android") {
+      exec(success, error, PLUGIN_NAME, "enterConversation", [params]);
     }
   },
   /**
    * 退出聊天会话。
    * 对于聊天室（Chat Room）需要调用 `exitChatRoom` 方法。
    */
-  exitConversation: function () {
-    if (device.platform === 'Android') {
-      exec(null, null, PLUGIN_NAME, 'exitConversation', [])
+  exitConversation: function() {
+    if (device.platform === "Android") {
+      exec(null, null, PLUGIN_NAME, "exitConversation", []);
     }
   },
   /**
@@ -790,15 +791,15 @@ var JMessagePlugin = {
    * @param {function} success = function (conversation) {} // 以参数形式返回聊天会话对象。
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  getConversation: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'getConversation', [params])
+  getConversation: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "getConversation", [params]);
   },
   /**
    * @param {function} success = function (conversationArray) {}  // 以参数形式返回会话对象数组。
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  getConversations: function (success, error) {
-    exec(success, error, PLUGIN_NAME, 'getConversations', [])
+  getConversations: function(success, error) {
+    exec(success, error, PLUGIN_NAME, "getConversations", []);
   },
   /**
    * 重置单个会话的未读消息数。
@@ -813,15 +814,15 @@ var JMessagePlugin = {
    * @param {function} success = function () {}
    * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  resetUnreadMessageCount: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'resetUnreadMessageCount', [params])
+  resetUnreadMessageCount: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "resetUnreadMessageCount", [params]);
   },
 
   // 聊天室 API - start
   ChatRoom: {
     /**
      * 获取当前应用所属聊天室的信息。
-     * 
+     *
      * @param {object} params = {
      *  start: number,  // 索引起始位置，从 0 开始。
      *  count: number   // 查询个数。
@@ -829,8 +830,8 @@ var JMessagePlugin = {
      * @param {function} success = function (chatRoomInfoList) {}
      * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
      */
-    getChatRoomInfoListOfApp: function (params, success, error) {
-      exec(success, error, PLUGIN_NAME, 'getChatRoomInfoListOfApp', [params])
+    getChatRoomInfoListOfApp: function(params, success, error) {
+      exec(success, error, PLUGIN_NAME, "getChatRoomInfoListOfApp", [params]);
     },
     /**
      * 获取当前登录用户加入的聊天室列表。
@@ -838,8 +839,8 @@ var JMessagePlugin = {
      * @param {function} success = function (chatRoomInfoList) {}
      * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
      */
-    getChatRoomInfoListOfUser: function (success, error) {
-      exec(success, error, PLUGIN_NAME, 'getChatRoomInfoListOfUser', [])
+    getChatRoomInfoListOfUser: function(success, error) {
+      exec(success, error, PLUGIN_NAME, "getChatRoomInfoListOfUser", []);
     },
     /**
      * 根据聊天室 id 获取聊天室信息。
@@ -850,18 +851,18 @@ var JMessagePlugin = {
      * @param {function} success = function (ChatRoomInfoList) {}
      * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
      */
-    getChatRoomInfoListById: function (params, success, error) {
-      exec(success, error, PLUGIN_NAME, 'getChatRoomInfoListById', [params])
+    getChatRoomInfoListById: function(params, success, error) {
+      exec(success, error, PLUGIN_NAME, "getChatRoomInfoListById", [params]);
     },
     /**
      * 获取聊天室拥有者的用户信息。
-     * 
+     *
      * @param {object} params = { roomId: String } // 聊天室 id
      * @param {function} success = function (userInfo) {}
      * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
      */
-    getChatRoomOwner: function (params, success, error) {
-      exec(success, error, PLUGIN_NAME, 'getChatRoomOwner', [params])
+    getChatRoomOwner: function(params, success, error) {
+      exec(success, error, PLUGIN_NAME, "getChatRoomOwner", [params]);
     },
     /**
      * 进入聊天室。
@@ -872,8 +873,8 @@ var JMessagePlugin = {
      * @param {function} success = function (conversation) {}
      * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
      */
-    enterChatRoom: function (params, success, error) {
-      exec(success, error, PLUGIN_NAME, 'enterChatRoom', [params])
+    enterChatRoom: function(params, success, error) {
+      exec(success, error, PLUGIN_NAME, "enterChatRoom", [params]);
     },
     /**
      * 离开聊天室。
@@ -883,8 +884,8 @@ var JMessagePlugin = {
      * @param {function} success = function () {}
      * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
      */
-    exitChatRoom: function (params, success, error) {
-      exec(success, error, PLUGIN_NAME, 'exitChatRoom', [params])
+    exitChatRoom: function(params, success, error) {
+      exec(success, error, PLUGIN_NAME, "exitChatRoom", [params]);
     },
     /**
      * 获取聊天室会话信息。
@@ -893,8 +894,8 @@ var JMessagePlugin = {
      * @param {function} success = function (conversation) {}
      * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
      */
-    getChatRoomConversation: function (params, success, error) {
-      exec(success, error, PLUGIN_NAME, 'getChatRoomConversation', [params])
+    getChatRoomConversation: function(params, success, error) {
+      exec(success, error, PLUGIN_NAME, "getChatRoomConversation", [params]);
     },
     /**
      * 从本地数据库中获取包含当前登录用户所有聊天室会话的列表。
@@ -902,69 +903,68 @@ var JMessagePlugin = {
      * @param {function} success = function (conversationList) {}
      * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
      */
-    getChatRoomConversationList: function (success, error) {
-      exec(success, error, PLUGIN_NAME, 'getChatRoomConversationList', [])
-    },
+    getChatRoomConversationList: function(success, error) {
+      exec(success, error, PLUGIN_NAME, "getChatRoomConversationList", []);
+    }
   },
   // 聊天室 - end
   /**
    * 获取所有会话未读消息总数
    * @param {function} callback = function([{count: number}])
    */
-  getAllUnreadCount: function (callback) {
-    exec(callback, null, PLUGIN_NAME, 'getAllUnreadCount', []) 
+  getAllUnreadCount: function(callback) {
+    exec(callback, null, PLUGIN_NAME, "getAllUnreadCount", []);
   },
-  
+
   // 群组相关 - start
   /**
    * 批量添加管理员
    * @param {object} param = {groupId: string, usernames: [string], appKey: string}
-   * @param {function} success 
-   * @param {function} error 
+   * @param {function} success
+   * @param {function} error
    */
-  addGroupAdmins: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'addGroupAdmins', [params])
+  addGroupAdmins: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "addGroupAdmins", [params]);
   },
 
   /**
    * 批量删除管理员
    * @param {object} param = {groupId: string, usernames: [string], appKey: string}
-   * @param {function} success 
-   * @param {function} error 
+   * @param {function} success
+   * @param {function} error
    */
-  removeGroupAdmins: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'removeGroupAdmins', [params])
-
+  removeGroupAdmins: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "removeGroupAdmins", [params]);
   },
 
   /**
    * 修改群类型，
-   * @param {object} param = {groudId: String, type: 'public' | 'private'} 
+   * @param {object} param = {groudId: String, type: 'public' | 'private'}
    * @param {function} success = function({conversation})
-   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {} 
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  changeGroupType: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'changeGroupType', [params])
+  changeGroupType: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "changeGroupType", [params]);
   },
 
   /**
    * 分页获取群页面
-   * @param {object} param = {appKey: string, start: number, count: number} 
+   * @param {object} param = {appKey: string, start: number, count: number}
    * @param {function} success = function([groupInfo])
-   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {} 
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  getPublicGroupInfos: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'getPublicGroupInfos', [params])
+  getPublicGroupInfos: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "getPublicGroupInfos", [params]);
   },
 
   /**
    * 申请公开群入群
-   * @param {object} param = {groupId: string, reason: string} 
+   * @param {object} param = {groupId: string, reason: string}
    * @param {function} success = function()
-   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {} 
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  applyJoinGroup: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'applyJoinGroup', [params])
+  applyJoinGroup: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "applyJoinGroup", [params]);
   },
 
   /**
@@ -974,24 +974,23 @@ var JMessagePlugin = {
    *  isAgree: 是否同意入群。
    *  isRespondInviter: 是否将处理结果返回给申请入群者
    * @param {function} success = _ => {}
-   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {} 
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  processApplyJoinGroup: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'processApplyJoinGroup', [params])
+  processApplyJoinGroup: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "processApplyJoinGroup", [params]);
   },
 
   /**
    * 解散群
    * @param {object} param = { groupId: string }
    * @param {function} success = _ => {}
-   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {} 
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
    */
-  dissolveGroup: function (params, success, error) {
-    exec(success, error, PLUGIN_NAME, 'dissolveGroup', [params])
+  dissolveGroup: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "dissolveGroup", [params]);
   },
 
   // 群组相关 - end
-
 
   // 事件监听 - start
   /**
@@ -1006,13 +1005,13 @@ var JMessagePlugin = {
    *  ...                // 不同消息类型还有其他对应的相关字段，具体可参考文档。
    * }
    */
-  addReceiveMessageListener: function (listener) {
-    EventHandlers.receiveMessage.push(listener)
+  addReceiveMessageListener: function(listener) {
+    EventHandlers.receiveMessage.push(listener);
   },
-  removeReceiveMessageListener: function (listener) {
-    var handlerIndex = EventHandlers.receiveMessage.indexOf(listener)
+  removeReceiveMessageListener: function(listener) {
+    var handlerIndex = EventHandlers.receiveMessage.indexOf(listener);
     if (handlerIndex >= 0) {
-      EventHandlers.receiveMessage.splice(handlerIndex, 1)
+      EventHandlers.receiveMessage.splice(handlerIndex, 1);
     }
   },
   /**
@@ -1020,13 +1019,13 @@ var JMessagePlugin = {
    * Note: Android only, (如果想要 iOS 端实现相同的功能，需要同时集成 jpush-phonegap-plugin)
    * @param {function} listener = function (message) {}  // 以参数形式返回消息对象。
    */
-  addClickMessageNotificationListener: function (listener) {
-    EventHandlers.clickMessageNotification.push(listener)
+  addClickMessageNotificationListener: function(listener) {
+    EventHandlers.clickMessageNotification.push(listener);
   },
-  removeClickMessageNotificationListener: function (listener) {
-    var handlerIndex = EventHandlers.clickMessageNotification.indexOf(listener)
+  removeClickMessageNotificationListener: function(listener) {
+    var handlerIndex = EventHandlers.clickMessageNotification.indexOf(listener);
     if (handlerIndex >= 0) {
-      EventHandlers.clickMessageNotification.splice(handlerIndex, 1)
+      EventHandlers.clickMessageNotification.splice(handlerIndex, 1);
     }
   },
   /**
@@ -1034,13 +1033,13 @@ var JMessagePlugin = {
    *
    * @param {function} listener = function ({'conversation': {}, 'messageArray': []}) {}  // 以参数形式返回消息对象数组。
    */
-  addSyncOfflineMessageListener: function (listener) {
-    EventHandlers.syncOfflineMessage.push(listener)
+  addSyncOfflineMessageListener: function(listener) {
+    EventHandlers.syncOfflineMessage.push(listener);
   },
-  removeSyncOfflineMessageListener: function (listener) {
-    var handlerIndex = EventHandlers.syncOfflineMessage.indexOf(listener)
+  removeSyncOfflineMessageListener: function(listener) {
+    var handlerIndex = EventHandlers.syncOfflineMessage.indexOf(listener);
     if (handlerIndex >= 0) {
-      EventHandlers.syncOfflineMessage.splice(handlerIndex, 1)
+      EventHandlers.syncOfflineMessage.splice(handlerIndex, 1);
     }
   },
   /**
@@ -1048,16 +1047,16 @@ var JMessagePlugin = {
    *
    * @param {function} listener = function ({'conversation': {}}) {}  // 以参数形式返回消息对象数组。
    */
-  addSyncRoamingMessageListener: function (listener) {
-    EventHandlers.syncRoamingMessage.push(listener)
-    if (device.platform === 'Android') {
-      exec(null, null, PLUGIN_NAME, 'addSyncRoamingMessageListener', [])
+  addSyncRoamingMessageListener: function(listener) {
+    EventHandlers.syncRoamingMessage.push(listener);
+    if (device.platform === "Android") {
+      exec(null, null, PLUGIN_NAME, "addSyncRoamingMessageListener", []);
     }
   },
-  removeSyncRoamingMessageListener: function (listener) {
-    var handlerIndex = EventHandlers.syncRoamingMessage.indexOf(listener)
+  removeSyncRoamingMessageListener: function(listener) {
+    var handlerIndex = EventHandlers.syncRoamingMessage.indexOf(listener);
     if (handlerIndex >= 0) {
-      EventHandlers.syncRoamingMessage.splice(handlerIndex, 1)
+      EventHandlers.syncRoamingMessage.splice(handlerIndex, 1);
     }
   },
   /**
@@ -1068,13 +1067,13 @@ var JMessagePlugin = {
    *  'type': String, // 'user_password_change' / 'user_logout' / 'user_deleted' / 'user_login_status_unexpected'
    * }
    */
-  addLoginStateChangedListener: function (listener) {
-    EventHandlers.loginStateChanged.push(listener)
+  addLoginStateChangedListener: function(listener) {
+    EventHandlers.loginStateChanged.push(listener);
   },
-  removeLoginStateChangedListener: function (listener) {
-    var handlerIndex = EventHandlers.loginStateChanged.indexOf(listener)
+  removeLoginStateChangedListener: function(listener) {
+    var handlerIndex = EventHandlers.loginStateChanged.indexOf(listener);
     if (handlerIndex >= 0) {
-      EventHandlers.loginStateChanged.splice(handlerIndex, 1)
+      EventHandlers.loginStateChanged.splice(handlerIndex, 1);
     }
   },
   /**
@@ -1088,13 +1087,13 @@ var JMessagePlugin = {
    *  'fromUserAppKey': string   // 事件发送者的 AppKey。
    * }
    */
-  addContactNotifyListener: function (listener) {
-    EventHandlers.contactNotify.push(listener)
+  addContactNotifyListener: function(listener) {
+    EventHandlers.contactNotify.push(listener);
   },
-  removeContactNotifyListener: function (listener) {
-    var handlerIndex = EventHandlers.contactNotify.indexOf(listener)
+  removeContactNotifyListener: function(listener) {
+    var handlerIndex = EventHandlers.contactNotify.indexOf(listener);
     if (handlerIndex >= 0) {
-      EventHandlers.contactNotify.splice(handlerIndex, 1)
+      EventHandlers.contactNotify.splice(handlerIndex, 1);
     }
   },
   /**
@@ -1106,13 +1105,13 @@ var JMessagePlugin = {
    *  'retractedMessage': object  // 被撤回的消息对象。
    * }
    */
-  addMessageRetractListener: function (listener) {
-    EventHandlers.retractMessage.push(listener)
+  addMessageRetractListener: function(listener) {
+    EventHandlers.retractMessage.push(listener);
   },
-  removeMessageRetractListener: function (listener) {
-    var handlerIndex = EventHandlers.retractMessage.indexOf(listener)
+  removeMessageRetractListener: function(listener) {
+    var handlerIndex = EventHandlers.retractMessage.indexOf(listener);
     if (handlerIndex >= 0) {
-      EventHandlers.retractMessage.splice(handlerIndex, 1)
+      EventHandlers.retractMessage.splice(handlerIndex, 1);
     }
   },
   /**
@@ -1126,45 +1125,46 @@ var JMessagePlugin = {
    *  receiverType: String, // 接收方的类型，可能值为 'single' 和 'group'。
    * }
    */
-  addReceiveTransCommandListener: function (listener) {
-    EventHandlers.receiveTransCommand.push(listener)
+  addReceiveTransCommandListener: function(listener) {
+    EventHandlers.receiveTransCommand.push(listener);
   },
-  removeReceiveTransCommandListener: function (listener) {
-    var handlerIndex = EventHandlers.receiveTransCommand.indexOf(listener)
+  removeReceiveTransCommandListener: function(listener) {
+    var handlerIndex = EventHandlers.receiveTransCommand.indexOf(listener);
     if (handlerIndex >= 0) {
-      EventHandlers.receiveTransCommand.splice(handlerIndex, 1)
+      EventHandlers.receiveTransCommand.splice(handlerIndex, 1);
     }
   },
   /**
    * 添加收到聊天室消息的事件监听。
-   * 
+   *
    * @param {function} listener = function (event) {} // 以参数形式返回事件信息。
    * event = {
    *  messageArray: Array   // 消息对象数组。
    * }
    */
-  addReceiveChatRoomMessageListener: function (listener) {
-    EventHandlers.receiveChatRoomMessage.push(listener)
+  addReceiveChatRoomMessageListener: function(listener) {
+    EventHandlers.receiveChatRoomMessage.push(listener);
   },
-  removeReceiveChatRoomMessageListener: function (listener) {
-    var handlerIndex = EventHandlers.receiveChatRoomMessage.indexOf(listener)
+  removeReceiveChatRoomMessageListener: function(listener) {
+    var handlerIndex = EventHandlers.receiveChatRoomMessage.indexOf(listener);
     if (handlerIndex >= 0) {
-      EventHandlers.receiveChatRoomMessage.splice(handlerIndex, 1)
+      EventHandlers.receiveChatRoomMessage.splice(handlerIndex, 1);
     }
   },
-
 
   /**
    * 监听接收入群申请事件
    * @param {function} listener = function([{Message}])
    */
-  addReceiveApplyJoinGroupApprovalListener: function (listener) {
-    EventHandlers.receiveApplyJoinGroupApproval.push(listener)
+  addReceiveApplyJoinGroupApprovalListener: function(listener) {
+    EventHandlers.receiveApplyJoinGroupApproval.push(listener);
   },
-  removeReceiveApplyJoinGroupApprovalListener: function (listener) {
-    var handlerIndex = EventHandlers.receiveApplyJoinGroupApproval.indexOf(listener)
+  removeReceiveApplyJoinGroupApprovalListener: function(listener) {
+    var handlerIndex = EventHandlers.receiveApplyJoinGroupApproval.indexOf(
+      listener
+    );
     if (handlerIndex >= 0) {
-      EventHandlers.receiveApplyJoinGroupApproval.splice(handlerIndex, 1)
+      EventHandlers.receiveApplyJoinGroupApproval.splice(handlerIndex, 1);
     }
   },
 
@@ -1172,13 +1172,15 @@ var JMessagePlugin = {
    * 监听管理员拒绝入群申请事件
    * @param {function} listener = function([{Message}])
    */
-  addReceiveGroupAdminRejectListener: function (listener) {
-    EventHandlers.receiveGroupAdminReject.push(listener)
+  addReceiveGroupAdminRejectListener: function(listener) {
+    EventHandlers.receiveGroupAdminReject.push(listener);
   },
-  removeReceiveGroupAdminRejectListener: function (listener) {
-    var handlerIndex = EventHandlers.receiveApplyJoinGroupApproval.indexOf(listener)
+  removeReceiveGroupAdminRejectListener: function(listener) {
+    var handlerIndex = EventHandlers.receiveApplyJoinGroupApproval.indexOf(
+      listener
+    );
     if (handlerIndex >= 0) {
-      EventHandlers.receiveGroupAdminReject.splice(handlerIndex, 1)
+      EventHandlers.receiveGroupAdminReject.splice(handlerIndex, 1);
     }
   },
 
@@ -1186,16 +1188,18 @@ var JMessagePlugin = {
    * 监听管理员同意入群申请事件
    * @param {function} listener = function([{Message}])
    */
-  addReceiveGroupAdminApprovalListener: function (listener) {
-    EventHandlers.receiveGroupAdminApproval.push(listener)
+  addReceiveGroupAdminApprovalListener: function(listener) {
+    EventHandlers.receiveGroupAdminApproval.push(listener);
   },
-  removeReceiveGroupAdminApprovalListener: function (listener) {
-    var handlerIndex = EventHandlers.receiveGroupAdminApproval.indexOf(listener)
+  removeReceiveGroupAdminApprovalListener: function(listener) {
+    var handlerIndex = EventHandlers.receiveGroupAdminApproval.indexOf(
+      listener
+    );
     if (handlerIndex >= 0) {
-      EventHandlers.receiveGroupAdminApproval.splice(handlerIndex, 1)
+      EventHandlers.receiveGroupAdminApproval.splice(handlerIndex, 1);
     }
   }
   // 事件监听 - end
-}
+};
 
 module.exports = JMessagePlugin
