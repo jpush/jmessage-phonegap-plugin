@@ -23,10 +23,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import cn.jpush.im.android.api.ChatRoomManager;
 import cn.jpush.im.android.api.ContactManager;
 import cn.jpush.im.android.api.JMessageClient;
 import cn.jpush.im.android.api.callback.CreateGroupCallback;
@@ -41,6 +41,7 @@ import cn.jpush.im.android.api.callback.GetNoDisurbListCallback;
 import cn.jpush.im.android.api.callback.GetUserInfoCallback;
 import cn.jpush.im.android.api.callback.GetUserInfoListCallback;
 import cn.jpush.im.android.api.callback.IntegerCallback;
+import cn.jpush.im.android.api.callback.RequestCallback;
 import cn.jpush.im.android.api.content.CustomContent;
 import cn.jpush.im.android.api.content.FileContent;
 import cn.jpush.im.android.api.content.ImageContent;
@@ -52,6 +53,9 @@ import cn.jpush.im.android.api.event.ChatRoomMessageEvent;
 import cn.jpush.im.android.api.event.CommandNotificationEvent;
 import cn.jpush.im.android.api.event.ContactNotifyEvent;
 import cn.jpush.im.android.api.event.ConversationRefreshEvent;
+import cn.jpush.im.android.api.event.GroupApprovalEvent;
+import cn.jpush.im.android.api.event.GroupApprovalRefuseEvent;
+import cn.jpush.im.android.api.event.GroupApprovedNotificationEvent;
 import cn.jpush.im.android.api.event.LoginStateChangeEvent;
 import cn.jpush.im.android.api.event.MessageEvent;
 import cn.jpush.im.android.api.event.MessageRetractEvent;
@@ -59,6 +63,7 @@ import cn.jpush.im.android.api.event.NotificationClickEvent;
 import cn.jpush.im.android.api.event.OfflineMessageEvent;
 import cn.jpush.im.android.api.exceptions.JMFileSizeExceedException;
 import cn.jpush.im.android.api.model.Conversation;
+import cn.jpush.im.android.api.model.GroupBasicInfo;
 import cn.jpush.im.android.api.model.GroupInfo;
 import cn.jpush.im.android.api.model.Message;
 import cn.jpush.im.android.api.model.UserInfo;
@@ -94,10 +99,13 @@ public class JMessagePlugin extends CordovaPlugin {
 
     private CallbackContext mCallback;
 
+    private HashMap<String, GroupApprovalEvent> groupApprovalEventHashMap;
+
     @Override
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
         super.initialize(cordova, webView);
         mCordovaActivity = cordova.getActivity();
+        groupApprovalEventHashMap = new HashMap<>();
     }
 
     @Override
@@ -294,7 +302,7 @@ public class JMessagePlugin extends CordovaPlugin {
             String imgPath = params.getString("imgPath");
             File img = new File(imgPath);
             String format = imgPath.substring(imgPath.lastIndexOf(".") + 1);
-            JMessageClient.updateUserAvatar(img, format,new BasicCallback() {
+            JMessageClient.updateUserAvatar(img, format, new BasicCallback() {
                 @Override
                 public void gotResult(int status, String desc) {
                     handleResult(status, desc, callback);
@@ -416,11 +424,11 @@ public class JMessagePlugin extends CordovaPlugin {
                         return;
                     }
 
-                    if (userInfo.getBigAvatarFile() == null) {  // 本地不存在头像原图，进行下载。
+                    if (userInfo.getBigAvatarFile() == null) { // 本地不存在头像原图，进行下载。
                         userInfo.getBigAvatarBitmap(new GetAvatarBitmapCallback() {
                             @Override
                             public void gotResult(int status, String desc, Bitmap bitmap) {
-                                if (status != 0) {  // 下载失败
+                                if (status != 0) { // 下载失败
                                     handleResult(status, desc, callback);
                                     return;
                                 }
@@ -597,7 +605,7 @@ public class JMessagePlugin extends CordovaPlugin {
 
         try {
             MediaPlayer mediaPlayer = MediaPlayer.create(mCordovaActivity, Uri.parse(path));
-            int duration = mediaPlayer.getDuration() / 1000;    // Millisecond to second.
+            int duration = mediaPlayer.getDuration() / 1000; // Millisecond to second.
 
             File file = getFile(path);
             VoiceContent content = new VoiceContent(file, duration);
@@ -839,7 +847,7 @@ public class JMessagePlugin extends CordovaPlugin {
 
         List<Message> messageList;
 
-        if (limit == -1) {  // 意味着要获得从 from 开始的所有消息。
+        if (limit == -1) { // 意味着要获得从 from 开始的所有消息。
             if (from == 0) {
                 messageList = conversation.getAllMessage();
             } else {
@@ -1285,27 +1293,41 @@ public class JMessagePlugin extends CordovaPlugin {
     // 群组 - start
 
     void createGroup(JSONArray data, final CallbackContext callback) {
-        String name, desc, avatarFilePath;
+        String name, desc, avatarFilePath, groupType;
 
         try {
             JSONObject params = data.getJSONObject(0);
             name = params.getString("name");
             desc = params.getString("desc");
-
-            JMessageClient.createGroup(name, desc, new CreateGroupCallback() {
-                @Override
-                public void gotResult(int status, String desc, long groupId) {
-                    if (status == 0) {
-                        callback.success(String.valueOf(groupId));
-                    } else {
-                        handleResult(status, desc, callback);
+            groupType = params.getString("groupType");
+            if(groupType.equals("private")){
+                JMessageClient.createGroup(name, desc, new CreateGroupCallback() {
+                    @Override
+                    public void gotResult(int status, String desc, long groupId) {
+                        if (status == 0) {
+                            callback.success(String.valueOf(groupId));
+                        } else {
+                            handleResult(status, desc, callback);
+                        }
                     }
-                }
-            });
-        } catch (JSONException e) {
-            e.printStackTrace();
-            handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
+                });
+            }else if(groupType.equals("public")){
+                JMessageClient.createPublicGroup(name, desc, new CreateGroupCallback() {
+
+    @Override
+    public void gotResult(int status, String desc, long groupId) {
+        if (status == 0) {
+            callback.success(String.valueOf(groupId));
+        } else {
+            handleResult(status, desc, callback);
         }
+    }});}else{handleResult(ERR_CODE_PARAMETER,ERR_MSG_PARAMETER+" : "+groupType,callback);}}catch(
+
+    JSONException e)
+    {
+        e.printStackTrace();
+        handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
+    }
     }
 
     void getGroupIds(JSONArray data, final CallbackContext callback) {
@@ -1387,27 +1409,27 @@ public class JMessagePlugin extends CordovaPlugin {
                         }
                     });
 
-                } else {
-                    groupInfo.updateName(newName, new BasicCallback() {
+                }else
+
+    {
+        groupInfo.updateName(newName, new BasicCallback() {
+            @Override
+            public void gotResult(int status, String desc) {
+                if (status == 0) {
+                    groupInfo.updateDescription(newDesc, new BasicCallback() {
                         @Override
                         public void gotResult(int status, String desc) {
-                            if (status == 0) {
-                                groupInfo.updateDescription(newDesc, new BasicCallback() {
-                                    @Override
-                                    public void gotResult(int status, String desc) {
-                                        handleResult(status, desc, callback);
-                                    }
-                                });
-
-                            } else {
-                                handleResult(status, desc, callback);
-                            }
+                            handleResult(status, desc, callback);
                         }
                     });
+
+                } else {
+                    handleResult(status, desc, callback);
                 }
             }
         });
     }
+    }});}
 
     void updateGroupAvatar(JSONArray data, final CallbackContext callback) {
         long groupId;
@@ -1426,7 +1448,7 @@ public class JMessagePlugin extends CordovaPlugin {
         JMessageClient.getGroupInfo(groupId, new GetGroupInfoCallback() {
             @Override
             public void gotResult(int status, String desc, GroupInfo groupInfo) {
-                if (status != 0) {  // error
+                if (status != 0) { // error
                     handleResult(status, desc, callback);
                     return;
                 }
@@ -1557,7 +1579,7 @@ public class JMessagePlugin extends CordovaPlugin {
 
     void blockGroupMessage(JSONArray data, final CallbackContext callback) {
         final long groupId;
-        final int isBlock;  // true: 屏蔽；false: 取消屏蔽。
+        final int isBlock; // true: 屏蔽；false: 取消屏蔽。
 
         try {
             JSONObject params = data.getJSONObject(0);
@@ -1749,26 +1771,26 @@ public class JMessagePlugin extends CordovaPlugin {
 
                 JMessageClient.getGroupInfo(groupId, new GetGroupInfoCallback() {
 
-                    @Override
-                    public void gotResult(int status, String desc, GroupInfo groupInfo) {
-                        if (status == 0) {
-                            groupInfo.setNoDisturb(isNoDisturb, new BasicCallback() {
-                                @Override
-                                public void gotResult(int status, String desc) {
-                                    handleResult(status, desc, callback);
-                                }
-                            });
+    @Override
+    public void gotResult(int status, String desc, GroupInfo groupInfo) {
+        if (status == 0) {
+            groupInfo.setNoDisturb(isNoDisturb, new BasicCallback() {
+                @Override
+                public void gotResult(int status, String desc) {
+                    handleResult(status, desc, callback);
+                }
+            });
 
-                        } else {
-                            handleResult(status, desc, callback);
-                        }
-                    }
-                });
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-            handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
+        } else {
+            handleResult(status, desc, callback);
         }
+    }});}}catch(
+
+    JSONException e){e.printStackTrace();
+
+    handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
+        }
+
     }
 
     void getNoDisturbList(JSONArray data, final CallbackContext callback) {
@@ -1843,8 +1865,8 @@ public class JMessagePlugin extends CordovaPlugin {
             if (conversation != null) {
                 callback.success(toJson(conversation));
             } else {
-                handleResult(ERR_CODE_CONVERSATION,
-                        "Can't create the conversation, please check your parameters", callback);
+                handleResult(ERR_CODE_CONVERSATION, "Can't create the conversation, please check your parameters",
+                        callback);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -2012,6 +2034,209 @@ public class JMessagePlugin extends CordovaPlugin {
 
     // 聊天室 - end
 
+    // 群组相关 - start
+
+    void getAllUnreadCount(JSONArray data, final CallbackContext callback) {
+        int count = JMessageClient.getAllUnReadMsgCount();
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("count", count);
+            callback.success(jsonObject);
+        } catch (JSONException e) {
+            callback.success(new JSONObject());
+            e.printStackTrace();
+        }
+
+    }
+
+    void addGroupAdmins(JSONArray data, final CallbackContext callback) {
+        String appKey;
+        long groupId;
+        JSONArray usernames;
+        try {
+            JSONObject params = data.getJSONObject(0);
+            groupId = Long.parseLong(params.getString("groupId"));
+            appKey = params.has("appKey") ? params.getString("appKey") : "";
+            usernames = params.getJSONArray("usernames");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
+            return;
+        }
+        JMessageClient.getGroupInfo(groupId, new GetGroupInfoCallback() {
+            @Override
+            public void gotResult(int status, String desc, GroupInfo groupInfo) {
+                if (status == 0) {
+                    final List<UserInfo> userInfos = new ArrayList<>();
+                    for (int i = 0; i < usernames.length(); i++) {
+                        try {
+                            userInfos.add(groupInfo.getGroupMemberInfo(usernames.getString(i), appKey));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            handleResult(ERR_CODE_PARAMETER, "Can't find usernames.", callback);
+                            return;
+                        }
+                    }
+                    groupInfo.addGroupKeeper(userInfos, new BasicCallback() {
+                        @Override
+                        public void gotResult(int status, String desc) {
+                            handleResult(status, desc, callback);
+                        }
+                    });
+                } else {
+                    handleResult(status, desc, callback);
+                }
+            }
+        });
+    }
+
+    void removeGroupAdmins(JSONArray data, final CallbackContext callback) {
+        String appKey;
+        long groupId;
+        JSONArray usernames;
+        try {
+            JSONObject params = data.getJSONObject(0);
+            groupId = Long.parseLong(params.getString("groupId"));
+            appKey = params.has("appKey") ? params.getString("appKey") : "";
+            usernames = params.getJSONArray("usernames");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
+            return;
+        }
+        JMessageClient.getGroupInfo(groupId, new GetGroupInfoCallback() {
+            @Override
+            public void gotResult(int status, String desc, GroupInfo groupInfo) {
+                if (status == 0) {
+                    final List<UserInfo> userInfos = new ArrayList<>();
+                    for (int i = 0; i < usernames.length(); i++) {
+                        try {
+                            userInfos.add(groupInfo.getGroupMemberInfo(usernames.getString(i), appKey));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            handleResult(ERR_CODE_PARAMETER, "Can't find usernames.", callback);
+                            return;
+                        }
+                    }
+                    groupInfo.removeGroupKeeper(userInfos, new BasicCallback() {
+                        @Override
+                        public void gotResult(int status, String desc) {
+                            handleResult(status, desc, callback);
+                        }
+                    });
+                } else {
+                    handleResult(status, desc, callback);
+                }
+            }
+        });
+
+    }
+
+    void getPublicGroupInfos(JSONArray data, final CallbackContext callback) {
+        String appKey;
+        int start, count;
+        try {
+            JSONObject params = data.getJSONObject(0);
+            start = Integer.parseInt(params.getString("start"));
+            count = Integer.parseInt(params.getString("count"));
+            appKey = params.has("appKey") ? params.getString("appKey") : "";
+        } catch (JSONException e) {
+            e.printStackTrace();
+            handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
+            return;
+        }
+
+        JMessageClient.getPublicGroupListByApp(appKey, start, count, new RequestCallback<List<GroupBasicInfo>>() {
+            @Override
+            public void gotResult(int status, String desc, List<GroupBasicInfo> groupBasicInfos) {
+                handleResult(toJson(groupBasicInfos), status, desc, callback);
+            }
+        });
+    }
+
+    void applyJoinGroup(JSONArray data, final CallbackContext callback) {
+        String reason;
+        long groupId;
+        try {
+            JSONObject params = data.getJSONObject(0);
+            groupId = Long.parseLong(params.getString("groupId"));
+            reason = params.getString("reason");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
+            return;
+        }
+        JMessageClient.applyJoinGroup(groupId, reason, new BasicCallback() {
+            @Override
+            public void gotResult(int status, String desc) {
+                handleResult(status, desc, callback);
+            }
+        });
+
+    }
+
+    void processApplyJoinGroup(JSONArray data, final CallbackContext callback) {
+        String  reason, appKey;
+        Boolean isAgree, isRespondInviter;
+        JSONArray events;
+        try {
+            JSONObject params = data.getJSONObject(0);
+            reason = params.getString("reason");
+            isAgree = params.getBoolean("isAgree");
+            isRespondInviter = params.getBoolean("isRespondInviter");
+            events = params.getJSONArray("events");
+            appKey = params.has("appKey") ? params.getString("appKey") : "";
+            for (int i = 0; i < events.length(); i++) {
+                GroupApprovalEvent groupApprovalEvent = groupApprovalEventHashMap.get(events.getString(i));
+                if(groupApprovalEvent == null){
+                    handleResult(ERR_CODE_PARAMETER,ERR_MSG_PARAMETER + ": can't get events." ,callback);
+                    return;
+                }
+                if(isAgree){
+                    groupApprovalEvent.acceptGroupApproval(groupApprovalEvent.getFromUsername(), appKey, new BasicCallback() {
+                        @Override
+                        public void gotResult(int status, String desc) {
+                            handleResult(status, desc, callback);
+                        }
+                    });
+
+                }else {
+                    groupApprovalEvent.refuseGroupApproval(groupApprovalEvent.getFromUsername(), appKey, reason, new BasicCallback() {
+
+    @Override
+    public void gotResult(int status, String desc) {
+        handleResult(status, desc, callback);
+    }});}
+
+    }}catch(JSONException e){e.printStackTrace();
+
+    handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
+            return;
+        }
+
+    }
+
+    void dissolveGroup(JSONArray data, final CallbackContext callback) {
+        long groupId;
+        try {
+            JSONObject params = data.getJSONObject(0);
+            groupId = Long.parseLong(params.getString("groupId"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+            handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
+            return;
+        }
+        JMessageClient.adminDissolveGroup(groupId,  new BasicCallback() {
+            @Override
+            public void gotResult(int status, String desc) {
+                handleResult(status, desc, callback);
+            }
+        });
+
+    }
+
+    // 群组相关 - end
+
     // 事件处理 - start
 
     /**
@@ -2147,7 +2372,7 @@ public class JMessagePlugin extends CordovaPlugin {
                 }
                 mRoamingMessageCache.add(eventJson);
 
-            } else if (mRoamingMessageCache == null) {    // JS 已添加监听事件，没有缓存，直接触发事件。
+            } else if (mRoamingMessageCache == null) { // JS 已添加监听事件，没有缓存，直接触发事件。
                 eventSuccess(eventJson);
             }
         }
@@ -2280,6 +2505,113 @@ public class JMessagePlugin extends CordovaPlugin {
         }
 
         JSONObject eventJson = toJson("receiveChatRoomMessage", result);
+        eventSuccess(eventJson);
+    }
+
+    /**
+     * 监听接收入群申请事件
+     */
+    public void onEvent(GroupApprovalEvent event) throws JSONException {
+        Log.d(TAG, "GroupApprovalEvent, event: " + event);
+        groupApprovalEventHashMap.put(event.getEventId() + "", event);
+        GroupApprovalEvent.Type type = event.getType();
+        JSONObject json = new JSONObject();
+        json.put("eventId", event.getEventId() + "");
+        json.put("reason", event.getReason());
+        json.put("groupId", event.getGid() + "");
+        json.put("isInitiativeApply", type.equals(GroupApprovalEvent.Type.apply_join_group));
+        event.getFromUserInfo(new GetUserInfoCallback() {
+            @Override
+            public void gotResult(int status, String desc, UserInfo userInfo) {
+                if (status == 0) {
+                    try {
+                        json.put("sendApplyUser", toJson(userInfo));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+        event.getApprovalUserInfoList(new GetUserInfoListCallback() {
+            @Override
+            public void gotResult(int status, String s, List<UserInfo> list) {
+                if (status == 0) {
+                    try {
+                        json.put("joinGroupUsers", toJson(list));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+
+        JSONObject eventJson = toJson("receiveApplyJoinGroupApproval", json);
+        eventSuccess(eventJson);
+
+    }
+
+    /**
+     * 监听管理员同意入群申请事件
+     */
+    public void onEvent(GroupApprovedNotificationEvent event) throws JSONException {
+        Log.d(TAG, "GroupApprovedNotificationEvent, event: " + event);
+        JSONObject json = new JSONObject();
+        json.put("isAgree", event.getApprovalResult());
+        json.put("applyEventId", event.getApprovalEventID() + "");
+        json.put("groupId", event.getGroupID() + "");
+        event.getOperator(new GetUserInfoCallback() {
+            @Override
+            public void gotResult(int status, String desc, UserInfo userInfo) {
+                if (status == 0) {
+                    try {
+                        json.put("groupAdmin", toJson(userInfo));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+        event.getApprovedUserInfoList(new GetUserInfoListCallback() {
+            @Override
+            public void gotResult(int status, String s, List<UserInfo> list) {
+                if (status == 0) {
+                    try {
+                        json.put("users", toJson(list));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+
+        JSONObject eventJson = toJson("receiveGroupAdminApproval", json);
+        eventSuccess(eventJson);
+
+    }
+
+    /**
+     * 监听管理员拒绝入群申请事件
+     */
+    public void onEvent(GroupApprovalRefuseEvent event) throws JSONException {
+        Log.d(TAG, "GroupApprovalRefuseEvent, event: " + event);
+        JSONObject json = new JSONObject();
+        json.put("reason", event.getReason());
+        json.put("groupId", event.getGid() + "");
+
+        event.getFromUserInfo(new GetUserInfoCallback() {
+            @Override
+            public void gotResult(int status, String desc, UserInfo userInfo) {
+                if (status == 0) {
+                    try {
+                        json.put("groupManager", toJson(userInfo));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+
+        JSONObject eventJson = toJson("receiveGroupAdminReject", json);
         eventSuccess(eventJson);
     }
 

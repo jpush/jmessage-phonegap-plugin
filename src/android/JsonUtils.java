@@ -25,6 +25,7 @@ import cn.jpush.im.android.api.enums.ConversationType;
 import cn.jpush.im.android.api.enums.MessageDirect;
 import cn.jpush.im.android.api.model.ChatRoomInfo;
 import cn.jpush.im.android.api.model.Conversation;
+import cn.jpush.im.android.api.model.GroupBasicInfo;
 import cn.jpush.im.android.api.model.GroupInfo;
 import cn.jpush.im.android.api.model.Message;
 import cn.jpush.im.android.api.model.UserInfo;
@@ -118,32 +119,50 @@ class JsonUtils {
         return result;
     }
 
+    static JSONObject toJson(GroupBasicInfo groupInfo) {
+        JSONObject result = new JSONObject();
+
+        try {
+            result.put("type", "group");
+            result.put("id", String.valueOf(groupInfo.getGroupID()));
+            result.put("name", groupInfo.getGroupName());
+            result.put("desc", groupInfo.getGroupDescription());
+            result.put("level", groupInfo.getGroupLevel());
+            result.put("avatarThumbPath", groupInfo.getAvatar());
+            result.put("maxMemberCount", groupInfo.getMaxMemberCount());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
     static JSONObject toJson(Message msg) {
         JSONObject result = new JSONObject();
         try {
-            result.put("id", String.valueOf(msg.getId()));  // 本地数据库 id
-            result.put("serverMessageId", String.valueOf(msg.getServerMessageId()));    // 服务器端 id
-            result.put("from", toJson(msg.getFromUser()));  // 消息发送者
+            result.put("id", String.valueOf(msg.getId())); // 本地数据库 id
+            result.put("serverMessageId", String.valueOf(msg.getServerMessageId())); // 服务器端 id
+            result.put("from", toJson(msg.getFromUser())); // 消息发送者
 
             boolean isSend = msg.getDirect().equals(MessageDirect.send);
-            result.put("isSend", isSend);    // 消息是否是由当前用户发出
+            result.put("isSend", isSend); // 消息是否是由当前用户发出
 
             JSONObject targetJson = null;
             switch (msg.getTargetType()) {
-                case single:
-                    if (isSend) {    // 消息发送
-                        targetJson = toJson((UserInfo) msg.getTargetInfo());
-                    } else {    // 消息接收
-                        targetJson = toJson(JMessageClient.getMyInfo());
-                    }
-                    break;
-                case group:
-                    targetJson = toJson((GroupInfo) msg.getTargetInfo());
-                    break;
-                case chatroom:
-                    targetJson = toJson((ChatRoomInfo) msg.getTargetInfo());
-                    break;
-                default:
+            case single:
+                if (isSend) { // 消息发送
+                    targetJson = toJson((UserInfo) msg.getTargetInfo());
+                } else { // 消息接收
+                    targetJson = toJson(JMessageClient.getMyInfo());
+                }
+                break;
+            case group:
+                targetJson = toJson((GroupInfo) msg.getTargetInfo());
+                break;
+            case chatroom:
+                targetJson = toJson((ChatRoomInfo) msg.getTargetInfo());
+                break;
+            default:
             }
             result.put("target", targetJson);
 
@@ -157,57 +176,57 @@ class JsonUtils {
             result.put("createTime", msg.getCreateTime());
 
             switch (msg.getContentType()) {
-                case text:
-                    result.put("type", "text");
-                    result.put("text", ((TextContent) content).getText());
+            case text:
+                result.put("type", "text");
+                result.put("text", ((TextContent) content).getText());
+                break;
+            case image:
+                result.put("type", "image");
+                result.put("thumbPath", ((ImageContent) content).getLocalThumbnailPath());
+                break;
+            case voice:
+                result.put("type", "voice");
+                result.put("path", ((VoiceContent) content).getLocalPath());
+                result.put("duration", ((VoiceContent) content).getDuration());
+                break;
+            case file:
+                result.put("type", "file");
+                result.put("fileName", ((FileContent) content).getFileName());
+                break;
+            case custom:
+                result.put("type", "custom");
+                Map<String, String> customObject = ((CustomContent) content).getAllStringValues();
+                result.put("customObject", toJson(customObject));
+                break;
+            case location:
+                result.put("type", "location");
+                result.put("latitude", ((LocationContent) content).getLatitude());
+                result.put("longitude", ((LocationContent) content).getLongitude());
+                result.put("address", ((LocationContent) content).getAddress());
+                result.put("scale", ((LocationContent) content).getScale());
+                break;
+            case eventNotification:
+                result.put("type", "event");
+                List usernameList = ((EventNotificationContent) content).getUserNames();
+                if (usernameList != null) {
+                    result.put("usernames", toJson(usernameList));
+                }
+                switch (((EventNotificationContent) content).getEventNotificationType()) {
+                case group_member_added:
+                    // 群成员加群事件
+                    result.put("eventType", "group_member_added");
                     break;
-                case image:
-                    result.put("type", "image");
-                    result.put("thumbPath", ((ImageContent) content).getLocalThumbnailPath());
+                case group_member_removed:
+                    // 群成员被踢事件
+                    result.put("eventType", "group_member_removed");
                     break;
-                case voice:
-                    result.put("type", "voice");
-                    result.put("path", ((VoiceContent) content).getLocalPath());
-                    result.put("duration", ((VoiceContent) content).getDuration());
+                case group_member_exit:
+                    // 群成员退群事件
+                    result.put("eventType", "group_member_exit");
                     break;
-                case file:
-                    result.put("type", "file");
-                    result.put("fileName", ((FileContent) content).getFileName());
-                    break;
-                case custom:
-                    result.put("type", "custom");
-                    Map<String, String> customObject = ((CustomContent) content).getAllStringValues();
-                    result.put("customObject", toJson(customObject));
-                    break;
-                case location:
-                    result.put("type", "location");
-                    result.put("latitude", ((LocationContent) content).getLatitude());
-                    result.put("longitude", ((LocationContent) content).getLongitude());
-                    result.put("address", ((LocationContent) content).getAddress());
-                    result.put("scale", ((LocationContent) content).getScale());
-                    break;
-                case eventNotification:
-                    result.put("type", "event");
-                    List usernameList = ((EventNotificationContent) content).getUserNames();
-                    if (usernameList != null) {
-                        result.put("usernames", toJson(usernameList));
-                    }
-                    switch (((EventNotificationContent) content).getEventNotificationType()) {
-                        case group_member_added:
-                            //群成员加群事件
-                            result.put("eventType", "group_member_added");
-                            break;
-                        case group_member_removed:
-                            //群成员被踢事件
-                            result.put("eventType", "group_member_removed");
-                            break;
-                        case group_member_exit:
-                            //群成员退群事件
-                            result.put("eventType", "group_member_exit");
-                            break;
-                        default:
-                    }
                 default:
+                }
+            default:
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -229,11 +248,11 @@ class JsonUtils {
                 String username;
                 String appKey;
 
-                if (isSend) {   // 消息由当前用户发送，则聊天对象为消息接收方。
+                if (isSend) { // 消息由当前用户发送，则聊天对象为消息接收方。
                     username = target.getString("username");
                     appKey = target.has("appKey") ? target.getString("appKey") : null;
 
-                } else {    // 当前用户为消息接收方，则聊天对象为消息发送方。
+                } else { // 当前用户为消息接收方，则聊天对象为消息发送方。
                     JSONObject opposite = json.getJSONObject("from");
                     username = opposite.getString("username");
                     appKey = opposite.has("appKey") ? opposite.getString("appKey") : null;
@@ -295,6 +314,8 @@ class JsonUtils {
                 jsonArray.put(toJson((UserInfo) object));
             } else if (object instanceof GroupInfo) {
                 jsonArray.put(toJson((GroupInfo) object));
+            } else if (object instanceof GroupBasicInfo) {
+                jsonArray.put(toJson((GroupBasicInfo) object));
             } else if (object instanceof Message) {
                 jsonArray.put(toJson((Message) object));
             } else {
@@ -330,12 +351,12 @@ class JsonUtils {
     static JSONObject toJson(ChatRoomInfo chatRoomInfo) throws JSONException {
         JSONObject json = new JSONObject();
         json.put("type", "chatRoom");
-        json.put("roomId", String.valueOf(chatRoomInfo.getRoomID()));   // 配合 iOS，将 long 转成 String。
+        json.put("roomId", String.valueOf(chatRoomInfo.getRoomID())); // 配合 iOS，将 long 转成 String。
         json.put("name", chatRoomInfo.getName());
         json.put("appKey", chatRoomInfo.getAppkey());
         json.put("description", chatRoomInfo.getDescription());
-        json.put("createTime", chatRoomInfo.getCreateTime());   // 创建日期，单位秒。
-        json.put("maxMemberCount", chatRoomInfo.getMaxMemberCount());   // 最大成员数。
+        json.put("createTime", chatRoomInfo.getCreateTime()); // 创建日期，单位秒。
+        json.put("maxMemberCount", chatRoomInfo.getMaxMemberCount()); // 最大成员数。
         json.put("memberCount", chatRoomInfo.getTotalMemberCount()); // 当前成员数。
         return json;
     }
