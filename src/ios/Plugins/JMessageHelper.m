@@ -85,65 +85,10 @@
 }
 
 - (void)onReceiveNotificationEvent:(JMSGNotificationEvent *)event {
+
   switch (event.eventType) {
-//    case kJMSGEventNotificationLoginKicked:
-//      [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageLoginStateChanged
-//                                                          object:@{@"type":@"user_kicked"}];
-//      break;
-//    case kJMSGEventNotificationServerAlterPassword:
-//      [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageLoginStateChanged
-//                                                          object:@{@"type":@"user_password_change"}];
-//      break;
-//    case kJMSGEventNotificationUserLoginStatusUnexpected:
-//      [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageLoginStateChanged
-//                                                          object:@{@"type":@"user_login_state_unexpected"}];
-//      break;
     case kJMSGEventNotificationCurrentUserInfoChange:
       break;
-//    case kJMSGEventNotificationReceiveFriendInvitation:{
-//      JMSGFriendNotificationEvent *friendEvent = (JMSGFriendNotificationEvent *) event;
-//      JMSGUser *user = [friendEvent getFromUser];
-//      [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageContactNotify
-//                                                          object:@{
-//                                                                    @"type":@"invite_received",
-//                                                                    @"reason":[friendEvent eventDescription],
-//                                                                    @"fromUsername":[friendEvent getFromUsername],
-//                                                                    @"fromUserAppKey":user.appKey}];
-//      }
-//      break;
-//    case kJMSGEventNotificationAcceptedFriendInvitation:{
-//      JMSGFriendNotificationEvent *friendEvent = (JMSGFriendNotificationEvent *) event;
-//      JMSGUser *user = [friendEvent getFromUser];
-//      [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageContactNotify
-//                                                          object:@{
-//                                                                    @"type":@"invite_accepted",
-//                                                                    @"reason":[friendEvent eventDescription],
-//                                                                    @"fromUsername":[friendEvent getFromUsername],
-//                                                                    @"fromUserAppKey":user.appKey}];
-//      }
-//      break;
-//    case kJMSGEventNotificationDeclinedFriendInvitation:{
-//      JMSGFriendNotificationEvent *friendEvent = (JMSGFriendNotificationEvent *) event;
-//      JMSGUser *user = [friendEvent getFromUser];
-//      [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageContactNotify
-//                                                          object:@{
-//                                                                    @"type":@"invite_declined",
-//                                                                    @"reason":[friendEvent eventDescription],
-//                                                                    @"fromUsername":[friendEvent getFromUsername],
-//                                                                    @"fromUserAppKey":user.appKey}];
-//      }
-//      break;
-//    case kJMSGEventNotificationDeletedFriend:{
-//      JMSGFriendNotificationEvent *friendEvent = (JMSGFriendNotificationEvent *) event;
-//      JMSGUser *user = [friendEvent getFromUser];
-//      [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageContactNotify
-//                                                          object:@{
-//                                                                    @"type":@"contact_deleted",
-//                                                                    @"reason":[friendEvent eventDescription],
-//                                                                    @"fromUsername":[friendEvent getFromUsername],
-//                                                                    @"fromUserAppKey":user.appKey}];
-//      }
-//      break;
     case kJMSGEventNotificationReceiveServerFriendUpdate:
       
       break;
