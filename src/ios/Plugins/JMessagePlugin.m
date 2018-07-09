@@ -2232,12 +2232,12 @@ NSMutableDictionary *_jmessageEventCache;
   NSDictionary * param = [command argumentAtIndex:0];
   NSNumber *start = nil;
   NSNumber *count = nil;
-  if (param[@"start"]) {
+  if (param[@"start"] == nil) {
     [self returnParamError:command];
     return;
   }
   
-  if (param[@"count"]) {
+  if (param[@"count"] == nil) {
     [self returnParamError:command];
     return;
   }
