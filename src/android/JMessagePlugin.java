@@ -1300,7 +1300,7 @@ public class JMessagePlugin extends CordovaPlugin {
             name = params.getString("name");
             desc = params.getString("desc");
             groupType = params.getString("groupType");
-            if(groupType.equals("private")){
+            if (groupType.equals("private")) {
                 JMessageClient.createGroup(name, desc, new CreateGroupCallback() {
                     @Override
                     public void gotResult(int status, String desc, long groupId) {
@@ -1311,23 +1311,24 @@ public class JMessagePlugin extends CordovaPlugin {
                         }
                     }
                 });
-            }else if(groupType.equals("public")){
+            } else if (groupType.equals("public")) {
                 JMessageClient.createPublicGroup(name, desc, new CreateGroupCallback() {
-
-    @Override
-    public void gotResult(int status, String desc, long groupId) {
-        if (status == 0) {
-            callback.success(String.valueOf(groupId));
-        } else {
-            handleResult(status, desc, callback);
+                    @Override
+                    public void gotResult(int status, String desc, long groupId) {
+                        if (status == 0) {
+                            callback.success(String.valueOf(groupId));
+                        } else {
+                            handleResult(status, desc, callback);
+                        }
+                    }
+                });
+            } else {
+                handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER + " : " + groupType, callback);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
         }
-    }});}else{handleResult(ERR_CODE_PARAMETER,ERR_MSG_PARAMETER+" : "+groupType,callback);}}catch(
-
-    JSONException e)
-    {
-        e.printStackTrace();
-        handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
-    }
     }
 
     void getGroupIds(JSONArray data, final CallbackContext callback) {
@@ -1409,27 +1410,27 @@ public class JMessagePlugin extends CordovaPlugin {
                         }
                     });
 
-                }else
-
-    {
-        groupInfo.updateName(newName, new BasicCallback() {
-            @Override
-            public void gotResult(int status, String desc) {
-                if (status == 0) {
-                    groupInfo.updateDescription(newDesc, new BasicCallback() {
+                } else {
+                    groupInfo.updateName(newName, new BasicCallback() {
                         @Override
                         public void gotResult(int status, String desc) {
-                            handleResult(status, desc, callback);
+                            if (status == 0) {
+                                groupInfo.updateDescription(newDesc, new BasicCallback() {
+                                    @Override
+                                    public void gotResult(int status, String desc) {
+                                        handleResult(status, desc, callback);
+                                    }
+                                });
+
+                            } else {
+                                handleResult(status, desc, callback);
+                            }
                         }
                     });
-
-                } else {
-                    handleResult(status, desc, callback);
                 }
             }
         });
     }
-    }});}
 
     void updateGroupAvatar(JSONArray data, final CallbackContext callback) {
         long groupId;
@@ -1771,26 +1772,26 @@ public class JMessagePlugin extends CordovaPlugin {
 
                 JMessageClient.getGroupInfo(groupId, new GetGroupInfoCallback() {
 
-    @Override
-    public void gotResult(int status, String desc, GroupInfo groupInfo) {
-        if (status == 0) {
-            groupInfo.setNoDisturb(isNoDisturb, new BasicCallback() {
-                @Override
-                public void gotResult(int status, String desc) {
-                    handleResult(status, desc, callback);
-                }
-            });
+                    @Override
+                    public void gotResult(int status, String desc, GroupInfo groupInfo) {
+                        if (status == 0) {
+                            groupInfo.setNoDisturb(isNoDisturb, new BasicCallback() {
+                                @Override
+                                public void gotResult(int status, String desc) {
+                                    handleResult(status, desc, callback);
+                                }
+                            });
 
-        } else {
-            handleResult(status, desc, callback);
+                        } else {
+                            handleResult(status, desc, callback);
+                        }
+                    }
+                });
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
         }
-    }});}}catch(
-
-    JSONException e){e.printStackTrace();
-
-    handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
-        }
-
     }
 
     void getNoDisturbList(JSONArray data, final CallbackContext callback) {
@@ -2132,6 +2133,47 @@ public class JMessagePlugin extends CordovaPlugin {
 
     }
 
+    void changeGroupType(JSONArray data, final CallbackContext callback) {
+        String type;
+        long groupId;
+        try {
+            JSONObject params = data.getJSONObject(0);
+            groupId = Long.parseLong(params.getString("groupId"));
+            type = params.getString("type");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
+            return;
+        }
+        JMessageClient.getGroupInfo(groupId, new GetGroupInfoCallback() {
+            @Override
+            public void gotResult(int status, String desc, GroupInfo groupInfo) {
+                if (status == 0) {
+                    if (type.equals("private")) {
+                        groupInfo.changeGroupType(GroupInfo.Type.private_group, new BasicCallback() {
+                            @Override
+                            public void gotResult(int status, String desc) {
+                                handleResult(status, desc, callback);
+                            }
+                        });
+                    } else if (type.equals("public")) {
+                        groupInfo.changeGroupType(GroupInfo.Type.public_group, new BasicCallback() {
+                            @Override
+                            public void gotResult(int status, String desc) {
+                                handleResult(status, desc, callback);
+                            }
+                        });
+                    } else {
+                        handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER + ":" + type, callback);
+                    }
+                } else {
+                    handleResult(status, desc, callback);
+                }
+            }
+        });
+
+    }
+
     void getPublicGroupInfos(JSONArray data, final CallbackContext callback) {
         String appKey;
         int start, count;
@@ -2176,7 +2218,7 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     void processApplyJoinGroup(JSONArray data, final CallbackContext callback) {
-        String  reason, appKey;
+        String reason, appKey;
         Boolean isAgree, isRespondInviter;
         JSONArray events;
         try {
@@ -2186,31 +2228,37 @@ public class JMessagePlugin extends CordovaPlugin {
             isRespondInviter = params.getBoolean("isRespondInviter");
             events = params.getJSONArray("events");
             appKey = params.has("appKey") ? params.getString("appKey") : "";
+
+            List<GroupApprovalEvent> groupApprovalEventList = new ArrayList<>();
+
             for (int i = 0; i < events.length(); i++) {
                 GroupApprovalEvent groupApprovalEvent = groupApprovalEventHashMap.get(events.getString(i));
-                if(groupApprovalEvent == null){
-                    handleResult(ERR_CODE_PARAMETER,ERR_MSG_PARAMETER + ": can't get events." ,callback);
+                if (groupApprovalEvent == null) {
+                    handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER + ": can't get events.", callback);
                     return;
                 }
-                if(isAgree){
-                    groupApprovalEvent.acceptGroupApproval(groupApprovalEvent.getFromUsername(), appKey, new BasicCallback() {
-                        @Override
-                        public void gotResult(int status, String desc) {
-                            handleResult(status, desc, callback);
-                        }
-                    });
+                groupApprovalEventList.add(groupApprovalEvent);
+            }
 
-                }else {
-                    groupApprovalEvent.refuseGroupApproval(groupApprovalEvent.getFromUsername(), appKey, reason, new BasicCallback() {
-
-    @Override
-    public void gotResult(int status, String desc) {
-        handleResult(status, desc, callback);
-    }});}
-
-    }}catch(JSONException e){e.printStackTrace();
-
-    handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
+            if (groupApprovalEventList.size() == 0) {
+                handleResult(ERR_CODE_PARAMETER, "Can not find GroupApprovalEvent by events", callback);
+                return;
+            }
+            if (isAgree) {
+                GroupApprovalEvent.acceptGroupApprovalInBatch(groupApprovalEventList, isRespondInviter,
+                        new BasicCallback() {
+                            @Override
+                            public void gotResult(int status, String desc) {
+                                handleResult(status, desc, callback);
+                            }
+                        });
+            } else {
+                // 忽略拒绝处理，直接返回成功信息
+                handleResult(0, "", callback);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
             return;
         }
 
@@ -2226,7 +2274,7 @@ public class JMessagePlugin extends CordovaPlugin {
             handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
             return;
         }
-        JMessageClient.adminDissolveGroup(groupId,  new BasicCallback() {
+        JMessageClient.adminDissolveGroup(groupId, new BasicCallback() {
             @Override
             public void gotResult(int status, String desc) {
                 handleResult(status, desc, callback);
@@ -2304,46 +2352,46 @@ public class JMessagePlugin extends CordovaPlugin {
                 final int fI = i;
 
                 switch (msg.getContentType()) {
-                    case image:
-                        ((ImageContent) msg.getContent()).downloadThumbnailImage(msg, new DownloadCompletionCallback() {
-                            @Override
-                            public void onComplete(int status, String desc, File file) {
-                                if (fI == fLatestMediaMessageIndex) {
-                                    for (Message msg : offlineMsgList) {
-                                        msgJsonArr.put(toJson(msg));
-                                    }
-                                    try {
-                                        json.put("messageArray", msgJsonArr);
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
-
-                                    JSONObject eventJson = toJson("syncOfflineMessage", json);
-                                    eventSuccess(eventJson);
+                case image:
+                    ((ImageContent) msg.getContent()).downloadThumbnailImage(msg, new DownloadCompletionCallback() {
+                        @Override
+                        public void onComplete(int status, String desc, File file) {
+                            if (fI == fLatestMediaMessageIndex) {
+                                for (Message msg : offlineMsgList) {
+                                    msgJsonArr.put(toJson(msg));
                                 }
-                            }
-                        });
-                        break;
-                    case voice:
-                        ((VoiceContent) msg.getContent()).downloadVoiceFile(msg, new DownloadCompletionCallback() {
-                            @Override
-                            public void onComplete(int status, String desc, File file) {
-                                if (fI == fLatestMediaMessageIndex) {
-                                    for (Message msg : offlineMsgList) {
-                                        msgJsonArr.put(toJson(msg));
-                                    }
-                                    try {
-                                        json.put("messageArray", msgJsonArr);
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
-
-                                    JSONObject eventJson = toJson("syncOfflineMessage", json);
-                                    eventSuccess(eventJson);
+                                try {
+                                    json.put("messageArray", msgJsonArr);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
                                 }
+
+                                JSONObject eventJson = toJson("syncOfflineMessage", json);
+                                eventSuccess(eventJson);
                             }
-                        });
-                    default:
+                        }
+                    });
+                    break;
+                case voice:
+                    ((VoiceContent) msg.getContent()).downloadVoiceFile(msg, new DownloadCompletionCallback() {
+                        @Override
+                        public void onComplete(int status, String desc, File file) {
+                            if (fI == fLatestMediaMessageIndex) {
+                                for (Message msg : offlineMsgList) {
+                                    msgJsonArr.put(toJson(msg));
+                                }
+                                try {
+                                    json.put("messageArray", msgJsonArr);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+
+                                JSONObject eventJson = toJson("syncOfflineMessage", json);
+                                eventSuccess(eventJson);
+                            }
+                        }
+                    });
+                default:
                 }
             }
         }
