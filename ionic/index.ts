@@ -18,7 +18,7 @@ import {
 export interface JMSingleType {
   type: 'single';
   username: string;
-  appKey: string;
+  appKey?: string;
 };
 
 export interface JMGroupType {
@@ -122,7 +122,7 @@ export type JMContactNotifyListener = (event: {
   type: 'invite_received' | 'invite_accepted' | 'invite_declined' | 'contact_deleted';
   reason: string;
   fromUsername: string;
-  fromUserAppKey: string;
+  fromUserAppKey?: string;
 }) => void;
 
 export type JMMessageRetractListener = (event: {
@@ -141,13 +141,36 @@ export type JMReceiveChatRoomMessageListener = (event: {
   messageArray: JMAllMessage[];
 }) => void;
 
+
+export type JMReceiveApplyJoinGroupApprovalListener = (event: {
+  eventId: string;
+  groupId: string;
+  isInitiativeApply: boolean;
+  sendApplyUser: JMUserInfo;
+  joinGroupUsers?: JMUserInfo[];
+  reason?: string;
+}) => void;
+
+export type JMReceiveGroupAdminRejectListener = (event: {
+  groupId: string;
+  groupManager: JMUserInfo;
+  reason?: string;
+}) => void;
+
+export type JMReceiveGroupAdminApprovalListener = (event: {
+  isAgree: boolean;
+  applyEventId: string;
+  groupId: string;
+  groupAdmin: JMUserInfo;
+  users: JMUserInfo[];
+}) => void;
 /**
  * User Type
  */
 export interface JMUserInfo {
   type: 'user';
   username: string;           // 用户名
-  appKey: string;             // 用户所属应用的 appKey，可与 username 共同作为用户的唯一标识
+  appKey?: string;             // 用户所属应用的 appKey，可与 username 共同作为用户的唯一标识
   nickname?: string;           // 昵称
   gender: 'male' | 'female' | 'unknown';             // 'male' / 'female' / 'unknown'
   avatarThumbPath: string;    // 头像的缩略图地址
@@ -170,7 +193,7 @@ export interface JMGroupInfo {
   desc?: string;               // 群组描述
   level: number;              // 群组等级，默认等级 4
   owner: string;              // 群主的 username
-  ownerAppKey: string;        // 群主的 appKey
+  ownerAppKey?: string;        // 群主的 appKey
   maxMemberCount: number;     // 最大成员数
   isNoDisturb: boolean;       // 是否免打扰
   isBlocked: boolean;          // 是否屏蔽群消息
@@ -180,7 +203,7 @@ export interface JMChatRoomInfo {
   type: 'chatRoom';
   roomId: string;   // 聊天室 id
   name: string;     // 聊天室名称
-  appKey: string;   // 聊天室所属应用的 App Key
+  appKey?: string;   // 聊天室所属应用的 App Key
   description?: string; // 聊天室描述信息
   createTime: number; // 创建日期，单位：秒
   maxMemberCount?: number; // 最大成员数
@@ -532,6 +555,7 @@ export class JMessagePlugin extends IonicNativePlugin {
 
   @Cordova()
   createGroup(params: {
+    groupType?: 'public' | 'private';
     name?: string;
     desc?: string;
   }): Promise<string> {
@@ -774,6 +798,71 @@ export class JMessagePlugin extends IonicNativePlugin {
     return;
   }
 
+  @Cordova()
+  getAllUnreadCount(): Promise< { count: number; } > {
+    return; // We add return; here to avoid any IDE / Compiler errors
+  }
+
+  @Cordova()
+  addGroupAdmins(params: {
+    groupId: string;
+    usernames: string[];
+    appKey?: string;
+  }): Promise<any> {
+    return;
+  }
+
+  @Cordova()
+  removeGroupAdmins(params: {
+    groupId: string;
+    usernames: string[];
+    appKey?: string;
+  }): Promise<any> {
+    return;
+  }
+
+  @Cordova()
+  changeGroupType(params: {
+    groupId: string;
+    type: 'public' | 'private';
+  }): Promise<any> {
+    return;
+  }
+
+  @Cordova()
+  getPublicGroupInfos(params: {
+    appKey: string;
+    start: number;
+    count: number;
+  }): Promise<any> {
+    return;
+  }
+
+  @Cordova()
+  applyJoinGroup(params: {
+    groupId: string;
+    reason?: string;
+  }): Promise<any> {
+    return;
+  }
+
+  @Cordova()
+  processApplyJoinGroup(params: {
+    events: string[];
+    isAgree: boolean;
+    isRespondInviter: boolean
+    reason?: string;
+  }): Promise<any> {
+    return;
+  }
+
+  @Cordova()
+  dissolveGroup(params: {
+    groupId: string;
+  }): Promise<any> {
+    return;
+  }
+
   @Cordova({
     sync: true,
     platforms: ['iOS', 'Android']
@@ -901,5 +990,48 @@ export class JMessagePlugin extends IonicNativePlugin {
     platforms: ['iOS', 'Android']
    })
   removeReceiveChatRoomMessageListener(params: JMReceiveChatRoomMessageListener): void {
+  }
+
+  @Cordova({
+    sync: true,
+    platforms: ['iOS', 'Android']
+   })
+   addReceiveApplyJoinGroupApprovalListener(params: JMReceiveApplyJoinGroupApprovalListener): void {
+  }
+
+  @Cordova({
+    sync: true,
+    platforms: ['iOS', 'Android']
+   })
+   removeReceiveApplyJoinGroupApprovalListener(params: JMReceiveApplyJoinGroupApprovalListener): void {
+  }
+
+
+  @Cordova({
+    sync: true,
+    platforms: ['iOS', 'Android']
+   })
+   addReceiveGroupAdminRejectListener(params: JMReceiveGroupAdminRejectListener): void {
+  }
+
+  @Cordova({
+    sync: true,
+    platforms: ['iOS', 'Android']
+   })
+   removeReceiveGroupAdminRejectListener(params: JMReceiveGroupAdminRejectListener): void {
+  }
+
+  @Cordova({
+    sync: true,
+    platforms: ['iOS', 'Android']
+   })
+   addReceiveGroupAdminApprovalListener(params: JMReceiveGroupAdminApprovalListener): void {
+  }
+
+  @Cordova({
+    sync: true,
+    platforms: ['iOS', 'Android']
+   })
+   removeReceiveGroupAdminApprovalListener(params: JMReceiveGroupAdminApprovalListener): void {
   }
 }

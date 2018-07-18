@@ -40,12 +40,18 @@ static NSString *const JMessageConfig_Delay        = @"Delay";
 
 //Group 回调
 #define kJJMessageGroupInfoChanged @"kJJMessageGroupInfoChanged"
+#define kJJMessageGroupInfoChanged @"kJJMessageGroupInfoChanged"
+#define kJJMessageReceiveApplyJoinGroupApproval @"kJJMessageReceiveApplyJoinGroupApproval"
+#define kJJMessageReceiveGroupAdminReject @"kJJMessageReceiveGroupAdminReject"
+#define kJMessageReceiveGroupAdminApproval @"kJMessageReceiveGroupAdminApproval"
 
 //User 回调
 #define kJJMessageLoginUserKicked  @"kJJMessageLoginUserKicked"
 #define kJJMessageLoginStateChanged  @"kJJMessageLoginStateChanged"
 #define kJJMessageContactNotify  @"kJJMessageContactNotify"
 #define kJJMessageRetractMessage  @"kJJMessageretractMessage"
+
+
 //message
 static NSString *const KEY_ERRORCODE    = @"errorCode";
 static NSString *const KEY_ERRORDESCRIP = @"errorDscription";

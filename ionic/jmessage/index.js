@@ -323,6 +323,30 @@ var JMessagePlugin = (function (_super) {
     JMessagePlugin.prototype.getChatRoomConversationList = function () {
         return;
     };
+    JMessagePlugin.prototype.getAllUnreadCount = function () {
+        return; // We add return; here to avoid any IDE / Compiler errors
+    };
+    JMessagePlugin.prototype.addGroupAdmins = function (params) {
+        return;
+    };
+    JMessagePlugin.prototype.removeGroupAdmins = function (params) {
+        return;
+    };
+    JMessagePlugin.prototype.changeGroupType = function (params) {
+        return;
+    };
+    JMessagePlugin.prototype.getPublicGroupInfos = function (params) {
+        return;
+    };
+    JMessagePlugin.prototype.applyJoinGroup = function (params) {
+        return;
+    };
+    JMessagePlugin.prototype.processApplyJoinGroup = function (params) {
+        return;
+    };
+    JMessagePlugin.prototype.dissolveGroup = function (params) {
+        return;
+    };
     JMessagePlugin.prototype.addReceiveMessageListener = function (params) {
     };
     JMessagePlugin.prototype.removeReceiveMessageListener = function (params) {
@@ -358,6 +382,18 @@ var JMessagePlugin = (function (_super) {
     JMessagePlugin.prototype.addReceiveChatRoomMessageListener = function (params) {
     };
     JMessagePlugin.prototype.removeReceiveChatRoomMessageListener = function (params) {
+    };
+    JMessagePlugin.prototype.addReceiveApplyJoinGroupApprovalListener = function (params) {
+    };
+    JMessagePlugin.prototype.removeReceiveApplyJoinGroupApprovalListener = function (params) {
+    };
+    JMessagePlugin.prototype.addReceiveGroupAdminRejectListener = function (params) {
+    };
+    JMessagePlugin.prototype.removeReceiveGroupAdminRejectListener = function (params) {
+    };
+    JMessagePlugin.prototype.addReceiveGroupAdminApprovalListener = function (params) {
+    };
+    JMessagePlugin.prototype.removeReceiveGroupAdminApprovalListener = function (params) {
     };
     JMessagePlugin.decorators = [
         { type: Injectable },
@@ -786,6 +822,54 @@ var JMessagePlugin = (function (_super) {
         __metadata("design:returntype", Promise)
     ], JMessagePlugin.prototype, "getChatRoomConversationList", null);
     __decorate([
+        Cordova(),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", []),
+        __metadata("design:returntype", Promise)
+    ], JMessagePlugin.prototype, "getAllUnreadCount", null);
+    __decorate([
+        Cordova(),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", [Object]),
+        __metadata("design:returntype", Promise)
+    ], JMessagePlugin.prototype, "addGroupAdmins", null);
+    __decorate([
+        Cordova(),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", [Object]),
+        __metadata("design:returntype", Promise)
+    ], JMessagePlugin.prototype, "removeGroupAdmins", null);
+    __decorate([
+        Cordova(),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", [Object]),
+        __metadata("design:returntype", Promise)
+    ], JMessagePlugin.prototype, "changeGroupType", null);
+    __decorate([
+        Cordova(),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", [Object]),
+        __metadata("design:returntype", Promise)
+    ], JMessagePlugin.prototype, "getPublicGroupInfos", null);
+    __decorate([
+        Cordova(),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", [Object]),
+        __metadata("design:returntype", Promise)
+    ], JMessagePlugin.prototype, "applyJoinGroup", null);
+    __decorate([
+        Cordova(),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", [Object]),
+        __metadata("design:returntype", Promise)
+    ], JMessagePlugin.prototype, "processApplyJoinGroup", null);
+    __decorate([
+        Cordova(),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", [Object]),
+        __metadata("design:returntype", Promise)
+    ], JMessagePlugin.prototype, "dissolveGroup", null);
+    __decorate([
         Cordova({
             sync: true,
             platforms: ['iOS', 'Android']
@@ -947,6 +1031,60 @@ var JMessagePlugin = (function (_super) {
         __metadata("design:paramtypes", [Function]),
         __metadata("design:returntype", void 0)
     ], JMessagePlugin.prototype, "removeReceiveChatRoomMessageListener", null);
+    __decorate([
+        Cordova({
+            sync: true,
+            platforms: ['iOS', 'Android']
+        }),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", [Function]),
+        __metadata("design:returntype", void 0)
+    ], JMessagePlugin.prototype, "addReceiveApplyJoinGroupApprovalListener", null);
+    __decorate([
+        Cordova({
+            sync: true,
+            platforms: ['iOS', 'Android']
+        }),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", [Function]),
+        __metadata("design:returntype", void 0)
+    ], JMessagePlugin.prototype, "removeReceiveApplyJoinGroupApprovalListener", null);
+    __decorate([
+        Cordova({
+            sync: true,
+            platforms: ['iOS', 'Android']
+        }),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", [Function]),
+        __metadata("design:returntype", void 0)
+    ], JMessagePlugin.prototype, "addReceiveGroupAdminRejectListener", null);
+    __decorate([
+        Cordova({
+            sync: true,
+            platforms: ['iOS', 'Android']
+        }),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", [Function]),
+        __metadata("design:returntype", void 0)
+    ], JMessagePlugin.prototype, "removeReceiveGroupAdminRejectListener", null);
+    __decorate([
+        Cordova({
+            sync: true,
+            platforms: ['iOS', 'Android']
+        }),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", [Function]),
+        __metadata("design:returntype", void 0)
+    ], JMessagePlugin.prototype, "addReceiveGroupAdminApprovalListener", null);
+    __decorate([
+        Cordova({
+            sync: true,
+            platforms: ['iOS', 'Android']
+        }),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", [Function]),
+        __metadata("design:returntype", void 0)
+    ], JMessagePlugin.prototype, "removeReceiveGroupAdminApprovalListener", null);
     JMessagePlugin = __decorate([
         Plugin({
             pluginName: 'JMessagePlugin',

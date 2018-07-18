@@ -29,14 +29,6 @@
 - (void)onConversationChanged:(JMSGConversation *)conversation;
 
 /*!
- * @abstract 当前剩余的全局未读数
- *
- * @param newCount 变更后的数量
- */
-@optional
-- (void)onUnreadChanged:(NSUInteger)newCount;
-
-/*!
  * @abstract 同步离线消息、离线事件通知
  *
  * @param conversation    同步离线消息的会话
@@ -92,5 +84,14 @@
  */
 - (void)onReceiveChatRoomConversation:(JMSGConversation *)conversation
                              messages:(NSArray JMSG_GENERIC(__kindof JMSGMessage *)*)messages;
+
+
+/*!
+ * @abstract 当前剩余的全局未读数
+ *
+ * @param newCount 变更后的数量
+ */
+@optional
+- (void)onUnreadChanged:(NSUInteger)newCount;
 @end
 

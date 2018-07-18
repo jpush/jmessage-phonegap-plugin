@@ -31,6 +31,7 @@
 #import <JMessage/JMSGPromptContent.h>
 #import <JMessage/JMSGOptionalContent.h>
 #import <JMessage/JMSGChatRoom.h>
+#import <JMessage/JMSGVideoContent.h>
 #import <JMessage/JMSGConstants.h>
 
 @protocol JMSGMessageDelegate;
@@ -54,10 +55,10 @@ extern NSString *const kJMSGServiceErrorNotification;                 // 错误�
 @interface JMessage : NSObject
 
 /*! JMessage SDK 版本号。用于展示 SDK 的版本信息 */
-#define JMESSAGE_VERSION @"3.4.1"
+#define JMESSAGE_VERSION @"3.6.1"
 
 /*! JMessage SDK 构建ID. 每次构建都会增加 */
-#define JMESSAGE_BUILD 205
+#define JMESSAGE_BUILD 222
 
 /*! API Version - int for program logic. SDK API 有变更时会增加 */
 extern NSInteger const JMESSAGE_API_VERSION;
@@ -66,13 +67,7 @@ extern NSInteger const JMESSAGE_API_VERSION;
 /*!
  * @abstract 初始化 JMessage SDK
  *
- * @param launchOptions    AppDelegate启动函数的参数launchingOption(用于推送服务)
- * @param appKey           appKey(应用Key值,通过JPush官网可以获取)
- * @param channel          应用的渠道名称
- * @param isProduction     是否为生产模式
- * @param category         iOS8新增通知快捷按钮参数
- *
- * @discussion 此方法被[setupJMessage:appKey:channel:apsForProduction:category:messageRoaming:]方法取代
+ * @discussion 此方法被[JMessage setupJMessage:appKey:channel:apsForProduction:category:messageRoaming:]方法取代
  */
 + (void)setupJMessage:(NSDictionary *)launchOptions
                appKey:(NSString *)appKey
@@ -141,15 +136,9 @@ extern NSInteger const JMESSAGE_API_VERSION;
 /*!
  * @abstract 打开日志级别到 Debug
  *
- * @discussion JMessage iOS 的日志系统参考 Android 设计了级别.
- * 从低到高是: Verbose, Debug, Info, Warning, Error.
- * 对日志级别的进一步理解, 请参考 Android 相关的说明.
+ * @discussion JMessage iOS  SDK 默认开启的日志级别为: Info. 只显示必要的信息, 不打印调试日志.
  *
- * SDK 默认开启的日志级别为: Info. 只显示必要的信息, 不打印调试日志.
- *
- * 调用本接口可打开日志级别为: Debug, 打印调试日志.
- *
- * 本接口与 [JPUSHService setDebugMode] 效果是相同的, 只需要调用一个即可.
+ * 调用本接口可打开日志级别为: Debug, 打印调试日志，初始化 SDK 前调用.
  */
 + (void)setDebugMode;
 
@@ -161,94 +150,8 @@ extern NSInteger const JMESSAGE_API_VERSION;
  * 虽说是关闭日志, 但还是会打印 Warning, Error 日志. 这二种日志级别, 在程序运行正常时, 不应有打印输出.
  *
  * 建议在发布的版本里, 调用此接口, 关闭掉日志打印.
- *
- * 本接口与 [JPUSHService setLogOFF] 效果是相同的, 只需要调用一个即可.
  */
 + (void)setLogOFF;
-
-/*!
- * @abstract 获取当前服务器端时间
- *
- * @discussion 可用于纠正本地时间。
- */
-+ (NSTimeInterval)currentServerTime;
-
-/*!
- * @abstract 发起数据库升级测试
- *
- * @discussion 这是一个专用于测试时使用到的接口.
- *
- * 关于数据库升级相关, 参考这个 [JMSGDBMigrateDelegate] 类里的说明.
- *
- * 调用此接口后, App 会收到一个升级开始通知, 30s 后再收到一个升级结束通知.
- *
- * 本接口内部并不会真实地发起数据库升级操作, 而仅用于发出开始与完成的通知, 以方便 App 来测试处理流程. 
- */
-+ (void)testDBMigrating;
-
-/*!
- *  @abstract 验证此 appKey 是否为当前应用 appKey
- *
- *  @param appKey
- *
- *  @return 是否为当前应用 appKey
- */
-+ (BOOL)isMainAppKey:(NSString *)appKey;
-
-/*!
- * @abstract 用户免打扰列表
- *
- * @param handler 结果回调。回调参数：
- *
- * - resultObject 类型为 NSArray，数组里成员的类型为 JMSGUser、JMSGGroup
- * - error 错误信息
- *
- * 如果 error 为 nil, 表示设置成功
- * 如果 error 不为 nil,表示设置失败
- *
- * @discussion 从服务器获取，返回用户的免打扰列表。
- * 建议开发者在 SDK 完全启动之后，再调用此接口获取数据
- */
-+ (void)noDisturbList:(JMSGCompletionHandler)handler;
-
-/*!
- * @abstract 设置是否全局免打扰
- *
- * @param isNoDisturb 是否全局免打扰 YES:是 NO: 否
- * @param handler 结果回调。回调参数：
- *
- * - resultObject 相应返回对象
- * - error 错误信息
- *
- * 如果 error 为 nil, 表示设置成功
- * 如果 error 不为 nil,表示设置失败
- *
- * @discussion 此函数为设置全局的消息免打扰
- */
-+ (void)setIsGlobalNoDisturb:(BOOL)isNoDisturb handler:(JMSGCompletionHandler)handler;
-
-/*!
- * @abstract 判断是否设置全局免打扰
- *
- * @return YES/NO
- */
-+ (BOOL)isSetGlobalNoDisturb;
-
-/*!
- * @abstract 黑名单列表
- *
- * @param handler 结果回调。回调参数：
- *
- * - resultObject 类型为 NSArray，数组里成员的类型为 JMSGUser
- * - error 错误信息
- *
- * 如果 error 为 nil, 表示设置成功
- * 如果 error 不为 nil,表示设置失败
- *
- * @discussion 从服务器获取，返回用户的黑名单列表。
- * 建议开发者在 SDK 完全启动之后，再调用此接口获取数据
- */
-+ (void)blackList:(JMSGCompletionHandler)handler;
 
 /*!
  * @abstract 注册远程推送
@@ -260,12 +163,21 @@ extern NSInteger const JMESSAGE_API_VERSION;
 + (void)registerForRemoteNotificationTypes:(NSUInteger)types categories:(NSSet *)categories;
 
 /*!
- * @abstract 注册DeviceToken
- * @param deviceToken 从注册推送回调中拿到的DeviceToken
+ * @abstract 注册 DeviceToken
+ * @param deviceToken 从注册推送回调中拿到的 DeviceToken
  * @discussion 此方法必须被调用
  *
  */
 + (void)registerDeviceToken:(NSData *)deviceToken;
+
+/*!
+ *  @abstract 验证此 appKey 是否为当前应用 appKey
+ *
+ *  @param appKey 应用 AppKey
+ *
+ *  @return 是否为当前应用 appKey
+ */
++ (BOOL)isMainAppKey:(NSString *)appKey;
 
 /*!
  * @abstract 设置角标(到服务器)
@@ -292,5 +204,111 @@ extern NSInteger const JMESSAGE_API_VERSION;
  * 参考 [JMessage setBadge:] 说明来理解其作用.
  */
 + (void)resetBadge;
+
+/*!
+ * @abstract 发送透传消息给自己在线的其他设备
+ *
+ * @param message   发送的内容
+ * @param platform  设备类型
+ * @param handler   回调
+ *
+ * @discussion 注意：
+ *
+ *  1. 消息透传功能，消息不会进入到后台的离线存储中去，仅当对方用户当前在线时才会成功送达，SDK 不会将此类消息内容存储；
+ *
+ *  2. 透传命令到达是，接收方通过 [JMSGEventDelegate onReceiveMessageTransparentEvent:] 方法监听。
+ *
+ * @since 3.5.0
+ */
++ (void)sendCrossDeviceTransMessage:(NSString *)message
+                           platform:(JMSGPlatformType)platform
+                            handler:(JMSGCompletionHandler)handler;
+
+/*!
+ * @abstract 判断是否设置全局免打扰
+ *
+ * @return YES/NO
+ */
++ (BOOL)isSetGlobalNoDisturb;
+
+/*!
+ * @abstract 设置是否全局免打扰
+ *
+ * @param isNoDisturb 是否全局免打扰 YES:是 NO: 否
+ * @param handler 结果回调。回调参数：error 不为 nil,表示设置失败
+ *
+ * @discussion 此函数为设置全局的消息免打扰，建议开发者在 SDK 完全启动之后，再调用此接口获取数据
+ */
++ (void)setIsGlobalNoDisturb:(BOOL)isNoDisturb handler:(JMSGCompletionHandler)handler;
+
+/*!
+ * @abstract 用户免打扰列表
+ *
+ * @param handler 结果回调。回调参数：
+ *
+ * - resultObject 类型为 NSArray，数组里成员的类型为 JMSGUser、JMSGGroup
+ * - error 错误信息
+ *
+ * 如果 error 为 nil, 表示设置成功
+ * 如果 error 不为 nil,表示设置失败
+ *
+ * @discussion 从服务器获取，返回用户的免打扰列表。
+ * 建议开发者在 SDK 完全启动之后，再调用此接口获取数据
+ */
++ (void)noDisturbList:(JMSGCompletionHandler)handler;
+
+/*!
+ * @abstract 黑名单列表
+ *
+ * @param handler 结果回调。回调参数：
+ *
+ * - resultObject 类型为 NSArray，数组里成员的类型为 JMSGUser
+ * - error 错误信息
+ *
+ * 如果 error 为 nil, 表示设置成功
+ * 如果 error 不为 nil,表示设置失败
+ *
+ * @discussion 从服务器获取，返回用户的黑名单列表。
+ * 建议开发者在 SDK 完全启动之后，再调用此接口获取数据
+ */
++ (void)blackList:(JMSGCompletionHandler)handler;
+
+/*!
+ * @abstract 获取当前服务器端时间
+ *
+ * @discussion 可用于纠正本地时间。
+ */
++ (NSTimeInterval)currentServerTime;
+
+/*!
+ * @abstract 发起数据库升级测试
+ *
+ * @discussion 这是一个专用于测试时使用到的接口.
+ *
+ * 关于数据库升级相关, 参考这个 [JMSGDBMigrateDelegate] 类里的说明.
+ *
+ * 调用此接口后, App 会收到一个升级开始通知, 30s 后再收到一个升级结束通知.
+ *
+ * 本接口内部并不会真实地发起数据库升级操作, 而仅用于发出开始与完成的通知, 以方便 App 来测试处理流程.
+ */
++ (void)testDBMigrating;
 @end
 
+
+/*!
+ * 用户登录设备信息
+ */
+@interface JMSGDeviceInfo: NSObject
+
+/// 设备所属平台，Android、iOS、Windows、web
+@property(nonatomic, assign, readonly) JMSGPlatformType platformType;
+/// 是否登录，YES:已登录，NO:未登录
+@property(nonatomic, assign, readonly) BOOL isLogin;
+/// 是否在线，0:不在线，1:在线
+@property(nonatomic, assign, readonly) UInt32 online;
+/// 上次登录时间
+@property(nonatomic, strong, readonly) NSNumber *mtime;
+/// 默认为0，1表示该设备被当前登录设备踢出
+@property(nonatomic, assign, readonly) NSInteger flag;
+
+@end
