@@ -13,7 +13,7 @@
 >
 >如果需要安装之前版本的插件，请先安装 v1.2.0 以下版本（建议安装 v1.1.12）的 [cordova-plugin-jcore](https://github.com/jpush/cordova-plugin-jcore)，再安装旧版插件（建议v3.2.0），否则运行会报错。
 >
->如果需要在cordova-android 7.0.0之前版本集成最新插件，参照[这篇文章](https://www.jianshu.com/p/23b117ca27a6)
+>如果需要在cordova-android 7.0.0之前版本集成最新插件，参照[这篇文章](https://www.jianshu.com/p/23b117ca27a6)
 >
 >[Cordova Android版本与原生版本对应表](http://cordova.apache.org/docs/en/latest/guide/platforms/android/index.html#requirements-and-support)
 
