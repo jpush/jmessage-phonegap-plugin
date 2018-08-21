@@ -546,11 +546,19 @@
           break;
         }
         case kJMSGEventNotificationUpdateGroupInfo: {
-          dict[@"eventType"] = @"updateGroupInfo";
+          dict[@"eventType"] = @"group_info_updated";
           break;
         }
         case kJMSGEventNotificationUserLoginStatusUnexpected: {
           dict[@"eventType"] = @"userLoginStatusUnexpected";
+          break;
+        }
+        case kJMSGEventNotificationGroupTypeChange: {
+          dict[@"eventType"] = @"group_type_changed";
+          break;
+        }
+        case kJMSGEventNotificationDissolveGroup: {
+          dict[@"eventType"] = @"group_dissolved";
           break;
         }
         default:
