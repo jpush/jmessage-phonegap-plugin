@@ -132,7 +132,7 @@ CustomMessage: {
 ```js
 Event: {
     type: 'event',
-    eventType: string,       // 'group_member_added' / 'group_member_removed' / 'group_member_exit'
+    eventType: string,       // 'group_member_added' / 'group_member_removed' / 'group_member_exit' / 'group_info_updated' / 'group_dissolved' / 'group_type_changed'
     usernames: Array         // 该事件涉及到的用户 username 数组。
 }
 ```

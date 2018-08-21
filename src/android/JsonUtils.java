@@ -224,6 +224,33 @@ class JsonUtils {
                     // 群成员退群事件
                     result.put("eventType", "group_member_exit");
                     break;
+                case group_info_updated:
+                    result.put("eventType", "group_info_updated");
+                    break;
+                case group_member_keep_silence:
+                    result.put("eventType", "group_member_keep_silence");
+                    break;
+                case group_member_keep_silence_cancel:
+                    result.put("eventType", "group_member_keep_silence_cancel");
+                    break;
+                case group_keeper_added:
+                    result.put("eventType", "group_keeper_added");
+                    break;
+                case group_keeper_removed:
+                    result.put("eventType", "group_keeper_removed");
+                    break;
+                case group_dissolved:
+                    // 解散群组事件
+                    result.put("eventType", "group_dissolved");
+                    break;
+                case group_owner_changed:
+                    // 移交群组事件
+                    result.put("eventType", "group_owner_changed");
+                    break;
+                case group_type_changed:
+                    // 移交群组事件
+                    result.put("eventType", "group_type_changed");
+                    break;
                 default:
                 }
             default:
