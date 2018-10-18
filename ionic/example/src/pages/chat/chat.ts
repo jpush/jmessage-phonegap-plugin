@@ -1,6 +1,6 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { NavController, ModalController, NavParams, Platform, LoadingController, Loading, Content } from 'ionic-angular';
-import { JMessagePlugin, JMConversationInfo, JMError, JMUserInfo, JMGroupInfo, JMAllMessage, JMImageMessage, JMAllType, JMVoiceMessage } from '@jiguang-ionic/jmessage';
+import { JMessagePlugin, JMConversationInfo, JMError, JMUserInfo, JMGroupInfo, JMAllMessage, JMImageMessage, JMAllType, JMVoiceMessage, JMNormalMessage } from '@jiguang-ionic/jmessage';
 import { JsonPipe } from '@angular/common';
 
 import { File, IWriteOptions } from '@ionic-native/file';
@@ -41,7 +41,8 @@ export class ChatPage {
     private camera: Camera,
     public loadingCtrl: LoadingController,
     private media: Media,
-    private file: File) {
+    private file: File,
+    private cd: ChangeDetectorRef,) {
     
       this.conversation = <JMConversationInfo>(new Object(navParams['data']));
 
@@ -59,16 +60,19 @@ export class ChatPage {
         if (this.isThisConversationMessage(message)) {
           
           if (message.type == 'image') {
-
             this.getImageDataFromPath(`file://${(<JMImageMessage>message).thumbPath}`).then(res => {
               this.imageMap[message.id] = res;  
 
               this.messageList.push(message);  
+              this.cd.detectChanges();
+              this.scrollToBottom();
             }).catch(err => {
               alert(JSON.parse(err));
             });
           } else {
             this.messageList.push(message);
+            this.cd.detectChanges();
+            this.scrollToBottom();
           }
         }
       })

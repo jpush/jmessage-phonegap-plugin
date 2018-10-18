@@ -139,7 +139,7 @@
             [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageContactNotify
                                                                 object:@{
                                                                          @"type":@"invite_received",
-                                                                         @"reason":[friendEvent eventDescription],
+                                                                         @"reason":[friendEvent eventDescription] ?: @"",
                                                                          @"fromUsername":[friendEvent getFromUser].username,
                                                                          @"fromUserAppKey":user.appKey}];
         }
@@ -150,7 +150,7 @@
             [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageContactNotify
                                                                 object:@{
                                                                          @"type":@"invite_accepted",
-                                                                         @"reason":[friendEvent eventDescription],
+                                                                         @"reason":[friendEvent eventDescription] ?: @"",
                                                                          @"fromUsername":[friendEvent getFromUser].username,
                                                                          @"fromUserAppKey":user.appKey}];
         }
@@ -161,7 +161,7 @@
             [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageContactNotify
                                                                 object:@{
                                                                          @"type":@"invite_declined",
-                                                                         @"reason":[friendEvent eventDescription],
+                                                                         @"reason":[friendEvent eventDescription] ?: @"",
                                                                          @"fromUsername":[friendEvent getFromUser].username,
                                                                          @"fromUserAppKey":user.appKey}];
         }
@@ -172,7 +172,7 @@
             [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageContactNotify
                                                                 object:@{
                                                                          @"type":@"contact_deleted",
-                                                                         @"reason":[friendEvent eventDescription],
+                                                                         @"reason":[friendEvent eventDescription] ?: @"",
                                                                          @"fromUsername":[friendEvent getFromUser].username,
                                                                          @"fromUserAppKey":user.appKey}];
         }
@@ -546,11 +546,19 @@
           break;
         }
         case kJMSGEventNotificationUpdateGroupInfo: {
-          dict[@"eventType"] = @"updateGroupInfo";
+          dict[@"eventType"] = @"group_info_updated";
           break;
         }
         case kJMSGEventNotificationUserLoginStatusUnexpected: {
           dict[@"eventType"] = @"userLoginStatusUnexpected";
+          break;
+        }
+        case kJMSGEventNotificationGroupTypeChange: {
+          dict[@"eventType"] = @"group_type_changed";
+          break;
+        }
+        case kJMSGEventNotificationDissolveGroup: {
+          dict[@"eventType"] = @"group_dissolved";
           break;
         }
         default:
