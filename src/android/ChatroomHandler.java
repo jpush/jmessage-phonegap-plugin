@@ -16,9 +16,7 @@ import cn.jpush.im.android.api.model.ChatRoomInfo;
 import cn.jpush.im.android.api.model.Conversation;
 import cn.jpush.im.api.BasicCallback;
 
-import static cn.jiguang.cordova.im.JMessagePlugin.ERR_CODE_CONVERSATION;
 import static cn.jiguang.cordova.im.JMessagePlugin.ERR_CODE_PARAMETER;
-import static cn.jiguang.cordova.im.JMessagePlugin.ERR_MSG_CONVERSATION;
 import static cn.jiguang.cordova.im.JMessagePlugin.ERR_MSG_PARAMETER;
 import static cn.jiguang.cordova.im.JMessageUtils.handleResult;
 import static cn.jiguang.cordova.im.JsonUtils.toJson;
@@ -85,7 +83,7 @@ class ChatRoomHandler {
     }
 
     static void getChatRoomInfoListById(JSONArray data, final CallbackContext callback) {
-        Set<Long> roomIds = new HashSet<Long>();    // JS 层为了和 iOS 统一，因此 roomId 类型为 String，在原生做转换。
+        Set<Long> roomIds = new HashSet<Long>(); // JS 层为了和 iOS 统一，因此 roomId 类型为 String，在原生做转换。
 
         try {
             JSONObject params = data.getJSONObject(0);
@@ -201,7 +199,7 @@ class ChatRoomHandler {
         ChatRoomManager.leaveChatRoom(roomId, new BasicCallback() {
             @Override
             public void gotResult(int status, String desc) {
-                if (status == 0) {  // success
+                if (status == 0) { // success
                     callback.success();
                 } else {
                     handleResult(status, desc, callback);
