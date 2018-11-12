@@ -2,7 +2,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="jmessage-phonegap-plugin"
-        version="3.5.2">
+        version="3.5.3">
 
     <name>JMessage</name>
     <description>集成极光 IM 和推送功能</description>
@@ -152,6 +152,12 @@
                 android:authorities="$PACKAGE_NAME.DataProvider"
                 android:name="cn.jpush.android.service.DataProvider"
                 android:exported="true" />
+
+            <!-- Required since JMessage 2.7.0 SDK 核心功能-->
+            <provider
+                android:name="cn.jpush.im.android.helpers.ipc.IMProvider"
+                android:authorities="$PACKAGE_NAME.IMProvider"
+                android:exported="false" />
 
             <meta-data android:name="JPUSH_APPKEY" android:value="$APP_KEY"/>
             <meta-data android:name="JPUSH_CHANNEL" android:value="developer-default"/>
