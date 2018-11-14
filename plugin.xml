@@ -2,7 +2,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="jmessage-phonegap-plugin"
-        version="3.5.4">
+        version="3.6.0">
 
     <name>JMessage</name>
     <description>集成极光 IM 和推送功能</description>
@@ -110,8 +110,7 @@
             <!-- Required Push SDK核心功能-->
             <receiver
                 android:name="cn.jpush.android.service.PushReceiver"
-                android:enabled="true"
-                android:exported="false">
+                android:enabled="true">
                 <intent-filter android:priority="1000">
                     <!--Required  显示通知栏 -->
                     <action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED_PROXY" />
@@ -130,9 +129,7 @@
             </receiver>
 
             <!-- Required Push SDK核心功能 -->
-            <receiver
-                android:name="cn.jpush.android.service.AlarmReceiver"
-                android:exported="false" />
+            <receiver android:name="cn.jpush.android.service.AlarmReceiver"/>
 
             <!-- IM Required IM SDK核心功能-->
             <receiver
@@ -165,9 +162,9 @@
 
         <lib-file src="src/android/libs/jmessage-sdk-android-2.7.1.jar" />
 
-        <source-file src="src/android/JMessagePlugin.java" target-dir="app/src/main/java/cn/jiguang/cordova/im"/>
-        <source-file src="src/android/JMessageUtils.java" target-dir="app/src/main/java/cn/jiguang/cordova/im"/>
-        <source-file src="src/android/JsonUtils.java" target-dir="app/src/main/java/cn/jiguang/cordova/im"/>
-        <source-file src="src/android/ChatRoomHandler.java" target-dir="app/src/main/java/cn/jiguang/cordova/im"/>
+        <source-file src="src/android/JMessagePlugin.java" target-dir="src/cn/jiguang/cordova/im"/>
+        <source-file src="src/android/JMessageUtils.java" target-dir="src/cn/jiguang/cordova/im"/>
+        <source-file src="src/android/JsonUtils.java" target-dir="src/cn/jiguang/cordova/im"/>
+        <source-file src="src/android/ChatRoomHandler.java" target-dir="src/cn/jiguang/cordova/im"/>
     </platform>
 </plugin>
