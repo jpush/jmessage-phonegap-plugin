@@ -469,7 +469,7 @@ NSMutableDictionary *_jmessageEventCache;
 }
 
 - (void)conversationChanged:(NSNotification *)notification {
-    [self evalFuntionName:@"onConversationChanged" jsonParm:[notification.object toJsonString]];
+//    [self evalFuntionName:@"onConversationChanged" jsonParm:[notification.object toJsonString]];
 }
 
 - (void)unreadChanged:(NSNotification *)notification{
