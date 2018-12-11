@@ -99,13 +99,12 @@ public class JMessagePlugin extends CordovaPlugin {
 
     private CallbackContext mCallback;
 
-    private HashMap<String, GroupApprovalEvent> groupApprovalEventHashMap;
+    public static HashMap<String, GroupApprovalEvent> groupApprovalEventHashMap = new HashMap<>();
 
     @Override
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
         super.initialize(cordova, webView);
         mCordovaActivity = cordova.getActivity();
-        groupApprovalEventHashMap = new HashMap<>();
     }
 
     @Override
@@ -1475,6 +1474,100 @@ public class JMessagePlugin extends CordovaPlugin {
         });
     }
 
+    void downloadThumbGroupAvatar(JSONArray data, final CallbackContext callback) {
+        String id;
+
+        try {
+            JSONObject params = data.getJSONObject(0);
+            id = params.getString("id");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callback.error(ERR_MSG_PARAMETER);
+            return;
+        }
+
+        JMessageClient.getGroupInfo(Long.parseLong(id), new GetGroupInfoCallback() {
+            @Override
+            public void gotResult(int status, String desc, GroupInfo groupInfo) {
+                if (status == 0) {
+                    File avatarFile = groupInfo.getAvatarFile();
+                    JSONObject result = new JSONObject();
+                    try {
+                        result.put("id", groupInfo.getGroupID() + "");
+                        String avatarFilePath = (avatarFile == null ? "" : avatarFile.getAbsolutePath());
+                        result.put("filePath", avatarFilePath);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    callback.success(result);
+                } else {
+                    handleResult(status, desc, callback);
+                }
+            }
+        });
+    }
+
+    void downloadOriginalGroupAvatar(JSONArray data, final CallbackContext callback) {
+        String id;
+
+        try {
+            JSONObject params = data.getJSONObject(0);
+            id = params.getString("id");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callback.error(ERR_MSG_PARAMETER);
+            return;
+        }
+
+        JMessageClient.getGroupInfo(Long.parseLong(id), new GetGroupInfoCallback() {
+            @Override
+            public void gotResult(int status, String desc, GroupInfo groupInfo) {
+                if (status != 0) {
+                    handleResult(status, desc, callback);
+                    return;
+                }
+
+                if (groupInfo.getBigAvatarFile() == null) { // 本地不存在头像原图，进行下载。
+                    groupInfo.getBigAvatarBitmap(new GetAvatarBitmapCallback() {
+                        @Override
+                        public void gotResult(int status, String desc, Bitmap bitmap) {
+                            if (status != 0) { // 下载失败
+                                handleResult(status, desc, callback);
+                                return;
+                            }
+
+                            String filePath = "";
+
+                            if (bitmap != null) {
+                                filePath = groupInfo.getBigAvatarFile().getAbsolutePath();
+                            }
+
+                            try {
+                                JSONObject result = new JSONObject();
+                                result.put("id", groupInfo.getGroupID() + "");
+                                result.put("filePath", filePath);
+                                callback.success(result);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                                callback.error(PluginResult.Status.JSON_EXCEPTION.toString());
+                            }
+                        }
+                    });
+
+                } else {
+                    JSONObject result = new JSONObject();
+                    try {
+                        result.put("id", groupInfo.getGroupID() + "");
+                        result.put("filePath", groupInfo.getBigAvatarFile().getAbsolutePath());
+                        callback.success(result);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
+
     void addGroupMembers(JSONArray data, final CallbackContext callback) {
         long groupId;
         JSONArray usernameJsonArr;
@@ -2253,8 +2346,21 @@ public class JMessagePlugin extends CordovaPlugin {
                             }
                         });
             } else {
-                // 忽略拒绝处理，直接返回成功信息
-                handleResult(0, "", callback);
+                // 批量处理只有接受，插件做循环单拒绝
+                for (int i = 0; i < groupApprovalEventList.size(); i++) {
+                    GroupApprovalEvent groupApprovalEvent = groupApprovalEventList.get(i);
+                    final int finalI = i;
+                    groupApprovalEvent.refuseGroupApproval(groupApprovalEvent.getFromUsername(),
+                            groupApprovalEvent.getfromUserAppKey(), reason, new BasicCallback() {
+                                @Override
+                                public void gotResult(int status, String desc) {
+                                    // 统一返回最后一个拒绝结果
+                                    if (finalI == groupApprovalEventList.size() - 1) {
+                                        handleResult(status, desc, callback);
+                                    }
+                                }
+                            });
+                }
             }
         } catch (JSONException e) {
             e.printStackTrace();
