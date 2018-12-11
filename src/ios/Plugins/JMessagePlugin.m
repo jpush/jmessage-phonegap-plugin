@@ -1775,7 +1775,7 @@ NSMutableDictionary *_jmessageEventCache;
       
       [self handleResultWithDictionary:@{@"username": user.username,
                                            @"appKey": user.appKey,
-                                         @"filePath": [user thumbAvatarLocalPath] ?: @""}
+                                         @"filePath": [user thumbAvatarLocalPath] ? : @""}
                                command:command error:error];
     }];
   }];
@@ -1816,7 +1816,7 @@ NSMutableDictionary *_jmessageEventCache;
             
             [self handleResultWithDictionary:@{@"username": user.username,
                                                  @"appKey": user.appKey,
-                                               @"filePath": [user largeAvatarLocalPath] ?: @""}
+                                               @"filePath": [user largeAvatarLocalPath] ? : @""}
                                      command:command error:error];
         }];
     }];
@@ -1850,7 +1850,7 @@ NSMutableDictionary *_jmessageEventCache;
         }
         
         [self handleResultWithDictionary:@{@"messageId": message.msgId,
-                                           @"filePath": content.thumbImageLocalPath}
+                                           @"filePath": content.thumbImageLocalPath ? : @""}
                                  command:command error:error];
       }];
     }
@@ -1887,7 +1887,7 @@ NSMutableDictionary *_jmessageEventCache;
         
         JMSGMediaAbstractContent *mediaContent = (JMSGMediaAbstractContent *) message.content;
         [self handleResultWithDictionary:@{@"messageId": message.msgId,
-                                           @"filePath": [mediaContent originMediaLocalPath]}
+                                           @"filePath": [mediaContent originMediaLocalPath] ? : @""}
                                  command:command error:error];
       }];
     }
@@ -1923,7 +1923,7 @@ NSMutableDictionary *_jmessageEventCache;
           
           JMSGMediaAbstractContent *mediaContent = (JMSGMediaAbstractContent *) message.content;
           [self handleResultWithDictionary:@{@"messageId": message.msgId,
-                                             @"filePath": [mediaContent originMediaLocalPath]}
+                                             @"filePath": [mediaContent originMediaLocalPath] ? : @""}
                                    command:command error:error];
         }];
       }
@@ -1953,7 +1953,7 @@ NSMutableDictionary *_jmessageEventCache;
           }
           JMSGFileContent *fileContent = (JMSGFileContent *) message.content;
           [self handleResultWithDictionary:@{@"messageId": message.msgId,
-                                             @"filePath":[fileContent originMediaLocalPath]}
+                                             @"filePath":[fileContent originMediaLocalPath] ? : @""}
                                    command:command error:error];
         }];
       }
@@ -2120,7 +2120,7 @@ NSMutableDictionary *_jmessageEventCache;
     JMSGGroup *group = resultObject;
     [group thumbAvatarData:^(NSData *data, NSString *objectId, NSError *error) {
 
-    [self handleResultWithDictionary: @{@"id": objectId, @"filePath": group.thumbAvatarLocalPath}
+      [self handleResultWithDictionary: @{@"id": objectId, @"filePath": group.thumbAvatarLocalPath ? : @""}
                              command: command
                                error: error];
     }];
@@ -2141,7 +2141,7 @@ NSMutableDictionary *_jmessageEventCache;
     
     JMSGGroup *group = resultObject;
     [group largeAvatarData:^(NSData *data, NSString *objectId, NSError *error) {
-      [self handleResultWithDictionary: @{@"id": objectId, @"filePath": group.largeAvatarLocalPath}
+      [self handleResultWithDictionary: @{@"id": objectId, @"filePath": group.largeAvatarLocalPath ? : @""}
                                command: command
                                  error: error];
     }];
