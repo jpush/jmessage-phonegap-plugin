@@ -990,7 +990,15 @@ var JMessagePlugin = {
     exec(success, error, PLUGIN_NAME, "dissolveGroup", [params]);
   },
 
-
+   /**
+    * 设置群成员昵称
+    * @param {object} params = { nickName: string, groupId: string , username: string, appKey: string}
+    * @param {function} success  = _ => {}
+    * @param {function} error  = function ({'code': '错误码', 'description': '错误信息'}) {}
+    */
+  setGroupNickname: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "setGroupNickname", [params]);
+  },
   /**
    * 移交群主
    * @param {object} params = { groupId: string , username: string, appKey: string}
