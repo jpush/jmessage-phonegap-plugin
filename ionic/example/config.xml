@@ -101,9 +101,9 @@
     <plugin name="cordova-plugin-whitelist" spec="^1.3.1" />
     <plugin name="ionic-plugin-keyboard" spec="^2.2.1" />
     <engine name="android" spec="~7.0.0" />
+    <allow-navigation href="http://192.168.10.171:8100" />
+    <allow-navigation href="http://192.168.8.18:8100" />
     <plugin name="jmessage-phonegap-plugin" spec="/Users/HuminiOS/Desktop/workproject/jmessage-phonegap-plugin">
         <variable name="APP_KEY" value="a1703c14b186a68a66ef86c1" />
     </plugin>
-    <allow-navigation href="http://192.168.10.171:8100" />
-    <allow-navigation href="http://192.168.8.18:8100" />
 </widget>

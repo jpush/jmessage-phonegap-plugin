@@ -12,6 +12,7 @@
 #import <Foundation/Foundation.h>
 #import <JMessage/JMSGConstants.h>
 #import <JMessage/JMSGUser.h>
+#import <JMessage/JMSGGroup.h>
 
 @class JMSGMessage;
 @class JMSGAbstractContent;
@@ -190,7 +191,7 @@ JMSG_ASSUME_NONNULL_BEGIN
 /*!
  * @abstract 获取当前所有会话的未读消息的总数
  *
- * @discussion 获取所有会话未读消息总数
+ * @discussion 获取所有会话未读消息总数，开启免打扰的会话未读数不会加入计数
  */
 + (NSNumber *)getAllUnreadCount;
 
@@ -519,7 +520,7 @@ JMSG_ASSUME_NONNULL_BEGIN
 - (void)avatarData:(JMSGAsyncDataHandler)handler;
 
 /*!
- * @abstract 获取会话头像的本地路径(仅限单聊)
+ * @abstract 获取会话头像的本地路径
  *
  * @return 返回本地路，返回值只有在下载完成之后才有意义
  */

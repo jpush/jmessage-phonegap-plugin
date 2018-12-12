@@ -170,3 +170,21 @@
 
 @end
 
+/*!
+ * @abstract 群成员群昵称修改事件
+ *
+ * @discussion 如果是离线事件， memberInfoList 里会包含群成员每一次的修改记录
+ */
+@interface JMSGGroupNicknameChangeEvent : NSObject
+
+/// 群组
+@property(nonatomic, strong, readonly) JMSGGroup *group;
+/// 修改昵称的群成员
+@property(nonatomic, strong, readonly) JMSGGroupMemberInfo *fromMemberInfo;
+/// 被修改昵称的群成员
+@property(nonatomic, strong, readonly) JMSGGroupMemberInfo *toMemberInfo;
+/// 事件时间
+@property(nonatomic, assign, readonly) UInt64 ctime;
+
+
+@end
