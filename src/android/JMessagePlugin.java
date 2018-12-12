@@ -1475,7 +1475,6 @@ public class JMessagePlugin extends CordovaPlugin {
         });
     }
 
-
     void downloadThumbGroupAvatar(JSONArray data, final CallbackContext callback) {
         String id;
 
@@ -1495,7 +1494,7 @@ public class JMessagePlugin extends CordovaPlugin {
                     File avatarFile = groupInfo.getAvatarFile();
                     JSONObject result = new JSONObject();
                     try {
-                        result.put("id", groupInfo.getGroupID()+"");
+                        result.put("id", groupInfo.getGroupID() + "");
                         String avatarFilePath = (avatarFile == null ? "" : avatarFile.getAbsolutePath());
                         result.put("filePath", avatarFilePath);
                     } catch (JSONException e) {
@@ -1546,7 +1545,7 @@ public class JMessagePlugin extends CordovaPlugin {
 
                             try {
                                 JSONObject result = new JSONObject();
-                                result.put("id", groupInfo.getGroupID()+"");
+                                result.put("id", groupInfo.getGroupID() + "");
                                 result.put("filePath", filePath);
                                 callback.success(result);
                             } catch (JSONException e) {
@@ -1559,7 +1558,7 @@ public class JMessagePlugin extends CordovaPlugin {
                 } else {
                     JSONObject result = new JSONObject();
                     try {
-                        result.put("id", groupInfo.getGroupID()+"");
+                        result.put("id", groupInfo.getGroupID() + "");
                         result.put("filePath", groupInfo.getBigAvatarFile().getAbsolutePath());
                         callback.success(result);
                     } catch (JSONException e) {
@@ -2353,13 +2352,11 @@ public class JMessagePlugin extends CordovaPlugin {
                     GroupApprovalEvent groupApprovalEvent = groupApprovalEventList.get(i);
                     final int finalI = i;
                     groupApprovalEvent.refuseGroupApproval(groupApprovalEvent.getFromUsername(),
-                            groupApprovalEvent.getfromUserAppKey(),
-                            reason,
-                            new BasicCallback() {
+                            groupApprovalEvent.getfromUserAppKey(), reason, new BasicCallback() {
                                 @Override
                                 public void gotResult(int status, String desc) {
                                     // 统一返回最后一个拒绝结果
-                                    if(finalI == groupApprovalEventList.size()-1){
+                                    if (finalI == groupApprovalEventList.size() - 1) {
                                         handleResult(status, desc, callback);
                                     }
                                 }
@@ -2388,6 +2385,40 @@ public class JMessagePlugin extends CordovaPlugin {
             @Override
             public void gotResult(int status, String desc) {
                 handleResult(status, desc, callback);
+            }
+        });
+
+    }
+
+    void setGroupNickname(JSONArray data, final CallbackContext callback) {
+        long groupId;
+        String username;
+        String appKey;
+        String nickName;
+        try {
+            JSONObject params = data.getJSONObject(0);
+            groupId = Long.parseLong(params.getString("groupId"));
+            username = params.getString("username");
+            nickName = params.getString("nickName");
+            appKey = params.has("appKey") ? params.getString("appKey") : "";
+        } catch (JSONException e) {
+            e.printStackTrace();
+            handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
+            return;
+        }
+        JMessageClient.getGroupInfo(groupId, new GetGroupInfoCallback() {
+            @Override
+            public void gotResult(int status, String desc, GroupInfo groupInfo) {
+                if (status == 0) {
+                    groupInfo.setMemNickname(username, appKey, nickName, new BasicCallback() {
+                        @Override
+                        public void gotResult(int i, String s) {
+                            handleResult(status, desc, callback);
+                        }
+                    });
+                } else {
+                    handleResult(status, desc, callback);
+                }
             }
         });
 
@@ -2486,7 +2517,6 @@ public class JMessagePlugin extends CordovaPlugin {
                         e.printStackTrace();
                     }
 
-
                 } else {
                     handleResult(status, desc, callback);
                 }
@@ -2519,7 +2549,6 @@ public class JMessagePlugin extends CordovaPlugin {
         });
 
     }
-
 
     // 群组相关 - end
 
