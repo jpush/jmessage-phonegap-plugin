@@ -1,6 +1,5 @@
 package cn.jiguang.cordova.im;
 
-
 import android.graphics.Bitmap;
 import android.os.Environment;
 
@@ -47,8 +46,7 @@ class JMessageUtils {
         }
     }
 
-    static void handleResult(JSONObject returnObject, int status, String desc,
-                             CallbackContext callback) {
+    static void handleResult(JSONObject returnObject, int status, String desc, CallbackContext callback) {
         if (status == 0) {
             callback.success(returnObject);
         } else {
@@ -60,8 +58,7 @@ class JMessageUtils {
         }
     }
 
-    static void handleResult(JSONArray returnObject, int status, String desc,
-                             CallbackContext callback) {
+    static void handleResult(JSONArray returnObject, int status, String desc, CallbackContext callback) {
         if (status == 0) {
             callback.success(returnObject);
         } else {
@@ -154,7 +151,7 @@ class JMessageUtils {
     }
 
     static Message getMessage(JSONObject params) throws JSONException {
-        if (params.has("messageId")) {  // 代表 JS 层为显式传入所需的参数。
+        if (params.has("messageId")) { // 代表 JS 层为显式传入所需的参数。
             Conversation conversation = getConversation(params);
             if (conversation == null) {
                 return null;
@@ -163,15 +160,15 @@ class JMessageUtils {
             String messageId = params.getString("messageId");
             return conversation.getMessage(Integer.parseInt(messageId));
 
-        } else if (params.has("id")) {    // 代表 JS 层传入的是 Message 对象。
+        } else if (params.has("id")) { // 代表 JS 层传入的是 Message 对象。
             return JsonToMessage(params);
         }
 
         return null;
     }
 
-    static void sendMessage(Conversation conversation, MessageContent content,
-                            MessageSendingOptions options, final CallbackContext callback) {
+    static void sendMessage(Conversation conversation, MessageContent content, MessageSendingOptions options,
+            final CallbackContext callback) {
         final Message msg = conversation.createSendMessage(content);
         msg.setOnSendCompleteCallback(new BasicCallback() {
             @Override

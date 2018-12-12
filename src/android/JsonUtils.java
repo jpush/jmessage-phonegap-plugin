@@ -27,6 +27,7 @@ import cn.jpush.im.android.api.model.ChatRoomInfo;
 import cn.jpush.im.android.api.model.Conversation;
 import cn.jpush.im.android.api.model.GroupBasicInfo;
 import cn.jpush.im.android.api.model.GroupInfo;
+import cn.jpush.im.android.api.model.GroupMemberInfo;
 import cn.jpush.im.android.api.model.Message;
 import cn.jpush.im.android.api.model.UserInfo;
 
@@ -104,6 +105,7 @@ class JsonUtils {
         try {
             result.put("type", "group");
             result.put("id", String.valueOf(groupInfo.getGroupID()));
+            result.put("groupType", String.valueOf(groupInfo.getGroupType()));
             result.put("name", groupInfo.getGroupName());
             result.put("desc", groupInfo.getGroupDescription());
             result.put("level", groupInfo.getGroupLevel());
@@ -112,6 +114,28 @@ class JsonUtils {
             result.put("maxMemberCount", groupInfo.getMaxMemberCount());
             result.put("isNoDisturb", groupInfo.getNoDisturb() == 1);
             result.put("isBlocked", groupInfo.isGroupBlocked() == 1);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
+    static JSONObject toJson(GroupMemberInfo groupMemberInfo) {
+        JSONObject result = new JSONObject();
+
+        try {
+            result.put("user", toJson(groupMemberInfo.getUserInfo()));
+            result.put("groupNickname", groupMemberInfo.getNickName());
+            if (groupMemberInfo.getType() == GroupMemberInfo.Type.group_owner) {
+                result.put("memberType", "owner");
+            } else if (groupMemberInfo.getType() == GroupMemberInfo.Type.group_keeper) {
+                result.put("memberType", "admin");
+            } else {
+                result.put("memberType", "ordinary");
+            }
+            result.put("joinGroupTime", groupMemberInfo.getJoinGroupTime());
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -345,6 +369,8 @@ class JsonUtils {
                 jsonArray.put(toJson((GroupBasicInfo) object));
             } else if (object instanceof Message) {
                 jsonArray.put(toJson((Message) object));
+            } else if (object instanceof GroupMemberInfo) {
+                jsonArray.put(toJson((GroupMemberInfo) object));
             } else {
                 jsonArray.put(object);
             }
