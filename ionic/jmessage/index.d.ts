@@ -149,6 +149,12 @@ export interface JMUserInfo {
         [key: string]: string;
     };
 }
+export interface JMGroupMemberInfo {
+    user: JMUserInfo;
+    groupNickname: string;
+    memberType: 'owner' | 'admin' | 'ordinary';
+    joinGroupTime: number;
+}
 export interface JMGroupInfo {
     type: 'group';
     id: string;
@@ -403,7 +409,7 @@ export declare class JMessagePlugin extends IonicNativePlugin {
     }): Promise<any>;
     getGroupMembers(params: {
         id: string;
-    }): Promise<any>;
+    }): Promise<JMGroupMemberInfo[]>;
     addUsersToBlacklist(params: {
         usernameArray: string[];
         appKey?: string;
@@ -456,6 +462,31 @@ export declare class JMessagePlugin extends IonicNativePlugin {
     getConversation(params: JMAllType): Promise<any>;
     getConversations(): Promise<any>;
     resetUnreadMessageCount(params: JMAllType): Promise<any>;
+    transferGroupOwner(params: {
+        groupId: string;
+        username: string;
+        appKey?: string;
+    }): Promise<any>;
+    setGroupMemberSilence(params: {
+        groupId: string;
+        isSilence: boolean;
+        username: string;
+        appKey?: string;
+    }): Promise<any>;
+    isSilenceMember(params: {
+        groupId: string;
+        username: string;
+        appKey?: string;
+    }): Promise<any>;
+    groupSilenceMembers(params: {
+        groupId: string;
+    }): Promise<any>;
+    setGroupNickname(params: {
+        groupId: string;
+        nickName: string;
+        username: string;
+        appKey?: string;
+    }): Promise<any>;
     /**
      * TODO:
      *

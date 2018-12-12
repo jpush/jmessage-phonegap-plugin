@@ -311,6 +311,21 @@ var JMessagePlugin = (function (_super) {
     JMessagePlugin.prototype.resetUnreadMessageCount = function (params) {
         return;
     };
+    JMessagePlugin.prototype.transferGroupOwner = function (params) {
+        return;
+    };
+    JMessagePlugin.prototype.setGroupMemberSilence = function (params) {
+        return;
+    };
+    JMessagePlugin.prototype.isSilenceMember = function (params) {
+        return;
+    };
+    JMessagePlugin.prototype.groupSilenceMembers = function (params) {
+        return;
+    };
+    JMessagePlugin.prototype.setGroupNickname = function (params) {
+        return;
+    };
     JMessagePlugin.prototype.enterChatRoom = function (params) {
         return;
     };
@@ -793,6 +808,36 @@ var JMessagePlugin = (function (_super) {
         __metadata("design:paramtypes", [Object]),
         __metadata("design:returntype", Promise)
     ], JMessagePlugin.prototype, "resetUnreadMessageCount", null);
+    __decorate([
+        Cordova(),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", [Object]),
+        __metadata("design:returntype", Promise)
+    ], JMessagePlugin.prototype, "transferGroupOwner", null);
+    __decorate([
+        Cordova(),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", [Object]),
+        __metadata("design:returntype", Promise)
+    ], JMessagePlugin.prototype, "setGroupMemberSilence", null);
+    __decorate([
+        Cordova(),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", [Object]),
+        __metadata("design:returntype", Promise)
+    ], JMessagePlugin.prototype, "isSilenceMember", null);
+    __decorate([
+        Cordova(),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", [Object]),
+        __metadata("design:returntype", Promise)
+    ], JMessagePlugin.prototype, "groupSilenceMembers", null);
+    __decorate([
+        Cordova(),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", [Object]),
+        __metadata("design:returntype", Promise)
+    ], JMessagePlugin.prototype, "setGroupNickname", null);
     __decorate([
         CordovaProperty,
         __metadata("design:type", JMChatRoom)
