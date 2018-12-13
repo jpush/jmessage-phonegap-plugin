@@ -208,7 +208,6 @@ public class JMessagePlugin extends CordovaPlugin {
 
     public void userLogin(JSONArray data, final CallbackContext callback) {
         String username, password;
-
         try {
             JSONObject params = data.getJSONObject(0);
             username = params.getString("username");
@@ -2758,7 +2757,6 @@ public class JMessagePlugin extends CordovaPlugin {
     public void onEvent(CommandNotificationEvent event) throws JSONException {
         final JSONObject result = new JSONObject();
         result.put("content", event.getMsg());
-
         event.getSenderUserInfo(new GetUserInfoCallback() {
             @Override
             public void gotResult(int status, String desc, UserInfo userInfo) {
@@ -2769,37 +2767,37 @@ public class JMessagePlugin extends CordovaPlugin {
                         e.printStackTrace();
                     }
                 }
-            }
-        });
+                event.getTargetInfo(new CommandNotificationEvent.GetTargetInfoCallback() {
+                    @Override
+                    public void gotResult(int status, String desc, Object obj, CommandNotificationEvent.Type type) {
+                        if (status == 0) {
+                            if (type == CommandNotificationEvent.Type.single) {
+                                try {
+                                    UserInfo receiver = (UserInfo) obj;
+                                    result.put("receiver", toJson(receiver));
+                                    result.put("receiverType", "single");
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
 
-        event.getTargetInfo(new CommandNotificationEvent.GetTargetInfoCallback() {
-            @Override
-            public void gotResult(int status, String desc, Object obj, CommandNotificationEvent.Type type) {
-                if (status == 0) {
-                    if (type == CommandNotificationEvent.Type.single) {
-                        try {
-                            UserInfo receiver = (UserInfo) obj;
-                            result.put("receiver", toJson(receiver));
-                            result.put("receiverType", "single");
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                            } else {
+                                try {
+                                    GroupInfo receiver = (GroupInfo) obj;
+                                    result.put("receiver", toJson(receiver));
+                                    result.put("receiverType", "group");
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
                         }
+                        JSONObject eventJson = toJson("receiveTransCommand", result);
+                        eventSuccess(eventJson);
 
-                    } else {
-                        try {
-                            GroupInfo receiver = (GroupInfo) obj;
-                            result.put("receiver", toJson(receiver));
-                            result.put("receiverType", "group");
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
                     }
-
-                    JSONObject eventJson = toJson("receiveTransCommand", result);
-                    eventSuccess(eventJson);
-                }
+                });
             }
         });
+
     }
 
     /**
@@ -2845,23 +2843,22 @@ public class JMessagePlugin extends CordovaPlugin {
                         e.printStackTrace();
                     }
                 }
-            }
-        });
-        event.getApprovalUserInfoList(new GetUserInfoListCallback() {
-            @Override
-            public void gotResult(int status, String s, List<UserInfo> list) {
-                if (status == 0) {
-                    try {
-                        json.put("joinGroupUsers", toJson(list));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                event.getApprovalUserInfoList(new GetUserInfoListCallback() {
+                    @Override
+                    public void gotResult(int status, String s, List<UserInfo> list) {
+                        if (status == 0) {
+                            try {
+                                json.put("joinGroupUsers", toJson(list));
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        JSONObject eventJson = toJson("receiveApplyJoinGroupApproval", json);
+                        eventSuccess(eventJson);
                     }
-                }
+                });
             }
         });
-
-        JSONObject eventJson = toJson("receiveApplyJoinGroupApproval", json);
-        eventSuccess(eventJson);
 
     }
 
@@ -2884,24 +2881,22 @@ public class JMessagePlugin extends CordovaPlugin {
                         e.printStackTrace();
                     }
                 }
-            }
-        });
-        event.getApprovedUserInfoList(new GetUserInfoListCallback() {
-            @Override
-            public void gotResult(int status, String s, List<UserInfo> list) {
-                if (status == 0) {
-                    try {
-                        json.put("users", toJson(list));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                event.getApprovedUserInfoList(new GetUserInfoListCallback() {
+                    @Override
+                    public void gotResult(int status, String s, List<UserInfo> list) {
+                        if (status == 0) {
+                            try {
+                                json.put("users", toJson(list));
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        JSONObject eventJson = toJson("receiveGroupAdminApproval", json);
+                        eventSuccess(eventJson);
                     }
-                }
+                });
             }
         });
-
-        JSONObject eventJson = toJson("receiveGroupAdminApproval", json);
-        eventSuccess(eventJson);
-
     }
 
     /**
@@ -2919,6 +2914,8 @@ public class JMessagePlugin extends CordovaPlugin {
                 if (status == 0) {
                     try {
                         json.put("groupManager", toJson(userInfo));
+                        JSONObject eventJson = toJson("receiveGroupAdminReject", json);
+                        eventSuccess(eventJson);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -2926,8 +2923,6 @@ public class JMessagePlugin extends CordovaPlugin {
             }
         });
 
-        JSONObject eventJson = toJson("receiveGroupAdminReject", json);
-        eventSuccess(eventJson);
     }
 
     private void eventSuccess(JSONObject value) {
