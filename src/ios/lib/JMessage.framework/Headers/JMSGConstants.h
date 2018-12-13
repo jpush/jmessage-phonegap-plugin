@@ -213,6 +213,18 @@ typedef NS_ENUM(NSInteger, JMSGPlatformType) {
 };
 
 /*!
+ * 群成员类型
+ */
+typedef NS_ENUM(NSInteger, JMSGGroupMemberType) {
+  /// 普通成员
+  kJMSGGroupMemberTypeOrdinary = 0,
+  /// 群主
+  kJMSGGroupMemberTypeOwner    = 1,
+  /// 管理员
+  kJMSGGroupMemberTypeAdmin    = 2,
+};
+
+/*!
  * 发送消息透传的的类型
  */
 typedef NS_ENUM(NSInteger,JMSGTransMessageType) {
@@ -280,6 +292,8 @@ typedef NS_ENUM(NSInteger, JMSGEventNotificationType) {
   kJMSGEventNotificationGroupTypeChange = 83,
   /// 事件类型: 解散群组
   kJMSGEventNotificationDissolveGroup = 11001,
+  /// 事件类型: 群组成员上限变更
+  kJMSGEventNotificationGroupMaxMemberCountChange = 11002,
   
   
   // 好友相关事件

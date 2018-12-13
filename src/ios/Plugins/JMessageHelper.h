@@ -51,6 +51,10 @@
 -(NSMutableDictionary*)groupToDictionary;
 @end
 
+@interface JMSGGroupMemberInfo (JMessage)
+- (NSMutableDictionary *)memberToDictionary;
+@end
+
 @interface JMSGGroupInfo (JMessage)
 -(NSMutableDictionary*)groupToDictionary;
 @end

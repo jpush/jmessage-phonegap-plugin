@@ -66,4 +66,16 @@
 @optional
 - (void)onReceiveGroupAdminApprovalEvent:(JMSGGroupAdminApprovalEvent *)event;
 
+/*!
+ * @abstract 群成员群昵称变更通知
+ *
+ * @param events 群成员昵称变更事件列表
+ *
+ * @discussion 如果是离线事件，SDK 会将所有的修改记录加入数组上抛。事件具体相关属性请查看 JMSGGroupNicknameChangeEvent 类
+ *
+ * @since 3.7.0
+ */
+@optional
+- (void)onReceiveGroupNicknameChangeEvents:(NSArray<__kindof JMSGGroupNicknameChangeEvent*>*)events;
+
 @end

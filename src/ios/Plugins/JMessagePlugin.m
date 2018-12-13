@@ -469,7 +469,7 @@ NSMutableDictionary *_jmessageEventCache;
 }
 
 - (void)conversationChanged:(NSNotification *)notification {
-    [self evalFuntionName:@"onConversationChanged" jsonParm:[notification.object toJsonString]];
+//    [self evalFuntionName:@"onConversationChanged" jsonParm:[notification.object toJsonString]];
 }
 
 - (void)unreadChanged:(NSNotification *)notification{
@@ -1492,19 +1492,20 @@ NSMutableDictionary *_jmessageEventCache;
         }
         
         JMSGGroup *group = resultObject;
-        
-        [group memberArrayWithCompletionHandler:^(id resultObject, NSError *error) {
-            if (error) {
-                [self handleResultWithDictionary:nil command:command error:error];
-                return;
-            }
+      
+        [group memberInfoList:^(id resultObject, NSError *error) {
+          if (error) {
+            [self handleResultWithDictionary:nil command:command error:error];
+            return;
+          }
           
-            NSArray *userList = resultObject;
-            NSMutableArray *userInfoList = @[].mutableCopy;
-            for (JMSGUser *user in userList) {
-                [userInfoList addObject:[user userToDictionary]];
-            }
-            [self handleResultWithArray:userInfoList command:command error:error];
+          NSArray *memberList = resultObject;
+          NSMutableArray *memberInfoList = @[].mutableCopy;
+          for (JMSGGroupMemberInfo *member in memberList) {
+            [memberInfoList addObject:[member memberToDictionary]];
+          }
+          
+          [self handleResultWithArray:memberInfoList command:command error:error];
         }];
     }];
 }
@@ -1775,7 +1776,7 @@ NSMutableDictionary *_jmessageEventCache;
       
       [self handleResultWithDictionary:@{@"username": user.username,
                                            @"appKey": user.appKey,
-                                         @"filePath": [user thumbAvatarLocalPath] ?: @""}
+                                         @"filePath": [user thumbAvatarLocalPath] ? : @""}
                                command:command error:error];
     }];
   }];
@@ -1816,7 +1817,7 @@ NSMutableDictionary *_jmessageEventCache;
             
             [self handleResultWithDictionary:@{@"username": user.username,
                                                  @"appKey": user.appKey,
-                                               @"filePath": [user largeAvatarLocalPath] ?: @""}
+                                               @"filePath": [user largeAvatarLocalPath] ? : @""}
                                      command:command error:error];
         }];
     }];
@@ -1850,7 +1851,7 @@ NSMutableDictionary *_jmessageEventCache;
         }
         
         [self handleResultWithDictionary:@{@"messageId": message.msgId,
-                                           @"filePath": content.thumbImageLocalPath}
+                                           @"filePath": content.thumbImageLocalPath ? : @""}
                                  command:command error:error];
       }];
     }
@@ -1887,7 +1888,7 @@ NSMutableDictionary *_jmessageEventCache;
         
         JMSGMediaAbstractContent *mediaContent = (JMSGMediaAbstractContent *) message.content;
         [self handleResultWithDictionary:@{@"messageId": message.msgId,
-                                           @"filePath": [mediaContent originMediaLocalPath]}
+                                           @"filePath": [mediaContent originMediaLocalPath] ? : @""}
                                  command:command error:error];
       }];
     }
@@ -1923,7 +1924,7 @@ NSMutableDictionary *_jmessageEventCache;
           
           JMSGMediaAbstractContent *mediaContent = (JMSGMediaAbstractContent *) message.content;
           [self handleResultWithDictionary:@{@"messageId": message.msgId,
-                                             @"filePath": [mediaContent originMediaLocalPath]}
+                                             @"filePath": [mediaContent originMediaLocalPath] ? : @""}
                                    command:command error:error];
         }];
       }
@@ -1953,7 +1954,7 @@ NSMutableDictionary *_jmessageEventCache;
           }
           JMSGFileContent *fileContent = (JMSGFileContent *) message.content;
           [self handleResultWithDictionary:@{@"messageId": message.msgId,
-                                             @"filePath":[fileContent originMediaLocalPath]}
+                                             @"filePath":[fileContent originMediaLocalPath] ? : @""}
                                    command:command error:error];
         }];
       }
@@ -2120,7 +2121,7 @@ NSMutableDictionary *_jmessageEventCache;
     JMSGGroup *group = resultObject;
     [group thumbAvatarData:^(NSData *data, NSString *objectId, NSError *error) {
 
-    [self handleResultWithDictionary: @{@"id": objectId, @"filePath": group.thumbAvatarLocalPath}
+      [self handleResultWithDictionary: @{@"id": objectId, @"filePath": group.thumbAvatarLocalPath ? : @""}
                              command: command
                                error: error];
     }];
@@ -2141,7 +2142,7 @@ NSMutableDictionary *_jmessageEventCache;
     
     JMSGGroup *group = resultObject;
     [group largeAvatarData:^(NSData *data, NSString *objectId, NSError *error) {
-      [self handleResultWithDictionary: @{@"id": objectId, @"filePath": group.largeAvatarLocalPath}
+      [self handleResultWithDictionary: @{@"id": objectId, @"filePath": group.largeAvatarLocalPath ? : @""}
                                command: command
                                  error: error];
     }];
@@ -2606,6 +2607,160 @@ NSMutableDictionary *_jmessageEventCache;
         
         [self handleResultNilWithCommand:command error:error];
     }];
+}
+
+- (void)transferGroupOwner:(CDVInvokedUrlCommand *)command {
+  NSDictionary * param = [command argumentAtIndex:0];
+  
+  if (param[@"groupId"] == nil ||
+      param[@"username"] == nil) {
+    [self returnParamError:command];
+    return;
+  }
+  
+  NSString *appKey = nil;
+  if (param[@"appKey"]) {
+    appKey = param[@"appKey"];
+  } else {
+    appKey = [JMessageHelper shareInstance].JMessageAppKey;
+  }
+  
+  [JMSGGroup groupInfoWithGroupId:param[@"groupId"] completionHandler:^(id resultObject, NSError *error) {
+    if (error) {
+      [self handleResultWithDictionary: nil command: command error: error];
+      return;
+    }
+    
+    JMSGGroup *group = resultObject;
+    [group transferGroupOwnerWithUsername:param[@"username"] appKey:appKey completionHandler:^(id resultObject, NSError *error) {
+      [self handleResultNilWithCommand:command error:error];
+    }];
+  }];
+
+}
+
+
+- (void)setGroupMemberSilence:(CDVInvokedUrlCommand *)command {
+  NSDictionary * param = [command argumentAtIndex:0];
+  
+  if (param[@"groupId"] == nil ||
+      param[@"username"] == nil ||
+      param[@"isSilence"] == nil) {
+    [self returnParamError:command];
+    return;
+  }
+  
+  NSString *appKey = nil;
+  if (param[@"appKey"]) {
+    appKey = param[@"appKey"];
+  } else {
+    appKey = [JMessageHelper shareInstance].JMessageAppKey;
+  }
+  
+  [JMSGGroup groupInfoWithGroupId:param[@"groupId"] completionHandler:^(id resultObject, NSError *error) {
+    if (error) {
+      [self handleResultWithDictionary: nil command: command error: error];
+      return;
+    }
+    
+    JMSGGroup *group = resultObject;
+    [group setGroupMemberSilence:[param[@"isSilence"] boolValue] username:param[@"username"] appKey:appKey handler:^(id resultObject, NSError *error) {
+      [self handleResultNilWithCommand:command error:error];
+    }];
+  }];
+  
+}
+
+- (void)isSilenceMember:(CDVInvokedUrlCommand *)command {
+  NSDictionary * param = [command argumentAtIndex:0];
+  
+  if (param[@"groupId"] == nil ||
+      param[@"username"] == nil) {
+    [self returnParamError:command];
+    return;
+  }
+  
+  NSString *appKey = nil;
+  if (param[@"appKey"]) {
+    appKey = param[@"appKey"];
+  } else {
+    appKey = [JMessageHelper shareInstance].JMessageAppKey;
+  }
+  
+  [JMSGGroup groupInfoWithGroupId:param[@"groupId"] completionHandler:^(id resultObject, NSError *error) {
+    if (error) {
+      [self handleResultWithDictionary: nil command: command error: error];
+      return;
+    }
+    
+    JMSGGroup *group = resultObject;
+    
+    BOOL isSilence = [group isSilenceMemberWithUsername:param[@"username"] appKey:appKey];
+    [self handleResultWithDictionary: @{@"isSilence": @(isSilence)} command: command error: error];
+  }];
+  
+}
+
+/**
+ * 获取群禁言列表 （注意在获取群列表成功后该方法才有效）
+ * @param {object} params = { groupId: string}
+ * @param {function} success
+ * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+ */
+- (void)groupSilenceMembers:(CDVInvokedUrlCommand *)command {
+  NSDictionary * param = [command argumentAtIndex:0];
+  
+  if (param[@"groupId"] == nil) {
+    [self returnParamError:command];
+    return;
+  }
+  
+  [JMSGGroup groupInfoWithGroupId:param[@"groupId"] completionHandler:^(id resultObject, NSError *error) {
+    if (error) {
+      [self handleResultWithDictionary: nil command: command error: error];
+      return;
+    }
+    
+    JMSGGroup *group = resultObject;
+    NSArray *silenceMembers = [group groupSilenceMembers];
+    NSArray *silenceUserDicArr = [silenceMembers mapObjectsUsingBlock:^id(id obj, NSUInteger idx) {
+      JMSGUser *user = obj;
+      return [user userToDictionary];
+    }];
+    [self handleResultWithArray:silenceUserDicArr command:command error:error];
+  }];
+}
+
+- (void)setGroupNickname:(CDVInvokedUrlCommand *)command {
+  NSDictionary * param = [command argumentAtIndex:0];
+  
+  if (param[@"groupId"] == nil ||
+      param[@"username"] == nil ||
+      param[@"nickName"] == nil) {
+    [self returnParamError:command];
+    return;
+  }
+  
+  NSString *appKey = nil;
+  if (param[@"appKey"]) {
+    appKey = param[@"appKey"];
+  } else {
+    appKey = [JMessageHelper shareInstance].JMessageAppKey;
+  }
+  
+  [JMSGGroup groupInfoWithGroupId:param[@"groupId"] completionHandler:^(id resultObject, NSError *error) {
+    if (error) {
+      [self handleResultWithDictionary: nil command: command error: error];
+      return;
+    }
+    
+    JMSGGroup *group = resultObject;
+    
+    [group setGroupNickname:param[@"nickName"] username:param[@"username"] appKey:appKey handler:^(id resultObject, NSError *error) {
+      [self handleResultNilWithCommand: command error: error];
+    }];
+  }];
+  
 }
 
 @end

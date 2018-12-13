@@ -70,6 +70,12 @@
 - (void)downloadOriginalGroupAvatar:(CDVInvokedUrlCommand *)command;
 - (void)setConversationExtras:(CDVInvokedUrlCommand *)command;
 
+- (void)transferGroupOwner:(CDVInvokedUrlCommand *)command;
+- (void)setGroupMemberSilence:(CDVInvokedUrlCommand *)command;
+- (void)isSilenceMember:(CDVInvokedUrlCommand *)command;
+- (void)groupSilenceMembers:(CDVInvokedUrlCommand *)command;
+- (void)setGroupNickname:(CDVInvokedUrlCommand *)command;
+
 // 聊天室 API
 - (void)getChatRoomInfoListOfApp:(CDVInvokedUrlCommand *)command;
 - (void)getChatRoomInfoListOfUser:(CDVInvokedUrlCommand *)command;
@@ -79,6 +85,5 @@
 - (void)getChatRoomConversation:(CDVInvokedUrlCommand *)command;
 - (void)getChatRoomConversationList:(CDVInvokedUrlCommand *)command;
 - (void)getChatRoomOwner:(CDVInvokedUrlCommand *)command;
-
 - (void)setBadge:(CDVInvokedUrlCommand *)command;
 @end

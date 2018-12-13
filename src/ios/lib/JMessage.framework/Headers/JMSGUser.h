@@ -179,11 +179,13 @@ JMSG_ASSUME_NONNULL_BEGIN
 /*!
  * @abstract 获取用户信息
  *
+ * @param uid 用户的 uid
+ *
  * @return 该 uid 用户信息
  *
  * @discussion 注意：返回值有可能为空，仅仅是本地查询
  */
-+ (JMSGUser *)userWithUid:(SInt64)uid;
++ (JMSGUser *JMSG_NULLABLE)userWithUid:(SInt64)uid;
 
 /*!
  * @abstract 获取用户本身个人信息接口

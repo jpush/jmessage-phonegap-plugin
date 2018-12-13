@@ -55,10 +55,10 @@ extern NSString *const kJMSGServiceErrorNotification;                 // 错误�
 @interface JMessage : NSObject
 
 /*! JMessage SDK 版本号。用于展示 SDK 的版本信息 */
-#define JMESSAGE_VERSION @"3.6.1"
+#define JMESSAGE_VERSION @"3.7.0"
 
 /*! JMessage SDK 构建ID. 每次构建都会增加 */
-#define JMESSAGE_BUILD 222
+#define JMESSAGE_BUILD 238
 
 /*! API Version - int for program logic. SDK API 有变更时会增加 */
 extern NSInteger const JMESSAGE_API_VERSION;
@@ -157,7 +157,6 @@ extern NSInteger const JMESSAGE_API_VERSION;
  * @abstract 注册远程推送
  * @param types 通知类型
  * @param categories 类别组
- * @discussion 此方法必须被调用，如果有集成JPush或其他远程推送注册方法，请不要再调用此方法
  *
  */
 + (void)registerForRemoteNotificationTypes:(NSUInteger)types categories:(NSSet *)categories;
@@ -165,8 +164,6 @@ extern NSInteger const JMESSAGE_API_VERSION;
 /*!
  * @abstract 注册 DeviceToken
  * @param deviceToken 从注册推送回调中拿到的 DeviceToken
- * @discussion 此方法必须被调用
- *
  */
 + (void)registerDeviceToken:(NSData *)deviceToken;
 

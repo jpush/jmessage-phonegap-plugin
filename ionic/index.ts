@@ -186,6 +186,13 @@ export interface JMUserInfo {
   extras?: { [key: string]: string; };              // 自定义键值对
 };
 
+export interface JMGroupMemberInfo {
+  user: JMUserInfo;                            // 群用户详情
+  groupNickname: string;                       // 用户的群昵称
+  memberType: 'owner' | 'admin' | 'ordinary';  // 用户类型
+  joinGroupTime: number;                       // 用户入群时间（单位：毫秒）
+}
+
 export interface JMGroupInfo {
   type: 'group';
   id: string;                 // 群组 id
@@ -613,7 +620,7 @@ export class JMessagePlugin extends IonicNativePlugin {
   @Cordova()
   getGroupMembers(params: {
     id: string;
-  }): Promise<any> {
+  }): Promise<JMGroupMemberInfo[]> {
     return;
   }
 
@@ -762,7 +769,50 @@ export class JMessagePlugin extends IonicNativePlugin {
     return;
   }
 
+  @Cordova()
+  transferGroupOwner(params: {
+    groupId: string;
+    username: string;
+    appKey?: string;
+  }): Promise<any> {
+    return;
+  }
 
+  @Cordova()
+  setGroupMemberSilence(params: {
+    groupId: string;
+    isSilence: boolean;
+    username: string;
+    appKey?: string;
+  }): Promise<any> {
+    return;
+  }
+
+  @Cordova()
+  isSilenceMember(params: {
+    groupId: string;
+    username: string;
+    appKey?: string;
+  }): Promise<any> {
+    return;
+  }
+
+  @Cordova()
+  groupSilenceMembers(params: {
+    groupId: string;
+  }): Promise<any> {
+    return;
+  }
+
+  @Cordova()
+  setGroupNickname(params: {
+    groupId: string;
+    nickName: string;
+    username: string;
+    appKey?: string;
+  }): Promise<any> {
+    return;
+  }
 
   /**
    * TODO:

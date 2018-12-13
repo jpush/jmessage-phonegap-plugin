@@ -377,7 +377,7 @@ JMSG_ASSUME_NONNULL_BEGIN
 
 
 /*!
- * 消息ID：这个ID是本地存数据库生成的ID，不是服务器端下发时的ID。
+ * 消息ID：这个 ID 是本地生成的ID，不是服务器端下发时的ID。
  */
 @property(nonatomic, strong, readonly) NSString *msgId;
 
@@ -641,6 +641,15 @@ JMSG_ASSUME_NONNULL_BEGIN
  * @discussion 遵循 Message JSON 协议的定义。
  */
 - (NSString *)toJsonString;
+
+/*!
+ * @abstract JSON 字符串 转换为 消息对象。
+ *
+ * @discussion 遵循 Message JSON 协议的定义。失败时返回 nil
+ *
+ * #### 注意：尽量不要自己随意拼接 json 字符串去转换，容易导致创建的 message 无法正常发送
+ */
++ (JMSGMessage *JMSG_NULLABLE)fromJson:(NSString *JMSG_NONNULL)json;
 
 /*!
  * @abstract 对象比较
