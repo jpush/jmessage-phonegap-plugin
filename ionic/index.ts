@@ -101,7 +101,7 @@ export interface JMEventMessage {
   usernames: string[];         // 该事件涉及到的用户 username 数组
 };
 
-export type JMAllMessage = JMTextMessage | JMVoiceMessage | JMImageMessage | JMFileMessage | JMEventMessage;
+export type JMAllMessage = JMTextMessage | JMVoiceMessage | JMImageMessage | JMFileMessage | JMEventMessage | JMCustomMessage;
 
 export type JMMessageEventListener = (message: JMAllMessage) => void;
 
