@@ -24,7 +24,6 @@ import java.io.FileNotFoundException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,7 +36,6 @@ import cn.jpush.im.android.api.callback.GetBlacklistCallback;
 import cn.jpush.im.android.api.callback.GetGroupIDListCallback;
 import cn.jpush.im.android.api.callback.GetGroupInfoCallback;
 import cn.jpush.im.android.api.callback.GetGroupInfoListCallback;
-import cn.jpush.im.android.api.callback.GetGroupMembersCallback;
 import cn.jpush.im.android.api.callback.GetNoDisurbListCallback;
 import cn.jpush.im.android.api.callback.GetUserInfoCallback;
 import cn.jpush.im.android.api.callback.GetUserInfoListCallback;
@@ -101,8 +99,6 @@ public class JMessagePlugin extends CordovaPlugin {
 
     private CallbackContext mCallback;
 
-    public static HashMap<String, GroupApprovalEvent> groupApprovalEventHashMap = new HashMap<>();
-
     @Override
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
         super.initialize(cordova, webView);
@@ -151,6 +147,7 @@ public class JMessagePlugin extends CordovaPlugin {
     void setDebugMode(JSONArray data, CallbackContext callback) throws JSONException {
         JSONObject params = data.getJSONObject(0);
         boolean enable = params.getBoolean("enable");
+        Logger.SHUTDOWNLOG = !enable;
         JMessageClient.setDebugMode(enable);
     }
 
@@ -801,6 +798,7 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     void retractMessage(JSONArray data, final CallbackContext callback) {
+        Logger.d(TAG, "retractMessage:" + data.toString());
         Conversation conversation;
         String messageId;
 
@@ -811,7 +809,6 @@ public class JMessagePlugin extends CordovaPlugin {
                 handleResult(ERR_CODE_CONVERSATION, ERR_MSG_CONVERSATION, callback);
                 return;
             }
-
             messageId = params.getString("messageId");
         } catch (JSONException e) {
             e.printStackTrace();
@@ -915,7 +912,6 @@ public class JMessagePlugin extends CordovaPlugin {
                 handleResult(ERR_CODE_CONVERSATION, "Can't get conversation", callback);
                 return;
             }
-
             messageId = params.getString("messageId");
         } catch (JSONException e) {
             e.printStackTrace();
@@ -924,7 +920,6 @@ public class JMessagePlugin extends CordovaPlugin {
         }
 
         boolean success = conversation.deleteMessage(Integer.parseInt(messageId));
-
         if (success) {
             callback.success();
         } else {
@@ -2334,7 +2329,8 @@ public class JMessagePlugin extends CordovaPlugin {
             List<GroupApprovalEvent> groupApprovalEventList = new ArrayList<>();
 
             for (int i = 0; i < events.length(); i++) {
-                GroupApprovalEvent groupApprovalEvent = groupApprovalEventHashMap.get(events.getString(i));
+                GroupApprovalEvent groupApprovalEvent = EventUtils.getGroupApprovalEvent(mCordovaActivity,
+                        events.getString(i));
                 if (groupApprovalEvent == null) {
                     handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER + ": can't get events.", callback);
                     return;
@@ -2352,6 +2348,9 @@ public class JMessagePlugin extends CordovaPlugin {
                             @Override
                             public void gotResult(int status, String desc) {
                                 handleResult(status, desc, callback);
+                                if (status == 0) {
+                                    EventUtils.removeGroupApprovalEvents(mCordovaActivity, groupApprovalEventList);
+                                }
                             }
                         });
             } else {
@@ -2366,6 +2365,10 @@ public class JMessagePlugin extends CordovaPlugin {
                                     // 统一返回最后一个拒绝结果
                                     if (finalI == groupApprovalEventList.size() - 1) {
                                         handleResult(status, desc, callback);
+                                    }
+                                    if (status == 0) {
+                                        EventUtils.removeGroupApprovalEvent(mCordovaActivity,
+                                                groupApprovalEvent.getEventId() + "");
                                     }
                                 }
                             });
@@ -2834,8 +2837,7 @@ public class JMessagePlugin extends CordovaPlugin {
      * 监听接收入群申请事件
      */
     public void onEvent(GroupApprovalEvent event) throws JSONException {
-        Log.d(TAG, "GroupApprovalEvent, event: " + event);
-        groupApprovalEventHashMap.put(event.getEventId() + "", event);
+        Logger.d(TAG, "GroupApprovalEvent, event: " + event);
         GroupApprovalEvent.Type type = event.getType();
         JSONObject json = new JSONObject();
         json.put("eventId", event.getEventId() + "");
@@ -2868,6 +2870,7 @@ public class JMessagePlugin extends CordovaPlugin {
                 });
             }
         });
+        EventUtils.saveGroupApprovalEvent(mCordovaActivity, event);
 
     }
 
@@ -2875,7 +2878,7 @@ public class JMessagePlugin extends CordovaPlugin {
      * 监听管理员同意入群申请事件
      */
     public void onEvent(GroupApprovedNotificationEvent event) throws JSONException {
-        Log.d(TAG, "GroupApprovedNotificationEvent, event: " + event);
+        Logger.d(TAG, "GroupApprovedNotificationEvent, event: " + event);
         JSONObject json = new JSONObject();
         json.put("isAgree", event.getApprovalResult());
         json.put("applyEventId", event.getApprovalEventID() + "");
@@ -2912,7 +2915,7 @@ public class JMessagePlugin extends CordovaPlugin {
      * 监听管理员拒绝入群申请事件
      */
     public void onEvent(GroupApprovalRefuseEvent event) throws JSONException {
-        Log.d(TAG, "GroupApprovalRefuseEvent, event: " + event);
+        Logger.d(TAG, "GroupApprovalRefuseEvent, event: " + event);
         JSONObject json = new JSONObject();
         json.put("reason", event.getReason());
         json.put("groupId", event.getGid() + "");
