@@ -21,6 +21,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -118,7 +119,15 @@ public class JMessagePlugin extends CordovaPlugin {
                     Method method = JMessagePlugin.class.getDeclaredMethod(action, JSONArray.class,
                             CallbackContext.class);
                     method.invoke(JMessagePlugin.this, data, callback);
+                } catch (NoSuchMethodException e) {
+                    Log.e(TAG, e.toString());
+                } catch (InvocationTargetException e) {
+                    Throwable t = e.getCause();
+                    t.printStackTrace();
+                    Log.e(TAG, t.toString());
+                    Log.e(TAG, e.toString());
                 } catch (Exception e) {
+                    e.printStackTrace();
                     Log.e(TAG, e.toString());
                 }
             }
