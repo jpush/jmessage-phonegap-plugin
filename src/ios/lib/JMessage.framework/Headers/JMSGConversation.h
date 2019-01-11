@@ -13,6 +13,7 @@
 #import <JMessage/JMSGConstants.h>
 #import <JMessage/JMSGUser.h>
 #import <JMessage/JMSGGroup.h>
+#import <JMessage/JMSGChatRoom.h>
 
 @class JMSGMessage;
 @class JMSGAbstractContent;

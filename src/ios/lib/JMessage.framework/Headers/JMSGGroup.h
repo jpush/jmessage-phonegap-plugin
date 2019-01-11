@@ -41,6 +41,40 @@
 @end
 
 /*!
+ * 群公告类
+ */
+@interface JMSGGroupAnnouncement : NSObject
+/// 公告 id
+@property(nonatomic, assign, readonly) UInt32 announcementId;
+/// 群组 id
+@property(nonatomic, strong, readonly) NSString *JMSG_NONNULL gid;
+/// 公告内容
+@property(nonatomic, strong, readonly) NSString *JMSG_NULLABLE text;
+/// 发布者
+@property(nonatomic, strong, readonly) JMSGUser *JMSG_NULLABLE publisher;
+/// 发布时间
+@property(nonatomic, assign, readonly) UInt64 publishTime;
+/// 是否置顶
+@property(nonatomic, assign, readonly) BOOL isTop;
+/// 置顶时间
+@property(nonatomic, assign, readonly) UInt64 topTime;
+
+/*!
+ * @abstract 公告对象转换为 JSON 字符串的表示。
+ */
+- (NSString *JMSG_NULLABLE)toJsonString;
+
+
+/*!
+ * @abstract JSON 字符串 转换为 公告对象。
+ *
+ * @discussion 失败时返回 nil
+ */
++ (JMSGGroupAnnouncement *JMSG_NULLABLE)fromJson:(NSString *JMSG_NONNULL)json;
+
+@end
+
+/*!
  * 群信息类（此类仅用于修改群信息、创建群、群信息展示）
  *
  * #### 注意：
@@ -63,8 +97,8 @@
 @property(nonatomic, strong, readonly) NSString *JMSG_NONNULL avatar;
 /** 群组类型，私有、公开，注意：仅限于创建群组时设置，创建成功之后不允许修改群类型*/
 @property(nonatomic, assign, readwrite) JMSGGroupType groupType;
-/** 群组人数上限*/
-@property(nonatomic, strong, readonly) NSString *JMSG_NONNULL maxMemberCount;
+/** 群组人数上限，注意：仅限于创建群组时可以设置，必须大于 2 */
+@property(nonatomic, strong, readwrite) NSString *JMSG_NONNULL maxMemberCount;
 /** 群组创建时间*/
 @property(nonatomic, assign, readonly) SInt64  ctime;
 
@@ -499,13 +533,107 @@ JMSG_ASSUME_NONNULL_BEGIN
 - (NSArray JMSG_GENERIC(__kindof JMSGUser *)*)groupSilenceMembers;
 
 /*!
- * @abstract 判断用户是否是管理员
+ * @abstract 获取群公告列表
  *
- * @param username  待判断用户的用户名
- * @param appKey    待判断用户的appKey，若传入空则默认使用本应用appKey
+ * @param handler 结果回调。resultObject 是 NSArray 类型，元素是 JMSGGroupAnnouncement
+ *
+ * @since 3.8.0
  */
-- (BOOL)isAdminMemberWithUsername:(NSString *JMSG_NONNULL)username
-                           appKey:(NSString *JMSG_NULLABLE)appKey;
+- (void)groupAnnouncementList:(JMSGCompletionHandler JMSG_NULLABLE)handler;
+
+/*!
+ * @abstract 发布群公告
+ *
+ * @param announcement 公告内容，大小必须在 1KB 以内
+ * @param sendMessage 发布成功后是否需要发一条消息通知群成员，默认：YES
+ * @param handler 结果回调。resultObject 为 JMSGGroupAnnouncement对象， error 为 nil 表示成功.
+ *
+ * @discussion
+ * #### 注意：
+ *
+ * 如果 sendMessage = NO，则 SDK 不会自动发送消息，上层可以在回调或者收到事件后，自己发送消息；
+ * 如果 sendMessage = YES，则在发布公告成功后 SDK 会自动在群里发布一条文本消息，文本内容就是公告内容，另外消息的 extras 里会附带公告的相关数据，上层可根据此数据将 message 对应到相应的公告， extras 里的 key-value 如下，
+ *
+ *    ```
+ *    key(String)       = "jmessage_group_announcement"
+ *    value(JsonString) = {
+ *                        "id" : 公告 id,
+ *                        "text" : 公告内容 text,
+ *                        "publisher_uid" : 发布者 uid,
+ *                        "ctime" : 公告发布时间,
+ *                        "isTop" : 是否置顶,
+ *                        "topTime" : 置顶时间,
+ *                        "gid" : 群 gid
+ *                      }
+ *    ```
+ * 群公告最多100条，发布公告后会有对应事件下发，上层通过 [JMSGGroupDelegate onReceiveGroupAnnouncementEvents:] 监听
+ *
+ * @since 3.8.0
+ */
+- (void)publishGroupAnnouncement:(NSString *JMSG_NONNULL)announcement
+                     sendMessage:(BOOL)sendMessage
+                         handler:(JMSGCompletionHandler JMSG_NULLABLE)handler;
+
+/*!
+ * @abstract 删除群公告
+ *
+ * @param announcementID 公告id
+ * @param handler 结果回调。error 为 nil 表示成功.
+ *
+ * @discussion 删除公告后会有对应事件下发，上层通过 [JMSGGroupDelegate onReceiveGroupAnnouncementEvents:] 监听
+ * @since 3.8.0
+ */
+- (void)deleteGroupAnnouncement:(NSString *JMSG_NONNULL)announcementID
+                        handler:(JMSGCompletionHandler JMSG_NULLABLE)handler;
+
+/*!
+ * @abstract 置顶/取消置顶 群公告
+ *
+ * @param isTop 置顶参数，YES:置顶，NO:取消置顶
+ * @param ID    公告 id
+ * @param handler 结果回调。error 为 nil 表示成功.
+ *
+ * @discussion 置顶公告后会有对应事件下发，上层通过 [JMSGGroupDelegate onReceiveGroupAnnouncementEvents:] 监听
+ * @since 3.8.0
+ */
+- (void)setGroupAnnouncementTop:(BOOL)isTop
+                 announcementID:(NSString *JMSG_NONNULL)ID
+                        handler:(JMSGCompletionHandler JMSG_NULLABLE)handler;
+
+/*!
+ * @abstract 群黑名单列表
+ *
+ * @handler 结果回调. resultObject 是 NSArray 类型，元素是 JMSGUser
+ *
+ * @since 3.8.0
+ */
+- (void)groupBlacklistHandler:(JMSGCompletionHandler JMSG_NULLABLE)handler;
+
+/*!
+ * @abstract 添加群黑名单
+ *
+ * @param usernames 用户名列表
+ * @param appkey   用户 appKey，usernames 中的所有用户必须在同一个 AppKey 下，不填则默认为本应用 appKey
+ * @param handler 结果回调。error 为 nil 表示成功.
+ *
+ * @discussion 黑名单上限100个，超出将无法设置成功，被拉入黑名单用户会被主动踢出群组，且无法再次加入.
+ * @since 3.8.0
+ */
+- (void)addGroupBlacklistWithUsernames:(NSArray <__kindof NSString *>*)usernames
+                                appKey:(NSString *JMSG_NULLABLE)appKey
+                               handler:(JMSGCompletionHandler JMSG_NULLABLE)handler;
+/*!
+ * @abstract 删除群黑名单
+ *
+ * @param usernames 用户名列表
+ * @param appkey   用户 appKey，usernames 中的所有用户必须在同一个 AppKey 下，不填则默认为本应用 appKey
+ * @param handler 结果回调。error 为 nil 表示成功.
+ *
+ * @since 3.8.0
+ */
+- (void)deleteGroupBlacklistWithUsernames:(NSArray <__kindof NSString *>*)usernames
+                                   appKey:(NSString *JMSG_NULLABLE)appKey
+                                  handler:(JMSGCompletionHandler JMSG_NULLABLE)handler;
 
 /*!
  * @abstract 管理员列表
@@ -517,15 +645,14 @@ JMSG_ASSUME_NONNULL_BEGIN
 - (NSArray JMSG_GENERIC(__kindof JMSGUser *)*)groupAdminMembers;
 
 /*!
- * @abstract 移交群主
+ * @abstract 判断用户是否是管理员
  *
- * @param username 新群主用户名
- * @param appkey   新群主用户 AppKey，不填则默认为本应用 AppKey
- * @param handler 结果回调。error 为 nil 表示成功.
+ * @param username  待判断用户的用户名
+ * @param appKey    待判断用户的appKey，若传入空则默认使用本应用appKey
  */
-- (void)transferGroupOwnerWithUsername:(NSString *JMSG_NONNULL)username
-                                appKey:(NSString *JMSG_NULLABLE)appkey
-                     completionHandler:(JMSGCompletionHandler JMSG_NULLABLE)handler;
+- (BOOL)isAdminMemberWithUsername:(NSString *JMSG_NONNULL)username
+                           appKey:(NSString *JMSG_NULLABLE)appKey;
+
 /*!
  * @abstract 添加管理员
  *
@@ -612,6 +739,17 @@ JMSG_ASSUME_NONNULL_BEGIN
  */
 - (void)removeMembersWithUsernameArray:(NSArray JMSG_GENERIC(__kindof NSString *) *)usernameArray
                                 appKey:(NSString *)userAppKey
+                     completionHandler:(JMSGCompletionHandler JMSG_NULLABLE)handler;
+
+/*!
+ * @abstract 移交群主
+ *
+ * @param username 新群主用户名
+ * @param appkey   新群主用户 AppKey，不填则默认为本应用 AppKey
+ * @param handler 结果回调。error 为 nil 表示成功.
+ */
+- (void)transferGroupOwnerWithUsername:(NSString *JMSG_NONNULL)username
+                                appKey:(NSString *JMSG_NULLABLE)appkey
                      completionHandler:(JMSGCompletionHandler JMSG_NULLABLE)handler;
 
 /*!

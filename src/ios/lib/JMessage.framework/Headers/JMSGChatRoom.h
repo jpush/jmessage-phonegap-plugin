@@ -136,6 +136,79 @@ JMSG_ASSUME_NONNULL_BEGIN
 - (void)getChatRoomOwnerInfo:(JMSGCompletionHandler JMSG_NULLABLE)handler;
 
 /*!
+ * @abstract 聊天室的黑名单列表
+ *
+ * @param handler 结果回调. resultObject 是 NSArray 类型，元素是 JMSGUser
+ *
+ * @since 3.8.0
+ */
+- (void)chatRoomBlacklist:(JMSGCompletionHandler JMSG_NULLABLE)handler;
+
+/*!
+ * @abstract 添加黑名单
+ *
+ * @param usernames 用户名列表
+ * @param appkey   用户 appKey，usernames 中的所有用户必须在同一个 AppKey 下，不填则默认为本应用 appKey
+ * @param handler 结果回调。error 为 nil 表示成功.
+ *
+ * @since 3.8.0
+ */
+- (void)addBlacklistWithUsernames:(NSArray <__kindof NSString *>*)usernames
+                           appKey:(NSString *JMSG_NULLABLE)appKey
+                          handler:(JMSGCompletionHandler JMSG_NULLABLE)handler;
+/*!
+ * @abstract 删除黑名单
+ *
+ * @param usernames 用户名列表
+ * @param appkey   用户 appKey，usernames 中的所有用户必须在同一个 AppKey 下，不填则默认为本应用 appKey
+ * @param handler 结果回调。error 为 nil 表示成功.
+ *
+ * @since 3.8.0
+ */
+- (void)deleteBlacklistWithUsernames:(NSArray <__kindof NSString *>*)usernames
+                              appKey:(NSString *JMSG_NULLABLE)appKey
+                             handler:(JMSGCompletionHandler JMSG_NULLABLE)handler;
+
+/*!
+ * @abstract 管理员列表
+ *
+ * @param handler 结果回调. resultObject 是 NSArray 类型，元素是 JMSGUser
+ *
+ * @discussion 注意：返回列表中不包含房主.
+ *
+ * @since 3.8.0
+ */
+- (void)chatRoomAdminList:(JMSGCompletionHandler JMSG_NULLABLE)handler;
+
+/*!
+ * @abstract 添加管理员
+ *
+ * @param usernames 用户名列表
+ * @param appkey    用户 AppKey，不填则默认为本应用 AppKey
+ * @param handler   结果回调。error 为 nil 表示成功.
+ *
+ * @discussion 注意：非 VIP 应用最多设置 15 个管理员，不包括群主本身
+ *
+ * @since 3.8.0
+ */
+- (void)addAdminWithUsernames:(NSArray <__kindof NSString *>*)usernames
+                       appKey:(NSString *JMSG_NULLABLE)appkey
+                      handler:(JMSGCompletionHandler JMSG_NULLABLE)handler;
+
+/*!
+ * @abstract 删除管理员
+ *
+ * @param usernames 用户名列表
+ * @param appkey    用户 AppKey，不填则默认为本应用 AppKey
+ * @param handler   结果回调。error 为 nil 表示成功.
+ *
+ * @since 3.8.0
+ */
+- (void)deleteAdminWithUsernames:(NSArray <__kindof NSString *>*)usernames
+                          appKey:(NSString *JMSG_NULLABLE)appkey
+                         handler:(JMSGCompletionHandler JMSG_NULLABLE)handler;
+
+/*!
  * @abstract 聊天室的展示名
  *
  * @discussion 如果  chatroom.name 为空, 则此接口会返回 chatroom.roomID.

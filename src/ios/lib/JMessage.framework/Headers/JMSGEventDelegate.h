@@ -64,6 +64,27 @@
 @optional
 - (void)onReceiveMessageTransparentEvent:(JMSGMessageTransparentEvent *)transparentEvent;
 
+/*!
+ * @abstract 聊天室管理员变更通知
+ *
+ * @param event 管理员事件列表
+ *
+ * @discussion 事件具体相关属性请查看 JMSGChatRoomAdminChangeEvent 类
+ *
+ * @since 3.8.0
+ */
+- (void)onReceiveChatRoomAdminChangeEvents:(NSArray<__kindof JMSGChatRoomAdminChangeEvent*>*)events;
+
+/*!
+ * @abstract 聊天室黑名单变更通知
+ *
+ * @param event 黑名单事件列表
+ *
+ * @discussion 事件具体相关属性请查看 JMSGChatRoomBlacklisChangetEvent 类
+ *
+ * @since 3.8.0
+ */
+- (void)onReceiveChatRoomBlacklistChangeEvents:(NSArray<__kindof JMSGChatRoomBlacklisChangetEvent*>*)events;
 
 
 ///----------------------------------------------------
