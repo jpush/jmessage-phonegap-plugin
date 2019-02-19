@@ -98,10 +98,10 @@ export type JMCustomMessage = JMNormalMessage & {
 export interface JMEventMessage {
   type: 'event';           // 消息类型
   eventType: 'group_member_added' | 'group_member_removed' | 'group_member_exit';       // 'group_member_added' / 'group_member_removed' / 'group_member_exit'
-  usernames: JMUserInfo[];         // 该事件涉及到的用户 username 数组
+  usernames: string[];         // 该事件涉及到的用户 username 数组
 };
 
-export type JMAllMessage = JMTextMessage | JMVoiceMessage | JMImageMessage | JMFileMessage | JMEventMessage;
+export type JMAllMessage = JMTextMessage | JMVoiceMessage | JMImageMessage | JMFileMessage | JMEventMessage | JMCustomMessage;
 
 export type JMMessageEventListener = (message: JMAllMessage) => void;
 
