@@ -1,32 +1,17 @@
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-/**
- *
- * TODO:
- * - Add Promise callback params type
- * - Add ChatRoom API
- * - Test ionic plugin
- * - Remove this note
- */
-import { Injectable } from '@angular/core';
-import { Plugin, Cordova, CordovaProperty, IonicNativePlugin } from '@ionic-native/core';
+import { IonicNativePlugin, cordovaPropertyGet, cordovaPropertySet, cordova } from '@ionic-native/core';
 ;
 ;
 ;
@@ -39,1109 +24,147 @@ import { Plugin, Cordova, CordovaProperty, IonicNativePlugin } from '@ionic-nati
 ;
 ;
 ;
-// TODO: to Promise
-var JMChatRoom = (function () {
-    function JMChatRoom() {
+var JMChatRoomOriginal = /** @class */ (function () {
+    function JMChatRoomOriginal() {
     }
-    JMChatRoom.prototype.getChatRoomInfoListOfApp = function (params, success, fail) { };
-    JMChatRoom.prototype.getChatRoomInfoListOfUser = function (success, fail) { };
-    JMChatRoom.prototype.getChatRoomInfoListById = function (params, success, fail) { };
-    JMChatRoom.prototype.getChatRoomOwner = function (params, success, fail) { };
-    JMChatRoom.prototype.enterChatRoom = function (obj, success, fail) { };
-    JMChatRoom.prototype.exitChatRoom = function (params, success, fail) { };
-    JMChatRoom.prototype.getChatRoomConversation = function (params, success, fail) { };
-    JMChatRoom.prototype.getChatRoomConversationList = function (success, fail) { };
-    JMChatRoom.decorators = [
-        { type: Injectable },
-    ];
-    /** @nocollapse */
-    JMChatRoom.ctorParameters = function () { return []; };
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object, Function, Function]),
-        __metadata("design:returntype", void 0)
-    ], JMChatRoom.prototype, "getChatRoomInfoListOfApp", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Function, Function]),
-        __metadata("design:returntype", void 0)
-    ], JMChatRoom.prototype, "getChatRoomInfoListOfUser", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object, Function, Function]),
-        __metadata("design:returntype", void 0)
-    ], JMChatRoom.prototype, "getChatRoomInfoListById", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object, Function, Function]),
-        __metadata("design:returntype", void 0)
-    ], JMChatRoom.prototype, "getChatRoomOwner", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object, Function, Function]),
-        __metadata("design:returntype", void 0)
-    ], JMChatRoom.prototype, "enterChatRoom", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object, Function, Function]),
-        __metadata("design:returntype", void 0)
-    ], JMChatRoom.prototype, "exitChatRoom", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object, Function, Function]),
-        __metadata("design:returntype", void 0)
-    ], JMChatRoom.prototype, "getChatRoomConversation", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Function, Function]),
-        __metadata("design:returntype", void 0)
-    ], JMChatRoom.prototype, "getChatRoomConversationList", null);
-    return JMChatRoom;
+    JMChatRoomOriginal.prototype.getChatRoomInfoListOfApp = function (params, success, fail) { return cordova(this, "getChatRoomInfoListOfApp", {}, arguments); };
+    JMChatRoomOriginal.prototype.getChatRoomInfoListOfUser = function (success, fail) { return cordova(this, "getChatRoomInfoListOfUser", {}, arguments); };
+    JMChatRoomOriginal.prototype.getChatRoomInfoListById = function (params, success, fail) { return cordova(this, "getChatRoomInfoListById", {}, arguments); };
+    JMChatRoomOriginal.prototype.getChatRoomOwner = function (params, success, fail) { return cordova(this, "getChatRoomOwner", {}, arguments); };
+    JMChatRoomOriginal.prototype.enterChatRoom = function (obj, success, fail) { return cordova(this, "enterChatRoom", {}, arguments); };
+    JMChatRoomOriginal.prototype.exitChatRoom = function (params, success, fail) { return cordova(this, "exitChatRoom", {}, arguments); };
+    JMChatRoomOriginal.prototype.getChatRoomConversation = function (params, success, fail) { return cordova(this, "getChatRoomConversation", {}, arguments); };
+    JMChatRoomOriginal.prototype.getChatRoomConversationList = function (success, fail) { return cordova(this, "getChatRoomConversationList", {}, arguments); };
+    JMChatRoomOriginal.providedIn = "root";
+    return JMChatRoomOriginal;
 }());
+var JMChatRoom = new JMChatRoomOriginal();
 export { JMChatRoom };
-/**
- * @name jmessage
- * @description
- * This plugin does something
- */
-var JMessagePlugin = (function (_super) {
-    __extends(JMessagePlugin, _super);
-    function JMessagePlugin() {
+var JMessagePluginOriginal = /** @class */ (function (_super) {
+    __extends(JMessagePluginOriginal, _super);
+    function JMessagePluginOriginal() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    /**
-     * This function does something
-     * @param obj {string} Some param to configure something
-     * @param arg2 {number} Another param to configure something
-     * @return {Promise<any>} Returns a promise that resolves when something happens
-     */
-    JMessagePlugin.prototype.init = function (params) { };
-    JMessagePlugin.prototype.setDebugMode = function (params) { };
-    JMessagePlugin.prototype.register = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.login = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.logout = function () { };
-    JMessagePlugin.prototype.setBadge = function (params) { };
-    JMessagePlugin.prototype.getMyInfo = function () {
-        return; // We add return; here to avoid any IDE / Compiler errors
-    };
-    JMessagePlugin.prototype.getUserInfo = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.updateMyPassword = function (params) {
-        return;
-    };
-    /**
-     * 更新当前用户头像。
-     * @param {object} params = {
-     *  imgPath: string // 本地图片绝对路径。
-     * }
-     * 注意 Android 与 iOS 的文件路径是不同的：
-     *   - Android 类似：/storage/emulated/0/DCIM/Camera/IMG_20160526_130223.jpg
-     *   - iOS 类似：/var/mobile/Containers/Data/Application/7DC5CDFF-6581-4AD3-B165-B604EBAB1250/tmp/photo.jpg
-     */
-    JMessagePlugin.prototype.updateMyAvatar = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.updateMyInfo = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.updateGroupAvatar = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.downloadThumbGroupAvatar = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.downloadOriginalGroupAvatar = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.setConversationExtras = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.sendTextMessage = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.sendImageMessage = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.sendVoiceMessage = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.sendCustomMessage = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.sendLocationMessage = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.sendFileMessage = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.retractMessage = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.getHistoryMessages = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.getMessageById = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.deleteMessageById = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.sendInvitationRequest = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.acceptInvitation = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.declineInvitation = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.removeFromFriendList = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.updateFriendNoteName = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.updateFriendNoteText = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.getFriends = function () {
-        return;
-    };
-    JMessagePlugin.prototype.createGroup = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.getGroupIds = function () {
-        return;
-    };
-    JMessagePlugin.prototype.getGroupInfo = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.updateGroupInfo = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.addGroupMembers = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.removeGroupMembers = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.exitGroup = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.getGroupMembers = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.addUsersToBlacklist = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.removeUsersFromBlacklist = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.getBlacklist = function () {
-        return;
-    };
-    JMessagePlugin.prototype.setNoDisturb = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.getNoDisturbList = function () {
-        return;
-    };
-    JMessagePlugin.prototype.setNoDisturbGlobal = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.isNoDisturbGlobal = function () {
-        return;
-    };
-    JMessagePlugin.prototype.blockGroupMessage = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.isGroupBlocked = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.getBlockedGroupList = function () {
-        return;
-    };
-    JMessagePlugin.prototype.downloadThumbUserAvatar = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.downloadOriginalUserAvatar = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.downloadThumbImage = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.downloadOriginalImage = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.downloadVoiceFile = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.downloadFile = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.createConversation = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.deleteConversation = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.enterConversation = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.exitConversation = function (params) { };
-    JMessagePlugin.prototype.getConversation = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.getConversations = function () {
-        return;
-    };
-    JMessagePlugin.prototype.resetUnreadMessageCount = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.transferGroupOwner = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.setGroupMemberSilence = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.isSilenceMember = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.groupSilenceMembers = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.setGroupNickname = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.enterChatRoom = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.exitChatRoom = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.getChatRoomConversation = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.getChatRoomConversationList = function () {
-        return;
-    };
-    JMessagePlugin.prototype.getAllUnreadCount = function () {
-        return; // We add return; here to avoid any IDE / Compiler errors
-    };
-    JMessagePlugin.prototype.addGroupAdmins = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.removeGroupAdmins = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.changeGroupType = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.getPublicGroupInfos = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.applyJoinGroup = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.processApplyJoinGroup = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.dissolveGroup = function (params) {
-        return;
-    };
-    JMessagePlugin.prototype.addReceiveMessageListener = function (params) {
-    };
-    JMessagePlugin.prototype.removeReceiveMessageListener = function (params) {
-    };
-    JMessagePlugin.prototype.addClickMessageNotificationListener = function (params) {
-    };
-    JMessagePlugin.prototype.removeClickMessageNotificationListener = function (params) {
-    };
-    JMessagePlugin.prototype.addSyncOfflineMessageListener = function (params) {
-    };
-    JMessagePlugin.prototype.removeSyncOfflineMessageListener = function (params) {
-    };
-    JMessagePlugin.prototype.addSyncRoamingMessageListener = function (params) {
-    };
-    JMessagePlugin.prototype.removeSyncRoamingMessageListener = function (params) {
-    };
-    JMessagePlugin.prototype.addLoginStateChangedListener = function (params) {
-    };
-    JMessagePlugin.prototype.removeLoginStateChangedListener = function (params) {
-    };
-    JMessagePlugin.prototype.addContactNotifyListener = function (params) {
-    };
-    JMessagePlugin.prototype.removeContactNotifyListener = function (params) {
-    };
-    JMessagePlugin.prototype.addMessageRetractListener = function (params) {
-    };
-    JMessagePlugin.prototype.removeMessageRetractListener = function (params) {
-    };
-    JMessagePlugin.prototype.addReceiveTransCommandListener = function (params) {
-    };
-    JMessagePlugin.prototype.removeReceiveTransCommandListener = function (params) {
-    };
-    JMessagePlugin.prototype.addReceiveChatRoomMessageListener = function (params) {
-    };
-    JMessagePlugin.prototype.removeReceiveChatRoomMessageListener = function (params) {
-    };
-    JMessagePlugin.prototype.addReceiveApplyJoinGroupApprovalListener = function (params) {
-    };
-    JMessagePlugin.prototype.removeReceiveApplyJoinGroupApprovalListener = function (params) {
-    };
-    JMessagePlugin.prototype.addReceiveGroupAdminRejectListener = function (params) {
-    };
-    JMessagePlugin.prototype.removeReceiveGroupAdminRejectListener = function (params) {
-    };
-    JMessagePlugin.prototype.addReceiveGroupAdminApprovalListener = function (params) {
-    };
-    JMessagePlugin.prototype.removeReceiveGroupAdminApprovalListener = function (params) {
-    };
-    JMessagePlugin.decorators = [
-        { type: Injectable },
-    ];
-    /** @nocollapse */
-    JMessagePlugin.ctorParameters = function () { return []; };
-    __decorate([
-        Cordova({
-            sync: true,
-            platforms: ['iOS', 'Android']
-        }),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", void 0)
-    ], JMessagePlugin.prototype, "init", null);
-    __decorate([
-        Cordova({
-            sync: true,
-            platforms: ['iOS', 'Android']
-        }),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", void 0)
-    ], JMessagePlugin.prototype, "setDebugMode", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "register", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "login", null);
-    __decorate([
-        Cordova({
-            sync: true,
-            platforms: ['iOS', 'Android']
-        }),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", []),
-        __metadata("design:returntype", void 0)
-    ], JMessagePlugin.prototype, "logout", null);
-    __decorate([
-        Cordova({
-            sync: true,
-            platforms: ['iOS', 'Android']
-        }),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", void 0)
-    ], JMessagePlugin.prototype, "setBadge", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", []),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "getMyInfo", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "getUserInfo", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "updateMyPassword", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "updateMyAvatar", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "updateMyInfo", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "updateGroupAvatar", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "downloadThumbGroupAvatar", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "downloadOriginalGroupAvatar", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "setConversationExtras", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "sendTextMessage", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "sendImageMessage", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "sendVoiceMessage", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "sendCustomMessage", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "sendLocationMessage", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "sendFileMessage", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "retractMessage", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "getHistoryMessages", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "getMessageById", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "deleteMessageById", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "sendInvitationRequest", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "acceptInvitation", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "declineInvitation", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "removeFromFriendList", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "updateFriendNoteName", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "updateFriendNoteText", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", []),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "getFriends", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "createGroup", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", []),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "getGroupIds", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "getGroupInfo", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "updateGroupInfo", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "addGroupMembers", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "removeGroupMembers", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "exitGroup", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "getGroupMembers", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "addUsersToBlacklist", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "removeUsersFromBlacklist", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", []),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "getBlacklist", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "setNoDisturb", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", []),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "getNoDisturbList", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "setNoDisturbGlobal", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", []),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "isNoDisturbGlobal", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "blockGroupMessage", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "isGroupBlocked", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", []),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "getBlockedGroupList", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "downloadThumbUserAvatar", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "downloadOriginalUserAvatar", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "downloadThumbImage", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "downloadOriginalImage", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "downloadVoiceFile", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "downloadFile", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "createConversation", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "deleteConversation", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "enterConversation", null);
-    __decorate([
-        Cordova({
-            sync: true,
-            platforms: ['iOS', 'Android']
-        }),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", void 0)
-    ], JMessagePlugin.prototype, "exitConversation", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "getConversation", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", []),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "getConversations", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "resetUnreadMessageCount", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "transferGroupOwner", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "setGroupMemberSilence", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "isSilenceMember", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "groupSilenceMembers", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "setGroupNickname", null);
-    __decorate([
-        CordovaProperty,
-        __metadata("design:type", JMChatRoom)
-    ], JMessagePlugin.prototype, "ChatRoom", void 0);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "enterChatRoom", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "exitChatRoom", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "getChatRoomConversation", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", []),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "getChatRoomConversationList", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", []),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "getAllUnreadCount", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "addGroupAdmins", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "removeGroupAdmins", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "changeGroupType", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "getPublicGroupInfos", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "applyJoinGroup", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "processApplyJoinGroup", null);
-    __decorate([
-        Cordova(),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", Promise)
-    ], JMessagePlugin.prototype, "dissolveGroup", null);
-    __decorate([
-        Cordova({
-            sync: true,
-            platforms: ['iOS', 'Android']
-        }),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Function]),
-        __metadata("design:returntype", void 0)
-    ], JMessagePlugin.prototype, "addReceiveMessageListener", null);
-    __decorate([
-        Cordova({
-            sync: true,
-            platforms: ['iOS', 'Android']
-        }),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Function]),
-        __metadata("design:returntype", void 0)
-    ], JMessagePlugin.prototype, "removeReceiveMessageListener", null);
-    __decorate([
-        Cordova({
-            sync: true,
-            platforms: ['iOS', 'Android']
-        }),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Function]),
-        __metadata("design:returntype", void 0)
-    ], JMessagePlugin.prototype, "addClickMessageNotificationListener", null);
-    __decorate([
-        Cordova({
-            sync: true,
-            platforms: ['iOS', 'Android']
-        }),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Function]),
-        __metadata("design:returntype", void 0)
-    ], JMessagePlugin.prototype, "removeClickMessageNotificationListener", null);
-    __decorate([
-        Cordova({
-            sync: true,
-            platforms: ['iOS', 'Android']
-        }),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Function]),
-        __metadata("design:returntype", void 0)
-    ], JMessagePlugin.prototype, "addSyncOfflineMessageListener", null);
-    __decorate([
-        Cordova({
-            sync: true,
-            platforms: ['iOS', 'Android']
-        }),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Function]),
-        __metadata("design:returntype", void 0)
-    ], JMessagePlugin.prototype, "removeSyncOfflineMessageListener", null);
-    __decorate([
-        Cordova({
-            sync: true,
-            platforms: ['iOS', 'Android']
-        }),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Function]),
-        __metadata("design:returntype", void 0)
-    ], JMessagePlugin.prototype, "addSyncRoamingMessageListener", null);
-    __decorate([
-        Cordova({
-            sync: true,
-            platforms: ['iOS', 'Android']
-        }),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Function]),
-        __metadata("design:returntype", void 0)
-    ], JMessagePlugin.prototype, "removeSyncRoamingMessageListener", null);
-    __decorate([
-        Cordova({
-            sync: true,
-            platforms: ['iOS', 'Android']
-        }),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Function]),
-        __metadata("design:returntype", void 0)
-    ], JMessagePlugin.prototype, "addLoginStateChangedListener", null);
-    __decorate([
-        Cordova({
-            sync: true,
-            platforms: ['iOS', 'Android']
-        }),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Function]),
-        __metadata("design:returntype", void 0)
-    ], JMessagePlugin.prototype, "removeLoginStateChangedListener", null);
-    __decorate([
-        Cordova({
-            sync: true,
-            platforms: ['iOS', 'Android']
-        }),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Function]),
-        __metadata("design:returntype", void 0)
-    ], JMessagePlugin.prototype, "addContactNotifyListener", null);
-    __decorate([
-        Cordova({
-            sync: true,
-            platforms: ['iOS', 'Android']
-        }),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Function]),
-        __metadata("design:returntype", void 0)
-    ], JMessagePlugin.prototype, "removeContactNotifyListener", null);
-    __decorate([
-        Cordova({
-            sync: true,
-            platforms: ['iOS', 'Android']
-        }),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Function]),
-        __metadata("design:returntype", void 0)
-    ], JMessagePlugin.prototype, "addMessageRetractListener", null);
-    __decorate([
-        Cordova({
-            sync: true,
-            platforms: ['iOS', 'Android']
-        }),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Function]),
-        __metadata("design:returntype", void 0)
-    ], JMessagePlugin.prototype, "removeMessageRetractListener", null);
-    __decorate([
-        Cordova({
-            sync: true,
-            platforms: ['iOS', 'Android']
-        }),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Function]),
-        __metadata("design:returntype", void 0)
-    ], JMessagePlugin.prototype, "addReceiveTransCommandListener", null);
-    __decorate([
-        Cordova({
-            sync: true,
-            platforms: ['iOS', 'Android']
-        }),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Function]),
-        __metadata("design:returntype", void 0)
-    ], JMessagePlugin.prototype, "removeReceiveTransCommandListener", null);
-    __decorate([
-        Cordova({
-            sync: true,
-            platforms: ['iOS', 'Android']
-        }),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Function]),
-        __metadata("design:returntype", void 0)
-    ], JMessagePlugin.prototype, "addReceiveChatRoomMessageListener", null);
-    __decorate([
-        Cordova({
-            sync: true,
-            platforms: ['iOS', 'Android']
-        }),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Function]),
-        __metadata("design:returntype", void 0)
-    ], JMessagePlugin.prototype, "removeReceiveChatRoomMessageListener", null);
-    __decorate([
-        Cordova({
-            sync: true,
-            platforms: ['iOS', 'Android']
-        }),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Function]),
-        __metadata("design:returntype", void 0)
-    ], JMessagePlugin.prototype, "addReceiveApplyJoinGroupApprovalListener", null);
-    __decorate([
-        Cordova({
-            sync: true,
-            platforms: ['iOS', 'Android']
-        }),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Function]),
-        __metadata("design:returntype", void 0)
-    ], JMessagePlugin.prototype, "removeReceiveApplyJoinGroupApprovalListener", null);
-    __decorate([
-        Cordova({
-            sync: true,
-            platforms: ['iOS', 'Android']
-        }),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Function]),
-        __metadata("design:returntype", void 0)
-    ], JMessagePlugin.prototype, "addReceiveGroupAdminRejectListener", null);
-    __decorate([
-        Cordova({
-            sync: true,
-            platforms: ['iOS', 'Android']
-        }),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Function]),
-        __metadata("design:returntype", void 0)
-    ], JMessagePlugin.prototype, "removeReceiveGroupAdminRejectListener", null);
-    __decorate([
-        Cordova({
-            sync: true,
-            platforms: ['iOS', 'Android']
-        }),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Function]),
-        __metadata("design:returntype", void 0)
-    ], JMessagePlugin.prototype, "addReceiveGroupAdminApprovalListener", null);
-    __decorate([
-        Cordova({
-            sync: true,
-            platforms: ['iOS', 'Android']
-        }),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Function]),
-        __metadata("design:returntype", void 0)
-    ], JMessagePlugin.prototype, "removeReceiveGroupAdminApprovalListener", null);
-    JMessagePlugin = __decorate([
-        Plugin({
-            pluginName: 'JMessagePlugin',
-            plugin: 'jmessage-phonegap-plugin',
-            pluginRef: 'JMessage',
-            repo: 'https://github.com/jpush/jmessage-phonegap-plugin',
-            install: 'cordova plugin add jmessage-phonegap-plugin --variable APP_KEY=your_app_key',
-            installVariables: ['APP_KEY'],
-            platforms: ['Android', 'iOS']
-        })
-    ], JMessagePlugin);
-    return JMessagePlugin;
+    JMessagePluginOriginal.prototype.functionName = function (arg1, arg2) { return cordova(this, "functionName", {}, arguments); };
+    JMessagePluginOriginal.prototype.init = function (params) { return cordova(this, "init", { "sync": true, "platforms": ["iOS", "Android"] }, arguments); };
+    JMessagePluginOriginal.prototype.setDebugMode = function (params) { return cordova(this, "setDebugMode", { "sync": true, "platforms": ["iOS", "Android"] }, arguments); };
+    JMessagePluginOriginal.prototype.register = function (params) { return cordova(this, "register", {}, arguments); };
+    JMessagePluginOriginal.prototype.login = function (params) { return cordova(this, "login", {}, arguments); };
+    JMessagePluginOriginal.prototype.logout = function () { return cordova(this, "logout", { "sync": true, "platforms": ["iOS", "Android"] }, arguments); };
+    JMessagePluginOriginal.prototype.setBadge = function (params) { return cordova(this, "setBadge", { "sync": true, "platforms": ["iOS", "Android"] }, arguments); };
+    JMessagePluginOriginal.prototype.getMyInfo = function () { return cordova(this, "getMyInfo", {}, arguments); };
+    JMessagePluginOriginal.prototype.getUserInfo = function (params) { return cordova(this, "getUserInfo", {}, arguments); };
+    JMessagePluginOriginal.prototype.updateMyPassword = function (params) { return cordova(this, "updateMyPassword", {}, arguments); };
+    JMessagePluginOriginal.prototype.updateMyAvatar = function (params) { return cordova(this, "updateMyAvatar", {}, arguments); };
+    JMessagePluginOriginal.prototype.updateMyInfo = function (params) { return cordova(this, "updateMyInfo", {}, arguments); };
+    JMessagePluginOriginal.prototype.updateGroupAvatar = function (params) { return cordova(this, "updateGroupAvatar", {}, arguments); };
+    JMessagePluginOriginal.prototype.downloadThumbGroupAvatar = function (params) { return cordova(this, "downloadThumbGroupAvatar", {}, arguments); };
+    JMessagePluginOriginal.prototype.downloadOriginalGroupAvatar = function (params) { return cordova(this, "downloadOriginalGroupAvatar", {}, arguments); };
+    JMessagePluginOriginal.prototype.setConversationExtras = function (params) { return cordova(this, "setConversationExtras", {}, arguments); };
+    JMessagePluginOriginal.prototype.sendTextMessage = function (params) { return cordova(this, "sendTextMessage", {}, arguments); };
+    JMessagePluginOriginal.prototype.sendImageMessage = function (params) { return cordova(this, "sendImageMessage", {}, arguments); };
+    JMessagePluginOriginal.prototype.sendVoiceMessage = function (params) { return cordova(this, "sendVoiceMessage", {}, arguments); };
+    JMessagePluginOriginal.prototype.sendCustomMessage = function (params) { return cordova(this, "sendCustomMessage", {}, arguments); };
+    JMessagePluginOriginal.prototype.sendLocationMessage = function (params) { return cordova(this, "sendLocationMessage", {}, arguments); };
+    JMessagePluginOriginal.prototype.sendFileMessage = function (params) { return cordova(this, "sendFileMessage", {}, arguments); };
+    JMessagePluginOriginal.prototype.retractMessage = function (params) { return cordova(this, "retractMessage", {}, arguments); };
+    JMessagePluginOriginal.prototype.getHistoryMessages = function (params) { return cordova(this, "getHistoryMessages", {}, arguments); };
+    JMessagePluginOriginal.prototype.getMessageById = function (params) { return cordova(this, "getMessageById", {}, arguments); };
+    JMessagePluginOriginal.prototype.deleteMessageById = function (params) { return cordova(this, "deleteMessageById", {}, arguments); };
+    JMessagePluginOriginal.prototype.sendInvitationRequest = function (params) { return cordova(this, "sendInvitationRequest", {}, arguments); };
+    JMessagePluginOriginal.prototype.acceptInvitation = function (params) { return cordova(this, "acceptInvitation", {}, arguments); };
+    JMessagePluginOriginal.prototype.declineInvitation = function (params) { return cordova(this, "declineInvitation", {}, arguments); };
+    JMessagePluginOriginal.prototype.removeFromFriendList = function (params) { return cordova(this, "removeFromFriendList", {}, arguments); };
+    JMessagePluginOriginal.prototype.updateFriendNoteName = function (params) { return cordova(this, "updateFriendNoteName", {}, arguments); };
+    JMessagePluginOriginal.prototype.updateFriendNoteText = function (params) { return cordova(this, "updateFriendNoteText", {}, arguments); };
+    JMessagePluginOriginal.prototype.getFriends = function () { return cordova(this, "getFriends", {}, arguments); };
+    JMessagePluginOriginal.prototype.createGroup = function (params) { return cordova(this, "createGroup", {}, arguments); };
+    JMessagePluginOriginal.prototype.getGroupIds = function () { return cordova(this, "getGroupIds", {}, arguments); };
+    JMessagePluginOriginal.prototype.getGroupInfo = function (params) { return cordova(this, "getGroupInfo", {}, arguments); };
+    JMessagePluginOriginal.prototype.updateGroupInfo = function (params) { return cordova(this, "updateGroupInfo", {}, arguments); };
+    JMessagePluginOriginal.prototype.addGroupMembers = function (params) { return cordova(this, "addGroupMembers", {}, arguments); };
+    JMessagePluginOriginal.prototype.removeGroupMembers = function (params) { return cordova(this, "removeGroupMembers", {}, arguments); };
+    JMessagePluginOriginal.prototype.exitGroup = function (params) { return cordova(this, "exitGroup", {}, arguments); };
+    JMessagePluginOriginal.prototype.getGroupMembers = function (params) { return cordova(this, "getGroupMembers", {}, arguments); };
+    JMessagePluginOriginal.prototype.addUsersToBlacklist = function (params) { return cordova(this, "addUsersToBlacklist", {}, arguments); };
+    JMessagePluginOriginal.prototype.removeUsersFromBlacklist = function (params) { return cordova(this, "removeUsersFromBlacklist", {}, arguments); };
+    JMessagePluginOriginal.prototype.getBlacklist = function () { return cordova(this, "getBlacklist", {}, arguments); };
+    JMessagePluginOriginal.prototype.setNoDisturb = function (params) { return cordova(this, "setNoDisturb", {}, arguments); };
+    JMessagePluginOriginal.prototype.getNoDisturbList = function () { return cordova(this, "getNoDisturbList", {}, arguments); };
+    JMessagePluginOriginal.prototype.setNoDisturbGlobal = function (params) { return cordova(this, "setNoDisturbGlobal", {}, arguments); };
+    JMessagePluginOriginal.prototype.isNoDisturbGlobal = function () { return cordova(this, "isNoDisturbGlobal", {}, arguments); };
+    JMessagePluginOriginal.prototype.blockGroupMessage = function (params) { return cordova(this, "blockGroupMessage", {}, arguments); };
+    JMessagePluginOriginal.prototype.isGroupBlocked = function (params) { return cordova(this, "isGroupBlocked", {}, arguments); };
+    JMessagePluginOriginal.prototype.getBlockedGroupList = function () { return cordova(this, "getBlockedGroupList", {}, arguments); };
+    JMessagePluginOriginal.prototype.downloadThumbUserAvatar = function (params) { return cordova(this, "downloadThumbUserAvatar", {}, arguments); };
+    JMessagePluginOriginal.prototype.downloadOriginalUserAvatar = function (params) { return cordova(this, "downloadOriginalUserAvatar", {}, arguments); };
+    JMessagePluginOriginal.prototype.downloadThumbImage = function (params) { return cordova(this, "downloadThumbImage", {}, arguments); };
+    JMessagePluginOriginal.prototype.downloadOriginalImage = function (params) { return cordova(this, "downloadOriginalImage", {}, arguments); };
+    JMessagePluginOriginal.prototype.downloadVoiceFile = function (params) { return cordova(this, "downloadVoiceFile", {}, arguments); };
+    JMessagePluginOriginal.prototype.downloadFile = function (params) { return cordova(this, "downloadFile", {}, arguments); };
+    JMessagePluginOriginal.prototype.createConversation = function (params) { return cordova(this, "createConversation", {}, arguments); };
+    JMessagePluginOriginal.prototype.deleteConversation = function (params) { return cordova(this, "deleteConversation", {}, arguments); };
+    JMessagePluginOriginal.prototype.enterConversation = function (params) { return cordova(this, "enterConversation", {}, arguments); };
+    JMessagePluginOriginal.prototype.exitConversation = function (params) { return cordova(this, "exitConversation", { "sync": true, "platforms": ["iOS", "Android"] }, arguments); };
+    JMessagePluginOriginal.prototype.getConversation = function (params) { return cordova(this, "getConversation", {}, arguments); };
+    JMessagePluginOriginal.prototype.getConversations = function () { return cordova(this, "getConversations", {}, arguments); };
+    JMessagePluginOriginal.prototype.resetUnreadMessageCount = function (params) { return cordova(this, "resetUnreadMessageCount", {}, arguments); };
+    JMessagePluginOriginal.prototype.transferGroupOwner = function (params) { return cordova(this, "transferGroupOwner", {}, arguments); };
+    JMessagePluginOriginal.prototype.setGroupMemberSilence = function (params) { return cordova(this, "setGroupMemberSilence", {}, arguments); };
+    JMessagePluginOriginal.prototype.isSilenceMember = function (params) { return cordova(this, "isSilenceMember", {}, arguments); };
+    JMessagePluginOriginal.prototype.groupSilenceMembers = function (params) { return cordova(this, "groupSilenceMembers", {}, arguments); };
+    JMessagePluginOriginal.prototype.setGroupNickname = function (params) { return cordova(this, "setGroupNickname", {}, arguments); };
+    JMessagePluginOriginal.prototype.enterChatRoom = function (params) { return cordova(this, "enterChatRoom", {}, arguments); };
+    JMessagePluginOriginal.prototype.exitChatRoom = function (params) { return cordova(this, "exitChatRoom", {}, arguments); };
+    JMessagePluginOriginal.prototype.getChatRoomConversation = function (params) { return cordova(this, "getChatRoomConversation", {}, arguments); };
+    JMessagePluginOriginal.prototype.getChatRoomConversationList = function () { return cordova(this, "getChatRoomConversationList", {}, arguments); };
+    JMessagePluginOriginal.prototype.getAllUnreadCount = function () { return cordova(this, "getAllUnreadCount", {}, arguments); };
+    JMessagePluginOriginal.prototype.addGroupAdmins = function (params) { return cordova(this, "addGroupAdmins", {}, arguments); };
+    JMessagePluginOriginal.prototype.removeGroupAdmins = function (params) { return cordova(this, "removeGroupAdmins", {}, arguments); };
+    JMessagePluginOriginal.prototype.changeGroupType = function (params) { return cordova(this, "changeGroupType", {}, arguments); };
+    JMessagePluginOriginal.prototype.getPublicGroupInfos = function (params) { return cordova(this, "getPublicGroupInfos", {}, arguments); };
+    JMessagePluginOriginal.prototype.applyJoinGroup = function (params) { return cordova(this, "applyJoinGroup", {}, arguments); };
+    JMessagePluginOriginal.prototype.processApplyJoinGroup = function (params) { return cordova(this, "processApplyJoinGroup", {}, arguments); };
+    JMessagePluginOriginal.prototype.dissolveGroup = function (params) { return cordova(this, "dissolveGroup", {}, arguments); };
+    JMessagePluginOriginal.prototype.addReceiveMessageListener = function (params) { return cordova(this, "addReceiveMessageListener", { "sync": true, "platforms": ["iOS", "Android"] }, arguments); };
+    JMessagePluginOriginal.prototype.removeReceiveMessageListener = function (params) { return cordova(this, "removeReceiveMessageListener", { "sync": true, "platforms": ["iOS", "Android"] }, arguments); };
+    JMessagePluginOriginal.prototype.addClickMessageNotificationListener = function (params) { return cordova(this, "addClickMessageNotificationListener", { "sync": true, "platforms": ["iOS", "Android"] }, arguments); };
+    JMessagePluginOriginal.prototype.removeClickMessageNotificationListener = function (params) { return cordova(this, "removeClickMessageNotificationListener", { "sync": true, "platforms": ["iOS", "Android"] }, arguments); };
+    JMessagePluginOriginal.prototype.addSyncOfflineMessageListener = function (params) { return cordova(this, "addSyncOfflineMessageListener", { "sync": true, "platforms": ["iOS", "Android"] }, arguments); };
+    JMessagePluginOriginal.prototype.removeSyncOfflineMessageListener = function (params) { return cordova(this, "removeSyncOfflineMessageListener", { "sync": true, "platforms": ["iOS", "Android"] }, arguments); };
+    JMessagePluginOriginal.prototype.addSyncRoamingMessageListener = function (params) { return cordova(this, "addSyncRoamingMessageListener", { "sync": true, "platforms": ["iOS", "Android"] }, arguments); };
+    JMessagePluginOriginal.prototype.removeSyncRoamingMessageListener = function (params) { return cordova(this, "removeSyncRoamingMessageListener", { "sync": true, "platforms": ["iOS", "Android"] }, arguments); };
+    JMessagePluginOriginal.prototype.addLoginStateChangedListener = function (params) { return cordova(this, "addLoginStateChangedListener", { "sync": true, "platforms": ["iOS", "Android"] }, arguments); };
+    JMessagePluginOriginal.prototype.removeLoginStateChangedListener = function (params) { return cordova(this, "removeLoginStateChangedListener", { "sync": true, "platforms": ["iOS", "Android"] }, arguments); };
+    JMessagePluginOriginal.prototype.addContactNotifyListener = function (params) { return cordova(this, "addContactNotifyListener", { "sync": true, "platforms": ["iOS", "Android"] }, arguments); };
+    JMessagePluginOriginal.prototype.removeContactNotifyListener = function (params) { return cordova(this, "removeContactNotifyListener", { "sync": true, "platforms": ["iOS", "Android"] }, arguments); };
+    JMessagePluginOriginal.prototype.addMessageRetractListener = function (params) { return cordova(this, "addMessageRetractListener", { "sync": true, "platforms": ["iOS", "Android"] }, arguments); };
+    JMessagePluginOriginal.prototype.removeMessageRetractListener = function (params) { return cordova(this, "removeMessageRetractListener", { "sync": true, "platforms": ["iOS", "Android"] }, arguments); };
+    JMessagePluginOriginal.prototype.addReceiveTransCommandListener = function (params) { return cordova(this, "addReceiveTransCommandListener", { "sync": true, "platforms": ["iOS", "Android"] }, arguments); };
+    JMessagePluginOriginal.prototype.removeReceiveTransCommandListener = function (params) { return cordova(this, "removeReceiveTransCommandListener", { "sync": true, "platforms": ["iOS", "Android"] }, arguments); };
+    JMessagePluginOriginal.prototype.addReceiveChatRoomMessageListener = function (params) { return cordova(this, "addReceiveChatRoomMessageListener", { "sync": true, "platforms": ["iOS", "Android"] }, arguments); };
+    JMessagePluginOriginal.prototype.removeReceiveChatRoomMessageListener = function (params) { return cordova(this, "removeReceiveChatRoomMessageListener", { "sync": true, "platforms": ["iOS", "Android"] }, arguments); };
+    JMessagePluginOriginal.prototype.addReceiveApplyJoinGroupApprovalListener = function (params) { return cordova(this, "addReceiveApplyJoinGroupApprovalListener", { "sync": true, "platforms": ["iOS", "Android"] }, arguments); };
+    JMessagePluginOriginal.prototype.removeReceiveApplyJoinGroupApprovalListener = function (params) { return cordova(this, "removeReceiveApplyJoinGroupApprovalListener", { "sync": true, "platforms": ["iOS", "Android"] }, arguments); };
+    JMessagePluginOriginal.prototype.addReceiveGroupAdminRejectListener = function (params) { return cordova(this, "addReceiveGroupAdminRejectListener", { "sync": true, "platforms": ["iOS", "Android"] }, arguments); };
+    JMessagePluginOriginal.prototype.removeReceiveGroupAdminRejectListener = function (params) { return cordova(this, "removeReceiveGroupAdminRejectListener", { "sync": true, "platforms": ["iOS", "Android"] }, arguments); };
+    JMessagePluginOriginal.prototype.addReceiveGroupAdminApprovalListener = function (params) { return cordova(this, "addReceiveGroupAdminApprovalListener", { "sync": true, "platforms": ["iOS", "Android"] }, arguments); };
+    JMessagePluginOriginal.prototype.removeReceiveGroupAdminApprovalListener = function (params) { return cordova(this, "removeReceiveGroupAdminApprovalListener", { "sync": true, "platforms": ["iOS", "Android"] }, arguments); };
+    Object.defineProperty(JMessagePluginOriginal.prototype, "ChatRoom", {
+        get: function () { return cordovaPropertyGet(this, "ChatRoom"); },
+        set: function (value) { cordovaPropertySet(this, "ChatRoom", value); },
+        enumerable: true,
+        configurable: true
+    });
+    JMessagePluginOriginal.pluginName = "JMessagePlugin";
+    JMessagePluginOriginal.plugin = "jmessage-phonegap-plugin";
+    JMessagePluginOriginal.pluginRef = "JMessage";
+    JMessagePluginOriginal.repo = "https://github.com/jpush/jmessage-phonegap-plugin";
+    JMessagePluginOriginal.install = "cordova plugin add jmessage-phonegap-plugin --variable APP_KEY=your_app_key";
+    JMessagePluginOriginal.installVariables = ["APP_KEY"];
+    JMessagePluginOriginal.platforms = ["Android", "iOS"];
+    return JMessagePluginOriginal;
 }(IonicNativePlugin));
+var JMessagePlugin = new JMessagePluginOriginal();
 export { JMessagePlugin };
-//# sourceMappingURL=index.js.map
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi9zcmMvQGlvbmljLW5hdGl2ZS9wbHVnaW5zL2ptZXNzYWdlL2luZGV4LnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7QUFZQSxPQUFPLHNFQUEwRixNQUFNLG9CQUFvQixDQUFDO0FBOEIzSCxDQUFDO0FBS0QsQ0FBQztBQUtELENBQUM7QUFPRCxDQUFDO0FBSUQsQ0FBQztBQUtELENBQUM7QUFjRCxDQUFDO0FBd0NELENBQUM7QUFxRkQsQ0FBQztBQW9CRCxDQUFDO0FBV0QsQ0FBQztBQTBDRCxDQUFDOzs7O0lBU0EsNkNBQXdCLGFBQUMsTUFHeEIsRUFBRSxPQUFpRCxFQUFFLElBQThCO0lBR3BGLDhDQUF5QixhQUN2QixPQUFpRCxFQUNqRCxJQUE4QjtJQUdoQyw0Q0FBdUIsYUFBQyxNQUV2QixFQUFFLE9BQWlELEVBQUUsSUFBOEI7SUFHcEYscUNBQWdCLGFBQUMsTUFFaEIsRUFBRSxPQUEyQyxFQUFFLElBQThCO0lBRzlFLGtDQUFhLGFBQUMsR0FFYixFQUFFLE9BQW1ELEVBQUUsSUFBOEI7SUFHdEYsaUNBQVksYUFBQyxNQUVaLEVBQUUsT0FBbUIsRUFBRSxJQUE4QjtJQUd0RCw0Q0FBdUIsYUFBQyxNQUV2QixFQUFFLE9BQW1CLEVBQUUsSUFBOEI7SUFHdEQsZ0RBQTJCLGFBQUMsT0FBeUQsRUFBRSxJQUE4Qjs7cUJBclV2SDs7U0E4UmEsVUFBVTs7SUF1RGEsa0NBQWlCOzs7O0lBU25ELHFDQUFZLGFBQUMsSUFBWSxFQUFFLElBQVk7SUFReEMsNkJBQUksYUFBQyxNQUFnQjtJQU1yQixxQ0FBWSxhQUFDLE1BQTRCO0lBR3pDLGlDQUFRLGFBQUMsTUFJUjtJQUtELDhCQUFLLGFBQUMsTUFHTDtJQVFELCtCQUFNO0lBTU4saUNBQVEsYUFBQyxNQUEwQjtJQUduQyxrQ0FBUztJQU1ULG9DQUFXLGFBQUMsTUFHWDtJQUtELHlDQUFnQixhQUFDLE1BR2hCO0lBY0QsdUNBQWMsYUFBQyxNQUVkO0lBS0QscUNBQVksYUFBQyxNQUlaO0lBS0QsMENBQWlCLGFBQUMsTUFHakI7SUFLRCxpREFBd0IsYUFBQyxNQUV4QjtJQUtELG9EQUEyQixhQUFDLE1BRTNCO0lBS0QsOENBQXFCLGFBQUMsTUFBMkQ7SUFLakYsd0NBQWUsYUFBQyxNQUF3RDtJQUt4RSx5Q0FBZ0IsYUFBQyxNQUF3RDtJQUt6RSx5Q0FBZ0IsYUFBQyxNQUF3RDtJQUt6RSwwQ0FBaUIsYUFBQyxNQUFvRjtJQUt0Ryw0Q0FBbUIsYUFBQyxNQUtuQjtJQUtELHdDQUFlLGFBQUMsTUFFZjtJQU1ELHVDQUFjLGFBQUMsTUFBMEM7SUFLekQsMkNBQWtCLGFBQUMsTUFHbEI7SUFLRCx1Q0FBYyxhQUFDLE1BQTBDO0lBS3pELDBDQUFpQixhQUFDLE1BQTBDO0lBSzVELDhDQUFxQixhQUFDLE1BSXJCO0lBS0QseUNBQWdCLGFBQUMsTUFHaEI7SUFLRCwwQ0FBaUIsYUFBQyxNQUlqQjtJQU9ELDZDQUFvQixhQUFDLE1BR3BCO0lBS0QsNkNBQW9CLGFBQUMsTUFJcEI7SUFLRCw2Q0FBb0IsYUFBQyxNQUlwQjtJQUtELG1DQUFVO0lBS1Ysb0NBQVcsYUFBQyxNQUlYO0lBS0Qsb0NBQVc7SUFLWCxxQ0FBWSxhQUFDLE1BQXVCO0lBS3BDLHdDQUFlLGFBQUMsTUFPYjtJQUtILHdDQUFlLGFBQUMsTUFJZjtJQUtELDJDQUFrQixhQUFDLE1BSWxCO0lBTUQsa0NBQVMsYUFBQyxNQUVUO0lBS0Qsd0NBQWUsYUFBQyxNQUVmO0lBS0QsNENBQW1CLGFBQUMsTUFHbkI7SUFLRCxpREFBd0IsYUFBQyxNQUd4QjtJQUtELHFDQUFZO0lBS1oscUNBQVksYUFBQyxNQUVaO0lBS0QseUNBQWdCO0lBS2hCLDJDQUFrQixhQUFDLE1BRWxCO0lBS0QsMENBQWlCO0lBS2pCLDBDQUFpQixhQUFDLE1BR2pCO0lBS0QsdUNBQWMsYUFBQyxNQUVkO0lBS0QsNENBQW1CO0lBS25CLGdEQUF1QixhQUFDLE1BR3ZCO0lBS0QsbURBQTBCLGFBQUMsTUFHMUI7SUFLRCwyQ0FBa0IsYUFBQyxNQUVsQjtJQUtELDhDQUFxQixhQUFDLE1BRXJCO0lBS0QsMENBQWlCLGFBQUMsTUFFakI7SUFLRCxxQ0FBWSxhQUFDLE1BRVo7SUFLRCwyQ0FBa0IsYUFBQyxNQUFpQjtJQUtwQywyQ0FBa0IsYUFBQyxNQUFpQjtJQUtwQywwQ0FBaUIsYUFBQyxNQUFrQztJQVFwRCx5Q0FBZ0IsYUFBQyxNQUFrQztJQUduRCx3Q0FBZSxhQUFDLE1BQWlCO0lBS2pDLHlDQUFnQjtJQUtoQixnREFBdUIsYUFBQyxNQUFpQjtJQUt6QywyQ0FBa0IsYUFBQyxNQUlsQjtJQUtELDhDQUFxQixhQUFDLE1BS3JCO0lBS0Qsd0NBQWUsYUFBQyxNQUlmO0lBS0QsNENBQW1CLGFBQUMsTUFFbkI7SUFLRCx5Q0FBZ0IsYUFBQyxNQUtoQjtJQWFELHNDQUFhLGFBQUMsTUFFYjtJQUtELHFDQUFZLGFBQUMsTUFFWjtJQUtELGdEQUF1QixhQUFDLE1BRXZCO0lBS0Qsb0RBQTJCO0lBSzNCLDBDQUFpQjtJQUtqQix1Q0FBYyxhQUFDLE1BSWQ7SUFLRCwwQ0FBaUIsYUFBQyxNQUlqQjtJQUtELHdDQUFlLGFBQUMsTUFHZjtJQUtELDRDQUFtQixhQUFDLE1BSW5CO0lBS0QsdUNBQWMsYUFBQyxNQUdkO0lBS0QsOENBQXFCLGFBQUMsTUFLckI7SUFLRCxzQ0FBYSxhQUFDLE1BRWI7SUFRRCxrREFBeUIsYUFBQyxNQUE4QjtJQU94RCxxREFBNEIsYUFBQyxNQUE4QjtJQU8zRCw0REFBbUMsYUFBQyxNQUE4QjtJQU9sRSwrREFBc0MsYUFBQyxNQUE4QjtJQU9yRSxzREFBNkIsYUFBQyxNQUFvQztJQU9sRSx5REFBZ0MsYUFBQyxNQUFvQztJQVFyRSxzREFBNkIsYUFBQyxNQUFvQztJQU9sRSx5REFBZ0MsYUFBQyxNQUFvQztJQU9yRSxxREFBNEIsYUFBQyxNQUFtQztJQU9oRSx3REFBK0IsYUFBQyxNQUFtQztJQVFuRSxpREFBd0IsYUFBQyxNQUErQjtJQU94RCxvREFBMkIsYUFBQyxNQUErQjtJQU8zRCxrREFBeUIsYUFBQyxNQUFnQztJQU8xRCxxREFBNEIsYUFBQyxNQUFnQztJQU83RCx1REFBOEIsYUFBQyxNQUFxQztJQU9wRSwwREFBaUMsYUFBQyxNQUFxQztJQVF2RSwwREFBaUMsYUFBQyxNQUF3QztJQU8xRSw2REFBb0MsYUFBQyxNQUF3QztJQU81RSxpRUFBd0MsYUFBQyxNQUErQztJQU94RixvRUFBMkMsYUFBQyxNQUErQztJQVEzRiwyREFBa0MsYUFBQyxNQUF5QztJQU81RSw4REFBcUMsYUFBQyxNQUF5QztJQU8vRSw2REFBb0MsYUFBQyxNQUEyQztJQU9oRixnRUFBdUMsYUFBQyxNQUEyQzswQkF0UXBGLG9DQUFROzs7Ozs7Ozs7Ozs7O3lCQWoxQlQ7RUFxVm9DLGlCQUFpQjtTQUF4QyxjQUFjIiwic291cmNlc0NvbnRlbnQiOlsiLyoqXG4gKiBUaGlzIGlzIGEgdGVtcGxhdGUgZm9yIG5ldyBwbHVnaW4gd3JhcHBlcnNcbiAqXG4gKiBUT0RPOlxuICogLSBBZGQvQ2hhbmdlIGluZm9ybWF0aW9uIGJlbG93XG4gKiAtIERvY3VtZW50IHVzYWdlIChpbXBvcnRpbmcsIGV4ZWN1dGluZyBtYWluIGZ1bmN0aW9uYWxpdHkpXG4gKiAtIFJlbW92ZSBhbnkgaW1wb3J0cyB0aGF0IHlvdSBhcmUgbm90IHVzaW5nXG4gKiAtIFJlbW92ZSBhbGwgdGhlIGNvbW1lbnRzIGluY2x1ZGVkIGluIHRoaXMgdGVtcGxhdGUsIEVYQ0VQVCB0aGUgQFBsdWdpbiB3cmFwcGVyIGRvY3MgYW5kIGFueSBvdGhlciBkb2NzIHlvdSBhZGRlZFxuICogLSBSZW1vdmUgdGhpcyBub3RlXG4gKlxuICovXG5pbXBvcnQgeyBJbmplY3RhYmxlIH0gZnJvbSAnQGFuZ3VsYXIvY29yZSc7XG5pbXBvcnQgeyBQbHVnaW4sIENvcmRvdmEsIENvcmRvdmFQcm9wZXJ0eSwgQ29yZG92YUluc3RhbmNlLCBJbnN0YW5jZVByb3BlcnR5LCBJb25pY05hdGl2ZVBsdWdpbiB9IGZyb20gJ0Bpb25pYy1uYXRpdmUvY29yZSc7XG5pbXBvcnQgeyBPYnNlcnZhYmxlIH0gZnJvbSAncnhqcyc7XG5cbi8qKlxuICogQG5hbWUgam1lc3NhZ2VcbiAqIEBkZXNjcmlwdGlvblxuICogVGhpcyBwbHVnaW4gZG9lcyBzb21ldGhpbmdcbiAqXG4gKiBAdXNhZ2VcbiAqIGBgYHR5cGVzY3JpcHRcbiAqIGltcG9ydCB7IGptZXNzYWdlIH0gZnJvbSAnQGlvbmljLW5hdGl2ZS9qbWVzc2FnZSc7XG4gKlxuICpcbiAqIGNvbnN0cnVjdG9yKHByaXZhdGUgam1lc3NhZ2U6IGptZXNzYWdlKSB7IH1cbiAqXG4gKiAuLi5cbiAqXG4gKlxuICogdGhpcy5qbWVzc2FnZS5mdW5jdGlvbk5hbWUoJ0hlbGxvJywgMTIzKVxuICogICAudGhlbigocmVzOiBhbnkpID0+IGNvbnNvbGUubG9nKHJlcykpXG4gKiAgIC5jYXRjaCgoZXJyb3I6IGFueSkgPT4gY29uc29sZS5lcnJvcihlcnJvcikpO1xuICpcbiAqIGBgYFxuICovXG5cblxuZXhwb3J0IGludGVyZmFjZSBKTVNpbmdsZVR5cGUge1xuICB0eXBlOiAnc2luZ2xlJztcbiAgdXNlcm5hbWU6IHN0cmluZztcbiAgYXBwS2V5Pzogc3RyaW5nO1xufTtcblxuZXhwb3J0IGludGVyZmFjZSBKTUdyb3VwVHlwZSB7XG4gIHR5cGU6ICdncm91cCc7XG4gIGdyb3VwSWQ6IHN0cmluZztcbn07XG5cbmV4cG9ydCBpbnRlcmZhY2UgSk1DaGF0Um9vbVR5cGUge1xuICB0eXBlOiAnY2hhdFJvb20nO1xuICByb29tSWQ6IHN0cmluZztcbn07XG5cbmV4cG9ydCB0eXBlIEpNQWxsVHlwZSA9IChKTVNpbmdsZVR5cGUgfCBKTUdyb3VwVHlwZSB8IEpNQ2hhdFJvb21UeXBlKTtcblxuZXhwb3J0IGludGVyZmFjZSBKTU1lc3NhZ2VPcHRpb25zIHtcbiAgZXh0cmFzPzogeyBba2V5OiBzdHJpbmddOiBzdHJpbmc7IH07XG4gIG1lc3NhZ2VTZW5kaW5nT3B0aW9ucz86IEpNTWVzc2FnZVNlbmRPcHRpb25zO1xufTtcblxuZXhwb3J0IGludGVyZmFjZSBKTUNvbmZpZyB7XG4gIGlzT3Blbk1lc3NhZ2VSb2FtaW5nOiBib29sZWFuO1xufTtcblxuZXhwb3J0IGludGVyZmFjZSBKTUVycm9yIHtcbiAgY29kZTogc3RyaW5nO1xuICBkZXNjcmlwdGlvbjogc3RyaW5nO1xufTtcblxuLyoqXG4gKiBNZXNzYWdlIHR5cGVcbiAqL1xuXG5leHBvcnQgaW50ZXJmYWNlIEpNTm9ybWFsTWVzc2FnZSB7XG4gIGlkOiBzdHJpbmc7ICAgICAgICAgICAgICAgICAgICAgIC8vIOacrOWcsOaVsOaNruW6k+S4reeahOa2iOaBryBpZFxuICBzZXJ2ZXJNZXNzYWdlSWQ6IHN0cmluZzsgICAgICAgICAgLy8g5a+55bqU5pyN5Yqh5Zmo56uv55qE5raI5oGvIGlkXG4gIGlzU2VuZDogYm9vbGVhbjsgICAgICAgICAgICAgICAgIC8vIOa2iOaBr+aYr+WQpueUseW9k+WJjeeUqOaIt+WPkeWHuuOAgnRydWXvvJrkuLrlvZPliY3nlKjmiLflj5HpgIHvvJtmYWxzZe+8muS4uuWvueaWueeUqOaIt+WPkemAgeOAglxuICBmcm9tOiBKTVVzZXJJbmZvOyAgICAgICAgICAgICAgICAvLyDmtojmga/lj5HpgIHogIXlr7nosaFcbiAgdGFyZ2V0OiAoSk1Vc2VySW5mbyB8IEpNR3JvdXBJbmZvKTsgLy8g5raI5oGv5o6l5pS26ICF5a+56LGhXG4gIGNyZWF0ZVRpbWU6IG51bWJlcjsgICAgICAgICAgICAgLy8g5Y+R6YCB5raI5oGv5pe26Ze0XG4gIGV4dHJhcz86IHsgW2tleTogc3RyaW5nXTogc3RyaW5nOyB9OyAgICAgICAgICAgICAgICAgIC8vIOmZhOW4pueahOmUruWAvOWvuVxufTtcblxuZXhwb3J0IHR5cGUgSk1UZXh0TWVzc2FnZSA9IEpNTm9ybWFsTWVzc2FnZSAmIHtcbiAgdHlwZTogJ3RleHQnO1xuICB0ZXh0OiBzdHJpbmc7ICAgICAgICAgICAgICAgICAgIC8vIOa2iOaBr+WGheWuuVxufTtcblxuZXhwb3J0IHR5cGUgSk1Wb2ljZU1lc3NhZ2UgPSBKTU5vcm1hbE1lc3NhZ2UgJiB7XG4gIHR5cGU6ICd2b2ljZSc7XG4gIHBhdGg/OiBzdHJpbmc7ICAgICAgICAgICAgICAgICAgIC8vIOivremfs+aWh+S7tui3r+W+hCzlpoLmnpzkuLrnqbrpnIDopoHosIPnlKjnm7jlupTkuIvovb3mlrnms5VcbiAgZHVyYXRpb246IG51bWJlcjsgICAgICAgICAgICAgICAgIC8vIOivremfs+aXtumVv++8jOWNleS9jeenklxufTtcblxuZXhwb3J0IHR5cGUgSk1JbWFnZU1lc3NhZ2UgPSBKTU5vcm1hbE1lc3NhZ2UgJiB7XG4gIHR5cGU6ICdpbWFnZSc7XG4gIHRodW1iUGF0aD86IHN0cmluZzsgICAgICAgICAgICAgICAvLyDlm77niYfnmoTnvKnnlaXlm77ot6/lvoQsIOWmguaenOS4uuepuumcgOimgeiwg+eUqOebuOW6lOS4i+i9veaWueazlVxufTtcblxuZXhwb3J0IHR5cGUgSk1GaWxlTWVzc2FnZSA9IEpNTm9ybWFsTWVzc2FnZSAmIHtcbiAgdHlwZTogJ2ZpbGUnO1xuICBmaWxlTmFtZTogc3RyaW5nOyAgICAgICAgICAgICAgICAgLy8g5paH5Lu25ZCNXG59O1xuXG5leHBvcnQgdHlwZSBKTUxvY2F0aW9uTWVzc2FnZSA9IEpNTm9ybWFsTWVzc2FnZSAmIHtcbiAgdHlwZTogJ2xvY2F0aW9uJztcbiAgbG9uZ2l0dWRlOiBudW1iZXI7ICAgICAgICAgICAgICAvLyDnu4/luqZcbiAgbGF0aXR1ZGU6IG51bWJlcjsgICAgICAgICAgICAgICAvLyDnuqzluqZcbiAgc2NhbGU6IG51bWJlcjsgICAgICAgICAgICAgICAgICAgLy8g5Zyw5Zu+57yp5pS+5q+U5L6LXG4gIGFkZHJlc3M/OiBzdHJpbmc7ICAgICAgICAgICAgICAgLy8g6K+m57uG5Zyw5Z2AXG59O1xuXG5leHBvcnQgdHlwZSBKTUN1c3RvbU1lc3NhZ2UgPSBKTU5vcm1hbE1lc3NhZ2UgJiB7XG4gIHR5cGU6ICdjdXN0b20nO1xuICBjdXN0b21PYmplY3Q6IHsgW2tleTogc3RyaW5nXTogc3RyaW5nOyB9ICAgICAgICAgICAgLy8g6Ieq5a6a5LmJ6ZSu5YC85a+5XG59O1xuXG5leHBvcnQgaW50ZXJmYWNlIEpNRXZlbnRNZXNzYWdlIHtcbiAgdHlwZTogJ2V2ZW50JzsgICAgICAgICAgIC8vIOa2iOaBr+exu+Wei1xuICBldmVudFR5cGU6ICdncm91cF9tZW1iZXJfYWRkZWQnIHwgJ2dyb3VwX21lbWJlcl9yZW1vdmVkJyB8ICdncm91cF9tZW1iZXJfZXhpdCc7ICAgICAgIC8vICdncm91cF9tZW1iZXJfYWRkZWQnIC8gJ2dyb3VwX21lbWJlcl9yZW1vdmVkJyAvICdncm91cF9tZW1iZXJfZXhpdCdcbiAgdXNlcm5hbWVzOiBzdHJpbmdbXTsgICAgICAgICAvLyDor6Xkuovku7bmtonlj4rliLDnmoTnlKjmiLcgdXNlcm5hbWUg5pWw57uEXG59O1xuXG5leHBvcnQgdHlwZSBKTUFsbE1lc3NhZ2UgPSBKTVRleHRNZXNzYWdlIHwgSk1Wb2ljZU1lc3NhZ2UgfCBKTUltYWdlTWVzc2FnZSB8IEpNRmlsZU1lc3NhZ2UgfCBKTUV2ZW50TWVzc2FnZSB8IEpNQ3VzdG9tTWVzc2FnZTtcblxuZXhwb3J0IHR5cGUgSk1NZXNzYWdlRXZlbnRMaXN0ZW5lciA9IChtZXNzYWdlOiBKTUFsbE1lc3NhZ2UpID0+IHZvaWQ7XG5cbmV4cG9ydCB0eXBlIEpNU3luY09mZmxpbmVNZXNzYWdlTGlzdGVuZXIgPSAoZXZlbnQ6IHtcbiAgY29udmVyc2F0aW9uOiBKTUNvbnZlcnNhdGlvbkluZm87XG4gIG1lc3NhZ2VBcnJheTogSk1BbGxNZXNzYWdlW107XG59KSA9PiB2b2lkO1xuXG5leHBvcnQgdHlwZSBKTVN5bmNSb2FtaW5nTWVzc2FnZUxpc3RlbmVyID0gKGV2ZW50OiB7XG4gIGNvbnZlcnNhdGlvbjogSk1Db252ZXJzYXRpb25JbmZvO1xufSkgPT4gdm9pZDtcblxuZXhwb3J0IHR5cGUgSk1Mb2dpblN0YXRlQ2hhbmdlZExpc3RlbmVyID0gKGV2ZW50OiB7XG4gIHR5cGU6ICd1c2VyX3Bhc3N3b3JkX2NoYW5nZScgfCAndXNlcl9sb2dvdXQnIHwgJ3VzZXJfZGVsZXRlZCcgfCAndXNlcl9sb2dpbl9zdGF0dXNfdW5leHBlY3RlZCc7XG59KSA9PiB2b2lkO1xuXG5leHBvcnQgdHlwZSBKTUNvbnRhY3ROb3RpZnlMaXN0ZW5lciA9IChldmVudDoge1xuICB0eXBlOiAnaW52aXRlX3JlY2VpdmVkJyB8ICdpbnZpdGVfYWNjZXB0ZWQnIHwgJ2ludml0ZV9kZWNsaW5lZCcgfCAnY29udGFjdF9kZWxldGVkJztcbiAgcmVhc29uOiBzdHJpbmc7XG4gIGZyb21Vc2VybmFtZTogc3RyaW5nO1xuICBmcm9tVXNlckFwcEtleT86IHN0cmluZztcbn0pID0+IHZvaWQ7XG5cbmV4cG9ydCB0eXBlIEpNTWVzc2FnZVJldHJhY3RMaXN0ZW5lciA9IChldmVudDoge1xuICBjb252ZXJzYXRpb246IEpNQ29udmVyc2F0aW9uSW5mbztcbiAgcmV0cmFjdGVkTWVzc2FnZTogSk1BbGxNZXNzYWdlO1xufSkgPT4gdm9pZDtcblxuZXhwb3J0IHR5cGUgSk1SZWNlaXZlVHJhbnNDb21tYW5kTGlzdGVuZXIgPSAoZXZlbnQ6IHtcbiAgbWVzc2FnZTogc3RyaW5nO1xuICBzZW5kZXI6IEpNVXNlckluZm87XG4gIHJlY2VpdmVyOiBKTVVzZXJJbmZvIHwgSk1Hcm91cEluZm87XG4gIHJlY2VpdmVyVHlwZTogJ3NpbmdsZScgfCAnZ3JvdXAnO1xufSkgPT4gdm9pZDtcblxuZXhwb3J0IHR5cGUgSk1SZWNlaXZlQ2hhdFJvb21NZXNzYWdlTGlzdGVuZXIgPSAoZXZlbnQ6IHtcbiAgbWVzc2FnZUFycmF5OiBKTUFsbE1lc3NhZ2VbXTtcbn0pID0+IHZvaWQ7XG5cblxuZXhwb3J0IHR5cGUgSk1SZWNlaXZlQXBwbHlKb2luR3JvdXBBcHByb3ZhbExpc3RlbmVyID0gKGV2ZW50OiB7XG4gIGV2ZW50SWQ6IHN0cmluZztcbiAgZ3JvdXBJZDogc3RyaW5nO1xuICBpc0luaXRpYXRpdmVBcHBseTogYm9vbGVhbjtcbiAgc2VuZEFwcGx5VXNlcjogSk1Vc2VySW5mbztcbiAgam9pbkdyb3VwVXNlcnM/OiBKTVVzZXJJbmZvW107XG4gIHJlYXNvbj86IHN0cmluZztcbn0pID0+IHZvaWQ7XG5cbmV4cG9ydCB0eXBlIEpNUmVjZWl2ZUdyb3VwQWRtaW5SZWplY3RMaXN0ZW5lciA9IChldmVudDoge1xuICBncm91cElkOiBzdHJpbmc7XG4gIGdyb3VwTWFuYWdlcjogSk1Vc2VySW5mbztcbiAgcmVhc29uPzogc3RyaW5nO1xufSkgPT4gdm9pZDtcblxuZXhwb3J0IHR5cGUgSk1SZWNlaXZlR3JvdXBBZG1pbkFwcHJvdmFsTGlzdGVuZXIgPSAoZXZlbnQ6IHtcbiAgaXNBZ3JlZTogYm9vbGVhbjtcbiAgYXBwbHlFdmVudElkOiBzdHJpbmc7XG4gIGdyb3VwSWQ6IHN0cmluZztcbiAgZ3JvdXBBZG1pbjogSk1Vc2VySW5mbztcbiAgdXNlcnM6IEpNVXNlckluZm9bXTtcbn0pID0+IHZvaWQ7XG4vKipcbiAqIFVzZXIgVHlwZVxuICovXG5leHBvcnQgaW50ZXJmYWNlIEpNVXNlckluZm8ge1xuICB0eXBlOiAndXNlcic7XG4gIHVzZXJuYW1lOiBzdHJpbmc7ICAgICAgICAgICAvLyDnlKjmiLflkI1cbiAgYXBwS2V5Pzogc3RyaW5nOyAgICAgICAgICAgICAvLyDnlKjmiLfmiYDlsZ7lupTnlKjnmoQgYXBwS2V577yM5Y+v5LiOIHVzZXJuYW1lIOWFseWQjOS9nOS4uueUqOaIt+eahOWUr+S4gOagh+ivhlxuICBuaWNrbmFtZT86IHN0cmluZzsgICAgICAgICAgIC8vIOaYteensFxuICBnZW5kZXI6ICdtYWxlJyB8ICdmZW1hbGUnIHwgJ3Vua25vd24nOyAgICAgICAgICAgICAvLyAnbWFsZScgLyAnZmVtYWxlJyAvICd1bmtub3duJ1xuICBhdmF0YXJUaHVtYlBhdGg6IHN0cmluZzsgICAgLy8g5aS05YOP55qE57yp55Wl5Zu+5Zyw5Z2AXG4gIGJpcnRoZGF5PzogbnVtYmVyOyAgICAgICAgICAgLy8g5pel5pyf55qE5q+r56eS5pWwXG4gIHJlZ2lvbj86IHN0cmluZzsgICAgICAgICAgICAgLy8g5Zyw5Yy6XG4gIHNpZ25hdHVyZT86IHN0cmluZzsgICAgICAgICAgLy8g5Liq5oCn562+5ZCNXG4gIGFkZHJlc3M/OiBzdHJpbmc7ICAgICAgICAgICAgLy8g5YW35L2T5Zyw5Z2AXG4gIG5vdGVOYW1lPzogc3RyaW5nOyAgICAgICAgICAgLy8g5aSH5rOo5ZCNXG4gIG5vdGVUZXh0Pzogc3RyaW5nOyAgICAgICAgICAgLy8g5aSH5rOo5L+h5oGvXG4gIGlzTm9EaXN0dXJiOiBib29sZWFuOyAgICAgICAvLyDmmK/lkKblhY3miZPmibBcbiAgaXNJbkJsYWNrTGlzdDogYm9vbGVhbjsgICAgIC8vIOaYr+WQpuWcqOm7keWQjeWNleS4rVxuICBpc0ZyaWVuZDogYm9vbGVhbjsgICAgICAgICAgLy8g5piv5ZCm5Li65aW95Y+LXG4gIGV4dHJhcz86IHsgW2tleTogc3RyaW5nXTogc3RyaW5nOyB9OyAgICAgICAgICAgICAgLy8g6Ieq5a6a5LmJ6ZSu5YC85a+5XG59O1xuXG5leHBvcnQgaW50ZXJmYWNlIEpNR3JvdXBNZW1iZXJJbmZvIHtcbiAgdXNlcjogSk1Vc2VySW5mbzsgICAgICAgICAgICAgICAgICAgICAgICAgICAgLy8g576k55So5oi36K+m5oOFXG4gIGdyb3VwTmlja25hbWU6IHN0cmluZzsgICAgICAgICAgICAgICAgICAgICAgIC8vIOeUqOaIt+eahOe+pOaYteensFxuICBtZW1iZXJUeXBlOiAnb3duZXInIHwgJ2FkbWluJyB8ICdvcmRpbmFyeSc7ICAvLyDnlKjmiLfnsbvlnotcbiAgam9pbkdyb3VwVGltZTogbnVtYmVyOyAgICAgICAgICAgICAgICAgICAgICAgLy8g55So5oi35YWl576k5pe26Ze077yI5Y2V5L2N77ya5q+r56eS77yJXG59XG5cbmV4cG9ydCBpbnRlcmZhY2UgSk1Hcm91cEluZm8ge1xuICB0eXBlOiAnZ3JvdXAnO1xuICBpZDogc3RyaW5nOyAgICAgICAgICAgICAgICAgLy8g576k57uEIGlkXG4gIG5hbWU/OiBzdHJpbmc7ICAgICAgICAgICAgICAgLy8g576k57uE5ZCN56ewXG4gIGRlc2M/OiBzdHJpbmc7ICAgICAgICAgICAgICAgLy8g576k57uE5o+P6L+wXG4gIGxldmVsOiBudW1iZXI7ICAgICAgICAgICAgICAvLyDnvqTnu4TnrYnnuqfvvIzpu5jorqTnrYnnuqcgNFxuICBvd25lcjogc3RyaW5nOyAgICAgICAgICAgICAgLy8g576k5Li755qEIHVzZXJuYW1lXG4gIG93bmVyQXBwS2V5Pzogc3RyaW5nOyAgICAgICAgLy8g576k5Li755qEIGFwcEtleVxuICBtYXhNZW1iZXJDb3VudDogbnVtYmVyOyAgICAgLy8g5pyA5aSn5oiQ5ZGY5pWwXG4gIGlzTm9EaXN0dXJiOiBib29sZWFuOyAgICAgICAvLyDmmK/lkKblhY3miZPmibBcbiAgaXNCbG9ja2VkOiBib29sZWFuOyAgICAgICAgICAvLyDmmK/lkKblsY/olL3nvqTmtojmga9cbn07XG5cbmV4cG9ydCBpbnRlcmZhY2UgSk1DaGF0Um9vbUluZm8ge1xuICB0eXBlOiAnY2hhdFJvb20nO1xuICByb29tSWQ6IHN0cmluZzsgICAvLyDogYrlpKnlrqQgaWRcbiAgbmFtZTogc3RyaW5nOyAgICAgLy8g6IGK5aSp5a6k5ZCN56ewXG4gIGFwcEtleT86IHN0cmluZzsgICAvLyDogYrlpKnlrqTmiYDlsZ7lupTnlKjnmoQgQXBwIEtleVxuICBkZXNjcmlwdGlvbj86IHN0cmluZzsgLy8g6IGK5aSp5a6k5o+P6L+w5L+h5oGvXG4gIGNyZWF0ZVRpbWU6IG51bWJlcjsgLy8g5Yib5bu65pel5pyf77yM5Y2V5L2N77ya56eSXG4gIG1heE1lbWJlckNvdW50PzogbnVtYmVyOyAvLyDmnIDlpKfmiJDlkZjmlbBcbiAgbWVtYmVyQ291bnQ6IG51bWJlcjsgICAgIC8vIOW9k+WJjeaIkOWRmOaVsFxufTtcblxuZXhwb3J0IHR5cGUgSk1Db252ZXJzYXRpb25JbmZvID0gKHtcbiAgY29udmVyc2F0aW9uVHlwZTogJ3NpbmdsZSc7XG4gIHRhcmdldDogSk1Vc2VySW5mbztcbn0gfCB7XG4gIGNvbnZlcnNhdGlvblR5cGU6ICdncm91cCc7XG4gIHRhcmdldDogSk1Hcm91cEluZm87XG59KSAmIHtcbiAgdGl0bGU6IHN0cmluZzsgICAgICAgICAgICAgICAgICAvLyDkvJror53moIfpophcbiAgbGF0ZXN0TWVzc2FnZTogSk1BbGxNZXNzYWdlOyAgICAvLyDmnIDov5HnmoTkuIDmnaHmtojmga/lr7nosaHjgILlpoLmnpzkuI3lrZjlnKjmtojmga/vvIzliJkgY29udmVyc2F0aW9uIOWvueixoeS4reayoeacieivpeWxnuaAp+OAglxuICB1bnJlYWRDb3VudDogbnVtYmVyOyAgICAgICAgICAgIC8vIOacquivu+a2iOaBr+aVsFxufTtcblxuZXhwb3J0IGludGVyZmFjZSBKTU1lc3NhZ2VTZW5kT3B0aW9ucyB7XG4gIC8qKlxuICog5o6l5pS25pa55piv5ZCm6ZKI5a+55q2k5qyh5raI5oGv5Y+R6YCB5bGV56S66YCa55+l5qCP6YCa55+l44CCXG4gKiBAdHlwZSB7Ym9vbGVhbn1cbiAqIEBkZWZhdWx0dmFsdWVcbiAqL1xuICBpc1Nob3dOb3RpZmljYXRpb24/OiBib29sZWFuO1xuICAvKipcbiAgICog5piv5ZCm6K6p5ZCO5Y+w5Zyo5a+55pa55LiN5Zyo57q/5pe25L+d5a2Y6L+Z5p2h56a757q/5raI5oGv77yM562J5Yiw5a+55pa55LiK57q/5ZCO5YaN5o6o6YCB57uZ5a+55pa544CCXG4gICAqIEB0eXBlIHtib29sZWFufVxuICAgKiBAZGVmYXVsdHZhbHVlXG4gICAqL1xuICBpc1JldGFpbk9mZmxpbmU/OiBib29sZWFuO1xuICAvKipcbiAgICog5piv5ZCm5byA5ZCv5LqG6Ieq5a6a5LmJ5o6l5pS25pa56YCa55+l5qCP5Yqf6IO944CCXG4gICAqIEB0eXBlIHs/Ym9vbGVhbn1cbiAgICovXG4gIGlzQ3VzdG9tTm90aWZpY2F0aW9uRW5hYmxlZD86IGJvb2xlYW47XG4gIC8qKlxuICAgKiDorr7nva7mraTmnaHmtojmga/lnKjmjqXmlLbmlrnpgJrnn6XmoI/miYDlsZXnpLrpgJrnn6XnmoTmoIfpopjjgIJcbiAgICogQHR5cGUgez9zdHJpbmd9XG4gICAqL1xuICBub3RpZmljYXRpb25UaXRsZT86IHN0cmluZztcbiAgLyoqXG4gICAqIOiuvue9ruatpOadoea2iOaBr+WcqOaOpeaUtuaWuemAmuefpeagj+aJgOWxleekuumAmuefpeeahOWGheWuueOAglxuICAgKiBAdHlwZSB7P3N0cmluZ31cbiAgICovXG4gIG5vdGlmaWNhdGlvblRleHQ/OiBzdHJpbmc7XG59O1xuXG4vLyBUT0RPOiB0byBQcm9taXNlXG5ASW5qZWN0YWJsZSh7XG4gIHByb3ZpZGVkSW46ICdyb290J1xufSlcbmV4cG9ydCBjbGFzcyBKTUNoYXRSb29tIHtcblxuICBAQ29yZG92YSgpXG4gIGdldENoYXRSb29tSW5mb0xpc3RPZkFwcChwYXJhbXM6IHtcbiAgICBzdGFydDogbnVtYmVyO1xuICAgIGNvdW50OiBudW1iZXI7XG4gIH0sIHN1Y2Nlc3M6IChjaGF0cm9vbUxpc3Q6IEpNQ2hhdFJvb21JbmZvW10pID0+IHZvaWQsIGZhaWw6IChlcnJvcjogSk1FcnJvcikgPT4gdm9pZCk6IHZvaWQge31cblxuICBAQ29yZG92YSgpXG4gIGdldENoYXRSb29tSW5mb0xpc3RPZlVzZXIoXG4gICAgc3VjY2VzczogKGNoYXRyb29tTGlzdDogSk1DaGF0Um9vbUluZm9bXSkgPT4gdm9pZCxcbiAgICBmYWlsOiAoZXJyb3I6IEpNRXJyb3IpID0+IHZvaWQpOiB2b2lkIHt9XG5cbiAgQENvcmRvdmEoKVxuICBnZXRDaGF0Um9vbUluZm9MaXN0QnlJZChwYXJhbXM6IHtcbiAgICByb29tSWQ6IHN0cmluZztcbiAgfSwgc3VjY2VzczogKGNoYXRyb29tTGlzdDogSk1DaGF0Um9vbUluZm9bXSkgPT4gdm9pZCwgZmFpbDogKGVycm9yOiBKTUVycm9yKSA9PiB2b2lkKTogdm9pZCB7fVxuXG4gIEBDb3Jkb3ZhKClcbiAgZ2V0Q2hhdFJvb21Pd25lcihwYXJhbXM6IHtcbiAgICByb29tSWQ6IHN0cmluZztcbiAgfSwgc3VjY2VzczogKGNoYXRyb29tTGlzdDogSk1Vc2VySW5mbykgPT4gdm9pZCwgZmFpbDogKGVycm9yOiBKTUVycm9yKSA9PiB2b2lkKTogdm9pZCB7fVxuXG4gIEBDb3Jkb3ZhKClcbiAgZW50ZXJDaGF0Um9vbShvYmo6IHtcbiAgICByb29tSWQ6IHN0cmluZztcbiAgfSwgc3VjY2VzczogKGNvbnZlcnNhdGlvbjogSk1Db252ZXJzYXRpb25JbmZvKSA9PiB2b2lkLCBmYWlsOiAoZXJyb3I6IEpNRXJyb3IpID0+IHZvaWQpOiB2b2lkIHt9XG5cbiAgQENvcmRvdmEoKVxuICBleGl0Q2hhdFJvb20ocGFyYW1zOiB7XG4gICAgcm9vbUlkOiBzdHJpbmc7XG4gIH0sIHN1Y2Nlc3M6ICgpID0+IHZvaWQsIGZhaWw6IChlcnJvcjogSk1FcnJvcikgPT4gdm9pZCk6IHZvaWQge31cblxuICBAQ29yZG92YSgpXG4gIGdldENoYXRSb29tQ29udmVyc2F0aW9uKHBhcmFtczoge1xuICAgIHJvb21JZDogc3RyaW5nO1xuICB9LCBzdWNjZXNzOiAoKSA9PiB2b2lkLCBmYWlsOiAoZXJyb3I6IEpNRXJyb3IpID0+IHZvaWQpOiB2b2lkIHt9XG5cbiAgQENvcmRvdmEoKVxuICBnZXRDaGF0Um9vbUNvbnZlcnNhdGlvbkxpc3Qoc3VjY2VzczogKGNvbnZlcnNhdGlvbkxpc3Q6IEpNQ29udmVyc2F0aW9uSW5mb1tdKSA9PiB2b2lkLCBmYWlsOiAoZXJyb3I6IEpNRXJyb3IpID0+IHZvaWQpOiB2b2lkIHt9XG59XG5cblxuQFBsdWdpbih7XG4gIHBsdWdpbk5hbWU6ICdKTWVzc2FnZVBsdWdpbicsXG4gIHBsdWdpbjogJ2ptZXNzYWdlLXBob25lZ2FwLXBsdWdpbicsXG4gIHBsdWdpblJlZjogJ0pNZXNzYWdlJyxcbiAgcmVwbzogJ2h0dHBzOi8vZ2l0aHViLmNvbS9qcHVzaC9qbWVzc2FnZS1waG9uZWdhcC1wbHVnaW4nLFxuICBpbnN0YWxsOiAnY29yZG92YSBwbHVnaW4gYWRkIGptZXNzYWdlLXBob25lZ2FwLXBsdWdpbiAtLXZhcmlhYmxlIEFQUF9LRVk9eW91cl9hcHBfa2V5JywgLy8gT1BUSU9OQUwgaW5zdGFsbCBjb21tYW5kLCBpbiBjYXNlIHRoZSBwbHVnaW4gcmVxdWlyZXMgdmFyaWFibGVzXG4gIGluc3RhbGxWYXJpYWJsZXM6IFsnQVBQX0tFWSddLFxuICBwbGF0Zm9ybXM6IFsnQW5kcm9pZCcsICdpT1MnXVxufSlcbkBJbmplY3RhYmxlKHtcbiAgcHJvdmlkZWRJbjogJ3Jvb3QnXG59KVxuZXhwb3J0IGNsYXNzIEpNZXNzYWdlUGx1Z2luIGV4dGVuZHMgSW9uaWNOYXRpdmVQbHVnaW4ge1xuXG4gIC8qKlxuICAgKiBUaGlzIGZ1bmN0aW9uIGRvZXMgc29tZXRoaW5nXG4gICAqIEBwYXJhbSBhcmcxIHtzdHJpbmd9IFNvbWUgcGFyYW0gdG8gY29uZmlndXJlIHNvbWV0aGluZ1xuICAgKiBAcGFyYW0gYXJnMiB7bnVtYmVyfSBBbm90aGVyIHBhcmFtIHRvIGNvbmZpZ3VyZSBzb21ldGhpbmdcbiAgICogQHJldHVybiB7UHJvbWlzZTxhbnk+fSBSZXR1cm5zIGEgcHJvbWlzZSB0aGF0IHJlc29sdmVzIHdoZW4gc29tZXRoaW5nIGhhcHBlbnNcbiAgICovXG4gIEBDb3Jkb3ZhKClcbiAgZnVuY3Rpb25OYW1lKGFyZzE6IHN0cmluZywgYXJnMjogbnVtYmVyKTogUHJvbWlzZTxhbnk+IHtcbiAgICByZXR1cm47IC8vIFdlIGFkZCByZXR1cm47IGhlcmUgdG8gYXZvaWQgYW55IElERSAvIENvbXBpbGVyIGVycm9yc1xuICB9XG5cbiAgQENvcmRvdmEoe1xuICAgIHN5bmM6IHRydWUsXG4gICAgcGxhdGZvcm1zOiBbJ2lPUycsICdBbmRyb2lkJ11cbiAgIH0pXG4gaW5pdChwYXJhbXM6IEpNQ29uZmlnKTogdm9pZCB7IH1cblxuIEBDb3Jkb3ZhKHtcbiAgIHN5bmM6IHRydWUsXG4gICBwbGF0Zm9ybXM6IFsnaU9TJywgJ0FuZHJvaWQnXVxuICB9KVxuIHNldERlYnVnTW9kZShwYXJhbXM6IHsgZW5hYmxlOiBib29sZWFuOyB9KTogdm9pZCB7fVxuXG4gQENvcmRvdmEoKVxuIHJlZ2lzdGVyKHBhcmFtczoge1xuICAgdXNlcm5hbWU6IHN0cmluZztcbiAgIHBhc3N3b3JkOiBzdHJpbmc7XG4gICBuaWNrbmFtZTogc3RyaW5nO1xuIH0pOiBQcm9taXNlPHZvaWQ+IHtcbiAgIHJldHVybjtcbiB9XG5cbiBAQ29yZG92YSgpXG4gbG9naW4ocGFyYW1zOiB7XG4gICB1c2VybmFtZTogc3RyaW5nO1xuICAgcGFzc3dvcmQ6IHN0cmluZztcbiB9KTogUHJvbWlzZTx2b2lkPiB7XG4gICByZXR1cm47XG4gfVxuXG4gQENvcmRvdmEoe1xuICAgc3luYzogdHJ1ZSxcbiAgIHBsYXRmb3JtczogWydpT1MnLCAnQW5kcm9pZCddXG4gIH0pXG4gbG9nb3V0KCk6IHZvaWQge31cblxuIEBDb3Jkb3ZhKHtcbiAgIHN5bmM6IHRydWUsXG4gICBwbGF0Zm9ybXM6IFsnaU9TJywgJ0FuZHJvaWQnXVxuICB9KVxuIHNldEJhZGdlKHBhcmFtczogeyBiYWRnZTogbnVtYmVyOyB9KTogdm9pZCB7IH1cblxuIEBDb3Jkb3ZhKClcbiBnZXRNeUluZm8oKTogUHJvbWlzZTwgSk1Vc2VySW5mbyB8IHt9ID4ge1xuICAgcmV0dXJuOyAvLyBXZSBhZGQgcmV0dXJuOyBoZXJlIHRvIGF2b2lkIGFueSBJREUgLyBDb21waWxlciBlcnJvcnNcbiB9XG5cblxuIEBDb3Jkb3ZhKClcbiBnZXRVc2VySW5mbyhwYXJhbXM6IHtcbiAgIHVzZXJuYW1lOiBzdHJpbmc7XG4gICBhcHBLZXk/OiBzdHJpbmc7XG4gfSk6IFByb21pc2U8Sk1Vc2VySW5mbz4ge1xuICAgcmV0dXJuO1xuIH1cblxuIEBDb3Jkb3ZhKClcbiB1cGRhdGVNeVBhc3N3b3JkKHBhcmFtczoge1xuICAgb2xkUHdkOiBzdHJpbmc7XG4gICBuZXdQd2Q6IHN0cmluZztcbiB9KTogUHJvbWlzZTx2b2lkPiB7XG4gICByZXR1cm47XG4gfVxuXG4gLyoqXG4gICog5pu05paw5b2T5YmN55So5oi35aS05YOP44CCXG4gICogQHBhcmFtIHtvYmplY3R9IHBhcmFtcyA9IHtcbiAgKiAgaW1nUGF0aDogc3RyaW5nIC8vIOacrOWcsOWbvueJh+e7neWvuei3r+W+hOOAglxuICAqIH1cbiAgKiDms6jmhI8gQW5kcm9pZCDkuI4gaU9TIOeahOaWh+S7tui3r+W+hOaYr+S4jeWQjOeahO+8mlxuICAqICAgLSBBbmRyb2lkIOexu+S8vO+8mi9zdG9yYWdlL2VtdWxhdGVkLzAvRENJTS9DYW1lcmEvSU1HXzIwMTYwNTI2XzEzMDIyMy5qcGdcbiAgKiAgIC0gaU9TIOexu+S8vO+8mi92YXIvbW9iaWxlL0NvbnRhaW5lcnMvRGF0YS9BcHBsaWNhdGlvbi83REM1Q0RGRi02NTgxLTRBRDMtQjE2NS1CNjA0RUJBQjEyNTAvdG1wL3Bob3RvLmpwZ1xuICAqL1xuIEBDb3Jkb3ZhKClcbiB1cGRhdGVNeUF2YXRhcihwYXJhbXM6IHtcbiAgIGltZ1BhdGg6IHN0cmluZztcbiB9KTogUHJvbWlzZTxhbnk+IHtcbiAgIHJldHVybjtcbiB9XG5cbiBAQ29yZG92YSgpXG4gdXBkYXRlTXlJbmZvKHBhcmFtczoge1xuICAgYmlydGhkYXk/OiBudW1iZXI7XG4gICBnZW5kZXI/OiAnbWFsZScgfCAnZmVtYWxlJyB8ICd1bmtub3duJztcbiAgIGV4dHJhcz86IHsgW2tleTogc3RyaW5nXTogc3RyaW5nOyB9O1xuIH0pOiBQcm9taXNlPGFueT4ge1xuICAgcmV0dXJuO1xuIH1cblxuIEBDb3Jkb3ZhKClcbiB1cGRhdGVHcm91cEF2YXRhcihwYXJhbXM6IHtcbiAgIGlkOiBzdHJpbmc7XG4gICBpbWdQYXRoOiBzdHJpbmc7XG4gfSk6IFByb21pc2U8YW55PiB7XG4gICByZXR1cm47XG4gfVxuXG4gQENvcmRvdmEoKVxuIGRvd25sb2FkVGh1bWJHcm91cEF2YXRhcihwYXJhbXM6IHtcbiAgIGlkOiBzdHJpbmc7XG4gfSk6IFByb21pc2U8YW55PiB7XG4gICByZXR1cm47XG4gfVxuXG4gQENvcmRvdmEoKVxuIGRvd25sb2FkT3JpZ2luYWxHcm91cEF2YXRhcihwYXJhbXM6IHtcbiAgIGlkOiBzdHJpbmc7XG4gfSk6IFByb21pc2U8YW55PiB7XG4gICByZXR1cm47XG4gfVxuXG4gQENvcmRvdmEoKVxuIHNldENvbnZlcnNhdGlvbkV4dHJhcyhwYXJhbXM6IEpNQWxsVHlwZSAmIHsgZXh0cmFzOiB7IFtrZXk6IHN0cmluZ106IHN0cmluZzsgfTsgfSk6IFByb21pc2U8YW55PiB7XG4gICByZXR1cm47XG4gfVxuXG4gQENvcmRvdmEoKVxuIHNlbmRUZXh0TWVzc2FnZShwYXJhbXM6IEpNQWxsVHlwZSAmIEpNTWVzc2FnZU9wdGlvbnMgJiB7IHRleHQ6IHN0cmluZzsgfSk6IFByb21pc2U8YW55PiB7XG4gICByZXR1cm47XG4gfVxuXG4gQENvcmRvdmEoKVxuIHNlbmRJbWFnZU1lc3NhZ2UocGFyYW1zOiBKTUFsbFR5cGUgJiBKTU1lc3NhZ2VPcHRpb25zICYgeyBwYXRoOiBzdHJpbmc7IH0pOiBQcm9taXNlPGFueT4ge1xuICAgcmV0dXJuO1xuIH1cblxuIEBDb3Jkb3ZhKClcbiBzZW5kVm9pY2VNZXNzYWdlKHBhcmFtczogSk1BbGxUeXBlICYgSk1NZXNzYWdlT3B0aW9ucyAmIHsgcGF0aDogc3RyaW5nOyB9KTogUHJvbWlzZTxhbnk+IHtcbiAgIHJldHVybjtcbiB9XG5cbiBAQ29yZG92YSgpXG4gc2VuZEN1c3RvbU1lc3NhZ2UocGFyYW1zOiBKTUFsbFR5cGUgJiBKTU1lc3NhZ2VPcHRpb25zICYgeyBjdXN0b21PYmplY3Q6IHsgW2tleTogc3RyaW5nXTogc3RyaW5nOyB9OyB9KTogUHJvbWlzZTxhbnk+IHtcbiAgIHJldHVybjtcbiB9XG5cbiBAQ29yZG92YSgpXG4gc2VuZExvY2F0aW9uTWVzc2FnZShwYXJhbXM6IEpNQWxsVHlwZSAmIEpNTWVzc2FnZU9wdGlvbnMgJiB7XG4gICBsYXRpdHVkZTogbnVtYmVyO1xuICAgbG9uZ2l0dWRlOiBudW1iZXI7XG4gICBzY2FsZTogbnVtYmVyO1xuICAgYWRkcmVzczogc3RyaW5nO1xuIH0pOiBQcm9taXNlPGFueT4ge1xuICAgcmV0dXJuO1xuIH1cblxuIEBDb3Jkb3ZhKClcbiBzZW5kRmlsZU1lc3NhZ2UocGFyYW1zOiBKTUFsbFR5cGUgJiBKTU1lc3NhZ2VPcHRpb25zICYge1xuICAgcGF0aDogc3RyaW5nO1xuIH0pOiBQcm9taXNlPGFueT4ge1xuICAgcmV0dXJuO1xuIH1cblxuXG4gQENvcmRvdmEoKVxuIHJldHJhY3RNZXNzYWdlKHBhcmFtczogSk1BbGxUeXBlICYgeyBtZXNzYWdlSWQ6IHN0cmluZzsgfSk6IFByb21pc2U8YW55PiB7XG4gICByZXR1cm47XG4gfVxuXG4gQENvcmRvdmEoKVxuIGdldEhpc3RvcnlNZXNzYWdlcyhwYXJhbXM6IChKTVNpbmdsZVR5cGUgfCBKTUdyb3VwVHlwZSkgJiB7XG4gICBmcm9tOiBudW1iZXI7XG4gICBsaW1pdDogbnVtYmVyO1xuIH0pOiBQcm9taXNlPGFueT4ge1xuICAgcmV0dXJuO1xuIH1cblxuIEBDb3Jkb3ZhKClcbiBnZXRNZXNzYWdlQnlJZChwYXJhbXM6IEpNQWxsVHlwZSAmIHsgbWVzc2FnZUlkOiBzdHJpbmc7IH0pOiBQcm9taXNlPGFueT4ge1xuICAgcmV0dXJuO1xuIH1cblxuIEBDb3Jkb3ZhKClcbiBkZWxldGVNZXNzYWdlQnlJZChwYXJhbXM6IEpNQWxsVHlwZSAmIHsgbWVzc2FnZUlkOiBzdHJpbmc7IH0pOiBQcm9taXNlPGFueT4ge1xuICAgcmV0dXJuO1xuIH1cblxuIEBDb3Jkb3ZhKClcbiBzZW5kSW52aXRhdGlvblJlcXVlc3QocGFyYW1zOiB7XG4gICB1c2VybmFtZTogc3RyaW5nO1xuICAgcmVhc29uOiBzdHJpbmc7XG4gICBhcHBLZXk/OiBzdHJpbmc7XG4gfSk6IFByb21pc2U8YW55PiB7XG4gICByZXR1cm47XG4gfVxuXG4gQENvcmRvdmEoKVxuIGFjY2VwdEludml0YXRpb24ocGFyYW1zOiB7XG4gICB1c2VybmFtZTogc3RyaW5nO1xuICAgYXBwS2V5Pzogc3RyaW5nO1xuIH0pOiBQcm9taXNlPGFueT4ge1xuICAgcmV0dXJuO1xuIH1cblxuIEBDb3Jkb3ZhKClcbiBkZWNsaW5lSW52aXRhdGlvbihwYXJhbXM6IHtcbiAgIHVzZXJuYW1lOiBzdHJpbmc7XG4gICByZWFzb246IHN0cmluZztcbiAgIGFwcEtleT86IHN0cmluZztcbiB9KTogUHJvbWlzZTxhbnk+IHtcbiAgIHJldHVybjtcbiB9XG5cblxuXG4gQENvcmRvdmEoKVxuIHJlbW92ZUZyb21GcmllbmRMaXN0KHBhcmFtczoge1xuICAgdXNlcm5hbWU6IHN0cmluZztcbiAgIGFwcEtleT86IHN0cmluZztcbiB9KTogUHJvbWlzZTxhbnk+IHtcbiAgIHJldHVybjtcbiB9XG5cbiBAQ29yZG92YSgpXG4gdXBkYXRlRnJpZW5kTm90ZU5hbWUocGFyYW1zOiB7XG4gICB1c2VybmFtZTogc3RyaW5nO1xuICAgbm90ZU5hbWU6IHN0cmluZztcbiAgIGFwcEtleT86IHN0cmluZztcbiB9KTogUHJvbWlzZTxhbnk+IHtcbiAgIHJldHVybjtcbiB9XG5cbiBAQ29yZG92YSgpXG4gdXBkYXRlRnJpZW5kTm90ZVRleHQocGFyYW1zOiB7XG4gICB1c2VybmFtZTogc3RyaW5nO1xuICAgbm90ZVRleHQ6IHN0cmluZztcbiAgIGFwcEtleT86IHN0cmluZztcbiB9KTogUHJvbWlzZTxhbnk+IHtcbiAgIHJldHVybjtcbiB9XG5cbiBAQ29yZG92YSgpXG4gZ2V0RnJpZW5kcygpOiBQcm9taXNlPGFueT4ge1xuICAgcmV0dXJuO1xuIH1cblxuIEBDb3Jkb3ZhKClcbiBjcmVhdGVHcm91cChwYXJhbXM6IHtcbiAgIGdyb3VwVHlwZT86ICdwdWJsaWMnIHwgJ3ByaXZhdGUnO1xuICAgbmFtZT86IHN0cmluZztcbiAgIGRlc2M/OiBzdHJpbmc7XG4gfSk6IFByb21pc2U8c3RyaW5nPiB7XG4gICByZXR1cm47XG4gfVxuXG4gQENvcmRvdmEoKVxuIGdldEdyb3VwSWRzKCk6IFByb21pc2U8YW55PiB7XG4gICByZXR1cm47XG4gfVxuXG4gQENvcmRvdmEoKVxuIGdldEdyb3VwSW5mbyhwYXJhbXM6IHsgaWQ6IHN0cmluZzsgfSk6IFByb21pc2U8YW55PiB7XG4gICByZXR1cm47XG4gfVxuXG4gQENvcmRvdmEoKVxuIHVwZGF0ZUdyb3VwSW5mbyhwYXJhbXM6IHtcbiAgIGlkOiBzdHJpbmc7XG4gICBuZXdOYW1lOiBzdHJpbmc7XG4gICBuZXdEZXNjPzogc3RyaW5nO1xuIH0gfCB7XG4gICAgIGlkOiBzdHJpbmc7XG4gICAgIG5ld0Rlc2M6IHN0cmluZztcbiAgIH0pOiBQcm9taXNlPGFueT4ge1xuICAgcmV0dXJuO1xuIH1cblxuIEBDb3Jkb3ZhKClcbiBhZGRHcm91cE1lbWJlcnMocGFyYW1zOiB7XG4gICBpZDogc3RyaW5nO1xuICAgdXNlcm5hbWVBcnJheTogc3RyaW5nW107XG4gICBhcHBLZXk/OiBzdHJpbmc7XG4gfSk6IFByb21pc2U8YW55PiB7XG4gICByZXR1cm47XG4gfVxuXG4gQENvcmRvdmEoKVxuIHJlbW92ZUdyb3VwTWVtYmVycyhwYXJhbXM6IHtcbiAgIGlkOiBzdHJpbmc7XG4gICB1c2VybmFtZUFycmF5OiBzdHJpbmdbXTtcbiAgIGFwcEtleT86IHN0cmluZztcbiB9KTogUHJvbWlzZTxhbnk+IHtcbiAgIHJldHVybjtcbiB9XG5cblxuIEBDb3Jkb3ZhKClcbiBleGl0R3JvdXAocGFyYW1zOiB7XG4gICBpZDogc3RyaW5nO1xuIH0pOiBQcm9taXNlPGFueT4ge1xuICAgcmV0dXJuO1xuIH1cblxuIEBDb3Jkb3ZhKClcbiBnZXRHcm91cE1lbWJlcnMocGFyYW1zOiB7XG4gICBpZDogc3RyaW5nO1xuIH0pOiBQcm9taXNlPEpNR3JvdXBNZW1iZXJJbmZvW10+IHtcbiAgIHJldHVybjtcbiB9XG5cbiBAQ29yZG92YSgpXG4gYWRkVXNlcnNUb0JsYWNrbGlzdChwYXJhbXM6IHtcbiAgIHVzZXJuYW1lQXJyYXk6IHN0cmluZ1tdO1xuICAgYXBwS2V5Pzogc3RyaW5nO1xuIH0pOiBQcm9taXNlPGFueT4ge1xuICAgcmV0dXJuO1xuIH1cblxuIEBDb3Jkb3ZhKClcbiByZW1vdmVVc2Vyc0Zyb21CbGFja2xpc3QocGFyYW1zOiB7XG4gICB1c2VybmFtZUFycmF5OiBzdHJpbmdbXTtcbiAgIGFwcEtleT86IHN0cmluZztcbiB9KTogUHJvbWlzZTxhbnk+IHtcbiAgIHJldHVybjtcbiB9XG5cbiBAQ29yZG92YSgpXG4gZ2V0QmxhY2tsaXN0KCk6IFByb21pc2U8YW55PiB7XG4gICByZXR1cm47XG4gfVxuXG4gQENvcmRvdmEoKVxuIHNldE5vRGlzdHVyYihwYXJhbXM6IChKTVNpbmdsZVR5cGUgfCBKTUdyb3VwVHlwZSkgJiB7XG4gICBpc05vRGlzdHVyYjogYm9vbGVhbjtcbiB9KTogUHJvbWlzZTxhbnk+IHtcbiAgIHJldHVybjtcbiB9XG5cbiBAQ29yZG92YSgpXG4gZ2V0Tm9EaXN0dXJiTGlzdCgpOiBQcm9taXNlPGFueT4ge1xuICAgcmV0dXJuO1xuIH1cblxuIEBDb3Jkb3ZhKClcbiBzZXROb0Rpc3R1cmJHbG9iYWwocGFyYW1zOiB7XG4gICBpc05vRGlzdHVyYjogYm9vbGVhbjtcbiB9KTogUHJvbWlzZTxhbnk+IHtcbiAgIHJldHVybjtcbiB9XG5cbiBAQ29yZG92YSgpXG4gaXNOb0Rpc3R1cmJHbG9iYWwoKTogUHJvbWlzZTxhbnk+IHtcbiAgIHJldHVybjtcbiB9XG5cbiBAQ29yZG92YSgpXG4gYmxvY2tHcm91cE1lc3NhZ2UocGFyYW1zOiB7XG4gICBpZDogc3RyaW5nO1xuICAgaXNCbG9jazogYm9vbGVhbjtcbiB9KTogUHJvbWlzZTxhbnk+IHtcbiAgIHJldHVybjtcbiB9XG5cbiBAQ29yZG92YSgpXG4gaXNHcm91cEJsb2NrZWQocGFyYW1zOiB7XG4gICBpZDogc3RyaW5nO1xuIH0pOiBQcm9taXNlPGFueT4ge1xuICAgcmV0dXJuO1xuIH1cblxuIEBDb3Jkb3ZhKClcbiBnZXRCbG9ja2VkR3JvdXBMaXN0KCk6IFByb21pc2U8YW55PiB7XG4gICByZXR1cm47XG4gfVxuXG4gQENvcmRvdmEoKVxuIGRvd25sb2FkVGh1bWJVc2VyQXZhdGFyKHBhcmFtczoge1xuICAgdXNlcm5hbWU6IHN0cmluZztcbiAgIGFwcEtleT86IHN0cmluZztcbiB9KTogUHJvbWlzZTxhbnk+IHtcbiAgIHJldHVybjtcbiB9XG5cbiBAQ29yZG92YSgpXG4gZG93bmxvYWRPcmlnaW5hbFVzZXJBdmF0YXIocGFyYW1zOiB7XG4gICB1c2VybmFtZTogc3RyaW5nO1xuICAgYXBwS2V5Pzogc3RyaW5nO1xuIH0pOiBQcm9taXNlPGFueT4ge1xuICAgcmV0dXJuO1xuIH1cblxuIEBDb3Jkb3ZhKClcbiBkb3dubG9hZFRodW1iSW1hZ2UocGFyYW1zOiAoSk1TaW5nbGVUeXBlIHwgSk1Hcm91cFR5cGUpICYge1xuICAgbWVzc2FnZUlkOiBzdHJpbmc7XG4gfSk6IFByb21pc2U8YW55PiB7XG4gICByZXR1cm47XG4gfVxuXG4gQENvcmRvdmEoKVxuIGRvd25sb2FkT3JpZ2luYWxJbWFnZShwYXJhbXM6IChKTVNpbmdsZVR5cGUgfCBKTUdyb3VwVHlwZSkgJiB7XG4gICBtZXNzYWdlSWQ6IHN0cmluZztcbiB9KTogUHJvbWlzZTxhbnk+IHtcbiAgIHJldHVybjtcbiB9XG5cbiBAQ29yZG92YSgpXG4gZG93bmxvYWRWb2ljZUZpbGUocGFyYW1zOiAoSk1TaW5nbGVUeXBlIHwgSk1Hcm91cFR5cGUpICYge1xuICAgbWVzc2FnZUlkOiBzdHJpbmc7XG4gfSk6IFByb21pc2U8YW55PiB7XG4gICByZXR1cm47XG4gfVxuXG4gQENvcmRvdmEoKVxuIGRvd25sb2FkRmlsZShwYXJhbXM6IChKTVNpbmdsZVR5cGUgfCBKTUdyb3VwVHlwZSkgJiB7XG4gICBtZXNzYWdlSWQ6IHN0cmluZztcbiB9KTogUHJvbWlzZTxhbnk+IHtcbiAgIHJldHVybjtcbiB9XG5cbiBAQ29yZG92YSgpXG4gY3JlYXRlQ29udmVyc2F0aW9uKHBhcmFtczogSk1BbGxUeXBlKTogUHJvbWlzZTxhbnk+IHtcbiAgIHJldHVybjtcbiB9XG5cbiBAQ29yZG92YSgpXG4gZGVsZXRlQ29udmVyc2F0aW9uKHBhcmFtczogSk1BbGxUeXBlKTogUHJvbWlzZTxhbnk+IHtcbiAgIHJldHVybjtcbiB9XG5cbiBAQ29yZG92YSgpXG4gZW50ZXJDb252ZXJzYXRpb24ocGFyYW1zOiBKTVNpbmdsZVR5cGUgfCBKTUdyb3VwVHlwZSk6IFByb21pc2U8YW55PiB7XG4gICByZXR1cm47XG4gfVxuXG4gQENvcmRvdmEoe1xuICAgc3luYzogdHJ1ZSxcbiAgIHBsYXRmb3JtczogWydpT1MnLCAnQW5kcm9pZCddXG4gIH0pXG4gZXhpdENvbnZlcnNhdGlvbihwYXJhbXM6IEpNU2luZ2xlVHlwZSB8IEpNR3JvdXBUeXBlKTogdm9pZCB7fVxuXG4gQENvcmRvdmEoKVxuIGdldENvbnZlcnNhdGlvbihwYXJhbXM6IEpNQWxsVHlwZSk6IFByb21pc2U8YW55PiB7XG4gICByZXR1cm47XG4gfVxuXG4gQENvcmRvdmEoKVxuIGdldENvbnZlcnNhdGlvbnMoKTogUHJvbWlzZTxhbnk+IHtcbiAgIHJldHVybjtcbiB9XG5cbiBAQ29yZG92YSgpXG4gcmVzZXRVbnJlYWRNZXNzYWdlQ291bnQocGFyYW1zOiBKTUFsbFR5cGUpOiBQcm9taXNlPGFueT4ge1xuICAgcmV0dXJuO1xuIH1cblxuIEBDb3Jkb3ZhKClcbiB0cmFuc2Zlckdyb3VwT3duZXIocGFyYW1zOiB7XG4gICBncm91cElkOiBzdHJpbmc7XG4gICB1c2VybmFtZTogc3RyaW5nO1xuICAgYXBwS2V5Pzogc3RyaW5nO1xuIH0pOiBQcm9taXNlPGFueT4ge1xuICAgcmV0dXJuO1xuIH1cblxuIEBDb3Jkb3ZhKClcbiBzZXRHcm91cE1lbWJlclNpbGVuY2UocGFyYW1zOiB7XG4gICBncm91cElkOiBzdHJpbmc7XG4gICBpc1NpbGVuY2U6IGJvb2xlYW47XG4gICB1c2VybmFtZTogc3RyaW5nO1xuICAgYXBwS2V5Pzogc3RyaW5nO1xuIH0pOiBQcm9taXNlPGFueT4ge1xuICAgcmV0dXJuO1xuIH1cblxuIEBDb3Jkb3ZhKClcbiBpc1NpbGVuY2VNZW1iZXIocGFyYW1zOiB7XG4gICBncm91cElkOiBzdHJpbmc7XG4gICB1c2VybmFtZTogc3RyaW5nO1xuICAgYXBwS2V5Pzogc3RyaW5nO1xuIH0pOiBQcm9taXNlPGFueT4ge1xuICAgcmV0dXJuO1xuIH1cblxuIEBDb3Jkb3ZhKClcbiBncm91cFNpbGVuY2VNZW1iZXJzKHBhcmFtczoge1xuICAgZ3JvdXBJZDogc3RyaW5nO1xuIH0pOiBQcm9taXNlPGFueT4ge1xuICAgcmV0dXJuO1xuIH1cblxuIEBDb3Jkb3ZhKClcbiBzZXRHcm91cE5pY2tuYW1lKHBhcmFtczoge1xuICAgZ3JvdXBJZDogc3RyaW5nO1xuICAgbmlja05hbWU6IHN0cmluZztcbiAgIHVzZXJuYW1lOiBzdHJpbmc7XG4gICBhcHBLZXk/OiBzdHJpbmc7XG4gfSk6IFByb21pc2U8YW55PiB7XG4gICByZXR1cm47XG4gfVxuXG4gLyoqXG4gICogVE9ETzpcbiAgKiBcbiAgKiBjaGF0Um9vbSBpbnRlcm5hbCBhcGkuXG4gICovXG4gQENvcmRvdmFQcm9wZXJ0eSgpXG4gQ2hhdFJvb206IEpNQ2hhdFJvb207XG5cbiBAQ29yZG92YSgpXG4gZW50ZXJDaGF0Um9vbShwYXJhbXM6IHtcbiAgIHJvb21JZDogc3RyaW5nO1xuIH0pOiBQcm9taXNlPGFueT4ge1xuICAgcmV0dXJuO1xuIH1cblxuIEBDb3Jkb3ZhKClcbiBleGl0Q2hhdFJvb20ocGFyYW1zOiB7XG4gICByb29tSWQ6IHN0cmluZztcbiB9KTogUHJvbWlzZTxhbnk+IHtcbiAgIHJldHVybjtcbiB9XG5cbiBAQ29yZG92YSgpXG4gZ2V0Q2hhdFJvb21Db252ZXJzYXRpb24ocGFyYW1zOiB7XG4gICByb29tSWQ6IHN0cmluZztcbiB9KTogUHJvbWlzZTxhbnk+IHtcbiAgIHJldHVybjtcbiB9XG5cbiBAQ29yZG92YSgpXG4gZ2V0Q2hhdFJvb21Db252ZXJzYXRpb25MaXN0KCk6IFByb21pc2U8YW55PiB7XG4gICByZXR1cm47XG4gfVxuXG4gQENvcmRvdmEoKVxuIGdldEFsbFVucmVhZENvdW50KCk6IFByb21pc2U8IHsgY291bnQ6IG51bWJlcjsgfSA+IHtcbiAgIHJldHVybjsgLy8gV2UgYWRkIHJldHVybjsgaGVyZSB0byBhdm9pZCBhbnkgSURFIC8gQ29tcGlsZXIgZXJyb3JzXG4gfVxuXG4gQENvcmRvdmEoKVxuIGFkZEdyb3VwQWRtaW5zKHBhcmFtczoge1xuICAgZ3JvdXBJZDogc3RyaW5nO1xuICAgdXNlcm5hbWVzOiBzdHJpbmdbXTtcbiAgIGFwcEtleT86IHN0cmluZztcbiB9KTogUHJvbWlzZTxhbnk+IHtcbiAgIHJldHVybjtcbiB9XG5cbiBAQ29yZG92YSgpXG4gcmVtb3ZlR3JvdXBBZG1pbnMocGFyYW1zOiB7XG4gICBncm91cElkOiBzdHJpbmc7XG4gICB1c2VybmFtZXM6IHN0cmluZ1tdO1xuICAgYXBwS2V5Pzogc3RyaW5nO1xuIH0pOiBQcm9taXNlPGFueT4ge1xuICAgcmV0dXJuO1xuIH1cblxuIEBDb3Jkb3ZhKClcbiBjaGFuZ2VHcm91cFR5cGUocGFyYW1zOiB7XG4gICBncm91cElkOiBzdHJpbmc7XG4gICB0eXBlOiAncHVibGljJyB8ICdwcml2YXRlJztcbiB9KTogUHJvbWlzZTxhbnk+IHtcbiAgIHJldHVybjtcbiB9XG5cbiBAQ29yZG92YSgpXG4gZ2V0UHVibGljR3JvdXBJbmZvcyhwYXJhbXM6IHtcbiAgIGFwcEtleTogc3RyaW5nO1xuICAgc3RhcnQ6IG51bWJlcjtcbiAgIGNvdW50OiBudW1iZXI7XG4gfSk6IFByb21pc2U8YW55PiB7XG4gICByZXR1cm47XG4gfVxuXG4gQENvcmRvdmEoKVxuIGFwcGx5Sm9pbkdyb3VwKHBhcmFtczoge1xuICAgZ3JvdXBJZDogc3RyaW5nO1xuICAgcmVhc29uPzogc3RyaW5nO1xuIH0pOiBQcm9taXNlPGFueT4ge1xuICAgcmV0dXJuO1xuIH1cblxuIEBDb3Jkb3ZhKClcbiBwcm9jZXNzQXBwbHlKb2luR3JvdXAocGFyYW1zOiB7XG4gICBldmVudHM6IHN0cmluZ1tdO1xuICAgaXNBZ3JlZTogYm9vbGVhbjtcbiAgIGlzUmVzcG9uZEludml0ZXI6IGJvb2xlYW5cbiAgIHJlYXNvbj86IHN0cmluZztcbiB9KTogUHJvbWlzZTxhbnk+IHtcbiAgIHJldHVybjtcbiB9XG5cbiBAQ29yZG92YSgpXG4gZGlzc29sdmVHcm91cChwYXJhbXM6IHtcbiAgIGdyb3VwSWQ6IHN0cmluZztcbiB9KTogUHJvbWlzZTxhbnk+IHtcbiAgIHJldHVybjtcbiB9XG5cbiBAQ29yZG92YSh7XG4gICBzeW5jOiB0cnVlLFxuICAgcGxhdGZvcm1zOiBbJ2lPUycsICdBbmRyb2lkJ11cbiAgfSlcbiBhZGRSZWNlaXZlTWVzc2FnZUxpc3RlbmVyKHBhcmFtczogSk1NZXNzYWdlRXZlbnRMaXN0ZW5lcik6IHZvaWQge1xuIH1cblxuIEBDb3Jkb3ZhKHtcbiAgIHN5bmM6IHRydWUsXG4gICBwbGF0Zm9ybXM6IFsnaU9TJywgJ0FuZHJvaWQnXVxuICB9KVxuIHJlbW92ZVJlY2VpdmVNZXNzYWdlTGlzdGVuZXIocGFyYW1zOiBKTU1lc3NhZ2VFdmVudExpc3RlbmVyKTogdm9pZCB7XG4gfVxuXG4gQENvcmRvdmEoe1xuICAgc3luYzogdHJ1ZSxcbiAgIHBsYXRmb3JtczogWydpT1MnLCAnQW5kcm9pZCddXG4gIH0pXG4gYWRkQ2xpY2tNZXNzYWdlTm90aWZpY2F0aW9uTGlzdGVuZXIocGFyYW1zOiBKTU1lc3NhZ2VFdmVudExpc3RlbmVyKTogdm9pZCB7XG4gfVxuXG4gQENvcmRvdmEoe1xuICAgc3luYzogdHJ1ZSxcbiAgIHBsYXRmb3JtczogWydpT1MnLCAnQW5kcm9pZCddXG4gIH0pXG4gcmVtb3ZlQ2xpY2tNZXNzYWdlTm90aWZpY2F0aW9uTGlzdGVuZXIocGFyYW1zOiBKTU1lc3NhZ2VFdmVudExpc3RlbmVyKTogdm9pZCB7XG4gfVxuXG4gQENvcmRvdmEoe1xuICAgc3luYzogdHJ1ZSxcbiAgIHBsYXRmb3JtczogWydpT1MnLCAnQW5kcm9pZCddXG4gIH0pXG4gYWRkU3luY09mZmxpbmVNZXNzYWdlTGlzdGVuZXIocGFyYW1zOiBKTVN5bmNPZmZsaW5lTWVzc2FnZUxpc3RlbmVyKTogdm9pZCB7XG4gfVxuXG4gQENvcmRvdmEoe1xuICAgc3luYzogdHJ1ZSxcbiAgIHBsYXRmb3JtczogWydpT1MnLCAnQW5kcm9pZCddXG4gIH0pXG4gcmVtb3ZlU3luY09mZmxpbmVNZXNzYWdlTGlzdGVuZXIocGFyYW1zOiBKTVN5bmNPZmZsaW5lTWVzc2FnZUxpc3RlbmVyKTogdm9pZCB7XG5cbiB9XG5cbiBAQ29yZG92YSh7XG4gICBzeW5jOiB0cnVlLFxuICAgcGxhdGZvcm1zOiBbJ2lPUycsICdBbmRyb2lkJ11cbiAgfSlcbiBhZGRTeW5jUm9hbWluZ01lc3NhZ2VMaXN0ZW5lcihwYXJhbXM6IEpNU3luY1JvYW1pbmdNZXNzYWdlTGlzdGVuZXIpOiB2b2lkIHtcbiB9XG5cbiBAQ29yZG92YSh7XG4gICBzeW5jOiB0cnVlLFxuICAgcGxhdGZvcm1zOiBbJ2lPUycsICdBbmRyb2lkJ11cbiAgfSlcbiByZW1vdmVTeW5jUm9hbWluZ01lc3NhZ2VMaXN0ZW5lcihwYXJhbXM6IEpNU3luY1JvYW1pbmdNZXNzYWdlTGlzdGVuZXIpOiB2b2lkIHtcbiB9XG5cbiBAQ29yZG92YSh7XG4gICBzeW5jOiB0cnVlLFxuICAgcGxhdGZvcm1zOiBbJ2lPUycsICdBbmRyb2lkJ11cbiAgfSlcbiBhZGRMb2dpblN0YXRlQ2hhbmdlZExpc3RlbmVyKHBhcmFtczogSk1Mb2dpblN0YXRlQ2hhbmdlZExpc3RlbmVyKTogdm9pZCB7XG4gfVxuXG4gQENvcmRvdmEoe1xuICAgc3luYzogdHJ1ZSxcbiAgIHBsYXRmb3JtczogWydpT1MnLCAnQW5kcm9pZCddXG4gIH0pXG4gcmVtb3ZlTG9naW5TdGF0ZUNoYW5nZWRMaXN0ZW5lcihwYXJhbXM6IEpNTG9naW5TdGF0ZUNoYW5nZWRMaXN0ZW5lcik6IHZvaWQge1xuIH1cblxuXG4gQENvcmRvdmEoe1xuICAgc3luYzogdHJ1ZSxcbiAgIHBsYXRmb3JtczogWydpT1MnLCAnQW5kcm9pZCddXG4gIH0pXG4gYWRkQ29udGFjdE5vdGlmeUxpc3RlbmVyKHBhcmFtczogSk1Db250YWN0Tm90aWZ5TGlzdGVuZXIpOiB2b2lkIHtcbiB9XG5cbiBAQ29yZG92YSh7XG4gICBzeW5jOiB0cnVlLFxuICAgcGxhdGZvcm1zOiBbJ2lPUycsICdBbmRyb2lkJ11cbiAgfSlcbiByZW1vdmVDb250YWN0Tm90aWZ5TGlzdGVuZXIocGFyYW1zOiBKTUNvbnRhY3ROb3RpZnlMaXN0ZW5lcik6IHZvaWQge1xuIH1cblxuIEBDb3Jkb3ZhKHtcbiAgIHN5bmM6IHRydWUsXG4gICBwbGF0Zm9ybXM6IFsnaU9TJywgJ0FuZHJvaWQnXVxuICB9KVxuIGFkZE1lc3NhZ2VSZXRyYWN0TGlzdGVuZXIocGFyYW1zOiBKTU1lc3NhZ2VSZXRyYWN0TGlzdGVuZXIpOiB2b2lkIHtcbiB9XG5cbiBAQ29yZG92YSh7XG4gICBzeW5jOiB0cnVlLFxuICAgcGxhdGZvcm1zOiBbJ2lPUycsICdBbmRyb2lkJ11cbiAgfSlcbiByZW1vdmVNZXNzYWdlUmV0cmFjdExpc3RlbmVyKHBhcmFtczogSk1NZXNzYWdlUmV0cmFjdExpc3RlbmVyKTogdm9pZCB7XG4gfVxuXG4gQENvcmRvdmEoe1xuICAgc3luYzogdHJ1ZSxcbiAgIHBsYXRmb3JtczogWydpT1MnLCAnQW5kcm9pZCddXG4gIH0pXG4gYWRkUmVjZWl2ZVRyYW5zQ29tbWFuZExpc3RlbmVyKHBhcmFtczogSk1SZWNlaXZlVHJhbnNDb21tYW5kTGlzdGVuZXIpOiB2b2lkIHtcbiB9XG5cbiBAQ29yZG92YSh7XG4gICBzeW5jOiB0cnVlLFxuICAgcGxhdGZvcm1zOiBbJ2lPUycsICdBbmRyb2lkJ11cbiAgfSlcbiByZW1vdmVSZWNlaXZlVHJhbnNDb21tYW5kTGlzdGVuZXIocGFyYW1zOiBKTVJlY2VpdmVUcmFuc0NvbW1hbmRMaXN0ZW5lcik6IHZvaWQge1xuIH1cblxuXG4gQENvcmRvdmEoe1xuICAgc3luYzogdHJ1ZSxcbiAgIHBsYXRmb3JtczogWydpT1MnLCAnQW5kcm9pZCddXG4gIH0pXG4gYWRkUmVjZWl2ZUNoYXRSb29tTWVzc2FnZUxpc3RlbmVyKHBhcmFtczogSk1SZWNlaXZlQ2hhdFJvb21NZXNzYWdlTGlzdGVuZXIpOiB2b2lkIHtcbiB9XG5cbiBAQ29yZG92YSh7XG4gICBzeW5jOiB0cnVlLFxuICAgcGxhdGZvcm1zOiBbJ2lPUycsICdBbmRyb2lkJ11cbiAgfSlcbiByZW1vdmVSZWNlaXZlQ2hhdFJvb21NZXNzYWdlTGlzdGVuZXIocGFyYW1zOiBKTVJlY2VpdmVDaGF0Um9vbU1lc3NhZ2VMaXN0ZW5lcik6IHZvaWQge1xuIH1cblxuIEBDb3Jkb3ZhKHtcbiAgIHN5bmM6IHRydWUsXG4gICBwbGF0Zm9ybXM6IFsnaU9TJywgJ0FuZHJvaWQnXVxuICB9KVxuICBhZGRSZWNlaXZlQXBwbHlKb2luR3JvdXBBcHByb3ZhbExpc3RlbmVyKHBhcmFtczogSk1SZWNlaXZlQXBwbHlKb2luR3JvdXBBcHByb3ZhbExpc3RlbmVyKTogdm9pZCB7XG4gfVxuXG4gQENvcmRvdmEoe1xuICAgc3luYzogdHJ1ZSxcbiAgIHBsYXRmb3JtczogWydpT1MnLCAnQW5kcm9pZCddXG4gIH0pXG4gIHJlbW92ZVJlY2VpdmVBcHBseUpvaW5Hcm91cEFwcHJvdmFsTGlzdGVuZXIocGFyYW1zOiBKTVJlY2VpdmVBcHBseUpvaW5Hcm91cEFwcHJvdmFsTGlzdGVuZXIpOiB2b2lkIHtcbiB9XG5cblxuIEBDb3Jkb3ZhKHtcbiAgIHN5bmM6IHRydWUsXG4gICBwbGF0Zm9ybXM6IFsnaU9TJywgJ0FuZHJvaWQnXVxuICB9KVxuICBhZGRSZWNlaXZlR3JvdXBBZG1pblJlamVjdExpc3RlbmVyKHBhcmFtczogSk1SZWNlaXZlR3JvdXBBZG1pblJlamVjdExpc3RlbmVyKTogdm9pZCB7XG4gfVxuXG4gQENvcmRvdmEoe1xuICAgc3luYzogdHJ1ZSxcbiAgIHBsYXRmb3JtczogWydpT1MnLCAnQW5kcm9pZCddXG4gIH0pXG4gIHJlbW92ZVJlY2VpdmVHcm91cEFkbWluUmVqZWN0TGlzdGVuZXIocGFyYW1zOiBKTVJlY2VpdmVHcm91cEFkbWluUmVqZWN0TGlzdGVuZXIpOiB2b2lkIHtcbiB9XG5cbiBAQ29yZG92YSh7XG4gICBzeW5jOiB0cnVlLFxuICAgcGxhdGZvcm1zOiBbJ2lPUycsICdBbmRyb2lkJ11cbiAgfSlcbiAgYWRkUmVjZWl2ZUdyb3VwQWRtaW5BcHByb3ZhbExpc3RlbmVyKHBhcmFtczogSk1SZWNlaXZlR3JvdXBBZG1pbkFwcHJvdmFsTGlzdGVuZXIpOiB2b2lkIHtcbiB9XG5cbiBAQ29yZG92YSh7XG4gICBzeW5jOiB0cnVlLFxuICAgcGxhdGZvcm1zOiBbJ2lPUycsICdBbmRyb2lkJ11cbiAgfSlcbiAgcmVtb3ZlUmVjZWl2ZUdyb3VwQWRtaW5BcHByb3ZhbExpc3RlbmVyKHBhcmFtczogSk1SZWNlaXZlR3JvdXBBZG1pbkFwcHJvdmFsTGlzdGVuZXIpOiB2b2lkIHtcbiB9XG5cbn1cbiJdfQ==
