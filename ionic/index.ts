@@ -7,12 +7,8 @@
  * - Remove this note
  */
 import { Injectable } from '@angular/core';
-import {
-  Plugin,
-  Cordova,
-  CordovaProperty,
-  IonicNativePlugin
-} from '@ionic-native/core';
+import { Plugin, Cordova, CordovaProperty, CordovaInstance, InstanceProperty, IonicNativePlugin } from '@ionic-native/core';
+import { Observable } from 'rxjs';
 
 
 export interface JMSingleType {
@@ -260,7 +256,9 @@ export interface JMMessageSendOptions {
 };
 
 // TODO: to Promise
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class JMChatRoom {
 
   @Cordova()
@@ -302,11 +300,8 @@ export class JMChatRoom {
   @Cordova()
   getChatRoomConversationList(success: (conversationList: JMConversationInfo[]) => void, fail: (error: JMError) => void): void {}
 }
-/**
- * @name jmessage
- * @description
- * This plugin does something
- */
+
+
 @Plugin({
   pluginName: 'JMessagePlugin',
   plugin: 'jmessage-phonegap-plugin',
@@ -316,772 +311,779 @@ export class JMChatRoom {
   installVariables: ['APP_KEY'],
   platforms: ['Android', 'iOS']
 })
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class JMessagePlugin extends IonicNativePlugin {
 
   /**
    * This function does something
-   * @param obj {string} Some param to configure something
+   * @param arg1 {string} Some param to configure something
    * @param arg2 {number} Another param to configure something
    * @return {Promise<any>} Returns a promise that resolves when something happens
    */
-  @Cordova({
-     sync: true,
-     platforms: ['iOS', 'Android']
-    })
-  init(params: JMConfig): void { }
-
-  @Cordova({
-    sync: true,
-    platforms: ['iOS', 'Android']
-   })
-  setDebugMode(params: { enable: boolean; }): void {}
-
   @Cordova()
-  register(params: {
-    username: string;
-    password: string;
-    nickname: string;
-  }): Promise<void> {
-    return;
-  }
-
-  @Cordova()
-  login(params: {
-    username: string;
-    password: string;
-  }): Promise<void> {
-    return;
-  }
-
-  @Cordova({
-    sync: true,
-    platforms: ['iOS', 'Android']
-   })
-  logout(): void {}
-
-  @Cordova({
-    sync: true,
-    platforms: ['iOS', 'Android']
-   })
-  setBadge(params: { badge: number; }): void { }
-
-  @Cordova()
-  getMyInfo(): Promise< JMUserInfo | {} > {
+  functionName(arg1: string, arg2: number): Promise<any> {
     return; // We add return; here to avoid any IDE / Compiler errors
   }
 
-
-  @Cordova()
-  getUserInfo(params: {
-    username: string;
-    appKey?: string;
-  }): Promise<JMUserInfo> {
-    return;
-  }
-
-  @Cordova()
-  updateMyPassword(params: {
-    oldPwd: string;
-    newPwd: string;
-  }): Promise<void> {
-    return;
-  }
-
-  /**
-   * 更新当前用户头像。
-   * @param {object} params = {
-   *  imgPath: string // 本地图片绝对路径。
-   * }
-   * 注意 Android 与 iOS 的文件路径是不同的：
-   *   - Android 类似：/storage/emulated/0/DCIM/Camera/IMG_20160526_130223.jpg
-   *   - iOS 类似：/var/mobile/Containers/Data/Application/7DC5CDFF-6581-4AD3-B165-B604EBAB1250/tmp/photo.jpg
-   */
-  @Cordova()
-  updateMyAvatar(params: {
-    imgPath: string;
-  }): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  updateMyInfo(params: {
-    birthday?: number;
-    gender?: 'male' | 'female' | 'unknown';
-    extras?: { [key: string]: string; };
-  }): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  updateGroupAvatar(params: {
-    id: string;
-    imgPath: string;
-  }): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  downloadThumbGroupAvatar(params: {
-    id: string;
-  }): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  downloadOriginalGroupAvatar(params: {
-    id: string;
-  }): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  setConversationExtras(params: JMAllType & { extras: { [key: string]: string; }; }): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  sendTextMessage(params: JMAllType & JMMessageOptions & { text: string; }): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  sendImageMessage(params: JMAllType & JMMessageOptions & { path: string; }): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  sendVoiceMessage(params: JMAllType & JMMessageOptions & { path: string; }): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  sendCustomMessage(params: JMAllType & JMMessageOptions & { customObject: { [key: string]: string; }; }): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  sendLocationMessage(params: JMAllType & JMMessageOptions & {
-    latitude: number;
-    longitude: number;
-    scale: number;
-    address: string;
-  }): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  sendFileMessage(params: JMAllType & JMMessageOptions & {
-    path: string;
-  }): Promise<any> {
-    return;
-  }
-
-
-  @Cordova()
-  retractMessage(params: JMAllType & { messageId: string; }): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  getHistoryMessages(params: (JMSingleType | JMGroupType) & {
-    from: number;
-    limit: number;
-  }): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  getMessageById(params: JMAllType & { messageId: string; }): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  deleteMessageById(params: JMAllType & { messageId: string; }): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  sendInvitationRequest(params: {
-    username: string;
-    reason: string;
-    appKey?: string;
-  }): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  acceptInvitation(params: {
-    username: string;
-    appKey?: string;
-  }): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  declineInvitation(params: {
-    username: string;
-    reason: string;
-    appKey?: string;
-  }): Promise<any> {
-    return;
-  }
-
-
-
-  @Cordova()
-  removeFromFriendList(params: {
-    username: string;
-    appKey?: string;
-  }): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  updateFriendNoteName(params: {
-    username: string;
-    noteName: string;
-    appKey?: string;
-  }): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  updateFriendNoteText(params: {
-    username: string;
-    noteText: string;
-    appKey?: string;
-  }): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  getFriends(): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  createGroup(params: {
-    groupType?: 'public' | 'private';
-    name?: string;
-    desc?: string;
-  }): Promise<string> {
-    return;
-  }
-
-  @Cordova()
-  getGroupIds(): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  getGroupInfo(params: { id: string; }): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  updateGroupInfo(params: {
-    id: string;
-    newName: string;
-    newDesc?: string;
-  } | {
-      id: string;
-      newDesc: string;
-    }): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  addGroupMembers(params: {
-    id: string;
-    usernameArray: string[];
-    appKey?: string;
-  }): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  removeGroupMembers(params: {
-    id: string;
-    usernameArray: string[];
-    appKey?: string;
-  }): Promise<any> {
-    return;
-  }
-
-
-  @Cordova()
-  exitGroup(params: {
-    id: string;
-  }): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  getGroupMembers(params: {
-    id: string;
-  }): Promise<JMGroupMemberInfo[]> {
-    return;
-  }
-
-  @Cordova()
-  addUsersToBlacklist(params: {
-    usernameArray: string[];
-    appKey?: string;
-  }): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  removeUsersFromBlacklist(params: {
-    usernameArray: string[];
-    appKey?: string;
-  }): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  getBlacklist(): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  setNoDisturb(params: (JMSingleType | JMGroupType) & {
-    isNoDisturb: boolean;
-  }): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  getNoDisturbList(): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  setNoDisturbGlobal(params: {
-    isNoDisturb: boolean;
-  }): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  isNoDisturbGlobal(): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  blockGroupMessage(params: {
-    id: string;
-    isBlock: boolean;
-  }): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  isGroupBlocked(params: {
-    id: string;
-  }): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  getBlockedGroupList(): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  downloadThumbUserAvatar(params: {
-    username: string;
-    appKey?: string;
-  }): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  downloadOriginalUserAvatar(params: {
-    username: string;
-    appKey?: string;
-  }): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  downloadThumbImage(params: (JMSingleType | JMGroupType) & {
-    messageId: string;
-  }): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  downloadOriginalImage(params: (JMSingleType | JMGroupType) & {
-    messageId: string;
-  }): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  downloadVoiceFile(params: (JMSingleType | JMGroupType) & {
-    messageId: string;
-  }): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  downloadFile(params: (JMSingleType | JMGroupType) & {
-    messageId: string;
-  }): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  createConversation(params: JMAllType): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  deleteConversation(params: JMAllType): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  enterConversation(params: JMSingleType | JMGroupType): Promise<any> {
-    return;
-  }
-
   @Cordova({
     sync: true,
     platforms: ['iOS', 'Android']
    })
-  exitConversation(params: JMSingleType | JMGroupType): void {}
+ init(params: JMConfig): void { }
 
-  @Cordova()
-  getConversation(params: JMAllType): Promise<any> {
-    return;
-  }
+ @Cordova({
+   sync: true,
+   platforms: ['iOS', 'Android']
+  })
+ setDebugMode(params: { enable: boolean; }): void {}
 
-  @Cordova()
-  getConversations(): Promise<any> {
-    return;
-  }
+ @Cordova()
+ register(params: {
+   username: string;
+   password: string;
+   nickname: string;
+ }): Promise<void> {
+   return;
+ }
 
-  @Cordova()
-  resetUnreadMessageCount(params: JMAllType): Promise<any> {
-    return;
-  }
+ @Cordova()
+ login(params: {
+   username: string;
+   password: string;
+ }): Promise<void> {
+   return;
+ }
 
-  @Cordova()
-  transferGroupOwner(params: {
-    groupId: string;
-    username: string;
-    appKey?: string;
-  }): Promise<any> {
-    return;
-  }
+ @Cordova({
+   sync: true,
+   platforms: ['iOS', 'Android']
+  })
+ logout(): void {}
 
-  @Cordova()
-  setGroupMemberSilence(params: {
-    groupId: string;
-    isSilence: boolean;
-    username: string;
-    appKey?: string;
-  }): Promise<any> {
-    return;
-  }
+ @Cordova({
+   sync: true,
+   platforms: ['iOS', 'Android']
+  })
+ setBadge(params: { badge: number; }): void { }
 
-  @Cordova()
-  isSilenceMember(params: {
-    groupId: string;
-    username: string;
-    appKey?: string;
-  }): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  groupSilenceMembers(params: {
-    groupId: string;
-  }): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  setGroupNickname(params: {
-    groupId: string;
-    nickName: string;
-    username: string;
-    appKey?: string;
-  }): Promise<any> {
-    return;
-  }
-
-  /**
-   * TODO:
-   * 
-   * chatRoom internal api.
-   */
-  @CordovaProperty
-  ChatRoom: JMChatRoom;
-
-  @Cordova()
-  enterChatRoom(params: {
-    roomId: string;
-  }): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  exitChatRoom(params: {
-    roomId: string;
-  }): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  getChatRoomConversation(params: {
-    roomId: string;
-  }): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  getChatRoomConversationList(): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  getAllUnreadCount(): Promise< { count: number; } > {
-    return; // We add return; here to avoid any IDE / Compiler errors
-  }
-
-  @Cordova()
-  addGroupAdmins(params: {
-    groupId: string;
-    usernames: string[];
-    appKey?: string;
-  }): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  removeGroupAdmins(params: {
-    groupId: string;
-    usernames: string[];
-    appKey?: string;
-  }): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  changeGroupType(params: {
-    groupId: string;
-    type: 'public' | 'private';
-  }): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  getPublicGroupInfos(params: {
-    appKey: string;
-    start: number;
-    count: number;
-  }): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  applyJoinGroup(params: {
-    groupId: string;
-    reason?: string;
-  }): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  processApplyJoinGroup(params: {
-    events: string[];
-    isAgree: boolean;
-    isRespondInviter: boolean
-    reason?: string;
-  }): Promise<any> {
-    return;
-  }
-
-  @Cordova()
-  dissolveGroup(params: {
-    groupId: string;
-  }): Promise<any> {
-    return;
-  }
-
-  @Cordova({
-    sync: true,
-    platforms: ['iOS', 'Android']
-   })
-  addReceiveMessageListener(params: JMMessageEventListener): void {
-  }
-
-  @Cordova({
-    sync: true,
-    platforms: ['iOS', 'Android']
-   })
-  removeReceiveMessageListener(params: JMMessageEventListener): void {
-  }
-
-  @Cordova({
-    sync: true,
-    platforms: ['iOS', 'Android']
-   })
-  addClickMessageNotificationListener(params: JMMessageEventListener): void {
-  }
-
-  @Cordova({
-    sync: true,
-    platforms: ['iOS', 'Android']
-   })
-  removeClickMessageNotificationListener(params: JMMessageEventListener): void {
-  }
-
-  @Cordova({
-    sync: true,
-    platforms: ['iOS', 'Android']
-   })
-  addSyncOfflineMessageListener(params: JMSyncOfflineMessageListener): void {
-  }
-
-  @Cordova({
-    sync: true,
-    platforms: ['iOS', 'Android']
-   })
-  removeSyncOfflineMessageListener(params: JMSyncOfflineMessageListener): void {
-
-  }
-
-  @Cordova({
-    sync: true,
-    platforms: ['iOS', 'Android']
-   })
-  addSyncRoamingMessageListener(params: JMSyncRoamingMessageListener): void {
-  }
-
-  @Cordova({
-    sync: true,
-    platforms: ['iOS', 'Android']
-   })
-  removeSyncRoamingMessageListener(params: JMSyncRoamingMessageListener): void {
-  }
-
-  @Cordova({
-    sync: true,
-    platforms: ['iOS', 'Android']
-   })
-  addLoginStateChangedListener(params: JMLoginStateChangedListener): void {
-  }
-
-  @Cordova({
-    sync: true,
-    platforms: ['iOS', 'Android']
-   })
-  removeLoginStateChangedListener(params: JMLoginStateChangedListener): void {
-  }
+ @Cordova()
+ getMyInfo(): Promise< JMUserInfo | {} > {
+   return; // We add return; here to avoid any IDE / Compiler errors
+ }
 
 
-  @Cordova({
-    sync: true,
-    platforms: ['iOS', 'Android']
-   })
-  addContactNotifyListener(params: JMContactNotifyListener): void {
-  }
+ @Cordova()
+ getUserInfo(params: {
+   username: string;
+   appKey?: string;
+ }): Promise<JMUserInfo> {
+   return;
+ }
 
-  @Cordova({
-    sync: true,
-    platforms: ['iOS', 'Android']
-   })
-  removeContactNotifyListener(params: JMContactNotifyListener): void {
-  }
+ @Cordova()
+ updateMyPassword(params: {
+   oldPwd: string;
+   newPwd: string;
+ }): Promise<void> {
+   return;
+ }
 
-  @Cordova({
-    sync: true,
-    platforms: ['iOS', 'Android']
-   })
-  addMessageRetractListener(params: JMMessageRetractListener): void {
-  }
+ /**
+  * 更新当前用户头像。
+  * @param {object} params = {
+  *  imgPath: string // 本地图片绝对路径。
+  * }
+  * 注意 Android 与 iOS 的文件路径是不同的：
+  *   - Android 类似：/storage/emulated/0/DCIM/Camera/IMG_20160526_130223.jpg
+  *   - iOS 类似：/var/mobile/Containers/Data/Application/7DC5CDFF-6581-4AD3-B165-B604EBAB1250/tmp/photo.jpg
+  */
+ @Cordova()
+ updateMyAvatar(params: {
+   imgPath: string;
+ }): Promise<any> {
+   return;
+ }
 
-  @Cordova({
-    sync: true,
-    platforms: ['iOS', 'Android']
-   })
-  removeMessageRetractListener(params: JMMessageRetractListener): void {
-  }
+ @Cordova()
+ updateMyInfo(params: {
+   birthday?: number;
+   gender?: 'male' | 'female' | 'unknown';
+   extras?: { [key: string]: string; };
+ }): Promise<any> {
+   return;
+ }
 
-  @Cordova({
-    sync: true,
-    platforms: ['iOS', 'Android']
-   })
-  addReceiveTransCommandListener(params: JMReceiveTransCommandListener): void {
-  }
+ @Cordova()
+ updateGroupAvatar(params: {
+   id: string;
+   imgPath: string;
+ }): Promise<any> {
+   return;
+ }
 
-  @Cordova({
-    sync: true,
-    platforms: ['iOS', 'Android']
-   })
-  removeReceiveTransCommandListener(params: JMReceiveTransCommandListener): void {
-  }
+ @Cordova()
+ downloadThumbGroupAvatar(params: {
+   id: string;
+ }): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ downloadOriginalGroupAvatar(params: {
+   id: string;
+ }): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ setConversationExtras(params: JMAllType & { extras: { [key: string]: string; }; }): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ sendTextMessage(params: JMAllType & JMMessageOptions & { text: string; }): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ sendImageMessage(params: JMAllType & JMMessageOptions & { path: string; }): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ sendVoiceMessage(params: JMAllType & JMMessageOptions & { path: string; }): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ sendCustomMessage(params: JMAllType & JMMessageOptions & { customObject: { [key: string]: string; }; }): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ sendLocationMessage(params: JMAllType & JMMessageOptions & {
+   latitude: number;
+   longitude: number;
+   scale: number;
+   address: string;
+ }): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ sendFileMessage(params: JMAllType & JMMessageOptions & {
+   path: string;
+ }): Promise<any> {
+   return;
+ }
 
 
-  @Cordova({
-    sync: true,
-    platforms: ['iOS', 'Android']
-   })
-  addReceiveChatRoomMessageListener(params: JMReceiveChatRoomMessageListener): void {
-  }
+ @Cordova()
+ retractMessage(params: JMAllType & { messageId: string; }): Promise<any> {
+   return;
+ }
 
-  @Cordova({
-    sync: true,
-    platforms: ['iOS', 'Android']
-   })
-  removeReceiveChatRoomMessageListener(params: JMReceiveChatRoomMessageListener): void {
-  }
+ @Cordova()
+ getHistoryMessages(params: (JMSingleType | JMGroupType) & {
+   from: number;
+   limit: number;
+ }): Promise<any> {
+   return;
+ }
 
-  @Cordova({
-    sync: true,
-    platforms: ['iOS', 'Android']
-   })
-   addReceiveApplyJoinGroupApprovalListener(params: JMReceiveApplyJoinGroupApprovalListener): void {
-  }
+ @Cordova()
+ getMessageById(params: JMAllType & { messageId: string; }): Promise<any> {
+   return;
+ }
 
-  @Cordova({
-    sync: true,
-    platforms: ['iOS', 'Android']
-   })
-   removeReceiveApplyJoinGroupApprovalListener(params: JMReceiveApplyJoinGroupApprovalListener): void {
-  }
+ @Cordova()
+ deleteMessageById(params: JMAllType & { messageId: string; }): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ sendInvitationRequest(params: {
+   username: string;
+   reason: string;
+   appKey?: string;
+ }): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ acceptInvitation(params: {
+   username: string;
+   appKey?: string;
+ }): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ declineInvitation(params: {
+   username: string;
+   reason: string;
+   appKey?: string;
+ }): Promise<any> {
+   return;
+ }
 
 
-  @Cordova({
-    sync: true,
-    platforms: ['iOS', 'Android']
-   })
-   addReceiveGroupAdminRejectListener(params: JMReceiveGroupAdminRejectListener): void {
-  }
 
-  @Cordova({
-    sync: true,
-    platforms: ['iOS', 'Android']
-   })
-   removeReceiveGroupAdminRejectListener(params: JMReceiveGroupAdminRejectListener): void {
-  }
+ @Cordova()
+ removeFromFriendList(params: {
+   username: string;
+   appKey?: string;
+ }): Promise<any> {
+   return;
+ }
 
-  @Cordova({
-    sync: true,
-    platforms: ['iOS', 'Android']
-   })
-   addReceiveGroupAdminApprovalListener(params: JMReceiveGroupAdminApprovalListener): void {
-  }
+ @Cordova()
+ updateFriendNoteName(params: {
+   username: string;
+   noteName: string;
+   appKey?: string;
+ }): Promise<any> {
+   return;
+ }
 
-  @Cordova({
-    sync: true,
-    platforms: ['iOS', 'Android']
-   })
-   removeReceiveGroupAdminApprovalListener(params: JMReceiveGroupAdminApprovalListener): void {
-  }
+ @Cordova()
+ updateFriendNoteText(params: {
+   username: string;
+   noteText: string;
+   appKey?: string;
+ }): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ getFriends(): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ createGroup(params: {
+   groupType?: 'public' | 'private';
+   name?: string;
+   desc?: string;
+ }): Promise<string> {
+   return;
+ }
+
+ @Cordova()
+ getGroupIds(): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ getGroupInfo(params: { id: string; }): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ updateGroupInfo(params: {
+   id: string;
+   newName: string;
+   newDesc?: string;
+ } | {
+     id: string;
+     newDesc: string;
+   }): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ addGroupMembers(params: {
+   id: string;
+   usernameArray: string[];
+   appKey?: string;
+ }): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ removeGroupMembers(params: {
+   id: string;
+   usernameArray: string[];
+   appKey?: string;
+ }): Promise<any> {
+   return;
+ }
+
+
+ @Cordova()
+ exitGroup(params: {
+   id: string;
+ }): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ getGroupMembers(params: {
+   id: string;
+ }): Promise<JMGroupMemberInfo[]> {
+   return;
+ }
+
+ @Cordova()
+ addUsersToBlacklist(params: {
+   usernameArray: string[];
+   appKey?: string;
+ }): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ removeUsersFromBlacklist(params: {
+   usernameArray: string[];
+   appKey?: string;
+ }): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ getBlacklist(): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ setNoDisturb(params: (JMSingleType | JMGroupType) & {
+   isNoDisturb: boolean;
+ }): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ getNoDisturbList(): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ setNoDisturbGlobal(params: {
+   isNoDisturb: boolean;
+ }): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ isNoDisturbGlobal(): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ blockGroupMessage(params: {
+   id: string;
+   isBlock: boolean;
+ }): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ isGroupBlocked(params: {
+   id: string;
+ }): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ getBlockedGroupList(): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ downloadThumbUserAvatar(params: {
+   username: string;
+   appKey?: string;
+ }): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ downloadOriginalUserAvatar(params: {
+   username: string;
+   appKey?: string;
+ }): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ downloadThumbImage(params: (JMSingleType | JMGroupType) & {
+   messageId: string;
+ }): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ downloadOriginalImage(params: (JMSingleType | JMGroupType) & {
+   messageId: string;
+ }): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ downloadVoiceFile(params: (JMSingleType | JMGroupType) & {
+   messageId: string;
+ }): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ downloadFile(params: (JMSingleType | JMGroupType) & {
+   messageId: string;
+ }): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ createConversation(params: JMAllType): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ deleteConversation(params: JMAllType): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ enterConversation(params: JMSingleType | JMGroupType): Promise<any> {
+   return;
+ }
+
+ @Cordova({
+   sync: true,
+   platforms: ['iOS', 'Android']
+  })
+ exitConversation(params: JMSingleType | JMGroupType): void {}
+
+ @Cordova()
+ getConversation(params: JMAllType): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ getConversations(): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ resetUnreadMessageCount(params: JMAllType): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ transferGroupOwner(params: {
+   groupId: string;
+   username: string;
+   appKey?: string;
+ }): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ setGroupMemberSilence(params: {
+   groupId: string;
+   isSilence: boolean;
+   username: string;
+   appKey?: string;
+ }): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ isSilenceMember(params: {
+   groupId: string;
+   username: string;
+   appKey?: string;
+ }): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ groupSilenceMembers(params: {
+   groupId: string;
+ }): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ setGroupNickname(params: {
+   groupId: string;
+   nickName: string;
+   username: string;
+   appKey?: string;
+ }): Promise<any> {
+   return;
+ }
+
+ /**
+  * TODO:
+  * 
+  * chatRoom internal api.
+  */
+ @CordovaProperty()
+ ChatRoom: JMChatRoom;
+
+ @Cordova()
+ enterChatRoom(params: {
+   roomId: string;
+ }): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ exitChatRoom(params: {
+   roomId: string;
+ }): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ getChatRoomConversation(params: {
+   roomId: string;
+ }): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ getChatRoomConversationList(): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ getAllUnreadCount(): Promise< { count: number; } > {
+   return; // We add return; here to avoid any IDE / Compiler errors
+ }
+
+ @Cordova()
+ addGroupAdmins(params: {
+   groupId: string;
+   usernames: string[];
+   appKey?: string;
+ }): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ removeGroupAdmins(params: {
+   groupId: string;
+   usernames: string[];
+   appKey?: string;
+ }): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ changeGroupType(params: {
+   groupId: string;
+   type: 'public' | 'private';
+ }): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ getPublicGroupInfos(params: {
+   appKey: string;
+   start: number;
+   count: number;
+ }): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ applyJoinGroup(params: {
+   groupId: string;
+   reason?: string;
+ }): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ processApplyJoinGroup(params: {
+   events: string[];
+   isAgree: boolean;
+   isRespondInviter: boolean
+   reason?: string;
+ }): Promise<any> {
+   return;
+ }
+
+ @Cordova()
+ dissolveGroup(params: {
+   groupId: string;
+ }): Promise<any> {
+   return;
+ }
+
+ @Cordova({
+   sync: true,
+   platforms: ['iOS', 'Android']
+  })
+ addReceiveMessageListener(params: JMMessageEventListener): void {
+ }
+
+ @Cordova({
+   sync: true,
+   platforms: ['iOS', 'Android']
+  })
+ removeReceiveMessageListener(params: JMMessageEventListener): void {
+ }
+
+ @Cordova({
+   sync: true,
+   platforms: ['iOS', 'Android']
+  })
+ addClickMessageNotificationListener(params: JMMessageEventListener): void {
+ }
+
+ @Cordova({
+   sync: true,
+   platforms: ['iOS', 'Android']
+  })
+ removeClickMessageNotificationListener(params: JMMessageEventListener): void {
+ }
+
+ @Cordova({
+   sync: true,
+   platforms: ['iOS', 'Android']
+  })
+ addSyncOfflineMessageListener(params: JMSyncOfflineMessageListener): void {
+ }
+
+ @Cordova({
+   sync: true,
+   platforms: ['iOS', 'Android']
+  })
+ removeSyncOfflineMessageListener(params: JMSyncOfflineMessageListener): void {
+
+ }
+
+ @Cordova({
+   sync: true,
+   platforms: ['iOS', 'Android']
+  })
+ addSyncRoamingMessageListener(params: JMSyncRoamingMessageListener): void {
+ }
+
+ @Cordova({
+   sync: true,
+   platforms: ['iOS', 'Android']
+  })
+ removeSyncRoamingMessageListener(params: JMSyncRoamingMessageListener): void {
+ }
+
+ @Cordova({
+   sync: true,
+   platforms: ['iOS', 'Android']
+  })
+ addLoginStateChangedListener(params: JMLoginStateChangedListener): void {
+ }
+
+ @Cordova({
+   sync: true,
+   platforms: ['iOS', 'Android']
+  })
+ removeLoginStateChangedListener(params: JMLoginStateChangedListener): void {
+ }
+
+
+ @Cordova({
+   sync: true,
+   platforms: ['iOS', 'Android']
+  })
+ addContactNotifyListener(params: JMContactNotifyListener): void {
+ }
+
+ @Cordova({
+   sync: true,
+   platforms: ['iOS', 'Android']
+  })
+ removeContactNotifyListener(params: JMContactNotifyListener): void {
+ }
+
+ @Cordova({
+   sync: true,
+   platforms: ['iOS', 'Android']
+  })
+ addMessageRetractListener(params: JMMessageRetractListener): void {
+ }
+
+ @Cordova({
+   sync: true,
+   platforms: ['iOS', 'Android']
+  })
+ removeMessageRetractListener(params: JMMessageRetractListener): void {
+ }
+
+ @Cordova({
+   sync: true,
+   platforms: ['iOS', 'Android']
+  })
+ addReceiveTransCommandListener(params: JMReceiveTransCommandListener): void {
+ }
+
+ @Cordova({
+   sync: true,
+   platforms: ['iOS', 'Android']
+  })
+ removeReceiveTransCommandListener(params: JMReceiveTransCommandListener): void {
+ }
+
+
+ @Cordova({
+   sync: true,
+   platforms: ['iOS', 'Android']
+  })
+ addReceiveChatRoomMessageListener(params: JMReceiveChatRoomMessageListener): void {
+ }
+
+ @Cordova({
+   sync: true,
+   platforms: ['iOS', 'Android']
+  })
+ removeReceiveChatRoomMessageListener(params: JMReceiveChatRoomMessageListener): void {
+ }
+
+ @Cordova({
+   sync: true,
+   platforms: ['iOS', 'Android']
+  })
+  addReceiveApplyJoinGroupApprovalListener(params: JMReceiveApplyJoinGroupApprovalListener): void {
+ }
+
+ @Cordova({
+   sync: true,
+   platforms: ['iOS', 'Android']
+  })
+  removeReceiveApplyJoinGroupApprovalListener(params: JMReceiveApplyJoinGroupApprovalListener): void {
+ }
+
+
+ @Cordova({
+   sync: true,
+   platforms: ['iOS', 'Android']
+  })
+  addReceiveGroupAdminRejectListener(params: JMReceiveGroupAdminRejectListener): void {
+ }
+
+ @Cordova({
+   sync: true,
+   platforms: ['iOS', 'Android']
+  })
+  removeReceiveGroupAdminRejectListener(params: JMReceiveGroupAdminRejectListener): void {
+ }
+
+ @Cordova({
+   sync: true,
+   platforms: ['iOS', 'Android']
+  })
+  addReceiveGroupAdminApprovalListener(params: JMReceiveGroupAdminApprovalListener): void {
+ }
+
+ @Cordova({
+   sync: true,
+   platforms: ['iOS', 'Android']
+  })
+  removeReceiveGroupAdminApprovalListener(params: JMReceiveGroupAdminApprovalListener): void {
+ }
 }

@@ -1,15 +1,15 @@
 {
   "name": "@jiguang-ionic/jmessage",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "Ionic Native - Native plugins for ionic apps",
   "module": "index.js",
   "typings": "index.d.ts",
   "author": "ionic",
   "license": "MIT",
   "peerDependencies": {
-    "@ionic-native/core": "^4.2.0",
+    "@ionic-native/core": "^5.0.0",
     "@angular/core": "*",
-    "rxjs": "^5.0.1",
+    "rxjs": "^6.0.1",
     "jmessage-phonegap-plugin": ">= 4.0.0"
   },
   "repository": {

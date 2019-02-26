@@ -238,7 +238,7 @@ export interface JMMessageSendOptions {
      */
     notificationText?: string;
 }
-export declare class JMChatRoomOriginal {
+export declare class JMChatRoom {
     getChatRoomInfoListOfApp(params: {
         start: number;
         count: number;
@@ -261,7 +261,7 @@ export declare class JMChatRoomOriginal {
     }, success: () => void, fail: (error: JMError) => void): void;
     getChatRoomConversationList(success: (conversationList: JMConversationInfo[]) => void, fail: (error: JMError) => void): void;
 }
-export declare class JMessagePluginOriginal extends IonicNativePlugin {
+export declare class JMessagePlugin extends IonicNativePlugin {
     /**
      * This function does something
      * @param arg1 {string} Some param to configure something
@@ -580,6 +580,3 @@ export declare class JMessagePluginOriginal extends IonicNativePlugin {
     addReceiveGroupAdminApprovalListener(params: JMReceiveGroupAdminApprovalListener): void;
     removeReceiveGroupAdminApprovalListener(params: JMReceiveGroupAdminApprovalListener): void;
 }
-
-export declare const JMChatRoom: JMChatRoomOriginal;
-export declare const JMessagePlugin: JMessagePluginOriginal;
