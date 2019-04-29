@@ -285,6 +285,27 @@ var JMessagePlugin = {
   },
   /**
    * @param {object} params = {
+   *  'type': String,                                // 'single' / 'group'
+   *  'groupId': String,                             // 当 type 为 'group' 时，groupId 不能为空
+   *  'username': String,                            // 当 type 为 'single' 时，username 不能为空
+   *  'appKey': String,                              // 当 type 为 'single' 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
+   *  'roomId': String,                              // 当 type 为 'chatRoom' 时，roomId 不能为空
+   *  'videoFilePath': String,                       // 本地视频文件路径
+   *  'videoFileName': String,                       // 本地视频文件名
+   *  'videoImagePath': String,                      // 本地视频缩略图路径
+   *  'videoImageFormat': String,                    // 本地视频缩略图格式（ios可不传）
+   *  'videoDuration': int,                          // 本地视频播放时长，单位秒
+   *  'extras': object,                              // Optional. 自定义键值对 = {'key1': 'value1'}
+   *  'messageSendingOptions': MessageSendingOptions // Optional. MessageSendingOptions 对象。
+   * }
+   * @param {function} success = function (msg) {}   // 以参数形式返回消息对象。
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  sendVideoMessage: function(params,success,error){
+    exec(success, error, PLUGIN_NAME, "sendVideoMessage", [params]);
+  },
+  /**
+   * @param {object} params = {
    *  'type': String,           // 'single' / 'group' / 'chatRoom'
    *  'groupId': String,        // 当 type 为 'group' 时，groupId 不能为空
    *  'username': String,       // 当 type 为 'single' 时，username 不能为空
@@ -705,6 +726,38 @@ var JMessagePlugin = {
   downloadVoiceFile: function(params, success, error) {
     exec(success, error, PLUGIN_NAME, "downloadVoiceFile", [params]);
   },
+  /**
+   * 下载视频消息文件，如果已经下载，会直接返回本地文件路径，不会重复下载。
+   *
+   * @param {object} params = {
+   *  'type': String,            // 'single' / 'group'
+   *  'groupId': String,         // 目标群组 id。
+   *  'username': String,        // 目标用户名。
+   *  'appKey': String,          // 目标用户所属 AppKey。
+   *  'messageId': string        // 指定消息 id。
+   * }
+   * @param {function} success = function ({'messageId': String, 'filePath': string}) {}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  downloadVideoFile: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "downloadVideoFile", [params]);
+  },  
+  /**
+   * 下载视频消息文件，如果已经下载，会直接返回本地文件路径，不会重复下载。
+   *
+   * @param {object} params = {
+   *  'type': String,            // 'single' / 'group'
+   *  'groupId': String,         // 目标群组 id。
+   *  'username': String,        // 目标用户名。
+   *  'appKey': String,          // 目标用户所属 AppKey。
+   *  'messageId': string        // 指定消息 id。
+   * }
+   * @param {function} success = function ({'messageId': String, 'filePath': string}) {}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+   downloadVideoFile: function(params, success, error) {
+     exec(success, error, PLUGIN_NAME, "downloadVideoFile", [params]);
+   },
   /**
    * 下载文件消息文件，如果已经下载，会直接返回本地文件路径，不会重复下载。
    *

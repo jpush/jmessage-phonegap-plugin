@@ -55,6 +55,7 @@
 - (void)downloadThumbImage:(CDVInvokedUrlCommand *)command;
 - (void)downloadOriginalImage:(CDVInvokedUrlCommand *)command;
 - (void)downloadVoiceFile:(CDVInvokedUrlCommand *)command;
+- (void)downloadVideoFile:(CDVInvokedUrlCommand *)command;
 - (void)downloadFile:(CDVInvokedUrlCommand *)command;
 - (void)createConversation:(CDVInvokedUrlCommand *)command;
 - (void)deleteConversation:(CDVInvokedUrlCommand *)command;

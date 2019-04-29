@@ -295,6 +295,28 @@ NSMutableDictionary *_jmessageEventCache;
       content = [[JMSGVoiceContent alloc] initWithVoiceData:[NSData dataWithContentsOfFile: mediaPath] voiceDuration:@(duration)];
       break;
     }
+    case kJMSGContentTypeVideo:{
+     NSString *videoFilePath = nil;
+     NSString *videoFileName = nil;
+     NSString *videoImagePath = nil;
+     NSNumber *number = nil;
+     if(param[@"videoFilePath"]){
+      videoFilePath = param[@"videoFilePath"];
+     }
+     if(param[@"videoFileName"]){
+      videoFileName = param[@"videoFileName"];
+     }
+     if(param[@"videoImagePath"]){
+      videoImagePath = param[@"videoImagePath"];
+     }
+     if(param[@"videoDuration"]){
+      number = param[@"videoDuration"];
+     }
+     double duration = [number integerValue];
+     content = [[JMSGVideoContent alloc] initWithVideoData:[NSData dataWithContentsOfFile:videoFilePath] thumbData:[NSData dataWithContentsOfFile:videoImagePath] duration:@(duration)];
+      [(JMSGVideoContent *)content setFileName:videoFileName];
+      break;
+     }
     case kJMSGContentTypeLocation:{
       content = [[JMSGLocationContent alloc] initWithLatitude:param[@"latitude"] longitude:param[@"longitude"] scale:param[@"scale"] address: param[@"address"]];
       break;
@@ -368,6 +390,10 @@ NSMutableDictionary *_jmessageEventCache;
   
   if ([str isEqualToString:@"voice"]) {
     return kJMSGContentTypeVoice;
+  }
+    
+  if ([str isEqualToString:@"video"]) {
+     return kJMSGContentTypeVideo;
   }
   
   if ([str isEqualToString:@"location"]) {
@@ -936,6 +962,35 @@ NSMutableDictionary *_jmessageEventCache;
       } else {
         [conversation sendMessage:message];
       }
+    }];
+}
+
+- (void)sendVideoMessage:(CDVInvokedUrlCommand *)command {
+    NSDictionary * param = [command argumentAtIndex:0];
+    
+    JMSGOptionalContent *messageSendingOptions = nil;
+    if (param[@"messageSendingOptions"] && [param[@"messageSendingOptions"] isKindOfClass: [NSDictionary class]]) {
+        messageSendingOptions = [self convertDicToJMSGOptionalContent:param[@"messageSendingOptions"]];
+    }
+    
+    JMSGMessage *message = [self createMessageWithDictionary:param type:kJMSGContentTypeVideo];
+    if (!message) {
+        [self returnErrorWithLog:@"cannot create message, check your params and make sure the media resource is valid" command:command];
+        return;
+    }
+    
+    [self getConversationWithDictionary:param callback:^(JMSGConversation *conversation, NSError *error) {
+        if (error) {
+            [self handleResultWithDictionary: nil command:command error: error];
+            return;
+        }
+        
+        self.SendMsgCallbackDic[message.msgId] = command.callbackId;
+        if (messageSendingOptions) {
+            [conversation sendMessage:message optionalContent:messageSendingOptions];
+        } else {
+            [conversation sendMessage:message];
+        }
     }];
 }
 
@@ -1839,7 +1894,7 @@ NSMutableDictionary *_jmessageEventCache;
     }
     
     if (message.contentType != kJMSGContentTypeImage) {
-      [self returnErrorWithLog:@"It is not voice message" command:command];
+      [self returnErrorWithLog:@"It is not image message" command:command];
       return;
     } else {
       JMSGImageContent *content = (JMSGImageContent *) message.content;
@@ -1874,7 +1929,7 @@ NSMutableDictionary *_jmessageEventCache;
     }
     
     if (message.contentType != kJMSGContentTypeImage) {
-      [self returnErrorWithLog:@"It is not voice message" command:command];
+      [self returnErrorWithLog:@"It is not image message" command:command];
       return;
     } else {
       JMSGImageContent *content = (JMSGImageContent *) message.content;
@@ -1912,7 +1967,7 @@ NSMutableDictionary *_jmessageEventCache;
       }
       
       if (message.contentType != kJMSGContentTypeVoice) {
-        [self returnErrorWithLog:@"It is not image message" command:command];
+        [self returnErrorWithLog:@"It is not voice message" command:command];
         return;
       } else {
         JMSGVoiceContent *content = (JMSGVoiceContent *) message.content;
@@ -1928,6 +1983,36 @@ NSMutableDictionary *_jmessageEventCache;
                                    command:command error:error];
         }];
       }
+    }];
+}
+
+- (void)downloadVideoFile:(CDVInvokedUrlCommand *)command {
+    NSDictionary * param = [command argumentAtIndex:0];
+    
+    [self getConversationWithDictionary:param callback:^(JMSGConversation *conversation, NSError *error) {
+        JMSGMessage *message = [conversation messageWithMessageId:param[@"messageId"]];
+        
+        if (message == nil) {
+            [self returnErrorWithLog:@"cann't find this message" command: command];
+            return;
+        }
+        
+        if (message.contentType != kJMSGContentTypeVideo) {
+            [self returnErrorWithLog:@"It is not video message" command:command];
+            return;
+        } else {
+            JMSGVideoContent *content = (JMSGVideoContent *) message.content;
+            [content videoDataWithProgress:nil completionHandler:^(NSData *data, NSString *objectId, NSError *error) {
+                if (error) {
+                    [self handleResultWithDictionary: nil command: command error: error];
+                    return;
+                }
+                JMSGFileContent *fileContent = (JMSGFileContent *) message.content;
+                [self handleResultWithDictionary:@{@"messageId": message.msgId,
+                                                   @"filePath":[fileContent originMediaLocalPath] ? : @""}
+                                         command:command error:error];
+            }];
+        }
     }];
 }
 

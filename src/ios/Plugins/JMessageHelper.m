@@ -117,7 +117,7 @@
     switch (event.eventType) {
         case kJMSGEventNotificationLoginKicked:
             [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageLoginStateChanged
-                                                                object:@{@"type":@"user_kicked"}];
+                                                                object:@{@"type":@"user_logout"}];
             break;
         case kJMSGEventNotificationServerAlterPassword:
             [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageLoginStateChanged
@@ -125,7 +125,11 @@
             break;
         case kJMSGEventNotificationUserLoginStatusUnexpected:
             [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageLoginStateChanged
-                                                                object:@{@"type":@"user_login_state_unexpected"}];
+                                                                object:@{@"type":@"user_login_status_unexpected"}];
+            break;
+        case kJMSGEventNotificationCurrentUserDeleted:
+            [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageLoginStateChanged
+                                                                object:@{@"type":@"user_deleted"}];
             break;
     }
 }
@@ -500,6 +504,16 @@
       dict[@"path"] = [self getOriginMediaFilePath];
       JMSGVoiceContent *voiceContent = (JMSGVoiceContent *) self.content;
       dict[@"duration"] = [voiceContent duration];
+      break;
+    }
+    case kJMSGContentTypeVideo: {
+      dict[@"type"] = @"video";
+      dict[@"mediaFilePath"] = [self getOriginMediaFilePath];
+      JMSGVideoContent *videoContent = (JMSGVideoContent *) self.content;
+      //dict[@"mediaFilePath"] = [videoContent mediaFilePath];
+      dict[@"mediaFileName"] = [videoContent fileName];
+      dict[@"videoDuration"] = [videoContent videoThumbImageLocalPath];
+      dict[@"videoDuration"] = [videoContent duration];
       break;
     }
     case kJMSGContentTypeCustom: {
