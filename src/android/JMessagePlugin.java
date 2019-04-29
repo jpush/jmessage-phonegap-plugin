@@ -4,8 +4,10 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -21,6 +23,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -46,6 +49,7 @@ import cn.jpush.im.android.api.content.FileContent;
 import cn.jpush.im.android.api.content.ImageContent;
 import cn.jpush.im.android.api.content.LocationContent;
 import cn.jpush.im.android.api.content.TextContent;
+import cn.jpush.im.android.api.content.VideoContent;
 import cn.jpush.im.android.api.content.VoiceContent;
 import cn.jpush.im.android.api.enums.ContentType;
 import cn.jpush.im.android.api.event.ChatRoomMessageEvent;
@@ -628,6 +632,57 @@ public class JMessagePlugin extends CordovaPlugin {
         }
     }
 
+    void sendVideoMessage(JSONArray data, CallbackContext callback) {
+        boolean hasPermission = PermissionHelper.hasPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (!hasPermission) {
+            handleResult(ERR_CODE_PERMISSION, ERR_MSG_PERMISSION_WRITE_EXTERNAL_STORAGE, callback);
+            return;
+        }
+        String videoFilePath;
+        String videoFileName;
+        String videoImagePath;
+        String videoImageFormat;
+        int videoDuration;
+        Map<String, String> extras = null;
+        MessageSendingOptions messageSendingOptions = null;
+        Conversation conversation;
+        try {
+            JSONObject params = data.getJSONObject(0);
+            conversation = JMessageUtils.createConversation(params);
+            if (conversation == null) {
+                handleResult(ERR_CODE_CONVERSATION, ERR_MSG_CONVERSATION, callback);
+                return;
+            }
+            videoFilePath = params.getString("videoFilePath");
+            videoFileName = params.getString("videoFileName");
+            videoImagePath = params.getString("videoImagePath");
+            videoImageFormat = params.getString("videoImageFormat");
+            videoDuration = params.getInt("videoDuration");
+            if (params.has("extras")) {
+                extras = fromJson(params.getJSONObject("extras"));
+            }
+            if (params.has("messageSendingOptions")) {
+                messageSendingOptions = toMessageSendingOptions(params.getJSONObject("messageSendingOptions"));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
+            return;
+        }
+        try {
+            Bitmap thumbImage = BitmapFactory.decodeFile(videoImagePath);
+            File videoFile = new File(videoFilePath);
+            VideoContent videoContent = new VideoContent(thumbImage, videoImageFormat, videoFile, videoFileName, videoDuration);
+            if (extras != null) {
+                videoContent.setExtras(extras);
+            }
+            sendMessage(conversation, videoContent, messageSendingOptions, callback);
+        } catch (IOException e) {
+            e.printStackTrace();
+            handleResult(ERR_CODE_FILE, ERR_MSG_FILE, callback);
+        }
+    }
+
     void sendCustomMessage(JSONArray data, CallbackContext callback) {
         try {
             JSONObject params = data.getJSONObject(0);
@@ -1042,6 +1097,48 @@ public class JMessagePlugin extends CordovaPlugin {
         VoiceContent content = (VoiceContent) msg.getContent();
         content.downloadVoiceFile(msg, new DownloadCompletionCallback() {
 
+            @Override
+            public void onComplete(int status, String desc, File file) {
+                if (status == 0) {
+                    JSONObject result = new JSONObject();
+                    try {
+                        result.put("messageId", msg.getId());
+                        result.put("filePath", file.getAbsolutePath());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    handleResult(result, status, desc, callback);
+
+                } else {
+                    handleResult(status, desc, callback);
+                }
+            }
+        });
+    }
+
+    void downloadVideoFile(JSONArray data, final CallbackContext callback) {
+        final Message msg;
+
+        try {
+            JSONObject params = data.getJSONObject(0);
+            msg = JMessageUtils.getMessage(params);
+            if (msg == null) {
+                handleResult(ERR_CODE_MESSAGE, ERR_MSG_MESSAGE, callback);
+                return;
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
+            return;
+        }
+
+        if (msg.getContentType() != ContentType.file) {
+            handleResult(ERR_CODE_MESSAGE, "Message type isn't video", callback);
+            return;
+        }
+
+        VideoContent content = (VideoContent) msg.getContent();
+        content.downloadVideoFile(msg, new DownloadCompletionCallback() {
             @Override
             public void onComplete(int status, String desc, File file) {
                 if (status == 0) {
@@ -2630,46 +2727,67 @@ public class JMessagePlugin extends CordovaPlugin {
                 final int fI = i;
 
                 switch (msg.getContentType()) {
-                case image:
-                    ((ImageContent) msg.getContent()).downloadThumbnailImage(msg, new DownloadCompletionCallback() {
-                        @Override
-                        public void onComplete(int status, String desc, File file) {
-                            if (fI == fLatestMediaMessageIndex) {
-                                for (Message msg : offlineMsgList) {
-                                    msgJsonArr.put(toJson(msg));
-                                }
-                                try {
-                                    json.put("messageArray", msgJsonArr);
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
+                    case image:
+                        ((ImageContent) msg.getContent()).downloadThumbnailImage(msg, new DownloadCompletionCallback() {
+                            @Override
+                            public void onComplete(int status, String desc, File file) {
+                                if (fI == fLatestMediaMessageIndex) {
+                                    for (Message msg : offlineMsgList) {
+                                        msgJsonArr.put(toJson(msg));
+                                    }
+                                    try {
+                                        json.put("messageArray", msgJsonArr);
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
 
-                                JSONObject eventJson = toJson("syncOfflineMessage", json);
-                                eventSuccess(eventJson);
+                                    JSONObject eventJson = toJson("syncOfflineMessage", json);
+                                    eventSuccess(eventJson);
+                                }
                             }
-                        }
-                    });
-                    break;
-                case voice:
-                    ((VoiceContent) msg.getContent()).downloadVoiceFile(msg, new DownloadCompletionCallback() {
-                        @Override
-                        public void onComplete(int status, String desc, File file) {
-                            if (fI == fLatestMediaMessageIndex) {
-                                for (Message msg : offlineMsgList) {
-                                    msgJsonArr.put(toJson(msg));
-                                }
-                                try {
-                                    json.put("messageArray", msgJsonArr);
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
+                        });
+                        break;
+                    case voice:
+                        ((VoiceContent) msg.getContent()).downloadVoiceFile(msg, new DownloadCompletionCallback() {
+                            @Override
+                            public void onComplete(int status, String desc, File file) {
+                                if (fI == fLatestMediaMessageIndex) {
+                                    for (Message msg : offlineMsgList) {
+                                        msgJsonArr.put(toJson(msg));
+                                    }
+                                    try {
+                                        json.put("messageArray", msgJsonArr);
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
 
-                                JSONObject eventJson = toJson("syncOfflineMessage", json);
-                                eventSuccess(eventJson);
+                                    JSONObject eventJson = toJson("syncOfflineMessage", json);
+                                    eventSuccess(eventJson);
+                                }
                             }
-                        }
-                    });
-                default:
+                        });
+                        break;
+                    case video:
+                        ((VideoContent) msg.getContent()).downloadVideoFile(msg, new DownloadCompletionCallback() {
+                            @Override
+                            public void onComplete(int status, String desc, File file) {
+                                if (fI == fLatestMediaMessageIndex) {
+                                    for (Message msg : offlineMsgList) {
+                                        msgJsonArr.put(toJson(msg));
+                                    }
+                                    try {
+                                        json.put("messageArray", msgJsonArr);
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+
+                                    JSONObject eventJson = toJson("syncOfflineMessage", json);
+                                    eventSuccess(eventJson);
+                                }
+                            }
+                        });
+                        break;    
+                    default:
                 }
             }
         }
