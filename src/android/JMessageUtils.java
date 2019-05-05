@@ -95,6 +95,10 @@ class JMessageUtils {
             messageSendingOptions.setNotificationText(json.getString("notificationText"));
         }
 
+        if (json.has("needReadReceipt") && !json.isNull("needReadReceipt")) {
+            messageSendingOptions.setNeedReadReceipt(json.getBoolean("needReadReceipt"));
+        }
+
         return messageSendingOptions;
     }
 

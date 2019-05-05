@@ -111,6 +111,10 @@ NSMutableDictionary *_jmessageEventCache;
                       selector:@selector(didReceiveJMessageMessage:)
                           name:kJJMessageReceiveMessage
                         object:nil];
+    [defaultCenter addObserver:self
+                      selector:@selector(didReceiptJMessageMessage:)
+                          name:kJJMessageReceiptMessage
+                        object:nil];
   [defaultCenter addObserver:self
                     selector:@selector(didReceiveJMessageChatRoomMessage:)
                         name:kJJMessageReceiveChatroomMessage
@@ -530,6 +534,13 @@ NSMutableDictionary *_jmessageEventCache;
     [self.commandDelegate sendPluginResult:result callbackId:self.callBack.callbackId];
 }
 
+- (void)didReceiptJMessageMessage:(NSNotification *)notification {
+    CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:@{@"eventName": @"receiptMessage", @"value": notification.object}];
+    [result setKeepCallback:@(true)];
+    
+    [self.commandDelegate sendPluginResult:result callbackId:self.callBack.callbackId];
+}
+
 - (void)didReceiveJMessageChatRoomMessage:(NSNotification *)notification {
   CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:@{@"eventName": @"receiveChatRoomMessage", @"value": notification.object}];
   [result setKeepCallback:@(true)];
@@ -710,7 +721,6 @@ NSMutableDictionary *_jmessageEventCache;
 
 - (void)userLogin:(CDVInvokedUrlCommand *)command {
     NSDictionary * user = [command argumentAtIndex:0];
-    NSLog(@"username %@",user);
     if (user[@"username"] && user[@"password"]) {
         [JMSGUser loginWithUsername:user[@"username"] password:user[@"password"] completionHandler:^(id resultObject, NSError *error) {
             if (!error) {
@@ -871,6 +881,10 @@ NSMutableDictionary *_jmessageEventCache;
     
     if(dic[@"notificationText"]) {
         customNotification.alert = dic[@"notificationText"];
+    }
+    
+    if(dic[@"needReadReceipt"]) {
+        optionlContent.needReadReceipt = dic[@"needReadReceipt"];
     }
     
     optionlContent.customNotification = customNotification;
@@ -2275,6 +2289,55 @@ NSMutableDictionary *_jmessageEventCache;
        return;
      }
   }];
+}
+
+
+-(void)setMessageHaveRead:(CDVInvokedUrlCommand *)command {
+     NSDictionary * param = [command argumentAtIndex:0];
+    if (!param[@"type"]) {
+        [self returnParamError:command];
+        return;
+    }
+    
+    if ([param[@"type"] isEqual: @"single"] && param[@"username"] != nil) {
+        
+    } else {
+        if ([param[@"type"] isEqual: @"group"] && param[@"groupId"] != nil) {
+            
+        } else {
+            [self returnParamError:command];
+            return;
+        }
+    }
+    
+    NSString *appKey = nil;
+    if (param[@"appKey"]) {
+        appKey = param[@"appKey"];
+    } else {
+        appKey = [JMessageHelper shareInstance].JMessageAppKey;
+    }
+    
+    [self getConversationWithDictionary:param callback:^(JMSGConversation *conversation, NSError *error) {
+        if (error) {
+            [self handleResultWithDictionary: nil command: command error: error];
+            return;
+        }
+        
+        JMSGMessage *message =  [conversation messageWithMessageId:param[@"id"]];
+        
+        if (message == nil) {
+            [self handleResultNilWithCommand:command error:[NSError errorWithDomain:@"message message fail" code: 3 userInfo: nil]];
+            return;
+        }
+        [message setMessageHaveRead:^(id resultObject, NSError *error) {
+            if (!error) {
+                [self handleResultNilWithCommand:command error:error];
+            } else {
+                [self handleResultWithDictionary: nil command: command error: error];
+            }
+        }];
+    }];
+    
 }
 
 
