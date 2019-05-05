@@ -187,6 +187,32 @@
     }
 }
 
+/*!
+ * 已读回执
+ * @abstract 监听消息回执状态变更事件
+ *
+ * @param receiptEvent 下发的通知事件，事件类型请查看 JMSGMessageReceiptStatusChangeEvent 类
+ * @discussion 上层可以通过 receiptEvent 获取相应信息
+ */
+- (void)onReceiveMessageReceiptStatusChangeEvent:(JMSGMessageReceiptStatusChangeEvent *)receiptEvent {
+    NSArray <__kindof JMSGMessage *>*messages =receiptEvent.messages;
+    NSMutableArray *array = [[NSMutableArray alloc] init];
+    NSUInteger index;
+    NSUInteger rangeCount = messages.count;
+    for (index = 0; index < rangeCount; index++) {
+        NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+        long unreadCount = messages[index].getMessageUnreadCount;
+        [dict setObject:@(unreadCount) forKey:@"unReceiptCount"];
+        NSString *serverMessageId = messages[index].serverMessageId;
+        [dict setObject:serverMessageId?:@"" forKey:@"serverMessageId"];
+        NSNumber *time = messages[index].timestamp;
+        [dict setObject:time?:@(0) forKey:@"unReceiptMTime"];
+        [array addObject:dict];
+    }
+    [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageReceiptMessage object:array];
+}
+
+
 #pragma mark - Group 回调
 
 /*!

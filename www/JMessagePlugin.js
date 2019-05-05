@@ -1,9 +1,11 @@
+cordova.define("jmessage-phonegap-plugin.JMessagePlugin", function(require, exports, module) {
 var exec = require('cordova/exec')
 
 var PLUGIN_NAME = 'JMessagePlugin'
 
 var EventHandlers = {
   receiveMessage: [],
+  receiptMessage: [],
   clickMessageNotification: [],
   syncOfflineMessage: [],
   syncRoamingMessage: [],
@@ -228,6 +230,34 @@ var JMessagePlugin = {
   setConversationExtras: function(params, success, error) {
     exec(success, error, PLUGIN_NAME, "setConversationExtras", [params]);
   },
+
+    /**
+     * 设置消息已读
+     * @param {object} params = {
+     *   必填，不可为空
+     *  ‘type’: String  single/group/chatroom
+     *
+     *   type为single时,除了下面的其他值可缺省
+     *  'username': String
+     *  'appKey': String
+     *
+     *   type为group时,除了下面的其他值可缺省
+     *  'groupId': String
+     *
+     *   type为chatroom时,除了下面的其他值可缺省
+     *  'roomId': String
+     *
+     *    必填，不可为空
+     *   'id': String
+     *
+     * }
+     *  @param {function} success =  function () {}
+     *  @param {function} error =  function ({'code': '错误码', 'description': '错误信息'}) {}
+     */
+    setMessageHaveRead: function(params, success, error) {
+      exec(success, error, PLUGIN_NAME, "setMessageHaveRead", [params]);
+    },
+
 
   /**
    * @param {object} params = {
@@ -1119,6 +1149,27 @@ var JMessagePlugin = {
     }
   },
   /**
+   * 添加收到消息已读回执事件监听。
+   *
+   * @param {function} listener = function (message) {}  // 以参数形式返回消息对象。
+   * message = {
+   *  'id': String,
+   *  'from': object,    // 消息发送者信息对象。
+   *  'target': object,  // 消息接收方信息（可能为用户或者群组）。
+   *  'type': string     // 'text' / 'image' / 'voice' / 'location' / 'file' / 'custom' / 'event'
+   *  ...                // 不同消息类型还有其他对应的相关字段，具体可参考文档。
+   * }
+   */
+  addReceiptMessageListener: function(listener) {
+    EventHandlers.receiptMessage.push(listener);
+  },
+  removeReceiptMessageListener: function(listener) {
+    var handlerIndex = EventHandlers.receiptMessage.indexOf(listener);
+    if (handlerIndex >= 0) {
+      EventHandlers.receiptMessage.splice(handlerIndex, 1);
+    }
+  },
+  /**
    * 添加点击通知栏消息通知事件监听。
    * Note: Android only, (如果想要 iOS 端实现相同的功能，需要同时集成 jpush-phonegap-plugin)
    * @param {function} listener = function (message) {}  // 以参数形式返回消息对象。
@@ -1307,3 +1358,5 @@ var JMessagePlugin = {
 };
 
 module.exports = JMessagePlugin
+
+});

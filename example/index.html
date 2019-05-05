@@ -91,10 +91,10 @@
 
         $(document).on("pageshow", "#conversationListPage", () => {
             updateConversationList();
-
-            window.JMessage.addReceiveMessageListener((msg) => {
-                updateConversationList();
-            });
+            
+            // window.JMessage.addReceiveMessageListener((msg) => {
+            //     updateConversationList();
+            // });
         });
 
         function gotoAddConversation() {
@@ -148,10 +148,21 @@
         $(document).on("pageshow", "#conversationPage", () => {
             window.JMessage.addReceiveMessageListener((msg) => {
                 // 在收到消息后将消息对象加入到消息数组的开头。
+                console.log("JS receiveMessage:" + JSON.stringify(msg));
+                updateConversationList();
                 messageArray.unshift(msg);
                 refreshConversation();
+                window.JMessage.setMessageHaveRead(
+                    {"id":msg.id,"type":"single","username":msg.from.username,"appKey":msg.from.appKey},
+                    (message) => {
+                        console.log("JS setMessageHaveRead:"+msg.description)
+                    });
             });
-
+            
+            window.JMessage.addReceiptMessageListener((msg) => {
+                console.log("JS receiptMessage:" + JSON.stringify(msg));
+            });
+            
             if (currentConversation.conversationType === 'single') {
                 var username = currentConversation.target.username;
                 var appKey = currentConversation.target.appKey;
@@ -209,7 +220,7 @@
             var messageContent = $('#messageContent').val();
 
             window.JMessage.sendTextMessage({'type': 'single', 'username': username,
-                'appKey': appKey, 'text': messageContent},
+                'appKey': appKey, 'text': messageContent,"messageSendingOptions":{"needReadReceipt":true}},
                 (msg) => {
                     messageArray.unshift(msg);
                     refreshConversation();

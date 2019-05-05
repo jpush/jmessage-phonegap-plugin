@@ -24,6 +24,7 @@ static NSString *const JMessageConfig_Delay        = @"Delay";
 
 // 在线消息
 #define kJJMessageReceiveMessage     @"kJJMessageReceiveMessage"
+#define kJJMessageReceiptMessage     @"kJJMessageReceiptMessage"
 #define kJJMessageReceiveChatroomMessage     @"kJJMessageReceiveChatroomMessage"
 #define kJJMessageSendMessageRespone @"kJJMessageSendMessageRespone"
 

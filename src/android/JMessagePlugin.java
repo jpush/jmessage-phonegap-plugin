@@ -11,6 +11,8 @@ import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.google.gson.JsonObject;
+
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
@@ -61,6 +63,7 @@ import cn.jpush.im.android.api.event.GroupApprovalRefuseEvent;
 import cn.jpush.im.android.api.event.GroupApprovedNotificationEvent;
 import cn.jpush.im.android.api.event.LoginStateChangeEvent;
 import cn.jpush.im.android.api.event.MessageEvent;
+import cn.jpush.im.android.api.event.MessageReceiptStatusChangeEvent;
 import cn.jpush.im.android.api.event.MessageRetractEvent;
 import cn.jpush.im.android.api.event.NotificationClickEvent;
 import cn.jpush.im.android.api.event.OfflineMessageEvent;
@@ -2195,6 +2198,41 @@ public class JMessagePlugin extends CordovaPlugin {
         handleResult(toJson(conversation), 0, null, callback);
     }
 
+    void setMessageHaveRead(JSONArray data, CallbackContext callback){
+        Conversation conversation = null;
+        String messageId = null;
+        try {
+            JSONObject params = data.getJSONObject(0);
+            messageId = params.getString("id");
+            conversation = JMessageUtils.getConversation(params);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        if (conversation == null) {
+            handleResult(ERR_CODE_CONVERSATION, ERR_MSG_CONVERSATION, callback);
+            return;
+        }
+        if (TextUtils.isEmpty(messageId)) {
+            handleResult(ERR_CODE_PARAMETER, ERR_MSG_PARAMETER, callback);
+            return;
+        }
+        Message message = conversation.getMessage(Integer.parseInt(messageId));
+        if (message == null) {
+            handleResult(ERR_CODE_MESSAGE, ERR_MSG_MESSAGE, callback);
+            return;
+        }
+        if (message.haveRead()) {
+            return;
+        }
+        message.setHaveRead(new BasicCallback() {
+            @Override
+            public void gotResult(int code, String message) {
+                handleResult(code, message, callback);
+            }
+        });
+    }
+
+
     // 聊天会话 - end
 
     // 聊天室 - start
@@ -2673,6 +2711,26 @@ public class JMessagePlugin extends CordovaPlugin {
         eventSuccess(eventJson);
     }
 
+    public void onEventMainThread(MessageReceiptStatusChangeEvent event) {
+        JSONObject eventJson = new JSONObject();
+        JSONArray msgJson = new JSONArray();
+        for (MessageReceiptStatusChangeEvent.MessageReceiptMeta meta : event.getMessageReceiptMetas()) {
+            try {
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("serverMessageId",String.valueOf(meta.getServerMsgId()));
+                jsonObject.put("unReceiptCount",meta.getUnReceiptCnt());
+                jsonObject.put("unReceiptMTime",String.valueOf(meta.getUnReceiptMtime()));
+                msgJson.put(jsonObject);
+            } catch (JSONException e) {
+                e.printStackTrace();
+                JSONObject errorJson = new JSONObject();
+                msgJson.put(errorJson);
+            }
+        }
+        eventJson = toJson("receiptMessage", msgJson);
+        eventSuccess(eventJson);
+    }
+
     /**
      * 触发通知栏点击事件。
      *
@@ -3056,6 +3114,12 @@ public class JMessagePlugin extends CordovaPlugin {
     }
 
     private void eventSuccess(JSONObject value) {
+        PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, value);
+        pluginResult.setKeepCallback(true);
+        mCallback.sendPluginResult(pluginResult);
+    }
+
+    private void eventSuccess(JSONArray value) {
         PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, value);
         pluginResult.setKeepCallback(true);
         mCallback.sendPluginResult(pluginResult);
