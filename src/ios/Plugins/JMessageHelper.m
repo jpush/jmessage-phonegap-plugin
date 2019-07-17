@@ -117,7 +117,7 @@
     switch (event.eventType) {
         case kJMSGEventNotificationLoginKicked:
             [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageLoginStateChanged
-                                                                object:@{@"type":@"user_kicked"}];
+                                                                object:@{@"type":@"user_logout"}];
             break;
         case kJMSGEventNotificationServerAlterPassword:
             [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageLoginStateChanged
@@ -125,7 +125,11 @@
             break;
         case kJMSGEventNotificationUserLoginStatusUnexpected:
             [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageLoginStateChanged
-                                                                object:@{@"type":@"user_login_state_unexpected"}];
+                                                                object:@{@"type":@"user_login_status_unexpected"}];
+            break;
+        case kJMSGEventNotificationCurrentUserDeleted:
+            [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageLoginStateChanged
+                                                                object:@{@"type":@"user_deleted"}];
             break;
     }
 }
@@ -182,6 +186,32 @@
             break;
     }
 }
+
+/*!
+ * 已读回执
+ * @abstract 监听消息回执状态变更事件
+ *
+ * @param receiptEvent 下发的通知事件，事件类型请查看 JMSGMessageReceiptStatusChangeEvent 类
+ * @discussion 上层可以通过 receiptEvent 获取相应信息
+ */
+- (void)onReceiveMessageReceiptStatusChangeEvent:(JMSGMessageReceiptStatusChangeEvent *)receiptEvent {
+    NSArray <__kindof JMSGMessage *>*messages =receiptEvent.messages;
+    NSMutableArray *array = [[NSMutableArray alloc] init];
+    NSUInteger index;
+    NSUInteger rangeCount = messages.count;
+    for (index = 0; index < rangeCount; index++) {
+        NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+        long unreadCount = messages[index].getMessageUnreadCount;
+        [dict setObject:@(unreadCount) forKey:@"unReceiptCount"];
+        NSString *serverMessageId = messages[index].serverMessageId;
+        [dict setObject:serverMessageId?:@"" forKey:@"serverMessageId"];
+        NSNumber *time = messages[index].timestamp;
+        [dict setObject:time?:@(0) forKey:@"unReceiptMTime"];
+        [array addObject:dict];
+    }
+    [[NSNotificationCenter defaultCenter] postNotificationName:kJJMessageReceiptMessage object:array];
+}
+
 
 #pragma mark - Group 回调
 
@@ -500,6 +530,16 @@
       dict[@"path"] = [self getOriginMediaFilePath];
       JMSGVoiceContent *voiceContent = (JMSGVoiceContent *) self.content;
       dict[@"duration"] = [voiceContent duration];
+      break;
+    }
+    case kJMSGContentTypeVideo: {
+      dict[@"type"] = @"video";
+      dict[@"mediaFilePath"] = [self getOriginMediaFilePath];
+      JMSGVideoContent *videoContent = (JMSGVideoContent *) self.content;
+      //dict[@"mediaFilePath"] = [videoContent mediaFilePath];
+      dict[@"mediaFileName"] = [videoContent fileName];
+      dict[@"videoDuration"] = [videoContent videoThumbImageLocalPath];
+      dict[@"videoDuration"] = [videoContent duration];
       break;
     }
     case kJMSGContentTypeCustom: {

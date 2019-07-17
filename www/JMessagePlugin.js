@@ -4,6 +4,7 @@ var PLUGIN_NAME = 'JMessagePlugin'
 
 var EventHandlers = {
   receiveMessage: [],
+  receiptMessage: [],
   clickMessageNotification: [],
   syncOfflineMessage: [],
   syncRoamingMessage: [],
@@ -229,6 +230,34 @@ var JMessagePlugin = {
     exec(success, error, PLUGIN_NAME, "setConversationExtras", [params]);
   },
 
+    /**
+     * 设置消息已读
+     * @param {object} params = {
+     *   必填，不可为空
+     *  ‘type’: String  single/group/chatroom
+     *
+     *   type为single时,除了下面的其他值可缺省
+     *  'username': String
+     *  'appKey': String
+     *
+     *   type为group时,除了下面的其他值可缺省
+     *  'groupId': String
+     *
+     *   type为chatroom时,除了下面的其他值可缺省
+     *  'roomId': String
+     *
+     *    必填，不可为空
+     *   'id': String
+     *
+     * }
+     *  @param {function} success =  function () {}
+     *  @param {function} error =  function ({'code': '错误码', 'description': '错误信息'}) {}
+     */
+    setMessageHaveRead: function(params, success, error) {
+      exec(success, error, PLUGIN_NAME, "setMessageHaveRead", [params]);
+    },
+
+
   /**
    * @param {object} params = {
    *  'type': String,                                // 'single' / 'group' / 'chatRoom'
@@ -282,6 +311,27 @@ var JMessagePlugin = {
    */
   sendVoiceMessage: function(params, success, error) {
     exec(success, error, PLUGIN_NAME, "sendVoiceMessage", [params]);
+  },
+  /**
+   * @param {object} params = {
+   *  'type': String,                                // 'single' / 'group'
+   *  'groupId': String,                             // 当 type 为 'group' 时，groupId 不能为空
+   *  'username': String,                            // 当 type 为 'single' 时，username 不能为空
+   *  'appKey': String,                              // 当 type 为 'single' 时，用于指定对象所属应用的 appKey。如果为空，默认为当前应用。
+   *  'roomId': String,                              // 当 type 为 'chatRoom' 时，roomId 不能为空
+   *  'videoFilePath': String,                       // 本地视频文件路径
+   *  'videoFileName': String,                       // 本地视频文件名
+   *  'videoImagePath': String,                      // 本地视频缩略图路径
+   *  'videoImageFormat': String,                    // 本地视频缩略图格式（ios可不传）
+   *  'videoDuration': int,                          // 本地视频播放时长，单位秒
+   *  'extras': object,                              // Optional. 自定义键值对 = {'key1': 'value1'}
+   *  'messageSendingOptions': MessageSendingOptions // Optional. MessageSendingOptions 对象。
+   * }
+   * @param {function} success = function (msg) {}   // 以参数形式返回消息对象。
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  sendVideoMessage: function(params,success,error){
+    exec(success, error, PLUGIN_NAME, "sendVideoMessage", [params]);
   },
   /**
    * @param {object} params = {
@@ -706,6 +756,38 @@ var JMessagePlugin = {
     exec(success, error, PLUGIN_NAME, "downloadVoiceFile", [params]);
   },
   /**
+   * 下载视频消息文件，如果已经下载，会直接返回本地文件路径，不会重复下载。
+   *
+   * @param {object} params = {
+   *  'type': String,            // 'single' / 'group'
+   *  'groupId': String,         // 目标群组 id。
+   *  'username': String,        // 目标用户名。
+   *  'appKey': String,          // 目标用户所属 AppKey。
+   *  'messageId': string        // 指定消息 id。
+   * }
+   * @param {function} success = function ({'messageId': String, 'filePath': string}) {}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+  downloadVideoFile: function(params, success, error) {
+    exec(success, error, PLUGIN_NAME, "downloadVideoFile", [params]);
+  },  
+  /**
+   * 下载视频消息文件，如果已经下载，会直接返回本地文件路径，不会重复下载。
+   *
+   * @param {object} params = {
+   *  'type': String,            // 'single' / 'group'
+   *  'groupId': String,         // 目标群组 id。
+   *  'username': String,        // 目标用户名。
+   *  'appKey': String,          // 目标用户所属 AppKey。
+   *  'messageId': string        // 指定消息 id。
+   * }
+   * @param {function} success = function ({'messageId': String, 'filePath': string}) {}
+   * @param {function} error = function ({'code': '错误码', 'description': '错误信息'}) {}
+   */
+   downloadVideoFile: function(params, success, error) {
+     exec(success, error, PLUGIN_NAME, "downloadVideoFile", [params]);
+   },
+  /**
    * 下载文件消息文件，如果已经下载，会直接返回本地文件路径，不会重复下载。
    *
    * @param {object} params = {
@@ -1066,6 +1148,27 @@ var JMessagePlugin = {
     }
   },
   /**
+   * 添加收到消息已读回执事件监听。
+   *
+   * @param {function} listener = function (message) {}  // 以参数形式返回消息对象。
+   * message = {
+   *  'id': String,
+   *  'from': object,    // 消息发送者信息对象。
+   *  'target': object,  // 消息接收方信息（可能为用户或者群组）。
+   *  'type': string     // 'text' / 'image' / 'voice' / 'location' / 'file' / 'custom' / 'event'
+   *  ...                // 不同消息类型还有其他对应的相关字段，具体可参考文档。
+   * }
+   */
+  addReceiptMessageListener: function(listener) {
+    EventHandlers.receiptMessage.push(listener);
+  },
+  removeReceiptMessageListener: function(listener) {
+    var handlerIndex = EventHandlers.receiptMessage.indexOf(listener);
+    if (handlerIndex >= 0) {
+      EventHandlers.receiptMessage.splice(handlerIndex, 1);
+    }
+  },
+  /**
    * 添加点击通知栏消息通知事件监听。
    * Note: Android only, (如果想要 iOS 端实现相同的功能，需要同时集成 jpush-phonegap-plugin)
    * @param {function} listener = function (message) {}  // 以参数形式返回消息对象。
@@ -1254,3 +1357,4 @@ var JMessagePlugin = {
 };
 
 module.exports = JMessagePlugin
+

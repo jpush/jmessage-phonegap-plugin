@@ -2,6 +2,7 @@ package cn.jiguang.cordova.im;
 
 import android.graphics.Bitmap;
 import android.os.Environment;
+import android.util.Log;
 
 import org.apache.cordova.CallbackContext;
 import org.json.JSONArray;
@@ -39,6 +40,7 @@ class JMessageUtils {
             callback.success();
         } else {
             try {
+                JSONObject errorObject = getErrorObject(status, desc);
                 callback.error(getErrorObject(status, desc));
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -91,6 +93,10 @@ class JMessageUtils {
 
         if (json.has("notificationText") && !json.isNull("notificationText")) {
             messageSendingOptions.setNotificationText(json.getString("notificationText"));
+        }
+
+        if (json.has("needReadReceipt") && !json.isNull("needReadReceipt")) {
+            messageSendingOptions.setNeedReadReceipt(json.getBoolean("needReadReceipt"));
         }
 
         return messageSendingOptions;

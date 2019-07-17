@@ -111,6 +111,10 @@ NSMutableDictionary *_jmessageEventCache;
                       selector:@selector(didReceiveJMessageMessage:)
                           name:kJJMessageReceiveMessage
                         object:nil];
+    [defaultCenter addObserver:self
+                      selector:@selector(didReceiptJMessageMessage:)
+                          name:kJJMessageReceiptMessage
+                        object:nil];
   [defaultCenter addObserver:self
                     selector:@selector(didReceiveJMessageChatRoomMessage:)
                         name:kJJMessageReceiveChatroomMessage
@@ -295,6 +299,28 @@ NSMutableDictionary *_jmessageEventCache;
       content = [[JMSGVoiceContent alloc] initWithVoiceData:[NSData dataWithContentsOfFile: mediaPath] voiceDuration:@(duration)];
       break;
     }
+    case kJMSGContentTypeVideo:{
+     NSString *videoFilePath = nil;
+     NSString *videoFileName = nil;
+     NSString *videoImagePath = nil;
+     NSNumber *number = nil;
+     if(param[@"videoFilePath"]){
+      videoFilePath = param[@"videoFilePath"];
+     }
+     if(param[@"videoFileName"]){
+      videoFileName = param[@"videoFileName"];
+     }
+     if(param[@"videoImagePath"]){
+      videoImagePath = param[@"videoImagePath"];
+     }
+     if(param[@"videoDuration"]){
+      number = param[@"videoDuration"];
+     }
+     double duration = [number integerValue];
+     content = [[JMSGVideoContent alloc] initWithVideoData:[NSData dataWithContentsOfFile:videoFilePath] thumbData:[NSData dataWithContentsOfFile:videoImagePath] duration:@(duration)];
+      [(JMSGVideoContent *)content setFileName:videoFileName];
+      break;
+     }
     case kJMSGContentTypeLocation:{
       content = [[JMSGLocationContent alloc] initWithLatitude:param[@"latitude"] longitude:param[@"longitude"] scale:param[@"scale"] address: param[@"address"]];
       break;
@@ -368,6 +394,10 @@ NSMutableDictionary *_jmessageEventCache;
   
   if ([str isEqualToString:@"voice"]) {
     return kJMSGContentTypeVoice;
+  }
+    
+  if ([str isEqualToString:@"video"]) {
+     return kJMSGContentTypeVideo;
   }
   
   if ([str isEqualToString:@"location"]) {
@@ -499,6 +529,13 @@ NSMutableDictionary *_jmessageEventCache;
 
 - (void)didReceiveJMessageMessage:(NSNotification *)notification {
     CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:@{@"eventName": @"receiveMessage", @"value": notification.object}];
+    [result setKeepCallback:@(true)];
+    
+    [self.commandDelegate sendPluginResult:result callbackId:self.callBack.callbackId];
+}
+
+- (void)didReceiptJMessageMessage:(NSNotification *)notification {
+    CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:@{@"eventName": @"receiptMessage", @"value": notification.object}];
     [result setKeepCallback:@(true)];
     
     [self.commandDelegate sendPluginResult:result callbackId:self.callBack.callbackId];
@@ -684,7 +721,6 @@ NSMutableDictionary *_jmessageEventCache;
 
 - (void)userLogin:(CDVInvokedUrlCommand *)command {
     NSDictionary * user = [command argumentAtIndex:0];
-    NSLog(@"username %@",user);
     if (user[@"username"] && user[@"password"]) {
         [JMSGUser loginWithUsername:user[@"username"] password:user[@"password"] completionHandler:^(id resultObject, NSError *error) {
             if (!error) {
@@ -847,6 +883,10 @@ NSMutableDictionary *_jmessageEventCache;
         customNotification.alert = dic[@"notificationText"];
     }
     
+    if(dic[@"needReadReceipt"]) {
+        optionlContent.needReadReceipt = dic[@"needReadReceipt"];
+    }
+    
     optionlContent.customNotification = customNotification;
     
     return optionlContent;
@@ -936,6 +976,35 @@ NSMutableDictionary *_jmessageEventCache;
       } else {
         [conversation sendMessage:message];
       }
+    }];
+}
+
+- (void)sendVideoMessage:(CDVInvokedUrlCommand *)command {
+    NSDictionary * param = [command argumentAtIndex:0];
+    
+    JMSGOptionalContent *messageSendingOptions = nil;
+    if (param[@"messageSendingOptions"] && [param[@"messageSendingOptions"] isKindOfClass: [NSDictionary class]]) {
+        messageSendingOptions = [self convertDicToJMSGOptionalContent:param[@"messageSendingOptions"]];
+    }
+    
+    JMSGMessage *message = [self createMessageWithDictionary:param type:kJMSGContentTypeVideo];
+    if (!message) {
+        [self returnErrorWithLog:@"cannot create message, check your params and make sure the media resource is valid" command:command];
+        return;
+    }
+    
+    [self getConversationWithDictionary:param callback:^(JMSGConversation *conversation, NSError *error) {
+        if (error) {
+            [self handleResultWithDictionary: nil command:command error: error];
+            return;
+        }
+        
+        self.SendMsgCallbackDic[message.msgId] = command.callbackId;
+        if (messageSendingOptions) {
+            [conversation sendMessage:message optionalContent:messageSendingOptions];
+        } else {
+            [conversation sendMessage:message];
+        }
     }];
 }
 
@@ -1839,7 +1908,7 @@ NSMutableDictionary *_jmessageEventCache;
     }
     
     if (message.contentType != kJMSGContentTypeImage) {
-      [self returnErrorWithLog:@"It is not voice message" command:command];
+      [self returnErrorWithLog:@"It is not image message" command:command];
       return;
     } else {
       JMSGImageContent *content = (JMSGImageContent *) message.content;
@@ -1874,7 +1943,7 @@ NSMutableDictionary *_jmessageEventCache;
     }
     
     if (message.contentType != kJMSGContentTypeImage) {
-      [self returnErrorWithLog:@"It is not voice message" command:command];
+      [self returnErrorWithLog:@"It is not image message" command:command];
       return;
     } else {
       JMSGImageContent *content = (JMSGImageContent *) message.content;
@@ -1912,7 +1981,7 @@ NSMutableDictionary *_jmessageEventCache;
       }
       
       if (message.contentType != kJMSGContentTypeVoice) {
-        [self returnErrorWithLog:@"It is not image message" command:command];
+        [self returnErrorWithLog:@"It is not voice message" command:command];
         return;
       } else {
         JMSGVoiceContent *content = (JMSGVoiceContent *) message.content;
@@ -1928,6 +1997,36 @@ NSMutableDictionary *_jmessageEventCache;
                                    command:command error:error];
         }];
       }
+    }];
+}
+
+- (void)downloadVideoFile:(CDVInvokedUrlCommand *)command {
+    NSDictionary * param = [command argumentAtIndex:0];
+    
+    [self getConversationWithDictionary:param callback:^(JMSGConversation *conversation, NSError *error) {
+        JMSGMessage *message = [conversation messageWithMessageId:param[@"messageId"]];
+        
+        if (message == nil) {
+            [self returnErrorWithLog:@"cann't find this message" command: command];
+            return;
+        }
+        
+        if (message.contentType != kJMSGContentTypeVideo) {
+            [self returnErrorWithLog:@"It is not video message" command:command];
+            return;
+        } else {
+            JMSGVideoContent *content = (JMSGVideoContent *) message.content;
+            [content videoDataWithProgress:nil completionHandler:^(NSData *data, NSString *objectId, NSError *error) {
+                if (error) {
+                    [self handleResultWithDictionary: nil command: command error: error];
+                    return;
+                }
+                JMSGFileContent *fileContent = (JMSGFileContent *) message.content;
+                [self handleResultWithDictionary:@{@"messageId": message.msgId,
+                                                   @"filePath":[fileContent originMediaLocalPath] ? : @""}
+                                         command:command error:error];
+            }];
+        }
     }];
 }
 
@@ -2193,6 +2292,55 @@ NSMutableDictionary *_jmessageEventCache;
 }
 
 
+-(void)setMessageHaveRead:(CDVInvokedUrlCommand *)command {
+     NSDictionary * param = [command argumentAtIndex:0];
+    if (!param[@"type"]) {
+        [self returnParamError:command];
+        return;
+    }
+    
+    if ([param[@"type"] isEqual: @"single"] && param[@"username"] != nil) {
+        
+    } else {
+        if ([param[@"type"] isEqual: @"group"] && param[@"groupId"] != nil) {
+            
+        } else {
+            [self returnParamError:command];
+            return;
+        }
+    }
+    
+    NSString *appKey = nil;
+    if (param[@"appKey"]) {
+        appKey = param[@"appKey"];
+    } else {
+        appKey = [JMessageHelper shareInstance].JMessageAppKey;
+    }
+    
+    [self getConversationWithDictionary:param callback:^(JMSGConversation *conversation, NSError *error) {
+        if (error) {
+            [self handleResultWithDictionary: nil command: command error: error];
+            return;
+        }
+        
+        JMSGMessage *message =  [conversation messageWithMessageId:param[@"id"]];
+        
+        if (message == nil) {
+            [self handleResultNilWithCommand:command error:[NSError errorWithDomain:@"message message fail" code: 3 userInfo: nil]];
+            return;
+        }
+        [message setMessageHaveRead:^(id resultObject, NSError *error) {
+            if (!error) {
+                [self handleResultNilWithCommand:command error:error];
+            } else {
+                [self handleResultWithDictionary: nil command: command error: error];
+            }
+        }];
+    }];
+    
+}
+
+
 - (void)getMessageById:(CDVInvokedUrlCommand *)command {
   NSDictionary * param = [command argumentAtIndex:0];
   [self getConversationWithDictionary:param callback:^(JMSGConversation *conversation, NSError *error) {
@@ -2422,7 +2570,7 @@ NSMutableDictionary *_jmessageEventCache;
 }
 
 - (void)getAllUnreadCount:(CDVInvokedUrlCommand *)command {
-    CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:[JMSGConversation getAllUnreadCount].boolValue];
+    CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:@{@"count":[JMSGConversation getAllUnreadCount]}];
     [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
 }
 
