@@ -1,4 +1,3 @@
-cordova.define("jmessage-phonegap-plugin.JMessagePlugin", function(require, exports, module) {
 var exec = require('cordova/exec')
 
 var PLUGIN_NAME = 'JMessagePlugin'
@@ -1359,4 +1358,3 @@ var JMessagePlugin = {
 
 module.exports = JMessagePlugin
 
-});
