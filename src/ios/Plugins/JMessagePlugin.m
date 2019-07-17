@@ -2570,7 +2570,7 @@ NSMutableDictionary *_jmessageEventCache;
 }
 
 - (void)getAllUnreadCount:(CDVInvokedUrlCommand *)command {
-    CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:[JMSGConversation getAllUnreadCount].boolValue];
+    CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:@{@"count":[JMSGConversation getAllUnreadCount]}];
     [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
 }
 
